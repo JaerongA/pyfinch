@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="JupyterTrust" id="86462266-d9c7-46bb-8973-8b9a20ef1990" />
+  <component name="ProjectId" id="1WqnWwYAqffUpv2XRnIvqmntdmx" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RunManager" selected="Python.EntropyAnalysis">
+    <configuration name="EntropyAnalysis" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="SongAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/EntropyAnalysis.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
+      <module name="SongAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\AJR\AppData\Local\Programs\Python\Python38-32\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PCC_normalization.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <module name="SongAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.EntropyAnalysis" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="" />
+      <created>1579886027757</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1579886027757</updated>
+      <workItem from="1579886029769" duration="5443000" />
+      <workItem from="1580266656821" duration="599000" />
+      <workItem from="1580349293030" duration="2902000" />
+      <workItem from="1580359855216" duration="51000" />
+      <workItem from="1580360936982" duration="2514000" />
+      <workItem from="1581704321521" duration="952000" />
+      <workItem from="1582081126043" duration="2026000" />
+      <workItem from="1582086489579" duration="58000" />
+      <workItem from="1585414863894" duration="1360000" />
+      <workItem from="1585448308903" duration="715000" />
+      <workItem from="1585449035832" duration="35000" />
+      <workItem from="1588120490366" duration="635000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1585414892782">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="736" y="356" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1579892040349" />
+    <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1585414892782" />
+    <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1580362605694" />
+    <state x="450" y="332" key="#com.intellij.ide.macro.MacrosDialog" timestamp="1580362275835">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="450" y="332" key="#com.intellij.ide.macro.MacrosDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1580362275835" />
+    <state x="397" y="406" width="1101" height="595" key="#xdebugger.evaluate" timestamp="1580362417188">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="397" y="406" width="1101" height="595" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1580362417188" />
+    <state x="405" y="388" key="EnvironmentVariablesDialog" timestamp="1580362280344">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="405" y="388" key="EnvironmentVariablesDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1580362280344" />
+    <state x="421" y="459" key="FileChooserDialogImpl" timestamp="1585448628049">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1581705272362" />
+    <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1585448628049" />
+    <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400@0.0.2560.1400" timestamp="1582086544230" />
+    <state width="1238" height="490" key="GridCell.Tab.0.bottom" timestamp="1580364792023">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="225" key="GridCell.Tab.0.bottom/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1579892091148" />
+    <state width="1238" height="490" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792023" />
+    <state width="1238" height="490" key="GridCell.Tab.0.center" timestamp="1580364792023">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="225" key="GridCell.Tab.0.center/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1579892091148" />
+    <state width="1238" height="490" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792023" />
+    <state width="1238" height="490" key="GridCell.Tab.0.left" timestamp="1580364792022">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="225" key="GridCell.Tab.0.left/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1579892091147" />
+    <state width="1238" height="490" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792022" />
+    <state width="1238" height="490" key="GridCell.Tab.0.right" timestamp="1580364792023">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="225" key="GridCell.Tab.0.right/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1579892091148" />
+    <state width="1238" height="490" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792023" />
+    <state width="1238" height="490" key="GridCell.Tab.1.bottom" timestamp="1580364792024">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="1238" height="490" key="GridCell.Tab.1.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792024" />
+    <state width="1238" height="490" key="GridCell.Tab.1.center" timestamp="1580364792024">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="1238" height="490" key="GridCell.Tab.1.center/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792024" />
+    <state width="1238" height="490" key="GridCell.Tab.1.left" timestamp="1580364792023">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="1238" height="490" key="GridCell.Tab.1.left/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792023" />
+    <state width="1238" height="490" key="GridCell.Tab.1.right" timestamp="1580364792024">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="1238" height="490" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792024" />
+    <state x="275" y="231" key="SettingsEditor" timestamp="1585415444291">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="782" y="344" key="SettingsEditor/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1579892083145" />
+    <state x="275" y="231" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1585415444291" />
+    <state x="275" y="231" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1582082591747" />
+    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1588120490413">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1581704337493" />
+    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1588120490413" />
+    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1582086489661" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/EntropyAnalysis.py</url>
+          <line>49</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/SongAnalysis$Python.coverage" NAME="SongAnalysis Coverage Results" MODIFIED="1580362320237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
