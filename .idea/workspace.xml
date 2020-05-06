@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="" />
+    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,8 +30,12 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="JupyterTrust" id="86462266-d9c7-46bb-8973-8b9a20ef1990" />
   <component name="ProjectId" id="1WqnWwYAqffUpv2XRnIvqmntdmx" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -141,7 +147,8 @@
       <workItem from="1585414863894" duration="1360000" />
       <workItem from="1585448308903" duration="715000" />
       <workItem from="1585449035832" duration="35000" />
-      <workItem from="1588120490366" duration="635000" />
+      <workItem from="1588120490366" duration="638000" />
+      <workItem from="1588697838458" duration="21000" />
     </task>
     <servers />
   </component>
@@ -152,7 +159,6 @@
     <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1585414892782">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="736" y="356" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1579892040349" />
     <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1585414892782" />
     <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1580362605694" />
     <state x="450" y="332" key="#com.intellij.ide.macro.MacrosDialog" timestamp="1580362275835">
@@ -176,22 +182,18 @@
     <state width="1238" height="490" key="GridCell.Tab.0.bottom" timestamp="1580364792023">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2517" height="225" key="GridCell.Tab.0.bottom/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1579892091148" />
     <state width="1238" height="490" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792023" />
     <state width="1238" height="490" key="GridCell.Tab.0.center" timestamp="1580364792023">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2517" height="225" key="GridCell.Tab.0.center/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1579892091148" />
     <state width="1238" height="490" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792023" />
     <state width="1238" height="490" key="GridCell.Tab.0.left" timestamp="1580364792022">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2517" height="225" key="GridCell.Tab.0.left/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1579892091147" />
     <state width="1238" height="490" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792022" />
     <state width="1238" height="490" key="GridCell.Tab.0.right" timestamp="1580364792023">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2517" height="225" key="GridCell.Tab.0.right/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1579892091148" />
     <state width="1238" height="490" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792023" />
     <state width="1238" height="490" key="GridCell.Tab.1.bottom" timestamp="1580364792024">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -212,14 +214,13 @@
     <state x="275" y="231" key="SettingsEditor" timestamp="1585415444291">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="782" y="344" key="SettingsEditor/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1579892083145" />
     <state x="275" y="231" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1585415444291" />
     <state x="275" y="231" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1582082591747" />
-    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1588120490413">
+    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1588697840239">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1581704337493" />
-    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1588120490413" />
+    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1588697840239" />
     <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1582086489661" />
   </component>
   <component name="XDebuggerManager">
