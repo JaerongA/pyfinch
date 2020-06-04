@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/SAP_features" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SyllableFR_CrossCorr.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dd.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,30 +47,27 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/SyllableFR_CrossCorr.py" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Python" />
   </component>
-  <component name="RunManager" selected="Python.EntropyAnalysis">
-    <configuration name="EntropyAnalysis" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.SAP_features">
+    <configuration name="SAP_features" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/EntropyAnalysis.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/SAP_features" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -98,6 +98,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="SyllableFR_CrossCorr" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="SongAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/SyllableFR_CrossCorr.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -120,9 +142,15 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.SongAnalysis" />
+      <item itemvalue="Python.SyllableFR_CrossCorr" />
+      <item itemvalue="Python.SAP_features" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.EntropyAnalysis" />
+        <item itemvalue="Python.SAP_features" />
+        <item itemvalue="Python.SyllableFR_CrossCorr" />
       </list>
     </recent_temporary>
   </component>
@@ -149,79 +177,76 @@
       <workItem from="1585449035832" duration="35000" />
       <workItem from="1588120490366" duration="638000" />
       <workItem from="1588697838458" duration="21000" />
+      <workItem from="1588951495837" duration="2954000" />
+      <workItem from="1589005768562" duration="82000" />
+      <workItem from="1591113128572" duration="6205000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <option name="LAST_COMMIT_MESSAGE" value="" />
+  </component>
   <component name="WindowStateProjectService">
-    <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1585414892782">
+    <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1588952757704">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1585414892782" />
-    <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1580362605694" />
-    <state x="450" y="332" key="#com.intellij.ide.macro.MacrosDialog" timestamp="1580362275835">
+    <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1588952757704" />
+    <state x="990" y="486" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1591113173386">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="450" y="332" key="#com.intellij.ide.macro.MacrosDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1580362275835" />
-    <state x="397" y="406" width="1101" height="595" key="#xdebugger.evaluate" timestamp="1580362417188">
+    <state x="990" y="486" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1400@0.0.2560.1400" timestamp="1591113173386" />
+    <state x="829" y="226" key="CommitChangelistDialog2" timestamp="1591113222892">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="397" y="406" width="1101" height="595" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1580362417188" />
-    <state x="405" y="388" key="EnvironmentVariablesDialog" timestamp="1580362280344">
+    <state x="829" y="226" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1591113222892" />
+    <state x="421" y="459" key="FileChooserDialogImpl" timestamp="1589005827788">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="405" y="388" key="EnvironmentVariablesDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1580362280344" />
-    <state x="421" y="459" key="FileChooserDialogImpl" timestamp="1585448628049">
+    <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1589005827788" />
+    <state width="2505" height="477" key="GridCell.Tab.0.bottom" timestamp="1591152265342">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1581705272362" />
-    <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1585448628049" />
-    <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400@0.0.2560.1400" timestamp="1582086544230" />
-    <state width="1238" height="490" key="GridCell.Tab.0.bottom" timestamp="1580364792023">
+    <state width="2505" height="477" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265342" />
+    <state width="2505" height="477" key="GridCell.Tab.0.center" timestamp="1591152265342">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="1238" height="490" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792023" />
-    <state width="1238" height="490" key="GridCell.Tab.0.center" timestamp="1580364792023">
+    <state width="2505" height="477" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265342" />
+    <state width="2505" height="477" key="GridCell.Tab.0.left" timestamp="1591152265342">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="1238" height="490" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792023" />
-    <state width="1238" height="490" key="GridCell.Tab.0.left" timestamp="1580364792022">
+    <state width="2505" height="477" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265342" />
+    <state width="2505" height="477" key="GridCell.Tab.0.right" timestamp="1591152265342">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="1238" height="490" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792022" />
-    <state width="1238" height="490" key="GridCell.Tab.0.right" timestamp="1580364792023">
+    <state width="2505" height="477" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265342" />
+    <state width="2505" height="477" key="GridCell.Tab.1.bottom" timestamp="1591152265343">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="1238" height="490" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792023" />
-    <state width="1238" height="490" key="GridCell.Tab.1.bottom" timestamp="1580364792024">
+    <state width="2505" height="477" key="GridCell.Tab.1.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265343" />
+    <state width="2505" height="477" key="GridCell.Tab.1.center" timestamp="1591152265343">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="1238" height="490" key="GridCell.Tab.1.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792024" />
-    <state width="1238" height="490" key="GridCell.Tab.1.center" timestamp="1580364792024">
+    <state width="2505" height="477" key="GridCell.Tab.1.center/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265343" />
+    <state width="2505" height="477" key="GridCell.Tab.1.left" timestamp="1591152265342">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="1238" height="490" key="GridCell.Tab.1.center/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792024" />
-    <state width="1238" height="490" key="GridCell.Tab.1.left" timestamp="1580364792023">
+    <state width="2505" height="477" key="GridCell.Tab.1.left/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265342" />
+    <state width="2505" height="477" key="GridCell.Tab.1.right" timestamp="1591152265343">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="1238" height="490" key="GridCell.Tab.1.left/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792023" />
-    <state width="1238" height="490" key="GridCell.Tab.1.right" timestamp="1580364792024">
+    <state width="2505" height="477" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265343" />
+    <state x="246" y="273" key="SettingsEditor" timestamp="1591113792141">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="1238" height="490" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1580364792024" />
-    <state x="275" y="231" key="SettingsEditor" timestamp="1585415444291">
+    <state x="246" y="273" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1588953075484" />
+    <state x="246" y="273" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1591113792141" />
+    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1589005769401">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="275" y="231" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1585415444291" />
-    <state x="275" y="231" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1582082591747" />
-    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1588697840239">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-1920.1065.1920.1040@0.0.2560.1400" timestamp="1581704337493" />
-    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1588697840239" />
-    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1582086489661" />
+    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1589005769401" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -231,10 +256,21 @@
           <line>49</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/SAP_features</url>
+          <line>105</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/SAP_features</url>
+          <line>72</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Deafening$SAP_features.coverage" NAME="SAP_features Coverage Results" MODIFIED="1591127593793" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SongAnalysis$Python.coverage" NAME="SongAnalysis Coverage Results" MODIFIED="1580362320237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
