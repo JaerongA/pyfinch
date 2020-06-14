@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/SAP_features" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/SyllableFR_CrossCorr.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dd.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,13 +51,16 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Python" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RunManager" selected="Python.SAP_features">
     <configuration name="SAP_features" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -180,6 +180,7 @@
       <workItem from="1588951495837" duration="2954000" />
       <workItem from="1589005768562" duration="82000" />
       <workItem from="1591113128572" duration="6205000" />
+      <workItem from="1592168076605" duration="736000" />
     </task>
     <servers />
   </component>
@@ -190,10 +191,11 @@
     <option name="LAST_COMMIT_MESSAGE" value="" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1588952757704">
+    <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592168657248">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1588952757704" />
+    <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592168657248" />
     <state x="990" y="486" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1591113173386">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -238,15 +240,16 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="477" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265343" />
-    <state x="246" y="273" key="SettingsEditor" timestamp="1591113792141">
+    <state x="246" y="273" key="SettingsEditor" timestamp="1592168581844">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="246" y="273" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1588953075484" />
-    <state x="246" y="273" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1591113792141" />
-    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1589005769401">
+    <state x="246" y="273" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1592168581844" />
+    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1592168258140">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1589005769401" />
+    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592168258140" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
