@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Summary_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Summary_main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,7 +36,9 @@
   </component>
   <component name="JupyterTrust" id="86462266-d9c7-46bb-8973-8b9a20ef1990" />
   <component name="ProjectId" id="1WqnWwYAqffUpv2XRnIvqmntdmx" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -51,9 +54,10 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
-  <component name="RunManager" selected="Python.SAP_features">
+  <component name="RunManager" selected="Python.Summary_main">
     <configuration name="SAP_features" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -90,6 +94,25 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PCC_normalization.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Summary_main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="SongAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Summary_main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -146,9 +169,11 @@
       <item itemvalue="Python.SongAnalysis" />
       <item itemvalue="Python.SyllableFR_CrossCorr" />
       <item itemvalue="Python.SAP_features" />
+      <item itemvalue="Python.Summary_main" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.Summary_main" />
         <item itemvalue="Python.SAP_features" />
         <item itemvalue="Python.SyllableFR_CrossCorr" />
       </list>
@@ -180,7 +205,7 @@
       <workItem from="1588951495837" duration="2954000" />
       <workItem from="1589005768562" duration="82000" />
       <workItem from="1591113128572" duration="6205000" />
-      <workItem from="1592168076605" duration="736000" />
+      <workItem from="1592168076605" duration="7528000" />
     </task>
     <servers />
   </component>
@@ -200,6 +225,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="990" y="486" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1400@0.0.2560.1400" timestamp="1591113173386" />
+    <state x="361" y="572" key="#xdebugger.evaluate" timestamp="1592177565951">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="361" y="572" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592177565951" />
     <state x="829" y="226" key="CommitChangelistDialog2" timestamp="1591113222892">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -208,38 +237,38 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1589005827788" />
-    <state width="2505" height="477" key="GridCell.Tab.0.bottom" timestamp="1591152265342">
+    <state width="1225" height="323" key="GridCell.Tab.0.bottom" timestamp="1592177769393">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="477" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265342" />
-    <state width="2505" height="477" key="GridCell.Tab.0.center" timestamp="1591152265342">
+    <state width="1225" height="323" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592177769393" />
+    <state width="1225" height="323" key="GridCell.Tab.0.center" timestamp="1592177769393">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="477" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265342" />
-    <state width="2505" height="477" key="GridCell.Tab.0.left" timestamp="1591152265342">
+    <state width="1225" height="323" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592177769393" />
+    <state width="1225" height="323" key="GridCell.Tab.0.left" timestamp="1592177769393">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="477" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265342" />
-    <state width="2505" height="477" key="GridCell.Tab.0.right" timestamp="1591152265342">
+    <state width="1225" height="323" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592177769393" />
+    <state width="1225" height="323" key="GridCell.Tab.0.right" timestamp="1592177769393">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="477" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265342" />
-    <state width="2505" height="477" key="GridCell.Tab.1.bottom" timestamp="1591152265343">
+    <state width="1225" height="323" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592177769393" />
+    <state width="1225" height="323" key="GridCell.Tab.1.bottom" timestamp="1592177769394">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="477" key="GridCell.Tab.1.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265343" />
-    <state width="2505" height="477" key="GridCell.Tab.1.center" timestamp="1591152265343">
+    <state width="1225" height="323" key="GridCell.Tab.1.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592177769394" />
+    <state width="1225" height="323" key="GridCell.Tab.1.center" timestamp="1592177769393">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="477" key="GridCell.Tab.1.center/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265343" />
-    <state width="2505" height="477" key="GridCell.Tab.1.left" timestamp="1591152265342">
+    <state width="1225" height="323" key="GridCell.Tab.1.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592177769393" />
+    <state width="1225" height="323" key="GridCell.Tab.1.left" timestamp="1592177769393">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="477" key="GridCell.Tab.1.left/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265342" />
-    <state width="2505" height="477" key="GridCell.Tab.1.right" timestamp="1591152265343">
+    <state width="1225" height="323" key="GridCell.Tab.1.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592177769393" />
+    <state width="1225" height="323" key="GridCell.Tab.1.right" timestamp="1592177769394">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="477" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1591152265343" />
+    <state width="1225" height="323" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592177769394" />
     <state x="246" y="273" key="SettingsEditor" timestamp="1592168581844">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -270,9 +299,17 @@
           <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Deafening$Summary_main.coverage" NAME="Summary_main Coverage Results" MODIFIED="1592177761944" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$SAP_features.coverage" NAME="SAP_features Coverage Results" MODIFIED="1591127593793" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SongAnalysis$Python.coverage" NAME="SongAnalysis Coverage Results" MODIFIED="1580362320237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
