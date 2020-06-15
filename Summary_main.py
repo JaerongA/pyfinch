@@ -26,11 +26,15 @@ for cluster_run in range(0, nb_cluster):
     BirdID = summary_cluster['BirdID'][cluster_run]
     TaskName = summary_cluster['TaskName'][cluster_run]
     TaskSession = summary_cluster['TaskSession'][cluster_run]
+    TaskSessionDeafening = summary_cluster['TaskSessionDeafening'][cluster_run]
+    TaskSessionPostdeafening = summary_cluster['TaskSessionPostdeafening'][cluster_run]
+    DPH = summary_cluster['DPH'][cluster_run]
+    Block = summary_cluster['Block'][cluster_run]
+    Block = summary_cluster['TaskName'][cluster_run]
+    Block = summary_cluster['TaskName'][cluster_run]
+    Block = summary_cluster['TaskName'][cluster_run]
     TaskName = summary_cluster['TaskName'][cluster_run]
-    TaskName = summary_cluster['TaskName'][cluster_run]
-    TaskName = summary_cluster['TaskName'][cluster_run]
-    TaskName = summary_cluster['TaskName'][cluster_run]
-    TaskName = summary_cluster['TaskName'][cluster_run]
+
 
 
     print(Key,BirdID)
