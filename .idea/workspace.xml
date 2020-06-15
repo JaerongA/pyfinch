@@ -24,6 +24,9 @@
     <expand />
     <select />
   </component>
+  <component name="FavoritesManager">
+    <favorites_list name="Deafening" />
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -205,7 +208,7 @@
       <workItem from="1588951495837" duration="2954000" />
       <workItem from="1589005768562" duration="82000" />
       <workItem from="1591113128572" duration="6205000" />
-      <workItem from="1592168076605" duration="10201000" />
+      <workItem from="1592168076605" duration="17295000" />
     </task>
     <task id="LOCAL-00001" summary="Master script">
       <created>1592181120484</created>
@@ -245,50 +248,58 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="990" y="486" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1400@0.0.2560.1400" timestamp="1591113173386" />
-    <state x="1201" y="485" key="#xdebugger.evaluate" timestamp="1592184360457">
+    <state x="873" y="473" width="1262" height="716" key="#xdebugger.evaluate" timestamp="1592196518431">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1201" y="485" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592184360457" />
+    <state x="873" y="473" width="1262" height="716" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592196518431" />
     <state x="829" y="226" key="CommitChangelistDialog2" timestamp="1592181120032">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="829" y="226" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1592181120032" />
+    <state width="2138" height="582" key="DebuggerActiveHint" timestamp="1592193430078">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2138" height="582" key="DebuggerActiveHint/0.0.2560.1400@0.0.2560.1400" timestamp="1592193430078" />
+    <state x="93" y="93" width="2375" height="1215" key="DiffContextDialog" timestamp="1592192865538">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="93" y="93" width="2375" height="1215" key="DiffContextDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592192865538" />
     <state x="421" y="459" key="FileChooserDialogImpl" timestamp="1589005827788">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1589005827788" />
-    <state width="2505" height="323" key="GridCell.Tab.0.bottom" timestamp="1592183827693">
+    <state width="2505" height="323" key="GridCell.Tab.0.bottom" timestamp="1592196778635">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592183827693" />
-    <state width="2505" height="323" key="GridCell.Tab.0.center" timestamp="1592183827693">
+    <state width="2505" height="323" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592196778635" />
+    <state width="2505" height="323" key="GridCell.Tab.0.center" timestamp="1592196778635">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592183827693" />
-    <state width="2505" height="323" key="GridCell.Tab.0.left" timestamp="1592183827693">
+    <state width="2505" height="323" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592196778635" />
+    <state width="2505" height="323" key="GridCell.Tab.0.left" timestamp="1592196778635">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592183827693" />
-    <state width="2505" height="323" key="GridCell.Tab.0.right" timestamp="1592183827693">
+    <state width="2505" height="323" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592196778635" />
+    <state width="2505" height="323" key="GridCell.Tab.0.right" timestamp="1592196778635">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592183827693" />
-    <state width="2505" height="323" key="GridCell.Tab.1.bottom" timestamp="1592183827693">
+    <state width="2505" height="323" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592196778635" />
+    <state width="2505" height="323" key="GridCell.Tab.1.bottom" timestamp="1592196778635">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.1.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592183827693" />
-    <state width="2505" height="323" key="GridCell.Tab.1.center" timestamp="1592183827693">
+    <state width="2505" height="323" key="GridCell.Tab.1.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592196778635" />
+    <state width="2505" height="323" key="GridCell.Tab.1.center" timestamp="1592196778635">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.1.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592183827693" />
-    <state width="2505" height="323" key="GridCell.Tab.1.left" timestamp="1592183827693">
+    <state width="2505" height="323" key="GridCell.Tab.1.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592196778635" />
+    <state width="2505" height="323" key="GridCell.Tab.1.left" timestamp="1592196778635">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.1.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592183827693" />
-    <state width="2505" height="323" key="GridCell.Tab.1.right" timestamp="1592183827693">
+    <state width="2505" height="323" key="GridCell.Tab.1.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592196778635" />
+    <state width="2505" height="323" key="GridCell.Tab.1.right" timestamp="1592196778635">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592183827693" />
+    <state width="2505" height="323" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592196778635" />
     <state x="246" y="273" key="SettingsEditor" timestamp="1592168581844">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -318,11 +329,6 @@
           <line>72</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Summary_main.py</url>
-          <line>30</line>
-          <option name="timeStamp" value="23" />
-        </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
@@ -334,7 +340,7 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Deafening$Summary_main.coverage" NAME="Summary_main Coverage Results" MODIFIED="1592183809833" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$Summary_main.coverage" NAME="Summary_main Coverage Results" MODIFIED="1592196735570" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$SAP_features.coverage" NAME="SAP_features Coverage Results" MODIFIED="1591127593793" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SongAnalysis$Python.coverage" NAME="SongAnalysis Coverage Results" MODIFIED="1580362320237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
