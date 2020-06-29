@@ -11,13 +11,13 @@ def copy_cluster_mat(summary_cluster, projectROOT):
     # for cluster_run in range(0, nb_cluster):
     cluster_run = 0
     cluster = load.cluster(summary_cluster, cluster_run)
-    print(cluster)
-
-# pass
-
-    return cluster
+    # print(cluster)
+    sessionID, cellID, cellROOT = load.cluster_info(cluster)
 
 
+    return sessionID, cellID, cellROOT, cluster
+
+    # pass
 
 
 
@@ -27,4 +27,4 @@ def copy_cluster_mat(summary_cluster, projectROOT):
 
 
 if __name__ == '__main__':
-    cluster = copy_cluster_mat(summary_cluster, projectROOT)
+    sessionID, cellID, cellROOT, cluster = copy_cluster_mat(summary_cluster, projectROOT)

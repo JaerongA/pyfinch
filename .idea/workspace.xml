@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment=".">
+    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/practice.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/copy_cluster_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/copy_cluster_mat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/summary/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/summary/load.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,6 +37,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="JaerongAhn &lt;jaerongahn@gmail.com&gt;" />
+      </list>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="JupyterTrust" id="86462266-d9c7-46bb-8973-8b9a20ef1990" />
@@ -283,7 +291,7 @@
       <workItem from="1593315511122" duration="837000" />
       <workItem from="1593316361362" duration="109000" />
       <workItem from="1593369865038" duration="1162000" />
-      <workItem from="1593371128009" duration="14563000" />
+      <workItem from="1593371128009" duration="17900000" />
     </task>
     <task id="LOCAL-00001" summary="Master script">
       <created>1592181120484</created>
@@ -320,7 +328,14 @@
       <option name="project" value="LOCAL" />
       <updated>1593397183640</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary=".">
+      <created>1593397355817</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1593397355817</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -358,15 +373,15 @@
     </state>
     <state x="990" y="486" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1592972151176" />
     <state x="990" y="486" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1400@0.0.2560.1400" timestamp="1591113173386" />
-    <state x="395" y="629" width="1262" height="716" key="#xdebugger.evaluate" timestamp="1593384590471">
+    <state x="395" y="629" width="1262" height="716" key="#xdebugger.evaluate" timestamp="1593411384396">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="395" y="629" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593384590471" />
+    <state x="395" y="629" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593411384396" />
     <state x="1140" y="329" width="1262" height="716" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592375822627" />
-    <state x="829" y="226" key="CommitChangelistDialog2" timestamp="1593397282369">
+    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2" timestamp="1593397355376">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="829" y="226" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593397282369" />
+    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593397355376" />
     <state x="829" y="226" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1592181120032" />
     <state width="2138" height="582" key="DebuggerActiveHint" timestamp="1592193430078">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -380,45 +395,45 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1589005827788" />
-    <state width="2505" height="323" key="GridCell.Tab.0.bottom" timestamp="1593384613442">
+    <state width="2505" height="323" key="GridCell.Tab.0.bottom" timestamp="1593412361862">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593384613442" />
+    <state width="2505" height="323" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
     <state width="2505" height="323" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="323" key="GridCell.Tab.0.center" timestamp="1593384613441">
+    <state width="2505" height="323" key="GridCell.Tab.0.center" timestamp="1593412361862">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593384613441" />
+    <state width="2505" height="323" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
     <state width="2505" height="323" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="323" key="GridCell.Tab.0.left" timestamp="1593384613441">
+    <state width="2505" height="323" key="GridCell.Tab.0.left" timestamp="1593412361862">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593384613441" />
+    <state width="2505" height="323" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
     <state width="2505" height="323" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="323" key="GridCell.Tab.0.right" timestamp="1593384613441">
+    <state width="2505" height="323" key="GridCell.Tab.0.right" timestamp="1593412361862">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593384613441" />
+    <state width="2505" height="323" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
     <state width="2505" height="323" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="323" key="GridCell.Tab.1.bottom" timestamp="1593384613442">
+    <state width="2505" height="323" key="GridCell.Tab.1.bottom" timestamp="1593412361862">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593384613442" />
+    <state width="2505" height="323" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
     <state width="2505" height="323" key="GridCell.Tab.1.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153628" />
-    <state width="2505" height="323" key="GridCell.Tab.1.center" timestamp="1593384613442">
+    <state width="2505" height="323" key="GridCell.Tab.1.center" timestamp="1593412361862">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593384613442" />
+    <state width="2505" height="323" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
     <state width="2505" height="323" key="GridCell.Tab.1.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="323" key="GridCell.Tab.1.left" timestamp="1593384613442">
+    <state width="2505" height="323" key="GridCell.Tab.1.left" timestamp="1593412361862">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593384613442" />
+    <state width="2505" height="323" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
     <state width="2505" height="323" key="GridCell.Tab.1.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="323" key="GridCell.Tab.1.right" timestamp="1593384613442">
+    <state width="2505" height="323" key="GridCell.Tab.1.right" timestamp="1593412361862">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593384613442" />
+    <state width="2505" height="323" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
     <state width="2505" height="323" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153628" />
     <state x="246" y="273" key="SettingsEditor" timestamp="1593370058398">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -436,10 +451,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="852" y="225" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1592973001592" />
-    <state x="-2686" y="262" width="1420" height="990" maximized="true" key="dock-window-1" timestamp="1593385433394">
+    <state x="-2686" y="262" width="1420" height="990" maximized="true" key="dock-window-1" timestamp="1593401202095">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2686" y="262" width="1420" height="990" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593385433394" />
+    <state x="-2686" y="262" width="1420" height="990" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593401202095" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -475,9 +490,9 @@
           <option name="timeStamp" value="58" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/summary/load.py</url>
-          <line>30</line>
-          <option name="timeStamp" value="92" />
+          <url>file://$PROJECT_DIR$/copy_cluster_mat.py</url>
+          <line>16</line>
+          <option name="timeStamp" value="102" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -493,7 +508,7 @@
     <SUITE FILE_PATH="coverage/Deafening$Summary_main.coverage" NAME="Summary_main Coverage Results" MODIFIED="1592375757294" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$SAP_features.coverage" NAME="SAP_features Coverage Results" MODIFIED="1591127593793" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SongAnalysis$Python.coverage" NAME="SongAnalysis Coverage Results" MODIFIED="1580362320237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Deafening$copy_cluster_mat.coverage" NAME="copy_cluster_mat Coverage Results" MODIFIED="1593384548240" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$copy_cluster_mat.coverage" NAME="copy_cluster_mat Coverage Results" MODIFIED="1593412294595" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$load.coverage" NAME="load Coverage Results" MODIFIED="1593379386144" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/summary" />
   </component>
 </project>
