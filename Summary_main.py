@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from datetime import date
+from summary import load_project
 
 today = date.today()
 
@@ -66,11 +67,11 @@ for cluster_run in range(0, nb_cluster):
     # # for key, value in this_dic.items():
     # #     exec('{} = {}'.format(key, value))
 
-    >> > from types import SimpleNamespace
-    >> > d = {'a': 1, 'b': 2}
-    >> > n = SimpleNamespace(**d)
-    >> > n.a
-    1
+    # >> > from types import SimpleNamespace
+    # >> > d = {'a': 1, 'b': 2}
+    # >> > n = SimpleNamespace(**d)
+    # >> > n.a
+    # 1
 
 
     locals().update(this_dic)
