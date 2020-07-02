@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/summary/save.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/SongAnalysis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SongAnalysis.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
@@ -54,6 +54,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/SyllableFR_CrossCorr.py" />
@@ -143,9 +144,6 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -297,7 +295,9 @@
       <workItem from="1593316361362" duration="109000" />
       <workItem from="1593369865038" duration="1162000" />
       <workItem from="1593371128009" duration="17900000" />
-      <workItem from="1593581959015" duration="1676000" />
+      <workItem from="1593581959015" duration="2103000" />
+      <workItem from="1593647582705" duration="110000" />
+      <workItem from="1593647759338" duration="684000" />
     </task>
     <task id="LOCAL-00001" summary="Master script">
       <created>1592181120484</created>
@@ -341,7 +341,14 @@
       <option name="project" value="LOCAL" />
       <updated>1593397355817</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="save setting">
+      <created>1593647165512</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1593647165512</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -366,7 +373,8 @@
     <MESSAGE value="workspace" />
     <MESSAGE value="copy cluster .mat files for analysable neurons" />
     <MESSAGE value="." />
-    <option name="LAST_COMMIT_MESSAGE" value="." />
+    <MESSAGE value="save setting" />
+    <option name="LAST_COMMIT_MESSAGE" value="save setting" />
   </component>
   <component name="WindowStateProjectService">
     <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592168657248">
@@ -384,10 +392,10 @@
     </state>
     <state x="395" y="629" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593411384396" />
     <state x="1140" y="329" width="1262" height="716" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592375822627" />
-    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2" timestamp="1593397355376">
+    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2" timestamp="1593647164985">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593397355376" />
+    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593647164985" />
     <state x="829" y="226" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1592181120032" />
     <state width="2138" height="582" key="DebuggerActiveHint" timestamp="1592193430078">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -397,10 +405,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="93" y="93" width="2375" height="1215" key="DiffContextDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592192865538" />
-    <state x="421" y="459" key="FileChooserDialogImpl" timestamp="1593646463259">
+    <state x="421" y="459" key="FileChooserDialogImpl" timestamp="1593647327024">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593646463259" />
+    <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593647327024" />
     <state width="2505" height="323" key="GridCell.Tab.0.bottom" timestamp="1593412361862">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -441,26 +449,34 @@
     </state>
     <state width="2505" height="323" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
     <state width="2505" height="323" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153628" />
-    <state x="246" y="273" key="SettingsEditor" timestamp="1593646505544">
+    <state x="293" y="273" key="SettingsEditor" timestamp="1593648443034">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-3594" y="535" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1593316340520" />
-    <state x="246" y="273" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593646505544" />
+    <state x="293" y="273" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593648443034" />
     <state x="246" y="273" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1592168581844" />
-    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1593316361620">
-      <screen x="-3840" y="262" width="2560" height="1400" />
+    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1593647771103">
+      <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1593316361620" />
-    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1589005769401" />
+    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593647771103" />
     <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592372967067" />
     <state x="852" y="225" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1592973001592">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="852" y="225" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1592973001592" />
+    <state x="1078" y="373" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog" timestamp="1593648485415">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="1078" y="373" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593648485415" />
     <state x="-2686" y="262" width="1420" height="990" maximized="true" key="dock-window-1" timestamp="1593401202095">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2686" y="262" width="1420" height="990" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593401202095" />
+    <state x="912" y="195" width="737" height="1011" key="find.popup" timestamp="1593647625299">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="912" y="195" width="737" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593647625299" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
