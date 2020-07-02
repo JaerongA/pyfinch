@@ -4,7 +4,6 @@
 import os
 from summary import load
 
-global projectROOT, saveROOT
 
 config_file = 'project.ini'
 parser = load.config(config_file)
@@ -13,6 +12,11 @@ summary_cluster, nb_cluster = load.summary(parser)  # load cluster summary file
 del config_file, parser
 
 # Make a folder to save files
+saveROOT = 'InformationAnalysis'
+save.make_save_dir(saveROOT)
+
+
+
 saveROOT = projectROOT + '\\Analysis\\InformationAnalysis'
 if not os.path.exists(saveROOT):
     os.mkdir(saveROOT)

@@ -14,7 +14,6 @@ def project(parser):
     global projectROOT, summaryROOT
 
     projectROOT = parser.get('folders', 'projectROOT')
-    summaryROOT = projectROOT + parser.get('folders', 'summaryROOT')
 
     # os.chdir(projectROOT)
     # print(os.listdir(summaryROOT))
@@ -25,6 +24,7 @@ def summary(parser):
     import os
     import pandas as pd
 
+    summaryROOT = projectROOT + parser.get('folders', 'summaryROOT')
     summary_file = parser.get('files', 'summary')
     os.chdir(summaryROOT)
     # print(os.listdir(summaryROOT))
@@ -64,6 +64,7 @@ def cluster_info(cluster):
 
 
 if __name__ == '__main__':
-    parser = load_ini(config_file)
-    projectROOT, summaryROOT = load_project(parser)
-    summary_cluster = load_cluster(parser)
+    config_file = '../project.ini'
+    parser = config(config_file)
+    projectROOT = project(parser)
+    summary_cluster, nb_cluster = summary(parser)

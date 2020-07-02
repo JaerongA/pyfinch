@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/SongAnalysis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SongAnalysis.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/copy_cluster_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/copy_cluster_mat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/summary/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/summary/load.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/summary/save.py" beforeDir="false" afterPath="$PROJECT_DIR$/summary/save.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,7 +74,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\Summary" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.copy_cluster_mat">
+  <component name="RunManager" selected="Python.save">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -88,28 +89,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PCC_normalization.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Summary_main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="SongAnalysis" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="H:\Box\PythonToolbox\Deafening\Summary_main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -163,9 +142,6 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/summary" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -244,21 +220,40 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="save" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="SongAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/summary" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/summary/save.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.SongAnalysis" />
-      <item itemvalue="Python.Summary_main" />
       <item itemvalue="Python.load_project" />
       <item itemvalue="Python.load_project (1)" />
       <item itemvalue="Python.copy_cluster_mat" />
       <item itemvalue="Python.load" />
+      <item itemvalue="Python.save" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.copy_cluster_mat" />
+        <item itemvalue="Python.save" />
         <item itemvalue="Python.load" />
+        <item itemvalue="Python.copy_cluster_mat" />
         <item itemvalue="Python.load_project (1)" />
         <item itemvalue="Python.load_project (1)" />
-        <item itemvalue="Python.load_project" />
       </list>
     </recent_temporary>
   </component>
@@ -298,6 +293,7 @@
       <workItem from="1593581959015" duration="2103000" />
       <workItem from="1593647582705" duration="110000" />
       <workItem from="1593647759338" duration="684000" />
+      <workItem from="1593654500400" duration="7224000" />
     </task>
     <task id="LOCAL-00001" summary="Master script">
       <created>1592181120484</created>
@@ -387,10 +383,10 @@
     </state>
     <state x="990" y="486" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1592972151176" />
     <state x="990" y="486" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1400@0.0.2560.1400" timestamp="1591113173386" />
-    <state x="395" y="629" width="1262" height="716" key="#xdebugger.evaluate" timestamp="1593411384396">
+    <state x="395" y="629" width="1262" height="716" key="#xdebugger.evaluate" timestamp="1593666028580">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="395" y="629" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593411384396" />
+    <state x="395" y="629" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593666028580" />
     <state x="1140" y="329" width="1262" height="716" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592375822627" />
     <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2" timestamp="1593648533190">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -409,45 +405,45 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593647327024" />
-    <state width="2505" height="323" key="GridCell.Tab.0.bottom" timestamp="1593412361862">
+    <state width="2505" height="323" key="GridCell.Tab.0.bottom" timestamp="1593666116959">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
+    <state width="2505" height="323" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593666116959" />
     <state width="2505" height="323" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="323" key="GridCell.Tab.0.center" timestamp="1593412361862">
+    <state width="2505" height="323" key="GridCell.Tab.0.center" timestamp="1593666116959">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
+    <state width="2505" height="323" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593666116959" />
     <state width="2505" height="323" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="323" key="GridCell.Tab.0.left" timestamp="1593412361862">
+    <state width="2505" height="323" key="GridCell.Tab.0.left" timestamp="1593666116959">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
+    <state width="2505" height="323" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593666116959" />
     <state width="2505" height="323" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="323" key="GridCell.Tab.0.right" timestamp="1593412361862">
+    <state width="2505" height="323" key="GridCell.Tab.0.right" timestamp="1593666116959">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
+    <state width="2505" height="323" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593666116959" />
     <state width="2505" height="323" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="323" key="GridCell.Tab.1.bottom" timestamp="1593412361862">
+    <state width="2505" height="323" key="GridCell.Tab.1.bottom" timestamp="1593666116959">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
+    <state width="2505" height="323" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593666116959" />
     <state width="2505" height="323" key="GridCell.Tab.1.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153628" />
-    <state width="2505" height="323" key="GridCell.Tab.1.center" timestamp="1593412361862">
+    <state width="2505" height="323" key="GridCell.Tab.1.center" timestamp="1593666116959">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
+    <state width="2505" height="323" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593666116959" />
     <state width="2505" height="323" key="GridCell.Tab.1.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="323" key="GridCell.Tab.1.left" timestamp="1593412361862">
+    <state width="2505" height="323" key="GridCell.Tab.1.left" timestamp="1593666116959">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
+    <state width="2505" height="323" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593666116959" />
     <state width="2505" height="323" key="GridCell.Tab.1.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="323" key="GridCell.Tab.1.right" timestamp="1593412361862">
+    <state width="2505" height="323" key="GridCell.Tab.1.right" timestamp="1593666116959">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="323" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593412361862" />
+    <state width="2505" height="323" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593666116959" />
     <state width="2505" height="323" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153628" />
     <state x="293" y="273" key="SettingsEditor" timestamp="1593648443034">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -511,6 +507,11 @@
           <line>6</line>
           <option name="timeStamp" value="58" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/summary/save.py</url>
+          <line>23</line>
+          <option name="timeStamp" value="74" />
+        </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
@@ -520,9 +521,15 @@
         </breakpoint>
       </default-breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="config_file" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Deafening$Summary_main.coverage" NAME="Summary_main Coverage Results" MODIFIED="1592375757294" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$save.coverage" NAME="save Coverage Results" MODIFIED="1593665988238" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/summary" />
     <SUITE FILE_PATH="coverage/Deafening$SAP_features.coverage" NAME="SAP_features Coverage Results" MODIFIED="1591127593793" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SongAnalysis$Python.coverage" NAME="SongAnalysis Coverage Results" MODIFIED="1580362320237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$copy_cluster_mat.coverage" NAME="copy_cluster_mat Coverage Results" MODIFIED="1593412294595" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
