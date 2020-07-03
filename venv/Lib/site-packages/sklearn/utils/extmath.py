@@ -20,6 +20,7 @@ from . import check_random_state
 from ._logistic_sigmoid import _log_logistic_sigmoid
 from .sparsefuncs_fast import csr_row_norms
 from .validation import check_array
+from .validation import _deprecate_positional_args
 from .deprecation import deprecated
 
 
@@ -115,7 +116,8 @@ def density(w, **kwargs):
     return d
 
 
-def safe_sparse_dot(a, b, dense_output=False):
+@_deprecate_positional_args
+def safe_sparse_dot(a, b, *, dense_output=False):
     """Dot product that handle the sparse matrix case correctly
 
     Parameters
@@ -156,7 +158,8 @@ def safe_sparse_dot(a, b, dense_output=False):
     return ret
 
 
-def randomized_range_finder(A, size, n_iter,
+@_deprecate_positional_args
+def randomized_range_finder(A, *, size, n_iter,
                             power_iteration_normalizer='auto',
                             random_state=None):
     """Computes an orthonormal matrix whose range approximates the range of A.
@@ -184,10 +187,9 @@ def randomized_range_finder(A, size, n_iter,
 
     random_state : int, RandomState instance or None, optional (default=None)
         The seed of the pseudo random number generator to use when shuffling
-        the data.  If int, random_state is the seed used by the random number
-        generator; If RandomState instance, random_state is the random number
-        generator; If None, the random number generator is the RandomState
-        instance used by `np.random`.
+        the data, i.e. getting the random vectors to initialize the algorithm.
+        Pass an int for reproducible results across multiple function calls.
+        See :term:`Glossary <random_state>`.
 
     Returns
     -------
@@ -241,7 +243,8 @@ def randomized_range_finder(A, size, n_iter,
     return Q
 
 
-def randomized_svd(M, n_components, n_oversamples=10, n_iter='auto',
+@_deprecate_positional_args
+def randomized_svd(M, n_components, *, n_oversamples=10, n_iter='auto',
                    power_iteration_normalizer='auto', transpose='auto',
                    flip_sign=True, random_state=0):
     """Computes a truncated randomized SVD
@@ -296,10 +299,9 @@ def randomized_svd(M, n_components, n_oversamples=10, n_iter='auto',
 
     random_state : int, RandomState instance or None, optional (default=None)
         The seed of the pseudo random number generator to use when shuffling
-        the data.  If int, random_state is the seed used by the random number
-        generator; If RandomState instance, random_state is the random number
-        generator; If None, the random number generator is the RandomState
-        instance used by `np.random`.
+        the data, i.e. getting the random vectors to initialize the algorithm.
+        Pass an int for reproducible results across multiple function calls.
+        See :term:`Glossary <random_state>`.
 
     Notes
     -----
@@ -344,8 +346,10 @@ def randomized_svd(M, n_components, n_oversamples=10, n_iter='auto',
         # this implementation is a bit faster with smaller shape[1]
         M = M.T
 
-    Q = randomized_range_finder(M, n_random, n_iter,
-                                power_iteration_normalizer, random_state)
+    Q = randomized_range_finder(
+        M, size=n_random, n_iter=n_iter,
+        power_iteration_normalizer=power_iteration_normalizer,
+        random_state=random_state)
 
     # project M to the (k + p) dimensional space using the basis vectors
     B = safe_sparse_dot(Q.T, M)
@@ -371,7 +375,8 @@ def randomized_svd(M, n_components, n_oversamples=10, n_iter='auto',
         return U[:, :n_components], s[:n_components], V[:n_components, :]
 
 
-def weighted_mode(a, w, axis=0):
+@_deprecate_positional_args
+def weighted_mode(a, w, *, axis=0):
     """Returns an array of the weighted modal (most common) value in a
 
     If there is more than one such value, only the first is returned.

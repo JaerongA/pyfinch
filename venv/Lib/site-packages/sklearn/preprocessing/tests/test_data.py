@@ -80,9 +80,7 @@ def toarray(a):
 
 
 def _check_dim_1axis(a):
-    if isinstance(a, list):
-        return np.array(a).shape[0]
-    return a.shape[0]
+    return np.asarray(a).shape[0]
 
 
 def assert_correct_incr(i, batch_start, batch_stop, n, chunk_size,
@@ -1454,7 +1452,6 @@ def test_quantile_transform_sparse_toy():
     assert_array_almost_equal(X.toarray(), X_trans_inv.toarray())
 
 
-@pytest.mark.filterwarnings("ignore: The default value of `copy`")  # 0.23
 def test_quantile_transform_axis1():
     X = np.array([[0, 25, 50, 75, 100],
                   [2, 4, 6, 8, 10],
@@ -1532,18 +1529,6 @@ def test_quantile_transform_nan():
     assert np.isnan(transformer.quantiles_[:, 0]).all()
     # all other column should not contain NaN
     assert not np.isnan(transformer.quantiles_[:, 1:]).any()
-
-
-def test_deprecated_quantile_transform_copy():
-    future_message = ("The default value of `copy` will change from False to "
-                      "True in 0.23 in order to make it more consistent with "
-                      "the default `copy` values of other functions in "
-                      ":mod:`sklearn.preprocessing` and prevent "
-                      "unexpected side effects by modifying the value of `X` "
-                      "inplace. To avoid inplace modifications of `X`, it is "
-                      "recommended to explicitly set `copy=True`")
-    assert_warns_message(FutureWarning, future_message, quantile_transform,
-                         np.array([[0, 1], [0, 0.5], [1, 0]]))
 
 
 @pytest.mark.parametrize("array_type", ['array', 'sparse'])
@@ -1962,7 +1947,7 @@ def test_normalizer_max():
         X_norm2 = toarray(X_norm2)
 
         for X_norm in (X_norm1, X_norm2):
-            row_maxs = X_norm.max(axis=1)
+            row_maxs = abs(X_norm).max(axis=1)
             for i in range(3):
                 assert_almost_equal(row_maxs[i], 1.0)
             assert_almost_equal(row_maxs[3], 0.0)
@@ -1979,6 +1964,27 @@ def test_normalizer_max():
         for i in range(3):
             assert_almost_equal(row_maxs[i], 1.0)
         assert_almost_equal(la.norm(X_norm[3]), 0.0)
+
+
+def test_normalizer_max_sign():
+    # check that we normalize by a positive number even for negative data
+    rng = np.random.RandomState(0)
+    X_dense = rng.randn(4, 5)
+    # set the row number 3 to zero
+    X_dense[3, :] = 0.0
+    # check for mixed data where the value with
+    # largest magnitude is negative
+    X_dense[2, abs(X_dense[2, :]).argmax()] *= -1
+    X_all_neg = -np.abs(X_dense)
+    X_all_neg_sparse = sparse.csr_matrix(X_all_neg)
+
+    for X in (X_dense, X_all_neg, X_all_neg_sparse):
+        normalizer = Normalizer(norm='max')
+        X_norm = normalizer.transform(X)
+        assert X_norm is not X
+        X_norm = toarray(X_norm)
+        assert_array_equal(
+            np.sign(X_norm), np.sign(toarray(X)))
 
 
 def test_normalize():
@@ -2184,7 +2190,6 @@ def test_fit_cold_start():
         scaler.fit_transform(X_2d)
 
 
-@pytest.mark.filterwarnings("ignore: The default value of `copy`")  # 0.23
 def test_quantile_transform_valid_axis():
     X = np.array([[0, 25, 50, 75, 100],
                   [2, 4, 6, 8, 10],
@@ -2290,7 +2295,7 @@ def test_power_transformer_boxcox_strictly_positive_exception():
         pt.fit(X_with_negatives)
 
     with pytest.raises(ValueError, match=not_positive_message):
-        power_transform(X_with_negatives, 'box-cox')
+        power_transform(X_with_negatives, method='box-cox')
 
     with pytest.raises(ValueError, match=not_positive_message):
         pt.transform(np.zeros(X_2d.shape))
@@ -2299,7 +2304,7 @@ def test_power_transformer_boxcox_strictly_positive_exception():
         pt.fit(np.zeros(X_2d.shape))
 
     with pytest.raises(ValueError, match=not_positive_message):
-        power_transform(np.zeros(X_2d.shape), 'box-cox')
+        power_transform(np.zeros(X_2d.shape), method='box-cox')
 
 
 @pytest.mark.parametrize('X', [X_2d, np.abs(X_2d), -np.abs(X_2d),
@@ -2427,7 +2432,7 @@ def test_power_transformer_fit_transform(method, standardize):
     if method == 'box-cox':
         X = np.abs(X)
 
-    pt = PowerTransformer(method, standardize)
+    pt = PowerTransformer(method, standardize=standardize)
     assert_array_almost_equal(pt.fit(X).transform(X), pt.fit_transform(X))
 
 
@@ -2444,7 +2449,7 @@ def test_power_transformer_copy_True(method, standardize):
     assert X is not X_original  # sanity checks
     assert_array_almost_equal(X, X_original)
 
-    pt = PowerTransformer(method, standardize, copy=True)
+    pt = PowerTransformer(method, standardize=standardize, copy=True)
 
     pt.fit(X)
     assert_array_almost_equal(X, X_original)
@@ -2472,7 +2477,7 @@ def test_power_transformer_copy_False(method, standardize):
     assert X is not X_original  # sanity checks
     assert_array_almost_equal(X, X_original)
 
-    pt = PowerTransformer(method, standardize, copy=False)
+    pt = PowerTransformer(method, standardize=standardize, copy=False)
 
     pt.fit(X)
     assert_array_almost_equal(X, X_original)  # fit didn't change X
@@ -2489,19 +2494,15 @@ def test_power_transformer_copy_False(method, standardize):
     assert X_trans is X_inv_trans
 
 
-def test_power_transform_default_method():
-    X = np.abs(X_2d)
-
-    future_warning_message = (
-        "The default value of 'method' "
-        "will change from 'box-cox'"
-    )
-    assert_warns_message(FutureWarning, future_warning_message,
-                         power_transform, X)
-
-    with warnings.catch_warnings():
-        warnings.simplefilter('ignore')
-        X_trans_default = power_transform(X)
-
-    X_trans_boxcox = power_transform(X, method='box-cox')
-    assert_array_equal(X_trans_boxcox, X_trans_default)
+@pytest.mark.parametrize(
+    "X_2",
+    [sparse.random(10, 1, density=0.8, random_state=0),
+     sparse.csr_matrix(np.full((10, 1), fill_value=np.nan))]
+)
+def test_standard_scaler_sparse_partial_fit_finite_variance(X_2):
+    # non-regression test for:
+    # https://github.com/scikit-learn/scikit-learn/issues/16448
+    X_1 = sparse.random(5, 1, density=0.8)
+    scaler = StandardScaler(with_mean=False)
+    scaler.fit(X_1).partial_fit(X_2)
+    assert np.isfinite(scaler.var_[0])
