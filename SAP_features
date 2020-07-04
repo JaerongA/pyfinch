@@ -8,15 +8,16 @@ from scipy import stats
 from sklearn.decomposition import PCA
 from sklearn import datasets
 from sklearn.preprocessing import StandardScaler
+from summary.read_config import parser
+from summary import load
 
+project_path = load.project(parser)  # find the project folder
+summary_cluster, nb_cluster = load.summary(parser)  # load cluster summary file
 
-
-# projectROOT = r'C:\Users\jahn02\Box\Data\Deafening Project';  # lab
-projectROOT = r'H:\Box\Data\Deafening Project'  # home
-dataROOT = projectROOT + '\Analysis\SAP_features'
+data_path = os.path.join(project_path, r'Analysis\SAP_features') # the data folder where SAP feature values are stored
 analysis_file = 'SAP(ALL).txt'
 
-os.chdir(dataROOT)
+os.chdir(data_path)
 df = pd.read_csv(analysis_file, delimiter="\t")
 df = df.query('Context == "Undir"')  # select only Undir trials
 

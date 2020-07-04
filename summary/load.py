@@ -1,14 +1,17 @@
 # Load project & summary folder summary file
-config_file = 'project.ini'
+# config_file = 'project.ini'
+#
+#
+# def config(config_file):
+#     from configparser import ConfigParser
+#     parser = ConfigParser()
+#     parser.read(config_file)
+#     # print(parser.sections())
+#     return parser
 
+from .read_config import parser
 
-def config(config_file):
-    from configparser import ConfigParser
-    parser = ConfigParser()
-    parser.read(config_file)
-    # print(parser.sections())
-    return parser
-
+global parser
 
 def project(parser):
     global projectROOT, summaryROOT
