@@ -1,5 +1,5 @@
-## Load project & summary folder summary file
-config_file = '../project.ini'
+# Load project & summary folder summary file
+config_file = 'project.ini'
 
 
 def config(config_file):
@@ -64,7 +64,7 @@ def cluster_info(cluster):
 
 
 if __name__ == '__main__':
-    config_file = '../project.ini'
+    config_file = 'project.ini'
     parser = config(config_file)
     projectROOT = project(parser)
     summary_cluster, nb_cluster = summary(parser)

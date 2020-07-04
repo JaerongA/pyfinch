@@ -3,9 +3,9 @@
 
 import os
 from summary import load
+from summary import save
 
-
-config_file = 'project.ini'
+config_file = 'summary/project.ini'
 parser = load.config(config_file)
 projectROOT = load.project(parser)  # find the project folder
 summary_cluster, nb_cluster = load.summary(parser)  # load cluster summary file

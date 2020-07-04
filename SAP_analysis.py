@@ -9,7 +9,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy import stats
 
-config_file = 'project.ini'
+config_file = 'summary/project.ini'
 parser = load.config(config_file)
 projectROOT = load.project(parser)  # find the project folder
 del config_file, parser

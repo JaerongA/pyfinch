@@ -2,10 +2,10 @@ import os
 from datetime import date
 # from summary import load
 # from load import config_file
-from summary.load import *
+from summary.read_config import parser
+from summary import load
 
-parser = config(config_file)
-projectROOT = project(parser)  # find the project folder
+projectROOT = load.project(parser)  # find the project folder
 
 
 print(projectROOT)
