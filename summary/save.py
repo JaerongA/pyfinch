@@ -5,24 +5,20 @@ from datetime import date
 from summary.read_config import parser
 from summary import load
 
-projectROOT = load.project(parser)  # find the project folder
-
-
-print(projectROOT)
-path_name = 'Information'
+project_path = load.project(parser)  # find the project folder
+print(project_path)
 today = date.today()
-# d = today.strftime("%Y-%m-%d")
 
 
 def make_save_dir(path_name, *date):
 
     # print(path_name)
 
-    saveROOT = projectROOT + '\\Analysis\\' + path_name
+    save_root = project_path + '\\Analysis\\' + path_name
     if date:
-        saveROOT = saveROOT + '\\' + today.strftime("%Y-%m-%d")
-    if not os.path.exists(saveROOT):
-        os.mkdir(saveROOT)
+        save_root = save_root + '\\' + today.strftime("%Y-%m-%d")
+    if not os.path.exists(save_root):
+        os.mkdir(save_root)
 
 
 if __name__ == '__main__':
