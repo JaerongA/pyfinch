@@ -1,28 +1,27 @@
-# Created by JR (06/29/2020)
+# Created by Jaerong (06/29/2020)
 # This program copy/pastes SpkInfo.mat from each cell root to the destinatoin folder (InformationAnalysis)
 
 import os
+from summary.read_config import parser
 from summary import load
 from summary import save
 
-config_file = 'summary/project.ini'
-parser = load.config(config_file)
-projectROOT = load.project(parser)  # find the project folder
+project_path = load.project(parser)  # find the project folder
 summary_cluster, nb_cluster = load.summary(parser)  # load cluster summary file
-del config_file, parser
+del parser
 
 # Make a folder to save files
-saveROOT = 'InformationAnalysis'
-save.make_save_dir(saveROOT)
+save_path = 'InformationAnalysis'
+save.make_save_dir(save_path)
 
 
+save_path = os.path.join(project_path, r'Analysis\InformationAnalysis')  # the data folder where SAP feature values are stored
+if not os.path.exists(save_path):
+    os.mkdir(save_path)
 
-saveROOT = projectROOT + '\\Analysis\\InformationAnalysis'
-if not os.path.exists(saveROOT):
-    os.mkdir(saveROOT)
-df
 
 def copy_cluster_mat(summary_cluster):
+
     import shutil
 
     for cluster_run in range(0, nb_cluster):
@@ -31,18 +30,19 @@ def copy_cluster_mat(summary_cluster):
         if int(cluster.AnalysisOK):
             # print(cluster)
             sessionID, cellID, cellROOT = load.cluster_info(cluster)
-            print('Accessing... ' + cellROOT)
+            # print('Accessing... ' + cellROOT)
             os.chdir(cellROOT)
 
             mat_file = [file for file in os.listdir(cellROOT) if file.endswith('SpkInfo.mat')][0]
-            print(mat_file)
+            # print(mat_file)
 
             # Make a new folder for individual neurons
-            saveROOT2 = saveROOT + '\\' + cellID
-            if not os.path.exists(saveROOT2):
-                os.mkdir(saveROOT2)
+            save_path_new = os.path.join(save_path, cellID)
+            print(save_path_new)
+            if not os.path.exists(save_path_new):
+                os.mkdir(save_path_new)
 
-            shutil.copy(mat_file, saveROOT2)
+            shutil.copy(mat_file, save_path_new)
 
 
 if __name__ == '__main__':
