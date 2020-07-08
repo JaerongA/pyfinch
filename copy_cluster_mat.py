@@ -1,4 +1,4 @@
-# Created by Jaerong (06/29/2020)
+# By Jaerong (06/29/2020)
 # This program copy/pastes SpkInfo.mat from each cell root to the destinatoin folder (InformationAnalysis)
 
 import os

@@ -26,4 +26,12 @@
 import pandas as pd
 import numpy as np
 import random as rd
-from
+
+import matplotlib.pyplot as plt
+
+a = [1,2,3]
+b = [2,3,4]
+fig = plt.figure()
+plt.plot(a,b)
+plt.show()
+plt.close(fig)

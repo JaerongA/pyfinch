@@ -6,7 +6,7 @@ from summary.read_config import parser
 from summary import load
 
 project_path = load.project(parser)  # find the project folder
-print(project_path)
+# print(project_path)
 today = date.today()
 
 
