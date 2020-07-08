@@ -1,19 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/dir_undir_labeling.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/spike/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/syllable_sequence_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAP_features" beforeDir="false" afterPath="$PROJECT_DIR$/SAP_features" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/copy_cluster_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/copy_cluster_mat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/practice2.py" beforeDir="false" afterPath="$PROJECT_DIR$/practice2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/summary/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/summary/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/summary/read_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/summary/read_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/summary/save.py" beforeDir="false" afterPath="$PROJECT_DIR$/summary/save.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/syllable_duration_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_duration_analysis.py" afterDir="false" />
-    </list>
+    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -280,7 +268,7 @@
       <workItem from="1593909421953" duration="14913000" />
       <workItem from="1593965974833" duration="25819000" />
       <workItem from="1594075477143" duration="600000" />
-      <workItem from="1594174963089" duration="3019000" />
+      <workItem from="1594174963089" duration="3290000" />
     </task>
     <task id="LOCAL-00001" summary="Master script">
       <created>1592181120484</created>
@@ -436,7 +424,21 @@
       <option name="project" value="LOCAL" />
       <updated>1593992073487</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="label files differentially according to undir and dir">
+      <created>1594179010360</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1594179010360</updated>
+    </task>
+    <task id="LOCAL-00024" summary="07/07/2020">
+      <created>1594179067101</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1594179067101</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -475,7 +477,9 @@
     <MESSAGE value="Based on SAP features, motif syllables only" />
     <MESSAGE value="07/04/2020" />
     <MESSAGE value="An updated code to calculate duration for all syllables" />
-    <option name="LAST_COMMIT_MESSAGE" value="An updated code to calculate duration for all syllables" />
+    <MESSAGE value="label files differentially according to undir and dir" />
+    <MESSAGE value="07/07/2020" />
+    <option name="LAST_COMMIT_MESSAGE" value="07/07/2020" />
   </component>
   <component name="WindowStateProjectService">
     <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592168657248">
@@ -493,10 +497,10 @@
     </state>
     <state x="-2897" y="510" width="1407" height="940" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594006725790" />
     <state x="1140" y="329" width="1262" height="716" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592375822627" />
-    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2" timestamp="1594179009701">
+    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2" timestamp="1594179052351">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594179009701" />
+    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594179052351" />
     <state x="829" y="226" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1592181120032" />
     <state width="2138" height="582" key="DebuggerActiveHint" timestamp="1593751962392">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -571,14 +575,14 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="852" y="225" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1592973001592" />
-    <state x="1078" y="373" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog" timestamp="1594178972482">
+    <state x="1078" y="373" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog" timestamp="1594179031953">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1078" y="373" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594178972482" />
-    <state x="-3360" y="237" width="1982" height="1379" maximized="true" key="dock-window-1" timestamp="1594176050388">
+    <state x="1078" y="373" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594179031953" />
+    <state x="-3360" y="237" width="1982" height="1379" key="dock-window-1" timestamp="1594179231035">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3360" y="237" width="1982" height="1379" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594176050388" />
+    <state x="-3360" y="237" width="1982" height="1379" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594179231035" />
     <state x="-234" y="239" width="2575" height="1415" key="dock-window-2" timestamp="1593965991943">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
