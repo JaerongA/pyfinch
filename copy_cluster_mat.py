@@ -1,6 +1,7 @@
-# By Jaerong (06/29/2020)
-# This program copy/pastes SpkInfo.mat from each cell root to the destinatoin folder (InformationAnalysis)
-
+"""
+By Jaerong (06/29/2020)
+This program copy/pastes SpkInfo.mat from each cell root to the destinatoin folder (InformationAnalysis)
+"""
 import os
 from summary.read_config import parser
 from summary import load
@@ -37,12 +38,12 @@ def copy_cluster_mat(summary_cluster):
             # print(mat_file)
 
             # Make a new folder for individual neurons
-            save_path_new = os.path.join(save_path, cellID)
-            print(save_path_new)
-            if not os.path.exists(save_path_new):
-                os.mkdir(save_path_new)
+            new_save_path = os.path.join(save_path, cellID)
+            print(new_save_path)
+            if not os.path.exists(new_save_path):
+                os.mkdir(new_save_path)
 
-            shutil.copy(mat_file, save_path_new)
+            shutil.copy(mat_file, new_save_path)
 
 
 if __name__ == '__main__':
