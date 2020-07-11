@@ -2,11 +2,29 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="07/07/2020">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/load_spk.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/SongAnalysis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SongAnalysis.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/rGraphicsSettings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/rGraphicsSettings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dir_undir_labeling.py" beforeDir="false" afterPath="$PROJECT_DIR$/dir_undir_labeling.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SyllableFR_CrossCorr.py" beforeDir="false" afterPath="$PROJECT_DIR$/SyllableFR_CrossCorr.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/practice.py" beforeDir="false" afterPath="$PROJECT_DIR$/practice.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/practice2.py" beforeDir="false" afterPath="$PROJECT_DIR$/practice2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/syllable_duration_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_duration_analysis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/jedi/third_party/django-stubs/django-stubs/contrib/sitemaps/__init__.pyi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/jedi/third_party/django-stubs/django-stubs/contrib/sitemaps/management/__init__.pyi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/jedi/third_party/django-stubs/django-stubs/contrib/sitemaps/management/commands/__init__.pyi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/jedi/third_party/django-stubs/django-stubs/contrib/sitemaps/management/commands/ping_google.pyi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/jedi/third_party/django-stubs/django-stubs/contrib/sitemaps/views.pyi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/jedi/third_party/django-stubs/django-stubs/contrib/sites/__init__.pyi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/jedi/third_party/django-stubs/django-stubs/contrib/sites/apps.pyi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/jedi/third_party/django-stubs/django-stubs/contrib/sites/management.pyi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/jedi/third_party/django-stubs/django-stubs/contrib/sites/managers.pyi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/jedi/third_party/django-stubs/django-stubs/contrib/sites/middleware.pyi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/jedi/third_party/django-stubs/django-stubs/contrib/sites/models.pyi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/jedi/third_party/django-stubs/django-stubs/contrib/sites/requests.pyi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/jedi/third_party/django-stubs/django-stubs/contrib/sites/shortcuts.pyi" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,19 +88,16 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="H:\Box\PythonToolbox\Deafening\summary" />
       <recent name="H:\Box\PythonToolbox\Deafening" />
+      <recent name="H:\Box\PythonToolbox\Deafening\summary" />
       <recent name="H:\Box\PythonToolbox\Deafening\Summary" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.dir_undir_labeling">
-    <configuration name="hello.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Deafening/hello.html" useBuiltInWebServerPort="true">
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.load_spk">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -127,32 +142,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="copy_cluster_mat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="dir_undir_labeling" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/copy_cluster_mat.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="dir_undir_labeling" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="SongAnalysis" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -168,10 +164,54 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="load_spk" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="SongAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/load_spk.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="practice" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="SongAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/practice.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="practice2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -210,20 +250,20 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="JavaScript Debug.hello.html" />
       <item itemvalue="Python.SongAnalysis" />
-      <item itemvalue="Python.copy_cluster_mat" />
       <item itemvalue="Python.syllable_duration_analysis" />
       <item itemvalue="Python.practice2" />
       <item itemvalue="Python.dir_undir_labeling" />
+      <item itemvalue="Python.practice" />
+      <item itemvalue="Python.load_spk" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.load_spk" />
+        <item itemvalue="Python.practice" />
         <item itemvalue="Python.dir_undir_labeling" />
         <item itemvalue="Python.practice2" />
         <item itemvalue="Python.syllable_duration_analysis" />
-        <item itemvalue="JavaScript Debug.hello.html" />
-        <item itemvalue="Python.copy_cluster_mat" />
       </list>
     </recent_temporary>
   </component>
@@ -271,7 +311,9 @@
       <workItem from="1593909421953" duration="14913000" />
       <workItem from="1593965974833" duration="25819000" />
       <workItem from="1594075477143" duration="600000" />
-      <workItem from="1594174963089" duration="14691000" />
+      <workItem from="1594174963089" duration="17921000" />
+      <workItem from="1594266515952" duration="2724000" />
+      <workItem from="1594438973996" duration="714000" />
     </task>
     <task id="LOCAL-00001" summary="Master script">
       <created>1592181120484</created>
@@ -448,7 +490,14 @@
       <option name="project" value="LOCAL" />
       <updated>1594259571266</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="updated with a tkinter gui">
+      <created>1594259825371</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1594259825371</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -489,7 +538,8 @@
     <MESSAGE value="label files differentially according to undir and dir" />
     <MESSAGE value="07/07/2020" />
     <MESSAGE value="." />
-    <option name="LAST_COMMIT_MESSAGE" value="." />
+    <MESSAGE value="updated with a tkinter gui" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated with a tkinter gui" />
   </component>
   <component name="WindowStateProjectService">
     <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592168657248">
@@ -507,10 +557,10 @@
     </state>
     <state x="-2897" y="510" width="1407" height="940" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594184738806" />
     <state x="1140" y="329" width="1262" height="716" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592375822627" />
-    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2" timestamp="1594259568304">
+    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2" timestamp="1594259824869">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594259568304" />
+    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594259824869" />
     <state x="829" y="226" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1592181120032" />
     <state width="2138" height="582" key="DebuggerActiveHint" timestamp="1593751962392">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -525,61 +575,61 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593647327024" />
-    <state width="2505" height="324" key="GridCell.Tab.0.bottom" timestamp="1594184743954">
+    <state width="2505" height="324" key="GridCell.Tab.0.bottom" timestamp="1594263347331">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="324" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594184743954" />
+    <state width="2505" height="324" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594263347331" />
     <state width="2505" height="323" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="324" key="GridCell.Tab.0.center" timestamp="1594184743954">
+    <state width="2505" height="324" key="GridCell.Tab.0.center" timestamp="1594263347331">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="324" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594184743954" />
+    <state width="2505" height="324" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594263347331" />
     <state width="2505" height="323" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="324" key="GridCell.Tab.0.left" timestamp="1594184743954">
+    <state width="2505" height="324" key="GridCell.Tab.0.left" timestamp="1594263347331">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="324" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594184743954" />
+    <state width="2505" height="324" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594263347331" />
     <state width="2505" height="323" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="324" key="GridCell.Tab.0.right" timestamp="1594184743954">
+    <state width="2505" height="324" key="GridCell.Tab.0.right" timestamp="1594263347331">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="324" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594184743954" />
+    <state width="2505" height="324" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594263347331" />
     <state width="2505" height="323" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="324" key="GridCell.Tab.1.bottom" timestamp="1594184743955">
+    <state width="2505" height="324" key="GridCell.Tab.1.bottom" timestamp="1594263347331">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="324" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594184743955" />
+    <state width="2505" height="324" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594263347331" />
     <state width="2505" height="323" key="GridCell.Tab.1.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153628" />
-    <state width="2505" height="324" key="GridCell.Tab.1.center" timestamp="1594184743954">
+    <state width="2505" height="324" key="GridCell.Tab.1.center" timestamp="1594263347331">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="324" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594184743954" />
+    <state width="2505" height="324" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594263347331" />
     <state width="2505" height="323" key="GridCell.Tab.1.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="324" key="GridCell.Tab.1.left" timestamp="1594184743954">
+    <state width="2505" height="324" key="GridCell.Tab.1.left" timestamp="1594263347331">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="324" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594184743954" />
+    <state width="2505" height="324" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594263347331" />
     <state width="2505" height="323" key="GridCell.Tab.1.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="324" key="GridCell.Tab.1.right" timestamp="1594184743954">
+    <state width="2505" height="324" key="GridCell.Tab.1.right" timestamp="1594263347331">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="2505" height="324" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594184743954" />
+    <state width="2505" height="324" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594263347331" />
     <state width="2505" height="323" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153628" />
     <state x="1084" y="345" key="RollbackChangesDialog" timestamp="1593834114415">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="1084" y="345" key="RollbackChangesDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593834114415" />
-    <state x="369" y="74" width="1819" height="1326" key="SettingsEditor" timestamp="1593907699545">
+    <state x="369" y="74" width="1819" height="1326" key="SettingsEditor" timestamp="1594266620583">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-3594" y="535" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1593316340520" />
-    <state x="369" y="74" width="1819" height="1326" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593907699545" />
+    <state x="369" y="74" width="1819" height="1326" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594266620583" />
     <state x="246" y="273" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1592168581844" />
-    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1594174963809">
+    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1594438994093">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1593316361620" />
-    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594174963809" />
+    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594438994093" />
     <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592372967067" />
     <state x="852" y="225" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1592973001592">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -589,10 +639,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="1078" y="373" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594179031953" />
-    <state x="-3360" y="237" width="1982" height="1379" maximized="true" key="dock-window-1" timestamp="1594186469274">
+    <state x="-3171" y="249" width="1625" height="927" maximized="true" key="dock-window-1" timestamp="1594439436919">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3360" y="237" width="1982" height="1379" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594186469274" />
+    <state x="-3171" y="249" width="1625" height="927" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594439436919" />
     <state x="-234" y="239" width="2575" height="1415" key="dock-window-2" timestamp="1593965991943">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>

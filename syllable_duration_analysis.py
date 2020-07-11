@@ -1,6 +1,8 @@
-# By Jaerong (06/04/2020)
-# Syllable duration for all syllables regardless of it type
-# Calculation based on EventInfo.m
+"""
+By Jaerong (2020/06/04)
+Syllable duration for all syllables regardless of it type
+Calculation based on EventInfo.m
+"""
 
 import os
 
