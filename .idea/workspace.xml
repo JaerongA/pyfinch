@@ -1,20 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="07/07/2020">
+    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeafeningAnalysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/DeafeningAnalysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EntropyAnalysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/EntropyAnalysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PCC_normalization.py" beforeDir="false" afterPath="$PROJECT_DIR$/PCC_normalization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAP_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/SAP_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Summary_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Summary_main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SyllableFR_CrossCorr.py" beforeDir="false" afterPath="$PROJECT_DIR$/SyllableFR_CrossCorr.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/copy_cluster_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/copy_cluster_mat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/load_spk.py" beforeDir="false" afterPath="$PROJECT_DIR$/load_spk.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/practice2.py" beforeDir="false" afterPath="$PROJECT_DIR$/practice2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/summary/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/summary/load.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/summary/project.ini" beforeDir="false" afterPath="$PROJECT_DIR$/summary/project.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/syllable_sequence_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_sequence_analysis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,7 +77,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\Summary" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.practice2">
+  <component name="RunManager" selected="Python.copy_cluster_mat">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -244,9 +233,9 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.copy_cluster_mat" />
         <item itemvalue="Python.practice2" />
         <item itemvalue="Python.syllable_sequence_analysis" />
-        <item itemvalue="Python.copy_cluster_mat" />
         <item itemvalue="Python.qstring" />
         <item itemvalue="Python.read_header" />
       </list>
@@ -300,7 +289,7 @@
       <workItem from="1594266515952" duration="2724000" />
       <workItem from="1594438973996" duration="3958000" />
       <workItem from="1594571886222" duration="258000" />
-      <workItem from="1594572209146" duration="5607000" />
+      <workItem from="1594572209146" duration="6500000" />
     </task>
     <task id="LOCAL-00001" summary="Master script">
       <created>1592181120484</created>
@@ -519,7 +508,14 @@
       <option name="project" value="LOCAL" />
       <updated>1594581950913</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="07/12/2020">
+      <created>1594581962026</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1594581962026</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -540,7 +536,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Master script" />
     <MESSAGE value="Load project info" />
     <MESSAGE value="workspace" />
     <MESSAGE value="copy cluster .mat files for analysable neurons" />
@@ -565,7 +560,8 @@
     <MESSAGE value="new module for song analysis" />
     <MESSAGE value="made revisions in importing" />
     <MESSAGE value="a new module for spk analysis" />
-    <option name="LAST_COMMIT_MESSAGE" value="a new module for spk analysis" />
+    <MESSAGE value="07/12/2020" />
+    <option name="LAST_COMMIT_MESSAGE" value="07/12/2020" />
   </component>
   <component name="WindowStateProjectService">
     <state x="125" y="282" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592168657248">
@@ -583,10 +579,10 @@
     </state>
     <state x="-2897" y="510" width="1407" height="940" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594184738806" />
     <state x="1140" y="329" width="1262" height="716" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592375822627" />
-    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2" timestamp="1594581950489">
+    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2" timestamp="1594581961559">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594581950489" />
+    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594581961559" />
     <state x="829" y="226" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1592181120032" />
     <state width="2138" height="582" key="DebuggerActiveHint" timestamp="1593751962392">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -665,14 +661,14 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="1078" y="373" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594179031953" />
-    <state x="-3521" y="247" width="1709" height="1121" maximized="true" key="dock-window-1" timestamp="1594579891325">
+    <state x="-3521" y="247" width="1709" height="1121" maximized="true" key="dock-window-1" timestamp="1594582528632">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3521" y="247" width="1709" height="1121" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594579891325" />
-    <state x="-3335" y="246" width="1644" height="807" maximized="true" key="dock-window-2" timestamp="1594581696967">
+    <state x="-3521" y="247" width="1709" height="1121" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594582528632" />
+    <state x="-3335" y="246" width="1644" height="807" maximized="true" key="dock-window-2" timestamp="1594582528632">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3335" y="246" width="1644" height="807" maximized="true" key="dock-window-2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594581696967" />
+    <state x="-3335" y="246" width="1644" height="807" maximized="true" key="dock-window-2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594582528632" />
     <state x="403" y="319" width="2574" height="1408" key="dock-window-3" timestamp="1593912330317">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>

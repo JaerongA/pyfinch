@@ -3,17 +3,16 @@ By Jaerong (06/29/2020)
 This program copy/pastes SpkInfo.mat from each cell root to the destinatoin folder (InformationAnalysis)
 """
 import os
-from summary.read_config import parser
 from summary import load
-from summary import save
 
+parser = load.config()
 project_path = load.project(parser)  # find the project folder
 summary_cluster, nb_cluster = load.summary(parser)  # load cluster summary file
 del parser
 
 # Make a folder to save files
-save_path = 'InformationAnalysis'
-save.make_save_dir(save_path)
+# save_path = 'InformationAnalysis'
+# save.make_save_dir(save_path)
 
 
 save_path = os.path.join(project_path, r'Analysis\InformationAnalysis')  # the data folder where SAP feature values are stored
@@ -30,11 +29,11 @@ def copy_cluster_mat(summary_cluster):
 
         if int(cluster.AnalysisOK):
             # print(cluster)
-            session_id, cell_id, cell_root = load.cluster_info(cluster)
+            session_id, cell_id, session_path, cell_path = load.cluster_info(cluster)
             # print('Accessing... ' + cell_root)
-            os.chdir(cell_root)
+            os.chdir(cell_path)
 
-            mat_file = [file for file in os.listdir(cell_root) if file.endswith('SpkInfo.mat')][0]
+            mat_file = [file for file in os.listdir(cell_path) if file.endswith('SpkInfo.mat')][0]
             # print(mat_file)
 
             # Make a new folder for individual neurons
