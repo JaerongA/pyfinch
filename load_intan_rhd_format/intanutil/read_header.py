@@ -3,7 +3,7 @@
 # Michael Gibson 23 April 2015
 
 import sys, struct
-from intanutil.qstring import read_qstring
+from .qstring import read_qstring
 
 def read_header(fid):
     """Reads the Intan File Format header from the given file."""
