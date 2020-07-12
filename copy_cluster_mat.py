@@ -30,15 +30,15 @@ def copy_cluster_mat(summary_cluster):
 
         if int(cluster.AnalysisOK):
             # print(cluster)
-            sessionID, cellID, cellROOT = load.cluster_info(cluster)
-            # print('Accessing... ' + cellROOT)
-            os.chdir(cellROOT)
+            session_id, cell_id, cell_root = load.cluster_info(cluster)
+            # print('Accessing... ' + cell_root)
+            os.chdir(cell_root)
 
-            mat_file = [file for file in os.listdir(cellROOT) if file.endswith('SpkInfo.mat')][0]
+            mat_file = [file for file in os.listdir(cell_root) if file.endswith('SpkInfo.mat')][0]
             # print(mat_file)
 
             # Make a new folder for individual neurons
-            new_save_path = os.path.join(save_path, cellID)
+            new_save_path = os.path.join(save_path, cell_id)
             print(new_save_path)
             if not os.path.exists(new_save_path):
                 os.mkdir(new_save_path)

@@ -12,9 +12,11 @@ for cluster_run in range(0, nb_cluster):
     sessionID, cellID, cellROOT = load.cluster_info(cluster)
 
     print('Accessing... ' + cellROOT)
-    # os.chdir(cellROOT)
-    rhd_files = [file for file in os.listdir(cellROOT) if file.endswith('.rhd')][0]
-    print(rhd_files)
+    os.chdir(cellROOT)
+    rhd_files = [file for file in os.listdir(cellROOT) if file.endswith('.rhd')]
+
+    for rhd in rhd_files:
+        a =  read_data(rhd)  # load the .rhd file
     break
 
 

@@ -17,9 +17,9 @@ def change_width(ax, new_value) :
 
 
 
-projectROOT = r'C:\Users\jahn02\Box\Data\Deafening Project';  # lab
+project_path = r'C:\Users\jahn02\Box\Data\Deafening Project';  # lab
 # projectROOT =r'C:\Users\AJR\Box\Data\Deafening Project';  # home
-analysisROOT = projectROOT + '\Analysis\Summary'
+analysisROOT = project_path + '\Analysis\Summary'
 summary_cluster = "Cluster_summary(Deafening).xlsx"
 
 os.chdir(analysisROOT)

@@ -20,9 +20,9 @@ warnings.filterwarnings('ignore')
 
 ## Load Data
 # projectROOT = r'C:\Users\jahn02\Box\Data\Deafening Project';  # lab
-projectROOT = r'H:\Box\Data\Deafening Project'  # home
-analysisROOT = projectROOT + '\Analysis\Summary'
-saveROOT = projectROOT + '\Analysis'
+project_path = r'H:\Box\Data\Deafening Project'  # home
+analysisROOT = project_path + '\Analysis\Summary'
+saveROOT = project_path + '\Analysis'
 
 os.chdir(analysisROOT)
 # os.listdir()

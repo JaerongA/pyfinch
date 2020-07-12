@@ -12,8 +12,8 @@ warnings.filterwarnings('ignore')
 
 
 # projectROOT = r'C:\Users\jahn02\Box\Data\Deafening Project';  # lab
-projectROOT = r'C:\Users\AJR\Box\Data\Deafening Project'  # home
-analysisROOT = projectROOT + '\Analysis\Entropy\Entropy'
+project_path = r'C:\Users\AJR\Box\Data\Deafening Project'  # home
+analysisROOT = project_path + '\Analysis\Entropy\Entropy'
 # analysis_file = 'Entropy.csv'
 analysis_file = 'Entropy(ALL).txt'
 

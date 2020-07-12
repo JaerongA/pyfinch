@@ -11,10 +11,10 @@ from scipy import stats
 
 config_file = 'summary/project.ini'
 parser = load.config(config_file)
-projectROOT = load.project(parser)  # find the project folder
+project_path = load.project(parser)  # find the project folder
 del config_file, parser
 
-dataROOT = projectROOT + '\\Analysis\\SAP_features'
+dataROOT = project_path + '\\Analysis\\SAP_features'
 analysis_file = 'SAP(ALL).txt'
 os.chdir(dataROOT)
 

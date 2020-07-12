@@ -5,12 +5,12 @@ from summary import load_project
 
 today = date.today()
 
-projectROOT = r'H:\Box\Data\Deafening Project'  # home
+project_path = r'H:\Box\Data\Deafening Project'  # home
 # projectROOT = r'C:\Users\jahn02\Box\Data\Deafening Project'  # lab
 # projectROOT =r'C:\Users\AJR\Box\Data\Deafening Project'  # home
 
-summaryROOT = projectROOT + '\Analysis\Summary'
-os.chdir(summaryROOT)
+summary_path = project_path + '\Analysis\Summary'
+os.chdir(summary_path)
 
 # Load summary
 summary = "Cluster_summary(Deafening).xlsx"
@@ -19,7 +19,7 @@ summary_cluster = pd.read_excel(summary).applymap(str)  # read as a string
 print('Loading the summary file')
 
 # Save folder
-saveROOT = projectROOT + '/Analysis/SyllableDuration/' + str(today)
+saveROOT = project_path + '/Analysis/SyllableDuration/' + str(today)
 if not (os.path.isdir(saveROOT)): os.mkdir(saveROOT)
 
 nb_cluster = summary_cluster.shape[0]

@@ -1,36 +1,36 @@
+"""By Jaerong
+Load all info relating to the project """
+
 # Load project & summary folder summary file
-# config_file = 'project.ini'
-#
-#
-# def config(config_file):
-#     from configparser import ConfigParser
-#     parser = ConfigParser()
-#     parser.read(config_file)
-#     # print(parser.sections())
-#     return parser
 
-from .read_config import parser
 
-global parser
+def config():
+    from configparser import ConfigParser
+    config_file = 'summary/project.ini'
+    parser = ConfigParser()
+    parser.read(config_file)
+    # print(parser.sections())
+    return parser
+
 
 def project(parser):
-    global projectROOT, summaryROOT
+    global project_path, summary_path
 
-    projectROOT = parser.get('folders', 'projectROOT')
+    project_path = parser.get('folders', 'project_path')
 
-    # os.chdir(projectROOT)
-    # print(os.listdir(summaryROOT))
-    return projectROOT
+    # os.chdir(project_path)
+    # print(os.listdir(summary_path))
+    return project_path
 
 
 def summary(parser):
     import os
     import pandas as pd
 
-    summaryROOT = projectROOT + parser.get('folders', 'summaryROOT')
+    summary_path = project_path + parser.get('folders', 'summary_path')
     summary_file = parser.get('files', 'summary')
-    os.chdir(summaryROOT)
-    # print(os.listdir(summaryROOT))
+    os.chdir(summary_path)
+    # print(os.listdir(summary_path))
     summary_cluster = pd.read_excel(summary_file).applymap(str)  # read all cluster information as a string
     print('Loading the summary file')
     # print(summary_cluster.columns)  #  print out all features of the summary_cluster
@@ -58,16 +58,19 @@ def cluster(summary_cluster, cluster_run):
 
 def cluster_info(cluster):
     import os
-    sessionID = cluster.Key + '-' + cluster.BirdID + '-' + cluster.TaskName + '-' + cluster.TaskSession + '-' + cluster.SessionDate + '-Site' + cluster.Site
-    cellID = sessionID + '-' + cluster.Channel + '-' + cluster.Cluster
-    cellROOT = projectROOT + '\\' + cluster.BirdID + '\\' + cluster.TaskName + '\\' + cluster.TaskSession + '(' + cluster.SessionDate + ')\\' + cluster.Site + '\\Songs'
-    # print('Accessing... ' + cellROOT)
-    # os.chdir(cellROOT)
-    return sessionID, cellID, cellROOT
+    session_id = cluster.Key + '-' + cluster.BirdID + '-' + cluster.TaskName + '-' + cluster.TaskSession + '-' + cluster.SessionDate + '-Site' + cluster.Site
+    cell_id = session_id + '-' + cluster.Channel + '-' + cluster.Cluster
+    session_path = project_path + '\\' + cluster.BirdID + '\\' + cluster.TaskName + '\\' + cluster.TaskSession + '(' + cluster.SessionDate + ')'
+    cell_path = session_path + '\\' + cluster.Site + '\\Songs'
+    # print('Accessing... ' + cell_path)
+    # os.chdir(cell_path)
+    return session_id, cell_id, session_path, cell_path
+
+
 
 
 if __name__ == '__main__':
-    config_file = 'project.ini'
+    config_file: str = 'project.ini'
     parser = config(config_file)
-    projectROOT = project(parser)
+    project_path = project(parser)
     summary_cluster, nb_cluster = summary(parser)

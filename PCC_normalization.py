@@ -14,8 +14,8 @@ import numpy as np
 
 
 # projectROOT = r'C:\Users\jahn02\Box\Data\Deafening Project';  # lab
-projectROOT =r'C:\Users\AJR\Box\Data\Deafening Project'  # home
-analysisROOT = projectROOT + '\Analysis\Summary'
+project_path = r'C:\Users\AJR\Box\Data\Deafening Project'  # home
+analysisROOT = project_path + '\Analysis\Summary'
 summary_cluster = "Cluster_summary(Deafening).xlsx"
 print(summary_cluster)
 os.chdir(analysisROOT)
