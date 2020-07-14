@@ -5,14 +5,14 @@ This program copy/pastes SpkInfo.mat from each cell root to the destinatoin fold
 import os
 from summary import load
 
-parser = load.config()
-project_path = load.project(parser)  # find the project folder
-summary_cluster, nb_cluster = load.summary(parser)  # load cluster summary file
-del parser
+
+project_path = load.project(load.config())  # load cluster summary file
+summary_df, nb_cluster = load.summary(load.config())  # load cluster summary file
+
 
 # Make a folder to save files
-# save_path = 'InformationAnalysis'
-# save.make_save_dir(save_path)
+# # save_path = 'InformationAnalysis'
+# # save.make_save_dir(save_path)
 
 
 save_path = os.path.join(project_path, r'Analysis\InformationAnalysis')  # the data folder where SAP feature values are stored
@@ -20,12 +20,12 @@ if not os.path.exists(save_path):
     os.mkdir(save_path)
 
 
-def copy_cluster_mat(summary_cluster):
+def copy_cluster_mat(summary_df):
 
     import shutil
 
     for cluster_run in range(0, nb_cluster):
-        cluster = load.cluster(summary_cluster, cluster_run)
+        cluster = load.cluster(summary_df, cluster_run)
 
         if int(cluster.AnalysisOK):
             # print(cluster)
@@ -46,4 +46,4 @@ def copy_cluster_mat(summary_cluster):
 
 
 if __name__ == '__main__':
-    copy_cluster_mat(summary_cluster)
+    copy_cluster_mat(summary_df)

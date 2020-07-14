@@ -2,7 +2,7 @@ import os
 from datetime import date
 # from summary import load
 # from load import config_file
-from summary.read_config import parser
+# from summary.read_config import parser
 from summary import load
 
 project_path = load.project(parser)  # find the project folder
