@@ -3,10 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/copy_cluster_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/copy_cluster_mat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/summary/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/summary/load.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Summary_main.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/load_spk.py" beforeDir="false" afterPath="$PROJECT_DIR$/load_spk.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/summary/read_config.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/summary/save.py" beforeDir="false" afterPath="$PROJECT_DIR$/summary/save.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/syllable_sequence_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_sequence_analysis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,6 +72,13 @@
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings>
+        <option name="useSoftWraps" value="true" />
+      </console-settings>
+    </option>
+  </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="H:\Box\PythonToolbox\Deafening\load_intan_rhd_format\intanutil" />
@@ -80,7 +87,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\Summary" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.copy_cluster_mat">
+  <component name="RunManager" selected="Python.load_spk">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -129,6 +136,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -144,17 +154,17 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="load" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="load_spk" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/summary" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/summary/load.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/load_spk.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -167,6 +177,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/summary" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -186,6 +199,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/summary" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -205,6 +221,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -225,16 +244,16 @@
       <item itemvalue="Python.syllable_sequence_analysis" />
       <item itemvalue="Python.copy_cluster_mat" />
       <item itemvalue="Python.practice" />
-      <item itemvalue="Python.load" />
       <item itemvalue="Python.save" />
+      <item itemvalue="Python.load_spk" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.copy_cluster_mat" />
+        <item itemvalue="Python.load_spk" />
         <item itemvalue="Python.practice" />
+        <item itemvalue="Python.copy_cluster_mat" />
         <item itemvalue="Python.save" />
         <item itemvalue="Python.syllable_sequence_analysis" />
-        <item itemvalue="Python.load" />
       </list>
     </recent_temporary>
   </component>
@@ -288,7 +307,8 @@
       <workItem from="1594571886222" duration="258000" />
       <workItem from="1594572209146" duration="7036000" />
       <workItem from="1594693039964" duration="1887000" />
-      <workItem from="1594694937670" duration="1388000" />
+      <workItem from="1594694937670" duration="3173000" />
+      <workItem from="1594775296382" duration="2357000" />
     </task>
     <task id="LOCAL-00001" summary="Master script">
       <created>1592181120484</created>
@@ -521,7 +541,14 @@
       <option name="project" value="LOCAL" />
       <updated>1594582855139</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary=".">
+      <created>1594696343124</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1594696343124</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -585,10 +612,10 @@
     </state>
     <state x="-2897" y="510" width="1407" height="940" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594184738806" />
     <state x="1140" y="329" width="1262" height="716" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592375822627" />
-    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2" timestamp="1594582854710">
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1594781127455">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="829" y="226" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594582854710" />
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781127455" />
     <state x="829" y="226" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1592181120032" />
     <state width="2138" height="582" key="DebuggerActiveHint" timestamp="1593751962392">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -653,11 +680,15 @@
     <state x="-3594" y="535" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1593316340520" />
     <state x="369" y="74" width="1819" height="1326" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594694911958" />
     <state x="246" y="273" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1592168581844" />
-    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1594694937568">
+    <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1" timestamp="1594781085042">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
+    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1594775340579">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1593316361620" />
-    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594694937568" />
+    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594775340579" />
     <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592372967067" />
     <state x="852" y="225" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1592973001592">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -667,6 +698,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="1078" y="373" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594179031953" />
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1594779584825">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594779584825" />
     <state x="531" y="81" width="1709" height="1121" key="dock-window-1" timestamp="1594693059008">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -706,16 +741,6 @@
           <option name="timeStamp" value="53" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Summary_main.py</url>
-          <line>66</line>
-          <option name="timeStamp" value="57" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Summary_main.py</url>
-          <line>6</line>
-          <option name="timeStamp" value="58" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/SAP_features</url>
           <line>47</line>
           <option name="timeStamp" value="78" />
@@ -727,7 +752,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/load_spk.py</url>
-          <option name="timeStamp" value="111" />
+          <line>25</line>
+          <option name="timeStamp" value="113" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
