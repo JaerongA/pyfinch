@@ -3,10 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Summary_main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/load_spk.py" beforeDir="false" afterPath="$PROJECT_DIR$/load_spk.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/summary/read_config.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/summary/save.py" beforeDir="false" afterPath="$PROJECT_DIR$/summary/save.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/syllable_sequence_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_sequence_analysis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,6 +43,13 @@
       </list>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="hiddenUrls">
+      <set>
+        <option value="https://github.com/JaerongA/Deafening.git" />
+      </set>
+    </option>
   </component>
   <component name="JupyterTrust" id="86462266-d9c7-46bb-8973-8b9a20ef1990" />
   <component name="ProjectId" id="1WqnWwYAqffUpv2XRnIvqmntdmx" />
@@ -87,7 +91,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\Summary" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.load_spk">
+  <component name="RunManager" selected="Python.syllable_sequence_analysis">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -158,6 +162,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -221,9 +228,6 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -249,11 +253,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.syllable_sequence_analysis" />
         <item itemvalue="Python.load_spk" />
         <item itemvalue="Python.practice" />
         <item itemvalue="Python.copy_cluster_mat" />
         <item itemvalue="Python.save" />
-        <item itemvalue="Python.syllable_sequence_analysis" />
       </list>
     </recent_temporary>
   </component>
@@ -308,7 +312,8 @@
       <workItem from="1594572209146" duration="7036000" />
       <workItem from="1594693039964" duration="1887000" />
       <workItem from="1594694937670" duration="3173000" />
-      <workItem from="1594775296382" duration="2357000" />
+      <workItem from="1594775296382" duration="3951000" />
+      <workItem from="1594953115054" duration="2778000" />
     </task>
     <task id="LOCAL-00001" summary="Master script">
       <created>1592181120484</created>
@@ -548,7 +553,21 @@
       <option name="project" value="LOCAL" />
       <updated>1594696343124</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="plot the raw data for each channel">
+      <created>1594781128076</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1594781128076</updated>
+    </task>
+    <task id="LOCAL-00036" summary=".">
+      <created>1594781137327</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1594781137327</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -569,7 +588,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Load project info" />
     <MESSAGE value="workspace" />
     <MESSAGE value="copy cluster .mat files for analysable neurons" />
     <MESSAGE value="save setting" />
@@ -593,6 +611,7 @@
     <MESSAGE value="made revisions in importing" />
     <MESSAGE value="a new module for spk analysis" />
     <MESSAGE value="07/12/2020" />
+    <MESSAGE value="plot the raw data for each channel" />
     <MESSAGE value="." />
     <option name="LAST_COMMIT_MESSAGE" value="." />
   </component>
@@ -612,10 +631,11 @@
     </state>
     <state x="-2897" y="510" width="1407" height="940" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594184738806" />
     <state x="1140" y="329" width="1262" height="716" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592375822627" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1594781127455">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state x="-3263" y="425" width="971" height="957" key="CommitChangelistDialog2" timestamp="1594957582936">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781127455" />
+    <state x="-3263" y="425" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594957582936" />
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781136866" />
     <state x="829" y="226" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1592181120032" />
     <state width="2138" height="582" key="DebuggerActiveHint" timestamp="1593751962392">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -684,11 +704,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
-    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1594775340579">
+    <state x="973" y="471" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1594953847622">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1593316361620" />
-    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594775340579" />
+    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594953847622" />
     <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592372967067" />
     <state x="852" y="225" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1592973001592">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -722,10 +742,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="912" y="195" width="737" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593647625299" />
-    <state x="-2981" y="570" key="search.everywhere.popup" timestamp="1593736889919">
+    <state x="-2981" y="570" key="search.everywhere.popup" timestamp="1594953855775">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2981" y="570" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593736889919" />
+    <state x="-2981" y="570" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594953855775" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -754,6 +774,11 @@
           <url>file://$PROJECT_DIR$/load_spk.py</url>
           <line>25</line>
           <option name="timeStamp" value="113" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/syllable_sequence_analysis.py</url>
+          <line>27</line>
+          <option name="timeStamp" value="114" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
