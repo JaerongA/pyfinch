@@ -7,7 +7,7 @@ def config():
     config_file = 'summary/project.ini'
     parser = ConfigParser()
     parser.read(config_file)
-    print(parser.sections())
+    # print(parser.sections())
     return parser
 
 
@@ -51,7 +51,6 @@ def cluster(summary_df, cluster_run):
 
 
 def cluster_info(cluster):
-    import os
     session_id = cluster.Key + '-' + cluster.BirdID + '-' + cluster.TaskName + '-' + cluster.TaskSession + '-' + cluster.SessionDate + '-Site' + cluster.Site
     cell_id = session_id + '-' + cluster.Channel + '-' + cluster.Cluster
     session_path = project_path + '\\' + cluster.BirdID + '\\' + cluster.TaskName + '\\' + cluster.TaskSession + '(' + cluster.SessionDate + ')'
@@ -61,5 +60,5 @@ def cluster_info(cluster):
     return session_id, cell_id, session_path, cell_path
 
 
-if __name__ == '__main__':
-    config()
+# if __name__ == '__main__':
+#     config()
