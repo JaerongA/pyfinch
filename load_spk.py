@@ -1,3 +1,6 @@
+""" By Jaerong
+load & plot the neural data (.rhd)
+"""
 import os
 from summary import load
 # from summary import save
