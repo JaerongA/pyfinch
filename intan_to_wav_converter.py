@@ -10,6 +10,7 @@ from math import ceil
 import numpy as np
 from scipy.signal import hilbert
 from matplotlib import collections as mc
+from song_analysis.parameters import *
 
 
 def find_data_dir():
@@ -23,7 +24,7 @@ def find_data_dir():
     return Path(data_dir)
 
 
-# specify dir here or search for the dir manually
+# Specify dir here or search for the dir manually
 data_dir = Path(r'H:\Box\Data\Deafening Project\y44r34\Predeafening\20200703\Dir')
 try:
     data_dir
@@ -45,13 +46,19 @@ for rhd in rhd_files:
 
     fig = plt.figure(figsize=(10, 4), dpi=800)
     fig, ax = plt.subplots(nrows=nb_ch + 1, ncols=1, sharex=True)
-    ax[0].set_title(file_name)
-    ax[0].plot(intan['t_amplifier'], intan['board_adc_data'][0], 'k', linewidth=0.5)
-    ax[0].spines['right'].set_visible(False), ax[0].spines['top'].set_visible(False)
-    ax[0].set_xticks([])
-    ax[0].set_yticks([])
 
-    # set the range of the y-axis
+    # Plot spectrogram for song
+    ax[0].set_title(file_name)
+    # ax[0].plot(intan['t_amplifier'], intan['board_adc_data'][0], 'k', linewidth=0.5)  # plot the raw signal
+    ax[0].specgram(intan['board_adc_data'][0], Fs=sample_rate['intan'])
+    ax[0].spines['right'].set_visible(False), ax[0].spines['top'].set_visible(False)
+    ax[0].set_ylim(freq_range)
+    ax[0].set_xticks([])
+    # ax[0].set_yticks([])
+    ax[0].spines['left'].set_visible(False)
+    ax[0].spines['bottom'].set_visible(False)
+
+    # Set the range of the y-axis
     y_range = [abs(intan['amplifier_data'].min()), abs(intan['amplifier_data'].max())]
     y_range = ceil(max(y_range) / 1E2) * 1E2
 
@@ -86,7 +93,7 @@ for rhd in rhd_files:
     plt.margins(0.05)
     plt.tight_layout()
 
-    # save figure
+    # Save figure
     # fig_name = Path(rhd).with_suffix('.png')
     # plt.savefig(fig_name)
     # fig_name = Path(rhd).with_suffix('.pdf')  # vector format
