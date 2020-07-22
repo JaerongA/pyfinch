@@ -50,13 +50,16 @@ for rhd in rhd_files:
     # Plot spectrogram for song
     ax[0].set_title(file_name)
     # ax[0].plot(intan['t_amplifier'], intan['board_adc_data'][0], 'k', linewidth=0.5)  # plot the raw signal
-    ax[0].specgram(intan['board_adc_data'][0], Fs=sample_rate['intan'])
+    ax[0].specgram(intan['board_adc_data'][0], Fs=sample_rate['intan'], cmap='jet', scale_by_freq=None)
     ax[0].spines['right'].set_visible(False), ax[0].spines['top'].set_visible(False)
     ax[0].set_ylim(freq_range)
-    ax[0].set_xticks([])
-    # ax[0].set_yticks([])
+    # ax[0].set_xticks([])
+    ax[0].set_yticks([])
     ax[0].spines['left'].set_visible(False)
     ax[0].spines['bottom'].set_visible(False)
+    ax[0].text(ax[0].get_xlim()[0]*-0.5, freq_range[0]*0.1, str(freq_range[0]), size=10)
+    ax[0].text(ax[0].get_xlim()[0]*-0.5, freq_range[1]*0.95, str(freq_range[1]), size=10)
+    ax[0].set_ylabel('Frequency')
 
     # Set the range of the y-axis
     y_range = [abs(intan['amplifier_data'].min()), abs(intan['amplifier_data'].max())]
