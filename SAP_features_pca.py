@@ -1,3 +1,7 @@
+"""
+By Jaerong
+Runs PCA analysis on SAP features
+"""
 import os
 import pandas as pd
 import numpy as np

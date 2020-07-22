@@ -3,15 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeafeningAnalysis.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EntropyAnalysis.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FF_analysis.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PCC_normalization.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAP_analysis.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAP_features" beforeDir="false" afterPath="$PROJECT_DIR$/SAP_features_pca" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SyllableFR_CrossCorr.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/intan_to_wav_converter.py" beforeDir="false" afterPath="$PROJECT_DIR$/intan_to_wav_converter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/load_spk.py" beforeDir="false" afterPath="$PROJECT_DIR$/load_spk.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SAP_features_pca" beforeDir="false" afterPath="$PROJECT_DIR$/SAP_features_pca.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -331,7 +323,8 @@
       <workItem from="1595133195246" duration="33496000" />
       <workItem from="1595299953385" duration="5554000" />
       <workItem from="1595382332264" duration="161000" />
-      <workItem from="1595382501793" duration="28000" />
+      <workItem from="1595382501793" duration="44000" />
+      <workItem from="1595382781742" duration="56000" />
     </task>
     <task id="LOCAL-00001" summary="Master script">
       <created>1592181120484</created>
@@ -648,7 +641,14 @@
       <option name="project" value="LOCAL" />
       <updated>1595303422959</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary=".">
+      <created>1595382542709</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1595382542709</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -713,11 +713,11 @@
     <state x="-2949" y="927" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965258023" />
     <state x="-3732" y="722" width="1407" height="940" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595207572436" />
     <state x="1140" y="329" width="1262" height="716" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592375822627" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1595303422259">
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1595382542191">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-3263" y="425" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594957609077" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595303422259" />
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595382542191" />
     <state x="829" y="226" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1592181120032" />
     <state width="2138" height="582" key="DebuggerActiveHint" timestamp="1593751962392">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -855,7 +855,7 @@
           <option name="timeStamp" value="53" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/SAP_features_pca</url>
+          <url>file://$PROJECT_DIR$/SAP_features_pca.py</url>
           <line>47</line>
           <option name="timeStamp" value="78" />
         </line-breakpoint>
