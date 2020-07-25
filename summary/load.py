@@ -51,7 +51,7 @@ def cluster(summary_df, cluster_run):
 
 
 def cluster_info(cluster):
-    session_id = cluster.Key + '-' + cluster.BirdID + '-' + cluster.TaskName + '-' + cluster.TaskSession + '-' + cluster.SessionDate + '-Site' + cluster.Site
+    session_id = cluster.Key + '-' + cluster.BirdID + '-' + cluster.TaskName + '-' + cluster.TaskSession + '-' + cluster.SessionDate
     cell_id = session_id + '-' + cluster.Channel + '-' + cluster.Cluster
     session_path = project_path + '\\' + cluster.BirdID + '\\' + cluster.TaskName + '\\' + cluster.TaskSession + '(' + cluster.SessionDate + ')'
     cell_path = session_path + '\\' + cluster.Site + '\\Songs'
