@@ -9,13 +9,32 @@ from song_analysis.parameters import *
 import scipy.io
 import numpy as np
 
+
+def is_song_bout(song_notes, bout):
+    # returns the number of song notes within a bout
+    nb_song_note_in_bout = len([note for note in song_notes if note in bout])
+    return nb_song_note_in_bout
+
+
+def save_bout(filename, data):
+    # save the song bout & number of bouts in .json
+    import json
+    with open(filename, 'w') as f:
+        json.dump(data, f)
+
+
 summary_df, nb_cluster = load.summary(load.config())
+# Aggregate the dataframe (some days had recordings from multiple sites)
+# summary_df = summary_df.groupby(['BirdID', 'TaskName', 'TaskSession'], sort=False).agg(','.join).reset_index()
+
 
 # conditional select (optional)
-summary_df = summary_df.query('Key == "1"')
+summary_df = summary_df.query('Key == "3" or Key == "4"')
+# summary_df = summary_df.query('Key == "4"')
+
 pre_path = ''
-context_list = list()
-bout_list = list()
+# context_list = list()
+# bout_list = list()
 
 for cluster_run in range(0, summary_df.shape[0]):
 
@@ -23,11 +42,11 @@ for cluster_run in range(0, summary_df.shape[0]):
 
     session_id, cell_id, session_path, cell_path = load.cluster_info(cluster)
 
-    if pre_path is not session_path:
+    if pre_path != session_path:
         context_list = list()
         bout_list = list()
 
-    print('Accessing...... ' + cell_path)
+    print(f'Accessing.........  {cell_path}')
     os.chdir(cell_path)
 
     mat_file = [file for file in os.listdir(cell_path) if file.endswith('.not.mat')]
@@ -40,7 +59,7 @@ for cluster_run in range(0, summary_df.shape[0]):
         onsets = scipy.io.loadmat(file)['onsets'].transpose()[0]  # syllable onset timestamp
         offsets = scipy.io.loadmat(file)['offsets'].transpose()[0]  # syllable offset timestamp
         intervals = onsets[1:] - offsets[:-1]  # interval among syllables
-        context_list.append(file.split('.')[0][-3:][0])  # 'U' or 'D'
+        context_list.append(file.split('.')[0].split('_')[-1][0].upper())  # extract 'U' or 'D' from the file name
         # print(intervals)
 
         # demarcate the song bout with an asterisk (stop)
@@ -55,10 +74,27 @@ for cluster_run in range(0, summary_df.shape[0]):
             bout_labeling += '*' + syllables[ind[i] + 1:]
 
         bout_labeling += '*'
-        print(bout_labeling)
+        # print(bout_labeling)
         bout_list.append(bout_labeling)
 
         # count the number of bouts (only include those having a song motif)
         nb_bouts = len([bout for bout in bout_labeling.split('*')[:-1] if cluster.Motif in bout])
 
+    print(bout_list)
+
+    # Store song bouts and its context in a dict
+    bout = {'Undir': ''.join([bout for bout, context in zip(bout_list, context_list) if context == 'U']),
+            'Dir': ''.join([bout for bout, context in zip(bout_list, context_list) if context == 'D'])}
+
+    # Store song bouts and its context in a dict
+    nb_song_bouts = {
+        'Undir': len([bout for bout in bout['Undir'].split('*')[:-1] if is_song_bout(cluster.SongNote, bout)]),
+        'Dir': len([bout for bout in bout['Dir'].split('*')[:-1] if is_song_bout(cluster.SongNote, bout)])}
+
     pre_path = session_path
+
+    # Save the results in .json format in the session path
+    os.chdir(session_path)
+    save_bout('song_bout.json', bout)
+    save_bout('song_bout.json', nb_song_bouts)
+
