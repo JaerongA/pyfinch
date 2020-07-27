@@ -60,5 +60,11 @@ def cluster_info(cluster):
     return session_id, cell_id, session_path, cell_path
 
 
+def summary_create_db(summary_df):
+    # TODO: Convert to database
+    summary_df.to_sql(
+        name='cluster'
+    )
+
 # if __name__ == '__main__':
 #     config()

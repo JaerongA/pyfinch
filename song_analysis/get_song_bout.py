@@ -1,6 +1,6 @@
 """
 By Jaerong
-performs syllable sequence analysis and calculates transition entropy
+Separates song bouts (*) and store them in .json in song folders
 """
 
 import os
@@ -29,7 +29,7 @@ summary_df, nb_cluster = load.summary(load.config())
 
 
 # conditional select (optional)
-summary_df = summary_df.query('Key == "3" or Key == "4"')
+# summary_df = summary_df.query('Key == "3" or Key == "4"')
 # summary_df = summary_df.query('Key == "4"')
 
 pre_path = ''
@@ -46,7 +46,7 @@ for cluster_run in range(0, summary_df.shape[0]):
         context_list = list()
         bout_list = list()
 
-    print(f'Accessing.........  {cell_path}')
+    print(f'\nAccessing.........  {cell_path}\n')
     os.chdir(cell_path)
 
     mat_file = [file for file in os.listdir(cell_path) if file.endswith('.not.mat')]
@@ -86,15 +86,19 @@ for cluster_run in range(0, summary_df.shape[0]):
     bout = {'Undir': ''.join([bout for bout, context in zip(bout_list, context_list) if context == 'U']),
             'Dir': ''.join([bout for bout, context in zip(bout_list, context_list) if context == 'D'])}
 
-    # Store song bouts and its context in a dict
-    nb_song_bouts = {
-        'Undir': len([bout for bout in bout['Undir'].split('*')[:-1] if is_song_bout(cluster.SongNote, bout)]),
-        'Dir': len([bout for bout in bout['Dir'].split('*')[:-1] if is_song_bout(cluster.SongNote, bout)])}
+    bout = {'Undir': {'notes': bout['Undir'],
+                      'nb_bout': len([bout for bout in bout['Undir'].split('*')[:-1] if is_song_bout(cluster.SongNote, bout)])},
+            'Dir': {'notes': bout['Dir'],
+                    'nb_bout': len([bout for bout in bout['Dir'].split('*')[:-1] if is_song_bout(cluster.SongNote, bout)])}
+            }
+    # {'Undir': {'bout': 'kiiiiabcdjiabcdjiabcd*iiiabcdk*iiii*',
+    #   'nb_bout': 2},
+    #  'Dir': {'bout': 'kiiiiabcdjiabcdjiabcd*iiiabcdk*iiii*iiiabcdjiabcdk*kiiiiiabcdjia*',
+    #   'nb_bout': 4}}
+
 
     pre_path = session_path
 
     # Save the results in .json format in the session path
     os.chdir(session_path)
     save_bout('song_bout.json', bout)
-    save_bout('song_bout.json', nb_song_bouts)
-
