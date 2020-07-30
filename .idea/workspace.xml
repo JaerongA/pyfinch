@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/database/load.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/create_song_table.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/practice.py" beforeDir="false" afterPath="$PROJECT_DIR$/practice.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/load.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,8 +38,20 @@
         <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
         <item name="main: schema" type="981a47c2:SqliteImplModel$Schema" />
       </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="deafening" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="main: schema" type="981a47c2:SqliteImplModel$Schema" />
+        <item name="sqlite_sequence: table" type="3d80ac25:SqliteImplModel$Table" />
+      </path>
     </expand>
     <select />
+  </component>
+  <component name="ExecutionTargetDialog">
+    <checked>
+      <node key="749d0d8d-a4c1-4d80-8dbd-c1d388fa2cca" />
+    </checked>
   </component>
   <component name="FavoritesManager">
     <favorites_list name="Deafening" />
@@ -112,7 +124,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\Summary" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.load">
+  <component name="RunManager" selected="Python.get_song_bout">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -201,17 +213,20 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="load" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="load_spk" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/database" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/database/load.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/load_spk.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -266,19 +281,19 @@
     </configuration>
     <list>
       <item itemvalue="Python.SongAnalysis" />
+      <item itemvalue="Python.load_spk" />
       <item itemvalue="Python.practice (1)" />
       <item itemvalue="Python.intan_to_wav_converter" />
       <item itemvalue="Python.practice2" />
       <item itemvalue="Python.get_song_bout" />
-      <item itemvalue="Python.load" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.load" />
         <item itemvalue="Python.get_song_bout" />
         <item itemvalue="Python.intan_to_wav_converter" />
         <item itemvalue="Python.practice2" />
         <item itemvalue="Python.practice (1)" />
+        <item itemvalue="Python.load_spk" />
       </list>
     </recent_temporary>
   </component>
@@ -350,7 +365,8 @@
       <workItem from="1595881319168" duration="3000" />
       <workItem from="1595957923696" duration="603000" />
       <workItem from="1595967699491" duration="18000" />
-      <workItem from="1595994072156" duration="590000" />
+      <workItem from="1595974616620" duration="606000" />
+      <workItem from="1596078334033" duration="2584000" />
     </task>
     <task id="LOCAL-00003" summary="Load project info">
       <created>1593397090677</created>
@@ -780,6 +796,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="93" y="93" width="2375" height="1215" key="DiffContextDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592192865538" />
+    <state x="1049" y="343" key="ExecutionTargetDialog" timestamp="1596078825726">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="1049" y="343" key="ExecutionTargetDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596078825726" />
     <state x="421" y="459" key="FileChooserDialogImpl" timestamp="1593647327024">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -846,19 +866,23 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="1287" height="707" key="XDebugger.FullValuePopup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595735073448" />
-    <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog" timestamp="1595727190523">
+    <state x="1154" y="550" width="380" height="323" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1" timestamp="1596080728412">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595727190523" />
+    <state x="1154" y="550" width="380" height="323" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596080728412" />
+    <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog" timestamp="1596079575840">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596079575840" />
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1" timestamp="1594781085042">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
-    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1595994273387">
+    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1596078345020">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1595031595493" />
-    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595994273387" />
+    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596078345020" />
     <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592372967067" />
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1594964072416">
       <screen x="-3840" y="262" width="2560" height="1400" />
@@ -877,10 +901,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="531" y="81" width="1709" height="1121" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594693059008" />
-    <state x="613" y="329" width="1644" height="807" key="dock-window-2" timestamp="1594693059008">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state x="-3277" y="429" width="1641" height="807" maximized="true" key="dock-window-2" timestamp="1596080920621">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="613" y="329" width="1644" height="807" key="dock-window-2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594693059008" />
+    <state x="-3277" y="429" width="1641" height="807" maximized="true" key="dock-window-2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596080920621" />
     <state x="403" y="319" width="2574" height="1408" key="dock-window-3" timestamp="1593912330317">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
