@@ -1,8 +1,8 @@
 -- By Jaerong
 -- Create table for song data based on cluster table
 
-CREATE TABLE IF NOT EXISTS song
-(id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS song2
+(
 birdID                   STRING  not null,
 taskName                 STRING  not null,
 taskSession              INT     not null,
@@ -17,6 +17,7 @@ INSERT INTO song
 SELECT DISTINCT birdID, taskName, taskSession, taskSessionDeafening,
                 taskSessionPostDeafening, dph, block10days, sessionDate
 FROM cluster;
+
 
 
 --CREATE VIEW song AS

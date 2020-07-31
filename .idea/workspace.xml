@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/database/create_song_table.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/create_song_table.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/create_song_table.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/load.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -124,7 +124,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\Summary" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.get_song_bout">
+  <component name="RunManager" selected="Python.load">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -213,7 +213,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="load_spk" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="load" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -221,12 +221,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/database" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/load_spk.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/database/load.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -281,21 +281,43 @@
     </configuration>
     <list>
       <item itemvalue="Python.SongAnalysis" />
-      <item itemvalue="Python.load_spk" />
       <item itemvalue="Python.practice (1)" />
       <item itemvalue="Python.intan_to_wav_converter" />
       <item itemvalue="Python.practice2" />
       <item itemvalue="Python.get_song_bout" />
+      <item itemvalue="Python.load" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.load" />
         <item itemvalue="Python.get_song_bout" />
         <item itemvalue="Python.intan_to_wav_converter" />
         <item itemvalue="Python.practice2" />
         <item itemvalue="Python.practice (1)" />
-        <item itemvalue="Python.load_spk" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="deafening: root" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              </path>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="deafening: root" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+                <item name="com.intellij.database.console.session.MessageBusSession@459133f5" type="9fbbdea:ServiceModel$ServiceNode" />
+              </path>
+            </expand>
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -366,14 +388,8 @@
       <workItem from="1595957923696" duration="603000" />
       <workItem from="1595967699491" duration="18000" />
       <workItem from="1595974616620" duration="606000" />
-      <workItem from="1596078334033" duration="2584000" />
-    </task>
-    <task id="LOCAL-00003" summary="Load project info">
-      <created>1593397090677</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1593397090677</updated>
+      <workItem from="1596078334033" duration="5594000" />
+      <workItem from="1596084465795" duration="3825000" />
     </task>
     <task id="LOCAL-00004" summary="copy cluster .mat files for analysable neurons">
       <created>1593397173112</created>
@@ -711,7 +727,14 @@
       <option name="project" value="LOCAL" />
       <updated>1595821489030</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary=".">
+      <created>1596080929760</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1596080929760</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -755,9 +778,9 @@
     <MESSAGE value="module for plotting figures" />
     <MESSAGE value="added spectrogram" />
     <MESSAGE value="separates song bouts" />
-    <MESSAGE value="." />
     <MESSAGE value="add db" />
-    <option name="LAST_COMMIT_MESSAGE" value="add db" />
+    <MESSAGE value="." />
+    <option name="LAST_COMMIT_MESSAGE" value="." />
   </component>
   <component name="WindowStateProjectService">
     <state x="773" y="276" key="#SQL_Dialects" timestamp="1595728466323">
@@ -781,11 +804,11 @@
     <state x="-2949" y="927" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965258023" />
     <state x="-3648" y="520" width="1407" height="940" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595650712932" />
     <state x="1140" y="329" width="1262" height="716" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592375822627" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1595821488643">
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1596080929240">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-3263" y="425" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594957609077" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595821488643" />
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596080929240" />
     <state x="829" y="226" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1592181120032" />
     <state width="2138" height="582" key="DebuggerActiveHint" timestamp="1593751962392">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -796,37 +819,37 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="93" y="93" width="2375" height="1215" key="DiffContextDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592192865538" />
-    <state x="1049" y="343" key="ExecutionTargetDialog" timestamp="1596078825726">
+    <state x="1049" y="343" key="ExecutionTargetDialog" timestamp="1596086293798">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1049" y="343" key="ExecutionTargetDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596078825726" />
+    <state x="1049" y="343" key="ExecutionTargetDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596086293798" />
     <state x="421" y="459" key="FileChooserDialogImpl" timestamp="1593647327024">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="421" y="459" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593647327024" />
-    <state width="2505" height="315" key="GridCell.Tab.0.bottom" timestamp="1595653100274">
+    <state width="1727" height="459" key="GridCell.Tab.0.bottom" timestamp="1596085883075">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
-    <state width="2505" height="315" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595653100274" />
+    <state width="1727" height="459" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596085883075" />
     <state width="2505" height="323" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="315" key="GridCell.Tab.0.center" timestamp="1595653100274">
+    <state width="1727" height="459" key="GridCell.Tab.0.center" timestamp="1596085883075">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
-    <state width="2505" height="315" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595653100274" />
+    <state width="1727" height="459" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596085883075" />
     <state width="2505" height="323" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="315" key="GridCell.Tab.0.left" timestamp="1595653100274">
+    <state width="1727" height="459" key="GridCell.Tab.0.left" timestamp="1596085883075">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
-    <state width="2505" height="315" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595653100274" />
+    <state width="1727" height="459" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596085883075" />
     <state width="2505" height="323" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
-    <state width="2505" height="315" key="GridCell.Tab.0.right" timestamp="1595653100274">
+    <state width="1727" height="459" key="GridCell.Tab.0.right" timestamp="1596085883075">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
-    <state width="2505" height="315" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595653100274" />
+    <state width="1727" height="459" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596085883075" />
     <state width="2505" height="323" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
     <state width="2505" height="315" key="GridCell.Tab.1.bottom" timestamp="1595653100274">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -862,27 +885,31 @@
     <state x="-3594" y="535" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1593316340520" />
     <state x="369" y="74" width="1819" height="1326" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595821264925" />
     <state x="246" y="273" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1592168581844" />
+    <state x="766" y="352" width="675" height="655" key="StructurePopup" timestamp="1596085279463">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="766" y="352" width="675" height="655" key="StructurePopup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596085279463" />
     <state width="1287" height="707" key="XDebugger.FullValuePopup" timestamp="1595735073448">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="1287" height="707" key="XDebugger.FullValuePopup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595735073448" />
-    <state x="1154" y="550" width="380" height="323" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1" timestamp="1596080728412">
+    <state x="1154" y="550" width="380" height="323" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1" timestamp="1596086433398">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1154" y="550" width="380" height="323" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596080728412" />
-    <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog" timestamp="1596079575840">
+    <state x="1154" y="550" width="380" height="323" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596086433398" />
+    <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog" timestamp="1596085954598">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596079575840" />
+    <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596085954598" />
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1" timestamp="1594781085042">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
-    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1596078345020">
+    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1596169024814">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1595031595493" />
-    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596078345020" />
+    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596169024814" />
     <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592372967067" />
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1594964072416">
       <screen x="-3840" y="262" width="2560" height="1400" />
@@ -901,10 +928,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="531" y="81" width="1709" height="1121" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594693059008" />
-    <state x="-3277" y="429" width="1641" height="807" maximized="true" key="dock-window-2" timestamp="1596080920621">
+    <state x="-3277" y="429" width="1641" height="807" maximized="true" key="dock-window-2" timestamp="1596084409925">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3277" y="429" width="1641" height="807" maximized="true" key="dock-window-2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596080920621" />
+    <state x="-3277" y="429" width="1641" height="807" maximized="true" key="dock-window-2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596084409925" />
     <state x="403" y="319" width="2574" height="1408" key="dock-window-3" timestamp="1593912330317">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
