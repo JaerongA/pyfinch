@@ -8,9 +8,9 @@ from summary import load
 from song_analysis.parameters import *
 import scipy.io
 import numpy as np
-import sqlite3
+from database.load import database
 
-
+conn, cur = database()
 
 def is_song_bout(song_notes, bout):
     # returns the number of song notes within a bout
@@ -103,18 +103,21 @@ for cluster_run in range(0, summary_df.shape[0]):
     pre_path = session_path
 
     # Save the results in .json format in the session path
-    os.chdir(session_path)
-    save_bout('song_bout.json', bout)
+    # os.chdir(session_path)
+    # save_bout('song_bout.json', bout)
 
     # Save the results in the cluster db
-    conn = sqlite3.connect('.database/deafening.db')
-    cur = conn.cursor()
+    cur.execute("UPDATE cluster SET songBoutUndir = ? WHERE id = ?", (bout['Undir']['notes'], int(cluster.Key)))
+    cur.execute("UPDATE cluster SET songBoutDir = ? WHERE id = ?", (bout['Dir']['notes'], int(cluster.Key)))
 
-    sql = "INSERT INTO cluster (songBoutUndir, songBoutDir) VALUES (?,?)", (
-    bout['Undir']['notes'], bout['Dir']['notes'])
+    # Save the results in the cluster db
 
-    cur.execute("INSERT INTO cluster (songBoutUndir, songBoutDir) VALUES (?,?)", (
-    bout['Undir']['notes'], bout['Dir']['notes']))
+
+
     conn.commit()
     conn.close()
+
+
     break
+
+

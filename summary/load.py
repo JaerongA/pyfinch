@@ -7,7 +7,7 @@ def config():
     config_file = 'summary/project.ini'
     parser = ConfigParser()
     parser.read(config_file)
-    # print(parser.sections())
+    print(parser.sections())
     return parser
 
 

@@ -2,17 +2,17 @@ import sqlite3
 import pandas as pd
 
 
-def database():
-    conn = sqlite3.connect('deafening.db')
-    cursor = conn.cursor()
-    rows = cursor.execute('''SELECT * FROM cluster''')
-    for row in rows:
-        print(row)
+def database(*query):
+    conn = sqlite3.connect('database/deafening.db')
+    # conn = sqlite3.connect('deafening.db')
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
 
-    #conn.row_factory = sqlite3.Row
-    #cursor = conn.execute('''SELECT * FROM cluster''')
-    return cursor
-    # rows = cur.execute('''SELECT * FROM cluster''')
+    if query:
+        # cur = conn.execute('''SELECT * FROM cluster''')
+        cur = conn.execute(query[0])
+    return conn, cur
+
 
 # for row in rows:
 #    print(row)
@@ -27,10 +27,10 @@ def database():
 #     print(cluster['birdID'])
 #     break
 
-#conn = sqlite3.connect('deafening.db')
-#cursor = conn.cursor()
-#rows = cursor.execute('''SELECT * FROM cluster''')
-#for row in rows:
+# conn = sqlite3.connect('deafening.db')
+# cursor = conn.cursor()
+# rows = cursor.execute('''SELECT * FROM cluster''')
+# for row in rows:
 #    print(row)
 
 cursor = database()
