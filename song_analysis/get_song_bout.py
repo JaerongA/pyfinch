@@ -8,6 +8,8 @@ from summary import load
 from song_analysis.parameters import *
 import scipy.io
 import numpy as np
+import sqlite3
+
 
 
 def is_song_bout(song_notes, bout):
@@ -87,18 +89,32 @@ for cluster_run in range(0, summary_df.shape[0]):
             'Dir': ''.join([bout for bout, context in zip(bout_list, context_list) if context == 'D'])}
 
     bout = {'Undir': {'notes': bout['Undir'],
-                      'nb_bout': len([bout for bout in bout['Undir'].split('*')[:-1] if is_song_bout(cluster.SongNote, bout)])},
+                      'nb_bout': len(
+                          [bout for bout in bout['Undir'].split('*')[:-1] if is_song_bout(cluster.SongNote, bout)])},
             'Dir': {'notes': bout['Dir'],
-                    'nb_bout': len([bout for bout in bout['Dir'].split('*')[:-1] if is_song_bout(cluster.SongNote, bout)])}
+                    'nb_bout': len(
+                        [bout for bout in bout['Dir'].split('*')[:-1] if is_song_bout(cluster.SongNote, bout)])}
             }
     # {'Undir': {'bout': 'kiiiiabcdjiabcdjiabcd*iiiabcdk*iiii*',
     #   'nb_bout': 2},
     #  'Dir': {'bout': 'kiiiiabcdjiabcdjiabcd*iiiabcdk*iiii*iiiabcdjiabcdk*kiiiiiabcdjia*',
     #   'nb_bout': 4}}
 
-
     pre_path = session_path
 
     # Save the results in .json format in the session path
     os.chdir(session_path)
     save_bout('song_bout.json', bout)
+
+    # Save the results in the cluster db
+    conn = sqlite3.connect('.database/deafening.db')
+    cur = conn.cursor()
+
+    sql = "INSERT INTO cluster (songBoutUndir, songBoutDir) VALUES (?,?)", (
+    bout['Undir']['notes'], bout['Dir']['notes'])
+
+    cur.execute("INSERT INTO cluster (songBoutUndir, songBoutDir) VALUES (?,?)", (
+    bout['Undir']['notes'], bout['Dir']['notes']))
+    conn.commit()
+    conn.close()
+    break
