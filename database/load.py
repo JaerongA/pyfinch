@@ -6,6 +6,7 @@ def database(*query):
     # Apply query to the database
     # Return cursor
     conn = sqlite3.connect('database/deafening.db')
+    # conn.row_factory = lambda cursor, row: row[0]
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
@@ -14,23 +15,30 @@ def database(*query):
     return cur, conn
 
 
-def load_cluster(cluster_run):
-    conn = sqlite3.connect('database/deafening.db')
-    cur.execute("SELECT * FROM cluster WHERE id =?", str(cluster_run))
+def load_cluster(conn, cluster_run):
+
+    from types import SimpleNamespace
+
     df = pd.read_sql_query("SELECT * FROM cluster WHERE id = (?)", conn, params=(cluster_run,))
-    for cluster in cur:
-        if len(cluster['id']) == 1:
-            cluster['id'] = '00' + cluster['id']
-        elif len(cluster['id']) == 2:
-            cluster['id'] = '0' + cluster['id']
+    this_dic = df.iloc[0].to_dict()
+    cell = SimpleNamespace(**this_dic)
 
-        #if len(cluster.TaskSession) == 1:
-        #    cluster.TaskSession = 'D0' + cluster.TaskSession
-        #elif len(cluster.TaskSession) == 2:
-        #    cluster.TaskSession = 'D' + cluster.TaskSession
+    if len(cell.id) == 1:
+        cell.id = '00' + cell.id
+    elif len(cell.id) == 2:
+        cell.id = '0' + cell.id
 
-        #cluster.Site = cluster.Site[-2:]
-    return cur
+    if len(str(cell.taskSession)) == 1:
+        cell.taskSession = 'D0' + str(cell.taskSession)
+    elif len(str(cell.taskSession)) == 2:
+        cell.taskSession = 'D' + str(cell.taskSession)
+    cell.site = cell.site[-2:]
+
+    cell_name = cell.id + '-' + cell.birdID + '-' + cell.taskName + '-' + cell.taskSession + '-' + cell.sessionDate + '-' + cell.channel + '-' + cell.cluster
+    session_path = project_path + '\\' + cluster.BirdID + '\\' + cluster.TaskName + '\\' + cluster.TaskSession + '(' + cluster.SessionDate + ')'
+    cell_path = session_path + '\\' + cluster.Site + '\\Songs'
+
+    return cell, cell_name, cell_path
 
 
 def load_song(conn, cluster_run):
