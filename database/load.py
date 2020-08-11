@@ -62,6 +62,8 @@ def cell_info(conn, cluster_run):
 
 def song_info(conn, song_run):
     from types import SimpleNamespace
+    from pathlib import Path
+
     project_path = project()
     song_run += 1
     # df = pd.read_sql_query("SELECT * FROM song WHERE id = (?)", conn, params=(song_run,))
@@ -83,6 +85,7 @@ def song_info(conn, song_run):
     song_name = [song.id, song.birdID, song.taskName, song.taskSession, song.sessionDate]
     song_name = '-'.join(song_name)
     song_path = os.path.join(project_path, song.birdID, song.taskName, song.taskSession + '(' + song.sessionDate + ')')
+    song_path = Path(song_path)
 
     return song, song_name, song_path
 
