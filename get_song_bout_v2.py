@@ -26,7 +26,7 @@ def save_bout(filename, data):
 
 
 # query = "SELECT * FROM song WHERE id BETWEEN 2 AND 3"  # Load song database
-query = "SELECT * FROM song WHERE id =10"  # Load song database
+query = "SELECT * FROM song WHERE id is 3"  # Load song database
 
 cur, conn = load.database(query)
 
@@ -40,9 +40,10 @@ for song_run in range(0, nb_rows):
     context_list = list()
     bout_list = list()
 
-    for site in song_path.iterdir() :
+    for site in song_path.iterdir():
 
         mat_files = [file for file in site.rglob('*.not.mat')]
+
 
         for file in mat_files:
             syllables = scipy.io.loadmat(file)['syllables'][0]  # Load the syllable info
@@ -50,7 +51,8 @@ for song_run in range(0, nb_rows):
             offsets = scipy.io.loadmat(file)['offsets'].transpose()[0]  # syllable offset timestamp
             intervals = onsets[1:] - offsets[:-1]  # interval among syllables
             context_list.append(file.name.split('.')[0].split('_')[-1][0].upper())  # extract 'U' or 'D' from the file name
-            # print(intervals)
+            print(file)
+            # print(file.name)
 
             # demarcate the song bout with an asterisk (stop)
             ind = np.where(intervals > bout_crit)[0]
@@ -67,10 +69,10 @@ for song_run in range(0, nb_rows):
             # print(bout_labeling)
             bout_list.append(bout_labeling)
 
-            # count the number of bouts (only include those having a song motif)
-            nb_bouts = len([bout for bout in bout_labeling.split('*')[:-1] if cluster.Motif in bout])
+            # count the number of bouts (only includes those having a song note)
+            nb_bouts = len([bout for bout in bout_labeling.split('*')[:-1] if is_song_bout(song.songNote, bout)])
 
-        print(bout_list)
+        # print(bout_list)
 
         # Store song bouts and its context in a dict
         bout = {'Undir': ''.join([bout for bout, context in zip(bout_list, context_list) if context == 'U']),
@@ -79,10 +81,10 @@ for song_run in range(0, nb_rows):
         bout = {'Undir': {'notes': bout['Undir'],
                           'nb_bout': len(
                               [bout for bout in bout['Undir'].split('*')[:-1] if
-                               is_song_bout(cluster.SongNote, bout)])},
+                               is_song_bout(song.songNote, bout)])},
                 'Dir': {'notes': bout['Dir'],
                         'nb_bout': len(
-                            [bout for bout in bout['Dir'].split('*')[:-1] if is_song_bout(cluster.SongNote, bout)])}
+                            [bout for bout in bout['Dir'].split('*')[:-1] if is_song_bout(song.songNote, bout)])}
                 }
 
     break
