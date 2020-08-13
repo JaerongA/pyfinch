@@ -17,5 +17,13 @@ def make_save_dir(path_name, *date):
         os.mkdir(save_dir)
 
 
+
+def save_bout(filename, data):
+    # save the song bout & number of bouts in .json
+    import json
+    with open(filename, 'w') as f:
+        json.dump(data, f)
+
+
 if __name__ == '__main__':
     make_save_dir(path_name, date)
