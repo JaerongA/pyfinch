@@ -21,18 +21,22 @@ def project():
     return project_path
 
 
-def database(*query):
+def database(query):
     # Apply query to the database
-    # Return cursor
+    # Return cursor, connection, col_name
     conn = sqlite3.connect('database/deafening.db')
     # conn.row_factory = lambda cursor, row: row[0]
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
-    if query:
-        cur.execute(query[0])
-    conn.commit()
-    return cur, conn
+    # get column names
+    cur.execute(query)
+    row = cur.fetchone()
+    col_names = row.keys()
+
+    cur.execute(query)
+
+    return cur, conn, col_names
 
 
 def cell_info(conn, cluster_run):

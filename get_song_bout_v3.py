@@ -3,7 +3,6 @@ By Jaerong
 Separates song bouts (*) and store them in the database
 """
 
-import os
 from database import load
 from pathlib import Path
 from song_analysis.parameters import *
@@ -19,15 +18,17 @@ def is_song_bout(song_notes, bout):
 
 
 # Load song database
-query = "SELECT * FROM song WHERE id BETWEEN 3 AND 4"
-# query = "SELECT * FROM song WHERE birdID = 'g35r38'"  # Load song database
 
-cur, conn = load.database(query)
+# query = "SELECT * FROM song WHERE id BETWEEN 3 AND 8"
+query = "SELECT * FROM song WHERE birdID = 'g35r38'"
+# query = "SELECT * FROM song WHERE id =3"
+
+cur, conn, col_names = load.database(query)
 
 for song_row in cur.fetchall():
 
     song_name, song_path = load.song_info(song_row)
-
+    print(song_name)
     context_list = list()
     bout_list = list()
 
@@ -65,6 +66,8 @@ for song_row in cur.fetchall():
 
         print(bout_list)
 
+        break
+
     # Store song bouts and its context in a dict
     bout = {'Undir': ''.join([bout for bout, context in zip(bout_list, context_list) if context == 'U']),
             'Dir': ''.join([bout for bout, context in zip(bout_list, context_list) if context == 'D'])
@@ -81,4 +84,51 @@ for song_row in cur.fetchall():
 
     print(bout)
 
+    # Create new columns
+    ## Todo : make this into a function
+
+    if 'songBoutUndir' not in col_names:
+        cur.execute("ALTER TABLE song ADD COLUMN songBoutUndir TEXT")
+
+    if 'songBoutDir' not in col_names:
+        cur.execute("ALTER TABLE song ADD COLUMN songBoutDir TEXT")
+
+    if 'nbSongBoutUndir' not in col_names:
+        cur.execute("ALTER TABLE song ADD COLUMN nbSongBoutUndir INTEGER")
+
+    if 'nbSongBoutDir' not in col_names:
+        cur.execute("ALTER TABLE song ADD COLUMN nbSongBoutDir INTEGER")
+
+
+    # Update the database
+    cur.execute("UPDATE song SET songBoutUndir = ? WHERE id = ?", (bout['Undir']['notes'], song_row['id']))
+    cur.execute("UPDATE song SET songBoutDir = ? WHERE id = ?", (bout['Dir']['notes'], song_row['id']))
+
+    cur.execute("UPDATE song SET nbSongBoutUndir = ? WHERE id = ?", (bout['Undir']['nb_bout'], song_row['id']))
+    cur.execute("UPDATE song SET nbSongBoutDir = ? WHERE id = ?", (bout['Dir']['nb_bout'], song_row['id']))
+    conn.commit()
     break
+conn.close()
+
+
+
+
+# Load the bout info from the database for analysis
+
+# query = "SELECT * FROM song WHERE birdID = 'g35r38'"
+query = "SELECT * FROM song WHERE id =3"
+
+cur, conn, _ = load.database(query)
+
+for song_row in cur.fetchall():
+
+    songBout = song_row['songBoutUndir']
+
+    # songCallProportion =
+
+
+
+
+    break
+
+

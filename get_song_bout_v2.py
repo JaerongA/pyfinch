@@ -6,7 +6,7 @@ Separates song bouts (*) and store them in .json in song folders
 import os
 from database import load
 from pathlib import Path
-from song_analysis.parameters import *
+from song_analysis.parameters import bout_crit
 import scipy.io
 import numpy as np
 import sqlite3
