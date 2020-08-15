@@ -11,10 +11,21 @@ import numpy as np
 import sqlite3
 
 
-def is_song_bout(song_notes, bout):
-    # returns the number of song notes within a bout
-    nb_song_note_in_bout = len([note for note in song_notes if note in bout])
+def unique_nb_notes_in_bout(note: str, bout: str):
+    # returns the unique number of notes within a single bout string
+    nb_song_note_in_bout = len([note for note in note if note in bout])
     return nb_song_note_in_bout
+
+
+def total_nb_notes_in_bout(note: str, bout: str):
+    # returns the total number of song notes from a list of song bouts
+    notes = []
+    nb_notes = []
+    for note in note:
+        notes.append(note)
+        nb_notes.append(sum([bout.count(note) for bout in bout]))
+
+    return sum(nb_notes)
 
 
 # Load song database
@@ -32,7 +43,7 @@ for song_row in cur.fetchall():
     context_list = list()
     bout_list = list()
 
-    for site in [x for x in song_path.iterdir() if x.is_dir()]: # loop through the sub-dir
+    for site in [x for x in song_path.iterdir() if x.is_dir()]:  # loop through the sub-dir
 
         mat_files = [file for file in site.rglob('*.not.mat')]
 
@@ -62,7 +73,8 @@ for song_row in cur.fetchall():
             bout_list.append(bout_labeling)
 
             # count the number of bouts (only includes those having a song note)
-            nb_bouts = len([bout for bout in bout_labeling.split('*')[:-1] if is_song_bout(song_row['songNote'], bout)])
+            nb_bouts = len(
+                [bout for bout in bout_labeling.split('*')[:-1] if unique_nb_notes_in_bout(song_row['songNote'], bout)])
 
         print(bout_list)
 
@@ -76,10 +88,11 @@ for song_row in cur.fetchall():
     bout = {'Undir': {'notes': bout['Undir'],
                       'nb_bout': len(
                           [bout for bout in bout['Undir'].split('*')[:-1] if
-                           is_song_bout(song_row['songNote'], bout)])},
+                           unique_nb_notes_in_bout(song_row['songNote'], bout)])},
             'Dir': {'notes': bout['Dir'],
                     'nb_bout': len(
-                        [bout for bout in bout['Dir'].split('*')[:-1] if is_song_bout(song_row['songNote'], bout)])}
+                        [bout for bout in bout['Dir'].split('*')[:-1] if
+                         unique_nb_notes_in_bout(song_row['songNote'], bout)])}
             }
 
     print(bout)
@@ -99,7 +112,6 @@ for song_row in cur.fetchall():
     if 'nbSongBoutDir' not in col_names:
         cur.execute("ALTER TABLE song ADD COLUMN nbSongBoutDir INTEGER")
 
-
     # Update the database
     cur.execute("UPDATE song SET songBoutUndir = ? WHERE id = ?", (bout['Undir']['notes'], song_row['id']))
     cur.execute("UPDATE song SET songBoutDir = ? WHERE id = ?", (bout['Dir']['notes'], song_row['id']))
@@ -110,25 +122,28 @@ for song_row in cur.fetchall():
     break
 conn.close()
 
-
-
-
 # Load the bout info from the database for analysis
+
+from statistics import mean
 
 # query = "SELECT * FROM song WHERE birdID = 'g35r38'"
 query = "SELECT * FROM song WHERE id =3"
 
-cur, conn, _ = load.database(query)
+cur, conn, col_names = load.database(query)
 
 for song_row in cur.fetchall():
+    bout_list = song_row['songBoutUndir'].split('*')[:-1]  # remove bout demarcation and put them in a list
 
-    songBout = song_row['songBoutUndir']
+    songbout_list = [bout for bout in bout_list if
+                     unique_nb_notes_in_bout(song_row['songNote'], bout)]  # only extracts bouts with song notes
 
-    # songCallProportion =
+    # Calculate the mean number of introductory notes
+    mean_nb_intro_notes = mean(list(map(lambda x: x.count(song_row['introNotes']), songbout_list)))
+
+    # Calculate song/call proportions (# of calls / # of song notes)
+    song_call_prop = total_nb_notes_in_bout(song_row['calls'], songbout_list) / total_nb_notes_in_bout(song_row['songNote'], songbout_list)
 
 
 
 
     break
-
-
