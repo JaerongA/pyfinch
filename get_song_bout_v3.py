@@ -143,7 +143,7 @@ for song_row in cur.fetchall():
     # Calculate song/call proportions (# of calls / # of song notes)
     song_call_prop = total_nb_notes_in_bout(song_row['calls'], songbout_list) / total_nb_notes_in_bout(song_row['songNote'], songbout_list)
 
-
-
+    # Note sequence
+    note_seq = song_row['introNotes'] + song_row['songNote'] + song_row['calls'] + '*'
 
     break
