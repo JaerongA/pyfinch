@@ -132,7 +132,9 @@ query = "SELECT * FROM song WHERE id =3"
 cur, conn, col_names = load.database(query)
 
 for song_row in cur.fetchall():
-    bout_list = song_row['songBoutUndir'].split('*')[:-1]  # remove bout demarcation and put them in a list
+
+    syllables = song_row['songBoutUndir']
+    bout_list = syllables.split('*')[:-1]  # remove bout demarcation and put them in a list
 
     songbout_list = [bout for bout in bout_list if
                      unique_nb_notes_in_bout(song_row['songNote'], bout)]  # only extracts bouts with song notes
@@ -141,9 +143,25 @@ for song_row in cur.fetchall():
     mean_nb_intro_notes = mean(list(map(lambda x: x.count(song_row['introNotes']), songbout_list)))
 
     # Calculate song/call proportions (# of calls / # of song notes)
-    song_call_prop = total_nb_notes_in_bout(song_row['calls'], songbout_list) / total_nb_notes_in_bout(song_row['songNote'], songbout_list)
+    song_call_prop = total_nb_notes_in_bout(song_row['calls'], songbout_list) / total_nb_notes_in_bout(
+        song_row['songNote'], songbout_list)
 
-    # Note sequence
-    note_seq = song_row['introNotes'] + song_row['songNote'] + song_row['calls'] + '*'
+    # Note sequence for the current song bout
+    note_seq = list(song_row['introNotes'] + song_row['songNote'] + song_row['calls'] + '*')  # arrange in this order
+    bout = song_row['songBoutUndir']
+    bout = sorted(set(bout))
+    note_seq = [note for note in note_seq if note in bout]  # only count the notes that actually appeared in the bout
+
+
+
+    # Construct a transition matrix
+    trans_matrix = np.zeros((len(note_seq), len(note_seq)))  # initialize the matrix
+
+    for i, note in enumerate(syllables):
+        print(syllables[i] + '->' + syllables[i+1])
+        ind1 = note_seq.index(syllables[i])
+        ind2 = note_seq.index(syllables[i + 1])
+        trans_matrix[ind1, ind2] = trans_matrix[ind1, ind2] + 1
+
 
     break
