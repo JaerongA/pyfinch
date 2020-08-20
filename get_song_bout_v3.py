@@ -151,17 +151,24 @@ for song_row in cur.fetchall():
     bout = song_row['songBoutUndir']
     bout = sorted(set(bout))
     note_seq = [note for note in note_seq if note in bout]  # only count the notes that actually appeared in the bout
-
-
+    note_seq = ['i', 'a', 'b', 'c', 'd', 'j', 'k', 'm', '*']
 
     # Construct a transition matrix
     trans_matrix = np.zeros((len(note_seq), len(note_seq)))  # initialize the matrix
 
     for i, note in enumerate(syllables):
-        print(syllables[i] + '->' + syllables[i+1])
-        ind1 = note_seq.index(syllables[i])
-        ind2 = note_seq.index(syllables[i + 1])
-        trans_matrix[ind1, ind2] = trans_matrix[ind1, ind2] + 1
 
+        if i < len(syllables) - 1:
+            print(syllables[i] + '->' + syllables[i + 1])
+            ind1 = note_seq.index(syllables[i])
+            ind2 = note_seq.index(syllables[i + 1])
+            trans_matrix[ind1, ind2] = trans_matrix[ind1, ind2] + 1
+
+    # Draw a transition matrix
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+
+    ax = sns.heatmap(trans_matrix, cmap="YlGnBu")
+    plt.show()
 
     break
