@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/deafening.db" beforeDir="false" afterPath="$PROJECT_DIR$/database/deafening.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/get_song_bout_v3.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_song_bout_v3.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,6 +63,7 @@
       </list>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="MERGE" />
   </component>
   <component name="GithubPullRequestsUISettings">
     <option name="hiddenUrls">
@@ -189,6 +188,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -436,14 +438,8 @@
       <workItem from="1597459186228" duration="6135000" />
       <workItem from="1597635669354" duration="2784000" />
       <workItem from="1597719921582" duration="3271000" />
-      <workItem from="1597894158995" duration="1504000" />
-    </task>
-    <task id="LOCAL-00015" summary="obtain the distribution of syllables">
-      <created>1593839653769</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1593839653769</updated>
+      <workItem from="1597894158995" duration="3193000" />
+      <workItem from="1598057104362" duration="2838000" />
     </task>
     <task id="LOCAL-00016" summary="obtain the distribution of syllables">
       <created>1593839679855</created>
@@ -781,7 +777,14 @@
       <option name="project" value="LOCAL" />
       <updated>1597722990791</updated>
     </task>
-    <option name="localTasksCounter" value="64" />
+    <task id="LOCAL-00064" summary="plot transition matrix">
+      <created>1597895675465</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1597895675465</updated>
+    </task>
+    <option name="localTasksCounter" value="65" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -802,7 +805,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="obtain the distribution of syllables" />
     <MESSAGE value="revised the path setting" />
     <MESSAGE value="update the project in .json" />
     <MESSAGE value="Calculate duration for all syllables regardless of its type" />
@@ -827,7 +829,8 @@
     <MESSAGE value="changed the database loading scheme" />
     <MESSAGE value="updated mean intro notes, song/call prop" />
     <MESSAGE value="added a note sequence" />
-    <option name="LAST_COMMIT_MESSAGE" value="added a note sequence" />
+    <MESSAGE value="plot transition matrix" />
+    <option name="LAST_COMMIT_MESSAGE" value="plot transition matrix" />
   </component>
   <component name="WindowStateProjectService">
     <state x="773" y="276" key="#SQL_Dialects" timestamp="1595728466323">
@@ -851,11 +854,11 @@
     <state x="-2949" y="927" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965258023" />
     <state x="-2790" y="303" width="1407" height="685" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597374350414" />
     <state x="1140" y="329" width="1262" height="716" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592375822627" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1597722990349">
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1597895674967">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-3263" y="425" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1597636743087" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597722990349" />
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597895674967" />
     <state x="829" y="226" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1592181120032" />
     <state width="2138" height="582" key="DebuggerActiveHint" timestamp="1593751962392">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -956,11 +959,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
-    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1597894159860">
+    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1598586570953">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1595031595493" />
-    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597894159860" />
+    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1598586570953" />
     <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592372967067" />
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1594964072416">
       <screen x="-3840" y="262" width="2560" height="1400" />
@@ -971,10 +974,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="1078" y="373" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594179031953" />
-    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1596600434053">
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1597895687313">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596600434053" />
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597895687313" />
     <state x="33" y="396" width="2026" height="1079" key="dock-window-1" timestamp="1596847936393">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -992,10 +995,10 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3493" y="387" width="1803" height="1103" key="dock-window-4/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593913336759" />
-    <state x="912" y="195" width="737" height="1011" key="find.popup" timestamp="1597293264937">
+    <state x="912" y="195" width="737" height="1011" key="find.popup" timestamp="1598067866125">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="912" y="195" width="737" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597293264937" />
+    <state x="912" y="195" width="737" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1598067866125" />
     <state x="-3005" y="623" width="875" height="663" key="recent.locations.popup" timestamp="1594964061601">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
