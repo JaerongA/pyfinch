@@ -36,9 +36,9 @@ query = "SELECT * FROM song WHERE birdID = 'g35r38'"
 
 cur, conn, col_names = load.database(query)
 
-for song_row in cur.fetchall():
+for song_info in cur.fetchall():
 
-    song_name, song_path = load.song_info(song_row)
+    song_name, song_path = load.song_info(song_info)
     print(song_name)
     context_list = list()
     bout_list = list()
@@ -74,7 +74,7 @@ for song_row in cur.fetchall():
 
             # count the number of bouts (only includes those having a song note)
             nb_bouts = len(
-                [bout for bout in bout_labeling.split('*')[:-1] if unique_nb_notes_in_bout(song_row['songNote'], bout)])
+                [bout for bout in bout_labeling.split('*')[:-1] if unique_nb_notes_in_bout(song_info['songNote'], bout)])
 
         print(bout_list)
 
@@ -88,11 +88,11 @@ for song_row in cur.fetchall():
     bout = {'Undir': {'notes': bout['Undir'],
                       'nb_bout': len(
                           [bout for bout in bout['Undir'].split('*')[:-1] if
-                           unique_nb_notes_in_bout(song_row['songNote'], bout)])},
+                           unique_nb_notes_in_bout(song_info['songNote'], bout)])},
             'Dir': {'notes': bout['Dir'],
                     'nb_bout': len(
                         [bout for bout in bout['Dir'].split('*')[:-1] if
-                         unique_nb_notes_in_bout(song_row['songNote'], bout)])}
+                         unique_nb_notes_in_bout(song_info['songNote'], bout)])}
             }
 
     print(bout)
@@ -113,11 +113,11 @@ for song_row in cur.fetchall():
         cur.execute("ALTER TABLE song ADD COLUMN nbSongBoutDir INTEGER")
 
     # Update the database
-    cur.execute("UPDATE song SET songBoutUndir = ? WHERE id = ?", (bout['Undir']['notes'], song_row['id']))
-    cur.execute("UPDATE song SET songBoutDir = ? WHERE id = ?", (bout['Dir']['notes'], song_row['id']))
+    cur.execute("UPDATE song SET songBoutUndir = ? WHERE id = ?", (bout['Undir']['notes'], song_info['id']))
+    cur.execute("UPDATE song SET songBoutDir = ? WHERE id = ?", (bout['Dir']['notes'], song_info['id']))
 
-    cur.execute("UPDATE song SET nbSongBoutUndir = ? WHERE id = ?", (bout['Undir']['nb_bout'], song_row['id']))
-    cur.execute("UPDATE song SET nbSongBoutDir = ? WHERE id = ?", (bout['Dir']['nb_bout'], song_row['id']))
+    cur.execute("UPDATE song SET nbSongBoutUndir = ? WHERE id = ?", (bout['Undir']['nb_bout'], song_info['id']))
+    cur.execute("UPDATE song SET nbSongBoutDir = ? WHERE id = ?", (bout['Dir']['nb_bout'], song_info['id']))
     conn.commit()
     break
 conn.close()
@@ -131,24 +131,24 @@ query = "SELECT * FROM song WHERE id =3"
 
 cur, conn, col_names = load.database(query)
 
-for song_row in cur.fetchall():
+for song_info in cur.fetchall():
 
-    syllables = song_row['songBoutUndir']
+    syllables = song_info['songBoutUndir']
     bout_list = syllables.split('*')[:-1]  # remove bout demarcation and put them in a list
 
     songbout_list = [bout for bout in bout_list if
-                     unique_nb_notes_in_bout(song_row['songNote'], bout)]  # only extracts bouts with song notes
+                     unique_nb_notes_in_bout(song_info['songNote'], bout)]  # only extracts bouts with song notes
 
     # Calculate the mean number of introductory notes
-    mean_nb_intro_notes = mean(list(map(lambda x: x.count(song_row['introNotes']), songbout_list)))
+    mean_nb_intro_notes = mean(list(map(lambda x: x.count(song_info['introNotes']), songbout_list)))
 
     # Calculate song/call proportions (# of calls / # of song notes)
-    song_call_prop = total_nb_notes_in_bout(song_row['calls'], songbout_list) / total_nb_notes_in_bout(
-        song_row['songNote'], songbout_list)
+    song_call_prop = total_nb_notes_in_bout(song_info['calls'], songbout_list) / total_nb_notes_in_bout(
+        song_info['songNote'], songbout_list)
 
     # Note sequence for the current song bout
-    note_seq = list(song_row['introNotes'] + song_row['songNote'] + song_row['calls'] + '*')  # arrange in this order
-    bout = song_row['songBoutUndir']
+    note_seq = list(song_info['introNotes'] + song_info['songNote'] + song_info['calls'] + '*')  # arrange in this order
+    bout = song_info['songBoutUndir']
     bout = sorted(set(bout))
     note_seq = [note for note in note_seq if note in bout]  # only count the notes that actually appeared in the bout
     note_seq = ['i', 'a', 'b', 'c', 'd', 'j', 'k', 'm', '*']

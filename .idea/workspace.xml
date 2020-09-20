@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/snr_analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/load.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/get_song_bout_v3.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_song_bout_v3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/snr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/snr_analysis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -294,6 +294,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -443,7 +446,9 @@
       <workItem from="1599254502373" duration="86000" />
       <workItem from="1599522296108" duration="14000" />
       <workItem from="1599522415539" duration="2000" />
-      <workItem from="1600218077098" duration="2211000" />
+      <workItem from="1600218077098" duration="2957000" />
+      <workItem from="1600222214465" duration="1024000" />
+      <workItem from="1600370960615" duration="22000" />
     </task>
     <task id="LOCAL-00017" summary="revised the path setting">
       <created>1593913985676</created>
@@ -876,10 +881,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="1049" y="343" key="ExecutionTargetDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596086293798" />
-    <state x="346" y="615" key="FileChooserDialogImpl" timestamp="1597201595033">
+    <state x="346" y="615" key="FileChooserDialogImpl" timestamp="1600370970166">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="346" y="615" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597201595033" />
+    <state x="346" y="615" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600370970166" />
     <state width="2505" height="315" key="GridCell.Tab.0.bottom" timestamp="1597376626074">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -962,11 +967,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
-    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1599522303945">
+    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1600370960864">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1595031595493" />
-    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1599522303945" />
+    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600370960864" />
     <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592372967067" />
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1594964072416">
       <screen x="-3840" y="262" width="2560" height="1400" />
@@ -981,11 +986,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597895687313" />
-    <state x="-2833" y="242" width="1320" height="909" key="dock-window-1" timestamp="1600220293850">
+    <state x="-2827" y="638" width="1320" height="909" key="dock-window-1" timestamp="1600370989964">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="385" y="-19" width="2026" height="1079" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1596846007674" />
-    <state x="-2833" y="242" width="1320" height="909" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600220293850" />
+    <state x="-2827" y="638" width="1320" height="909" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600370989964" />
     <state x="-3277" y="429" width="1641" height="807" maximized="true" key="dock-window-2" timestamp="1596084409925">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
