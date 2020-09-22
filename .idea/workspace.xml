@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/get_song_bout_v3.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_song_bout_v3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/snr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/snr_analysis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -294,9 +293,6 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -449,6 +445,9 @@
       <workItem from="1600218077098" duration="2957000" />
       <workItem from="1600222214465" duration="1024000" />
       <workItem from="1600370960615" duration="22000" />
+      <workItem from="1600659268467" duration="1740000" />
+      <workItem from="1600720459230" duration="59000" />
+      <workItem from="1600746706122" duration="390000" />
     </task>
     <task id="LOCAL-00017" summary="revised the path setting">
       <created>1593913985676</created>
@@ -967,11 +966,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
-    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1600370960864">
+    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1600720459301">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1595031595493" />
-    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600370960864" />
+    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600720459301" />
     <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592372967067" />
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1594964072416">
       <screen x="-3840" y="262" width="2560" height="1400" />
