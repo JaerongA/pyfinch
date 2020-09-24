@@ -8,6 +8,7 @@ from load_intan_rhd_format.load_intan_rhd_format import read_data
 import pandas as pd
 import numpy as np
 import scipy.io
+from spike.load import read_spk_txt
 import matplotlib.pyplot as plt
 
 query = "SELECT * FROM cluster WHERE id = '22'"
@@ -18,15 +19,9 @@ for cell_info in cur.fetchall():
     print('Loading... ' + cell_name)
     mat_file = list(cell_path.glob('*' + cell_info['channel'] + '(merged).mat'))[0]
     channel_info = scipy.io.loadmat(mat_file)
-    # print(channel_info.keys())
     spk_file = list(cell_path.glob('*' + cell_info['channel'] + '(merged).txt'))[0]
-    print(spk_file)
+    unit_nb = int(cell_info['unit'][-2:])
 
+    # Read from the cluster .txt file
 
-    def read_spk_file(spk_file: str):
-        # Column header of the input .txt
-        # ['Channel', 'Unit', 'Timestamp']
-        # Column 3 to 35 stores waveforms
-
-        spk_info = np.loadtxt(spk_file, delimiter='\t', skiprows=1)  # skip header
-        spk_
+    spk_ts, spk_waveform, nb_spk = read_spk_txt(spk_file, unit_nb)

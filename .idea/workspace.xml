@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/spike/load.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/snr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/snr_analysis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/song_analysis/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/song_analysis/parameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spike/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/spike/parameters.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -448,7 +451,8 @@
       <workItem from="1600659268467" duration="1740000" />
       <workItem from="1600720459230" duration="59000" />
       <workItem from="1600746706122" duration="1703000" />
-      <workItem from="1600831726138" duration="1597000" />
+      <workItem from="1600831726138" duration="3235000" />
+      <workItem from="1600918315397" duration="1304000" />
     </task>
     <task id="LOCAL-00017" summary="revised the path setting">
       <created>1593913985676</created>
@@ -870,11 +874,6 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2138" height="582" key="DebuggerActiveHint/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593751962392" />
-    <state width="2138" height="582" key="DebuggerActiveHint/0.0.2560.1400@0.0.2560.1400" timestamp="1592193430078" />
-    <state x="93" y="93" width="2375" height="1215" key="DiffContextDialog" timestamp="1592192865538">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="93" y="93" width="2375" height="1215" key="DiffContextDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592192865538" />
     <state x="1049" y="343" key="ExecutionTargetDialog" timestamp="1596086293798">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -964,11 +963,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
-    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1600831798825">
+    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1600918317668">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1595031595493" />
-    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600831798825" />
+    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600918317668" />
     <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592372967067" />
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1594964072416">
       <screen x="-3840" y="262" width="2560" height="1400" />
@@ -979,10 +978,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="1078" y="373" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594179031953" />
-    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1597895687313">
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1600919618319">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597895687313" />
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600919618319" />
     <state x="-2827" y="638" width="1320" height="909" key="dock-window-1" timestamp="1600370989964">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
