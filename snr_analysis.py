@@ -23,5 +23,8 @@ for cell_info in cur.fetchall():
     unit_nb = int(cell_info['unit'][-2:])
 
     # Read from the cluster .txt file
-
     spk_ts, spk_waveform, nb_spk = read_spk_txt(spk_file, unit_nb)
+
+    for wave in spk_waveform:
+        print(wave.shape)
+        break

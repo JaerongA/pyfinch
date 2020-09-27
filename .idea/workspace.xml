@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/spike/load.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/snr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/snr_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/song_analysis/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/song_analysis/parameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spike/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/spike/parameters.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -296,6 +293,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -452,14 +452,7 @@
       <workItem from="1600720459230" duration="59000" />
       <workItem from="1600746706122" duration="1703000" />
       <workItem from="1600831726138" duration="3235000" />
-      <workItem from="1600918315397" duration="1304000" />
-    </task>
-    <task id="LOCAL-00017" summary="revised the path setting">
-      <created>1593913985676</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1593913985676</updated>
+      <workItem from="1600918315397" duration="3526000" />
     </task>
     <task id="LOCAL-00018" summary="update the project in .json">
       <created>1593914028862</created>
@@ -797,7 +790,14 @@
       <option name="project" value="LOCAL" />
       <updated>1598586772369</updated>
     </task>
-    <option name="localTasksCounter" value="66" />
+    <task id="LOCAL-00066" summary="snr analysis">
+      <created>1600919640437</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1600919640437</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -818,7 +818,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="update the project in .json" />
     <MESSAGE value="Calculate duration for all syllables regardless of its type" />
     <MESSAGE value="Based on SAP features, motif syllables only" />
     <MESSAGE value="07/04/2020" />
@@ -843,7 +842,8 @@
     <MESSAGE value="added a note sequence" />
     <MESSAGE value="plot transition matrix" />
     <MESSAGE value="syllable color scheme added" />
-    <option name="LAST_COMMIT_MESSAGE" value="syllable color scheme added" />
+    <MESSAGE value="snr analysis" />
+    <option name="LAST_COMMIT_MESSAGE" value="snr analysis" />
   </component>
   <component name="WindowStateProjectService">
     <state x="773" y="276" key="#SQL_Dialects" timestamp="1595728466323">
@@ -864,12 +864,11 @@
     </state>
     <state x="-2949" y="927" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965258023" />
     <state x="-2790" y="303" width="1407" height="685" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597374350414" />
-    <state x="1140" y="329" width="1262" height="716" key="#xdebugger.evaluate/0.0.2560.1400@0.0.2560.1400" timestamp="1592375822627" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1598586771852">
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1600919639934">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-3263" y="425" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1597636743087" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1598586771852" />
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600919639934" />
     <state width="2138" height="582" key="DebuggerActiveHint" timestamp="1593751962392">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -887,49 +886,41 @@
     </state>
     <state width="2505" height="324" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
     <state width="2505" height="315" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597376626074" />
-    <state width="2505" height="323" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
     <state width="2505" height="315" key="GridCell.Tab.0.center" timestamp="1597376626074">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
     <state width="2505" height="315" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597376626074" />
-    <state width="2505" height="323" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
     <state width="2505" height="315" key="GridCell.Tab.0.left" timestamp="1597376626074">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
     <state width="2505" height="315" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597376626074" />
-    <state width="2505" height="323" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
     <state width="2505" height="315" key="GridCell.Tab.0.right" timestamp="1597376626074">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
     <state width="2505" height="315" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597376626074" />
-    <state width="2505" height="323" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
     <state width="2505" height="315" key="GridCell.Tab.1.bottom" timestamp="1597376626074">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
     <state width="2505" height="315" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597376626074" />
-    <state width="2505" height="323" key="GridCell.Tab.1.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153628" />
     <state width="2505" height="315" key="GridCell.Tab.1.center" timestamp="1597376626074">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
     <state width="2505" height="315" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597376626074" />
-    <state width="2505" height="323" key="GridCell.Tab.1.center/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
     <state width="2505" height="315" key="GridCell.Tab.1.left" timestamp="1597376626074">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
     <state width="2505" height="315" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597376626074" />
-    <state width="2505" height="323" key="GridCell.Tab.1.left/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153627" />
     <state width="2505" height="315" key="GridCell.Tab.1.right" timestamp="1597376626074">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
     <state width="2505" height="315" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597376626074" />
-    <state width="2505" height="323" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1592376153628" />
     <state width="237" height="549" key="HiddenNamespacesPopup" timestamp="1597119712725">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -963,12 +954,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
-    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1600918317668">
+    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1601138403517">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1595031595493" />
-    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600918317668" />
-    <state x="973" y="471" key="com.intellij.ide.util.TipDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1592372967067" />
+    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601138403517" />
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1594964072416">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
