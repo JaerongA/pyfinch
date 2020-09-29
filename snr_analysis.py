@@ -5,9 +5,9 @@ Calculates a spike signal-to-noise ratio (SNR) relative to the background
 
 from database import load
 from load_intan_rhd_format.load_intan_rhd_format import read_data
-import pandas as pd
 import numpy as np
 import scipy.io
+from spike.parameters import sample_rate
 from spike.load import read_spk_txt
 import matplotlib.pyplot as plt
 
@@ -25,6 +25,24 @@ for cell_info in cur.fetchall():
     # Read from the cluster .txt file
     spk_ts, spk_waveform, nb_spk = read_spk_txt(spk_file, unit_nb)
 
+
+    # Plot the individual waveforms
+    plt.figure(figsize=(5, 4))
+    ax = plt.subplot(111)
+    x_time = np.arange(0, spk_waveform.shape[1]) / sample_rate * 1E3  # x-axis in miliseconds
     for wave in spk_waveform:
-        print(wave.shape)
-        break
+        # print(wave.shape)
+        ax.plot(x_time, wave, color='k', lw=0.2)
+    ax.spines['right'].set_visible(False), ax.spines['top'].set_visible(False)
+    ax.set_xlabel('Time (ms)')
+    ax.set_ylabel('Amplitude (µV)')
+    ax.plot(x_time, np.nanmean(spk_waveform, axis=0), color='r', lw=2)  # indicate the avg waveform
+    # ax.plot(x_time, np.nanmedian(spk_waveform, axis=0), color='r', lw=2)  # indicate the median waveform
+    plt.xlim([-0.05, 1])
+    plt.title(cell_name)
+    plt.show()
+
+    # Waveform analysis (based on averaged waveform)
+    avg_waveform = np.nanmean(spk_waveform, axis=0)
+    spk_height = np.abs(np.max(avg_waveform) - np.min(avg_waveform))  # in microseconds
+    spk_width = ((np.argmax(avg_waveform) - np.argmin(avg_waveform)) +1) * (1/sample_rate) * 1E6  # in microseconds
