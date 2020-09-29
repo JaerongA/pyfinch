@@ -5,7 +5,7 @@ performs syllable sequence analysis and calculates transition entropy
 
 import os
 from summary import load
-from song_analysis.parameters import *
+from song.parameters import *
 import scipy.io
 import numpy as np
 

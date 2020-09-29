@@ -10,7 +10,7 @@ from math import ceil
 import numpy as np
 from scipy.signal import hilbert
 from matplotlib import collections as mc
-from song_analysis.parameters import *
+from song.parameters import *
 
 
 def find_data_dir():

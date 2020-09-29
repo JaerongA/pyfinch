@@ -5,7 +5,7 @@ Separates song bouts (*) and store them in the database
 
 from database import load
 from pathlib import Path
-from song_analysis.parameters import *
+from song.parameters import *
 import scipy.io
 import numpy as np
 import sqlite3

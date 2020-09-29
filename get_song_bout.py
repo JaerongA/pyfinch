@@ -5,7 +5,7 @@ Separates song bouts (*) and store them in .json in song folders
 
 import os
 from summary import load
-from song_analysis.parameters import *
+from song.parameters import *
 import scipy.io
 import numpy as np
 from database.load import database
