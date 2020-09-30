@@ -3,7 +3,7 @@ By Jaerong
 Calculates a spike signal-to-noise ratio (SNR) relative to the background
 """
 
-from database import load
+from database import load, save
 from load_intan_rhd_format.load_intan_rhd_format import read_data
 import numpy as np
 import scipy.io
@@ -22,9 +22,11 @@ for cell_info in cur.fetchall():
     spk_file = list(cell_path.glob('*' + cell_info['channel'] + '(merged).txt'))[0]
     unit_nb = int(cell_info['unit'][-2:])
 
+    # Extract the raw neural trace (from the .mat file)
+    raw_trace = channel_info['amplifier_data'][0]
+
     # Read from the cluster .txt file
     spk_ts, spk_waveform, nb_spk = read_spk_txt(spk_file, unit_nb)
-
 
     # Plot the individual waveforms
     plt.figure(figsize=(5, 4))
@@ -45,4 +47,12 @@ for cell_info in cur.fetchall():
     # Waveform analysis (based on averaged waveform)
     avg_waveform = np.nanmean(spk_waveform, axis=0)
     spk_height = np.abs(np.max(avg_waveform) - np.min(avg_waveform))  # in microseconds
-    spk_width = ((np.argmax(avg_waveform) - np.argmin(avg_waveform)) +1) * (1/sample_rate) * 1E6  # in microseconds
+    spk_width = ((np.argmax(avg_waveform) - np.argmin(avg_waveform)) + 1) * (1 / sample_rate) * 1E6  # in microseconds
+
+    # pathlib.Path(project_path + '\Analysis\WaveformAnalysis')
+    path_name = 'WaveformAnalysis'
+    save.make_save_dir(path_name, )
+
+    # Calculate the SNR (signal-to-noise ratio in dB)
+    # variance of the signal (waveform) divided by the total neural trace
+    snr = 10 * np.log10(np.var(avg_waveform) / np.var(raw_trace))  # in dB
