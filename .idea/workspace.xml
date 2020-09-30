@@ -2,18 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/spike/analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/get_song_bout.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_song_bout.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/get_song_bout_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_song_bout_v2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/get_song_bout_v3.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_song_bout_v3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intan_to_wav_converter.py" beforeDir="false" afterPath="$PROJECT_DIR$/intan_to_wav_converter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/snr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/snr_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/song_analysis/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/song/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/song_analysis/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/song/functions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/song_analysis/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/song/parameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/song_analysis/syllable_sequence_analysis2.py" beforeDir="false" afterPath="$PROJECT_DIR$/song/syllable_sequence_analysis2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spike/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/spike/load.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/summary/save.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/save.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/syllable_duration_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_duration_analysis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,16 +108,16 @@
     </option>
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="H:\Box\PythonToolbox\Deafening" />
-      <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="H:\Box\PythonToolbox\Deafening\database" />
       <recent name="H:\Box\PythonToolbox\Deafening" />
       <recent name="H:\Box\PythonToolbox\Deafening\summary" />
       <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
       <recent name="H:\Box\PythonToolbox\Deafening\load_intan_rhd_format\intanutil" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="H:\Box\PythonToolbox\Deafening" />
+      <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
     </key>
   </component>
   <component name="RunManager" selected="Python.snr_analysis">
@@ -463,7 +455,7 @@
       <workItem from="1601138403442" duration="599000" />
       <workItem from="1601263749057" duration="5230000" />
       <workItem from="1601330056672" duration="17000" />
-      <workItem from="1601349265070" duration="2058000" />
+      <workItem from="1601349265070" duration="4964000" />
     </task>
     <task id="LOCAL-00018" summary="update the project in .json">
       <created>1593914028862</created>
@@ -1000,10 +992,10 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3493" y="387" width="1803" height="1103" key="dock-window-4/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593913336759" />
-    <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1601266691740">
+    <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1601352362443">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="479" y="429" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601266691740" />
+    <state x="479" y="429" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601352362443" />
     <state x="-3005" y="623" width="875" height="663" key="recent.locations.popup" timestamp="1594964061601">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -1032,7 +1024,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/syllable_duration_analysis.py</url>
-          <line>178</line>
+          <line>176</line>
           <option name="timeStamp" value="109" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">

@@ -7,10 +7,8 @@ Calculation based on EventInfo.m
 import os
 
 import pandas as pd
-import sys
 from summary.read_config import parser
 from summary import load
-from summary import save
 from datetime import date
 import scipy.io
 from math import ceil
