@@ -3,22 +3,20 @@ By Jaerong
 Calculates a spike signal-to-noise ratio (SNR) relative to the background
 """
 
-
 import pathlib
 from datetime import date
 from database import load
 
-# print(project_path)
-today = date.today()
 
-
-def make_save_dir(path_name, add_date=True):
+def make_save_dir(dir_name, add_date=True):
+    import os
     project_path = load.project()
     # print(project_path)
 
-    save_path = pathlib.Path(project_path + '\\Analysis\\' + path_name)
+    save_path = project_path + '\\Analysis\\' + dir_name
 
     if add_date:
+        today = date.today()
         save_path = save_path + '\\' + today.strftime("%Y-%m-%d")
 
     print(save_path)
@@ -26,7 +24,7 @@ def make_save_dir(path_name, add_date=True):
         os.mkdir(save_path)
 
 
-def file(path):
+def figure(path):
     pass
 
 
@@ -36,6 +34,3 @@ def save_bout(filename, data):
     with open(filename, 'w') as f:
         json.dump(data, f)
 
-
-if __name__ == '__main__':
-    make_save_dir(path_name, date)

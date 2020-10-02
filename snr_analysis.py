@@ -49,10 +49,10 @@ for cell_info in cur.fetchall():
     spk_height = np.abs(np.max(avg_waveform) - np.min(avg_waveform))  # in microseconds
     spk_width = ((np.argmax(avg_waveform) - np.argmin(avg_waveform)) + 1) * (1 / sample_rate) * 1E6  # in microseconds
 
-    # pathlib.Path(project_path + '\Analysis\WaveformAnalysis')
-    path_name = 'WaveformAnalysis'
-    save.make_save_dir(path_name, )
-
     # Calculate the SNR (signal-to-noise ratio in dB)
     # variance of the signal (waveform) divided by the total neural trace
     snr = 10 * np.log10(np.var(avg_waveform) / np.var(raw_trace))  # in dB
+
+    # Create a folder to store output files
+    dir_name = 'WaveformAnalysis'
+    save.make_save_dir(dir_name)
