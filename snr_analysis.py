@@ -29,7 +29,7 @@ for cell_info in cur.fetchall():
     spk_ts, spk_waveform, nb_spk = read_spk_txt(spk_file, unit_nb)
 
     # Plot the individual waveforms
-    plt.figure(figsize=(5, 4))
+    fig = plt.figure(figsize=(5, 4))
     ax = plt.subplot(111)
     x_time = np.arange(0, spk_waveform.shape[1]) / sample_rate * 1E3  # x-axis in miliseconds
     for wave in spk_waveform:
@@ -55,4 +55,7 @@ for cell_info in cur.fetchall():
 
     # Create a folder to store output files
     dir_name = 'WaveformAnalysis'
-    save.make_save_dir(dir_name)
+    save_path = save.make_save_dir(dir_name)
+
+    # Save figure
+    save.figure(fig, save_path, cell_name)
