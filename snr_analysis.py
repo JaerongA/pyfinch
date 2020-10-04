@@ -10,6 +10,7 @@ import scipy.io
 from spike.parameters import sample_rate
 from spike.load import read_spk_txt
 import matplotlib.pyplot as plt
+from utilities import draw
 
 query = "SELECT * FROM cluster WHERE id = '22'"
 cur, conn, col_names = load.database(query)
@@ -28,22 +29,6 @@ for cell_info in cur.fetchall():
     # Read from the cluster .txt file
     spk_ts, spk_waveform, nb_spk = read_spk_txt(spk_file, unit_nb)
 
-    # Plot the individual waveforms
-    fig = plt.figure(figsize=(5, 4))
-    ax = plt.subplot(111)
-    x_time = np.arange(0, spk_waveform.shape[1]) / sample_rate * 1E3  # x-axis in miliseconds
-    for wave in spk_waveform:
-        # print(wave.shape)
-        ax.plot(x_time, wave, color='k', lw=0.2)
-    ax.spines['right'].set_visible(False), ax.spines['top'].set_visible(False)
-    ax.set_xlabel('Time (ms)')
-    ax.set_ylabel('Amplitude (µV)')
-    ax.plot(x_time, np.nanmean(spk_waveform, axis=0), color='r', lw=2)  # indicate the avg waveform
-    # ax.plot(x_time, np.nanmedian(spk_waveform, axis=0), color='r', lw=2)  # indicate the median waveform
-    plt.xlim([-0.05, 1])
-    plt.title(cell_name)
-    plt.show()
-
     # Waveform analysis (based on averaged waveform)
     avg_waveform = np.nanmean(spk_waveform, axis=0)
     spk_height = np.abs(np.max(avg_waveform) - np.min(avg_waveform))  # in microseconds
@@ -53,9 +38,30 @@ for cell_info in cur.fetchall():
     # variance of the signal (waveform) divided by the total neural trace
     snr = 10 * np.log10(np.var(avg_waveform) / np.var(raw_trace))  # in dB
 
+    # Plot the individual waveforms
+    fig = plt.figure(figsize=(6, 4))
+    fig.suptitle(cell_name)
+    ax = plt.subplot(121)
+    x_time = np.arange(0, spk_waveform.shape[1]) / sample_rate * 1E3  # x-axis in miliseconds
+    for wave in spk_waveform:
+        ax.plot(x_time, wave, color='k', lw=0.2)
+    ax.spines['right'].set_visible(False), ax.spines['top'].set_visible(False)
+    ax.set_xlabel('Time (ms)')
+    ax.set_ylabel('Amplitude (µV)')
+    ax.plot(x_time, np.nanmean(spk_waveform, axis=0), color='r', lw=2)  # indicate the avg waveform
+    # ax.plot(x_time, np.nanmedian(spk_waveform, axis=0), color='r', lw=2)  # indicate the median waveform
+    plt.xlim([-0.05, 1])
+
+    plt.subplot(122)
+    plt.axis('off')
+    plt.text(0.1, 0.1, 'SNR = {:.2f} dB'.format(snr))
+    plt.text(0.1, 0.3, 'Spk Height = {:.2f} µV'.format(spk_height))
+    plt.text(0.1, 0.5, 'Spk Width = {:.2f} µs'.format(spk_width))
+    draw.set_fig_size(4, 2.8)  # set the physical size of the figure in inches (width, height)
     # Create a folder to store output files
     dir_name = 'WaveformAnalysis'
     save_path = save.make_save_dir(dir_name)
 
     # Save figure
-    save.figure(fig, save_path, cell_name)
+    save.figure(fig, save_path, cell_name, ext='.pdf')
+    plt.show()

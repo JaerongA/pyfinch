@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utilities/draw.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/save.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/save.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/snr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/snr_analysis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -455,14 +457,8 @@
       <workItem from="1601330056672" duration="17000" />
       <workItem from="1601349265070" duration="4964000" />
       <workItem from="1601609794503" duration="4674000" />
-      <workItem from="1601696556847" duration="1023000" />
-    </task>
-    <task id="LOCAL-00019" summary="Calculate duration for all syllables regardless of its type">
-      <created>1593914076236</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1593914076236</updated>
+      <workItem from="1601696556847" duration="4538000" />
+      <workItem from="1601782175097" duration="1475000" />
     </task>
     <task id="LOCAL-00020" summary="Based on SAP features, motif syllables only">
       <created>1593914098689</created>
@@ -800,7 +796,14 @@
       <option name="project" value="LOCAL" />
       <updated>1601697516077</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary=".">
+      <created>1601697592924</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1601697592924</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -839,14 +842,14 @@
     <MESSAGE value="added spectrogram" />
     <MESSAGE value="separates song bouts" />
     <MESSAGE value="add db" />
-    <MESSAGE value="." />
     <MESSAGE value="changed the database loading scheme" />
     <MESSAGE value="updated mean intro notes, song/call prop" />
     <MESSAGE value="added a note sequence" />
     <MESSAGE value="plot transition matrix" />
     <MESSAGE value="syllable color scheme added" />
     <MESSAGE value="snr analysis" />
-    <option name="LAST_COMMIT_MESSAGE" value="snr analysis" />
+    <MESSAGE value="." />
+    <option name="LAST_COMMIT_MESSAGE" value="." />
   </component>
   <component name="WindowStateProjectService">
     <state x="773" y="276" key="#SQL_Dialects" timestamp="1595728466323">
@@ -872,6 +875,10 @@
     </state>
     <state x="-3263" y="425" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1597636743087" />
     <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601697592452" />
+    <state width="314" height="242" key="DatabaseViewActions_Filter" timestamp="1601782217542">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="314" height="242" key="DatabaseViewActions_Filter/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601782217542" />
     <state width="2138" height="582" key="DebuggerActiveHint" timestamp="1593751962392">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -884,46 +891,46 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="346" y="615" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600370970166" />
-    <state width="2505" height="315" key="GridCell.Tab.0.bottom" timestamp="1601697495550">
+    <state width="2505" height="315" key="GridCell.Tab.0.bottom" timestamp="1601702700255">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
-    <state width="2505" height="315" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601697495550" />
-    <state width="2505" height="315" key="GridCell.Tab.0.center" timestamp="1601697495550">
+    <state width="2505" height="315" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601702700255" />
+    <state width="2505" height="315" key="GridCell.Tab.0.center" timestamp="1601702700255">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
-    <state width="2505" height="315" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601697495550" />
-    <state width="2505" height="315" key="GridCell.Tab.0.left" timestamp="1601697495550">
+    <state width="2505" height="315" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601702700255" />
+    <state width="2505" height="315" key="GridCell.Tab.0.left" timestamp="1601702700255">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
-    <state width="2505" height="315" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601697495550" />
-    <state width="2505" height="315" key="GridCell.Tab.0.right" timestamp="1601697495550">
+    <state width="2505" height="315" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601702700255" />
+    <state width="2505" height="315" key="GridCell.Tab.0.right" timestamp="1601702700255">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
-    <state width="2505" height="315" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601697495550" />
-    <state width="2505" height="315" key="GridCell.Tab.1.bottom" timestamp="1601697495551">
+    <state width="2505" height="315" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601702700255" />
+    <state width="2505" height="315" key="GridCell.Tab.1.bottom" timestamp="1601702700255">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
-    <state width="2505" height="315" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601697495551" />
-    <state width="2505" height="315" key="GridCell.Tab.1.center" timestamp="1601697495550">
+    <state width="2505" height="315" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601702700255" />
+    <state width="2505" height="315" key="GridCell.Tab.1.center" timestamp="1601702700255">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
-    <state width="2505" height="315" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601697495550" />
-    <state width="2505" height="315" key="GridCell.Tab.1.left" timestamp="1601697495550">
+    <state width="2505" height="315" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601702700255" />
+    <state width="2505" height="315" key="GridCell.Tab.1.left" timestamp="1601702700255">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
-    <state width="2505" height="315" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601697495550" />
-    <state width="2505" height="315" key="GridCell.Tab.1.right" timestamp="1601697495550">
+    <state width="2505" height="315" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601702700255" />
+    <state width="2505" height="315" key="GridCell.Tab.1.right" timestamp="1601702700255">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="324" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965862507" />
-    <state width="2505" height="315" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601697495550" />
+    <state width="2505" height="315" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601702700255" />
     <state width="237" height="549" key="HiddenNamespacesPopup" timestamp="1597119712725">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -957,11 +964,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
-    <state x="-2867" y="733" width="615" height="404" key="com.intellij.ide.util.TipDialog" timestamp="1601696597353">
-      <screen x="-3840" y="262" width="2560" height="1400" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1601782244880">
+      <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1601330065273" />
-    <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601696597353" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601782244880" />
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1594964072416">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -991,10 +998,10 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3493" y="387" width="1803" height="1103" key="dock-window-4/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593913336759" />
-    <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1601612299445">
+    <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1601783505726">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="479" y="429" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601612299445" />
+    <state x="479" y="429" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601783505726" />
     <state x="-3005" y="623" width="875" height="663" key="recent.locations.popup" timestamp="1594964061601">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>

@@ -28,10 +28,17 @@ def make_save_dir(dir_name, add_date=True):
 
 def figure(fig, save_path, title, ext='.png'):
     import matplotlib.pyplot as plt
-    fig_name = Path(save_path + '/' + title + ext)
-    plt.savefig(fig_name, transparent=True)
+    import matplotlib
+    # Make the text in .pdf editable
+    # pdf.fonttype : 42 # Output Type 3 (Type3) or Type 42 (TrueType)
+    matplotlib.rcParams['pdf.fonttype'] = 42
+    matplotlib.rcParams['ps.fonttype'] = 42
+    # Make Arial the default font
+    matplotlib.rcParams['font.sans-serif'] = "Arial"
+    matplotlib.rcParams['font.family'] = "sans-serif"
 
-    pass
+    fig_name = save_path / (title + ext)
+    plt.savefig(fig_name, transparent=True)
 
 
 def save_bout(filename, data):
