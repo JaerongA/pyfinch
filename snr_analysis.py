@@ -39,7 +39,7 @@ for cell_info in cur.fetchall():
     snr = 10 * np.log10(np.var(avg_waveform) / np.var(raw_trace))  # in dB
 
     # Plot the individual waveforms
-    fig = plt.figure(figsize=(6, 4))
+    fig = plt.figure()
     fig.suptitle(cell_name)
     ax = plt.subplot(121)
     x_time = np.arange(0, spk_waveform.shape[1]) / sample_rate * 1E3  # x-axis in miliseconds
@@ -50,18 +50,32 @@ for cell_info in cur.fetchall():
     ax.set_ylabel('Amplitude (µV)')
     ax.plot(x_time, np.nanmean(spk_waveform, axis=0), color='r', lw=2)  # indicate the avg waveform
     # ax.plot(x_time, np.nanmedian(spk_waveform, axis=0), color='r', lw=2)  # indicate the median waveform
-    plt.xlim([-0.05, 1])
+    plt.xlim([-0.2, 1])
 
+    # axis_convert = lambda x: ((x/10) + (10 - (x/10) % 10)) * 10
+    # ylim =list(map(axis_convert, list(ax.get_ylim())))
+    # ax.set_ylim(ylim)
+
+
+    # Plot a scale bar
+    ylim = ax.get_ylim()
+    plt.axis('off')
+    plt.plot([0, 0.5], [ax.get_ylim()[0], ax.get_ylim()[0]], 'k', lw=2)  # for amplitude
+    plt.text(-0.25, sum(ax.get_ylim()), '500 µV', rotation=90)
+    plt.plot([-0.1, -0.1], [-250, 250], 'k', lw=2)  # for time
+    plt.text(0.12, ax.get_ylim()[0]*1.01, '500 µs')
+
+    # Print out text
     plt.subplot(122)
     plt.axis('off')
-    plt.text(0.1, 0.1, 'SNR = {:.2f} dB'.format(snr))
-    plt.text(0.1, 0.3, 'Spk Height = {:.2f} µV'.format(spk_height))
-    plt.text(0.1, 0.5, 'Spk Width = {:.2f} µs'.format(spk_width))
-    draw.set_fig_size(4, 2.8)  # set the physical size of the figure in inches (width, height)
+    plt.text(0.1, 0.2, 'SNR = {:.2f} dB'.format(snr), fontsize=12)
+    plt.text(0.1, 0.4, 'Spk Height = {:.2f} µV'.format(spk_height), fontsize=12)
+    plt.text(0.1, 0.6, 'Spk Width = {:.2f} µs'.format(spk_width), fontsize=12)
+    draw.set_fig_size(4.2, 2.8)  # set the physical size of the figure in inches (width, height)
     # Create a folder to store output files
     dir_name = 'WaveformAnalysis'
     save_path = save.make_save_dir(dir_name)
 
     # Save figure
-    save.figure(fig, save_path, cell_name, ext='.pdf')
+    # save.figure(fig, save_path, cell_name, ext='.pdf')
     plt.show()
