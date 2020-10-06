@@ -12,7 +12,9 @@ from spike.load import read_spk_txt
 import matplotlib.pyplot as plt
 from utilities import draw
 
-query = "SELECT * FROM cluster WHERE id = '22'"
+## Load from the database
+# query = "SELECT * FROM cluster WHERE id = '22'"
+query = "SELECT * FROM cluster WHERE ephysOK = 1 AND id == 11"
 cur, conn, col_names = load.database(query)
 
 for cell_info in cur.fetchall():
@@ -32,7 +34,7 @@ for cell_info in cur.fetchall():
     # Waveform analysis (based on averaged waveform)
     avg_waveform = np.nanmean(spk_waveform, axis=0)
     spk_height = np.abs(np.max(avg_waveform) - np.min(avg_waveform))  # in microseconds
-    spk_width = ((np.argmax(avg_waveform) - np.argmin(avg_waveform)) + 1) * (1 / sample_rate) * 1E6  # in microseconds
+    spk_width = abs(((np.argmax(avg_waveform) - np.argmin(avg_waveform)) + 1)) * (1 / sample_rate) * 1E6  # in microseconds
 
     # Calculate the SNR (signal-to-noise ratio in dB)
     # variance of the signal (waveform) divided by the total neural trace
@@ -56,26 +58,27 @@ for cell_info in cur.fetchall():
     # ylim =list(map(axis_convert, list(ax.get_ylim())))
     # ax.set_ylim(ylim)
 
-
     # Plot a scale bar
-    ylim = ax.get_ylim()
-    plt.axis('off')
-    plt.plot([0, 0.5], [ax.get_ylim()[0], ax.get_ylim()[0]], 'k', lw=2)  # for amplitude
+
+    plt.plot([0, 0.5], [ax.get_ylim()[0], ax.get_ylim()[0]], 'k', lw=2)  # for time
     plt.text(-0.25, sum(ax.get_ylim()), '500 µV', rotation=90)
-    plt.plot([-0.1, -0.1], [-250, 250], 'k', lw=2)  # for time
-    plt.text(0.12, ax.get_ylim()[0]*1.01, '500 µs')
+    plt.plot([-0.1, -0.1], [-250, 250], 'k', lw=2)  # for amplitude
+    plt.text(0.12, ax.get_ylim()[0] * 1.05, '500 µs')
+    plt.axis('off')
 
     # Print out text
     plt.subplot(122)
     plt.axis('off')
-    plt.text(0.1, 0.2, 'SNR = {:.2f} dB'.format(snr), fontsize=12)
-    plt.text(0.1, 0.4, 'Spk Height = {:.2f} µV'.format(spk_height), fontsize=12)
-    plt.text(0.1, 0.6, 'Spk Width = {:.2f} µs'.format(spk_width), fontsize=12)
-    draw.set_fig_size(4.2, 2.8)  # set the physical size of the figure in inches (width, height)
+    plt.text(0.1, 0.1, 'SNR = {:.2f} dB'.format(snr), fontsize=12)
+    plt.text(0.1, 0.3, 'Spk Height = {:.2f} µV'.format(spk_height), fontsize=12)
+    plt.text(0.1, 0.5, 'Spk Width = {:.2f} µs'.format(spk_width), fontsize=12)
+    plt.text(0.1, 0.7, '# of Spk = {}'.format(nb_spk), fontsize=12)
+    draw.set_fig_size(4.2, 2.5)  # set the physical size of the figure in inches (width, height)
     # Create a folder to store output files
     dir_name = 'WaveformAnalysis'
     save_path = save.make_save_dir(dir_name)
 
-    # Save figure
+    # Save figure (.pdf or .png)
     # save.figure(fig, save_path, cell_name, ext='.pdf')
+    save.figure(fig, save_path, cell_name, ext='.png')
     plt.show()

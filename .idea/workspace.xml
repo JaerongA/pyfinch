@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/utilities/draw.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/save.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/save.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/snr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/snr_analysis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -458,7 +456,9 @@
       <workItem from="1601349265070" duration="4964000" />
       <workItem from="1601609794503" duration="4674000" />
       <workItem from="1601696556847" duration="4538000" />
-      <workItem from="1601782175097" duration="1475000" />
+      <workItem from="1601782175097" duration="5277000" />
+      <workItem from="1601955183512" duration="219000" />
+      <workItem from="1601955498490" duration="1042000" />
     </task>
     <task id="LOCAL-00020" summary="Based on SAP features, motif syllables only">
       <created>1593914098689</created>
@@ -964,11 +964,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1601782244880">
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1601955499755">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1601330065273" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601782244880" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601955499755" />
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1594964072416">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -977,15 +977,15 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="1078" y="373" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594179031953" />
-    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1600919618319">
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601784529414">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600919618319" />
-    <state x="-2827" y="638" width="1320" height="909" key="dock-window-1" timestamp="1600370989964">
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601784529414" />
+    <state x="-3411" y="344" width="1807" height="1021" key="dock-window-1" timestamp="1601955827906">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="385" y="-19" width="2026" height="1079" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1596846007674" />
-    <state x="-2827" y="638" width="1320" height="909" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600370989964" />
+    <state x="-3411" y="344" width="1807" height="1021" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601955827906" />
     <state x="-3277" y="429" width="1641" height="807" maximized="true" key="dock-window-2" timestamp="1596084409925">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
