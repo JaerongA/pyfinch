@@ -57,7 +57,7 @@ def cell_info(row):
     elif len(str(row['taskSession'])) == 2:
         cell_taskSession = 'D' + str(str(row['taskSession']))
 
-    cell_name = [cell_id, row['birdID'], row['taskName'], cell_taskSession, row['sessionDate'],
+    cell_name = [cell_id, row['birdID'], row['taskName'], cell_taskSession, row['sessionDate'], row['site'],
                  row['channel'], row['unit']]
     cell_name = '-'.join(map(str, cell_name))
 

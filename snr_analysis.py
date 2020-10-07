@@ -4,7 +4,6 @@ Calculates a spike signal-to-noise ratio (SNR) relative to the background
 """
 
 from database import load, save
-from load_intan_rhd_format.load_intan_rhd_format import read_data
 import numpy as np
 import scipy.io
 from spike.parameters import sample_rate
@@ -13,8 +12,10 @@ import matplotlib.pyplot as plt
 from utilities import draw
 
 ## Load from the database
-# query = "SELECT * FROM cluster WHERE id = '22'"
-query = "SELECT * FROM cluster WHERE ephysOK = 1 AND id == 11"
+query = "SELECT * FROM cluster WHERE id = '34'"
+# query = "SELECT * FROM cluster WHERE ephysOK = 1 AND id == 12"
+# query = "SELECT * FROM cluster WHERE ephysOK = 1"
+
 cur, conn, col_names = load.database(query)
 
 for cell_info in cur.fetchall():
@@ -44,7 +45,8 @@ for cell_info in cur.fetchall():
     fig = plt.figure()
     fig.suptitle(cell_name)
     ax = plt.subplot(121)
-    x_time = np.arange(0, spk_waveform.shape[1]) / sample_rate * 1E3  # x-axis in miliseconds
+    x_time = np.arange(0, spk_waveform.shape[1]) / sample_rate * 1E3  # x-axis in ms
+
     for wave in spk_waveform:
         ax.plot(x_time, wave, color='k', lw=0.2)
     ax.spines['right'].set_visible(False), ax.spines['top'].set_visible(False)
@@ -60,10 +62,10 @@ for cell_info in cur.fetchall():
 
     # Plot a scale bar
 
-    plt.plot([0, 0.5], [ax.get_ylim()[0], ax.get_ylim()[0]], 'k', lw=2)  # for time
-    plt.text(-0.25, sum(ax.get_ylim()), '500 µV', rotation=90)
     plt.plot([-0.1, -0.1], [-250, 250], 'k', lw=2)  # for amplitude
-    plt.text(0.12, ax.get_ylim()[0] * 1.05, '500 µs')
+    plt.text(-0.25, -120, '500 µV', rotation=90)
+    plt.plot([0, 0.5], [ax.get_ylim()[0], ax.get_ylim()[0]], 'k', lw=2)  # for time
+    plt.text(0.15, ax.get_ylim()[0] * 1.05, '500 µs')
     plt.axis('off')
 
     # Print out text
@@ -79,6 +81,7 @@ for cell_info in cur.fetchall():
     save_path = save.make_save_dir(dir_name)
 
     # Save figure (.pdf or .png)
-    # save.figure(fig, save_path, cell_name, ext='.pdf')
-    save.figure(fig, save_path, cell_name, ext='.png')
+    # save.figure(fig, save_path, cell_name, ext='.pdf')  # in vector format
+    # save.figure(fig, save_path, cell_name, ext='.png')
     plt.show()
+    plt.close(fig)
