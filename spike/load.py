@@ -13,7 +13,7 @@ def read_spk_txt(spk_txt_file, unit_nb):
 
     spk_info = np.loadtxt(spk_txt_file, delimiter='\t', skiprows=1)  # skip header
     # select only the unit (there could be multiple isolated units in the same file)
-    spk_info[spk_info[:, 1] == unit_nb, :]
+    spk_info = spk_info[spk_info[:, 1] == unit_nb, :]
 
     spk_ts = spk_info[:, 2]  # spike time stamps
     spk_waveform = spk_info[:, 3:]  # spike waveform
