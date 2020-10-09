@@ -4,9 +4,6 @@
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/deafening.db" beforeDir="false" afterPath="$PROJECT_DIR$/database/deafening.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project.js" beforeDir="false" afterPath="$PROJECT_DIR$/convert_adbit2volts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/snr_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spike/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/spike/load.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -296,9 +293,6 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -466,6 +460,9 @@
       <workItem from="1601955183512" duration="219000" />
       <workItem from="1601955498490" duration="4526000" />
       <workItem from="1602042644166" duration="7359000" />
+      <workItem from="1602183629997" duration="621000" />
+      <workItem from="1602189723699" duration="617000" />
+      <workItem from="1602211169675" duration="3168000" />
     </task>
     <task id="LOCAL-00021" summary="07/04/2020">
       <created>1593914138821</created>
@@ -958,23 +955,23 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="1287" height="707" key="XDebugger.FullValuePopup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595735073448" />
-    <state x="1154" y="550" width="380" height="323" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1" timestamp="1597203195600">
+    <state x="1154" y="550" width="380" height="323" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1" timestamp="1602214635039">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1154" y="550" width="380" height="323" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597203195600" />
-    <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog" timestamp="1602046198800">
+    <state x="1154" y="550" width="380" height="323" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602214635039" />
+    <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog" timestamp="1602215326317">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602046198800" />
+    <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602215326317" />
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1" timestamp="1594781085042">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1602183639665">
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1602189723713">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1601330065273" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602183639665" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602189723713" />
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1594964072416">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -987,19 +984,19 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601784529414" />
-    <state x="276" y="106" width="1658" height="1167" key="dock-window-1" timestamp="1602046713714">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="385" y="-19" width="2026" height="1079" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1596846007674" />
-    <state x="276" y="106" width="1658" height="1167" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602046713714" />
-    <state x="-3277" y="429" width="1641" height="807" maximized="true" key="dock-window-2" timestamp="1596084409925">
+    <state x="-3351" y="663" width="700" height="1102" key="dock-window-1" timestamp="1602214429859">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3277" y="429" width="1641" height="807" maximized="true" key="dock-window-2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596084409925" />
-    <state x="403" y="319" width="2574" height="1408" key="dock-window-3" timestamp="1593912330317">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state x="-3351" y="663" width="700" height="1102" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1602214429859" />
+    <state x="276" y="106" width="1658" height="1167" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602046713714" />
+    <state x="-3527" y="255" width="1540" height="1102" maximized="true" key="dock-window-2" timestamp="1602215402320">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="403" y="319" width="2574" height="1408" key="dock-window-3/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593912330317" />
+    <state x="-3527" y="255" width="1540" height="1102" maximized="true" key="dock-window-2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602215402320" />
+    <state x="-3301" y="248" width="1540" height="1102" maximized="true" key="dock-window-3" timestamp="1602215402320">
+      <screen x="-3840" y="262" width="2560" height="1400" />
+    </state>
+    <state x="-3301" y="248" width="1540" height="1102" maximized="true" key="dock-window-3/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602215402320" />
     <state x="-3493" y="387" width="1803" height="1103" key="dock-window-4" timestamp="1593913336759">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
