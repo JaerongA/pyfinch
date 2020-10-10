@@ -12,10 +12,10 @@ import matplotlib.pyplot as plt
 from utilities import draw
 
 ## Load from the database
-query = "SELECT * FROM cluster WHERE id = 29"
-# query = "SELECT * FROM cluster WHERE id BETWEEN 33 AND 34"
+# query = "SELECT * FROM cluster WHERE id = 29"
 # query = "SELECT * FROM cluster WHERE ephysOK = 1 AND id == 12"
 # query = "SELECT * FROM cluster WHERE ephysOK = 1"
+query = "SELECT * FROM cluster WHERE id BETWEEN 25 AND 28"
 
 cur, conn, col_names = load.database(query)
 
@@ -32,8 +32,7 @@ for row in cur.fetchall():
 
     # Read from the cluster .txt file
     spk_ts, spk_waveform, nb_spk = read_spk_txt(spk_file, unit_nb)
-    break
-    spk_waveform = spk_waveform / (10/65536 * 1E3)
+
     # Waveform analysis (based on averaged waveform)
     avg_waveform = np.nanmean(spk_waveform, axis=0)
     spk_height = np.abs(np.max(avg_waveform) - np.min(avg_waveform))  # in microseconds

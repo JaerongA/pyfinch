@@ -5,21 +5,40 @@ It significantly decreased the amplitude of the waveform of those clusters isola
 This program converts the amplitude of those clusters by using ADbit value
 """
 
+from database import load
+import numpy as np
+import matplotlib.pyplot as plt
+from pathlib import Path
+from spike.load import read_spk_txt
 
+
+def convert_adbit_volts(spk_waveform):
+    """Input the waveform matrix extracted from the cluster .txt output"""
+
+    '''Parameters on the Offline Sorter'''
+    volt_range = 10  # in milivolts +- 5mV
+    sampling_bits = 16
+    volt_resolution = 2**sampling_bits
+
+    spk_waveform_new = spk_waveform / ((volt_range / volt_resolution) * 1E3)
+    return spk_waveform_new
+
+
+query = "SELECT * FROM cluster WHERE adbit_cluster IS TRUE"
+cur, conn, col_names = load.database(query)
 
 for row in cur.fetchall():
     cell_name, cell_path = load.cell_info(row)
     print('Loading... ' + cell_name)
-    mat_file = list(cell_path.glob('*' + row['channel'] + '(merged).mat'))[0]
-    channel_info = scipy.io.loadmat(mat_file)
-    spk_file = list(cell_path.glob('*' + row['channel'] + '(merged).txt'))[0]
     unit_nb = int(row['unit'][-2:])
 
-    # Extract the raw neural trace (from the .mat file)
-    raw_trace = channel_info['amplifier_data'][0]
+    spk_txt_file = list(cell_path.glob('*' + row['channel'] + '(merged).txt'))[0]
 
-    # Read from the cluster .txt file
-    spk_ts, spk_waveform, nb_spk = read_spk_txt(spk_file, unit_nb)
-    if not row['adbit']:
+    '''Read from the cluster .txt file'''
+    spk_ts, spk_waveform, nb_spk = read_spk_txt(spk_txt_file)
+    if row['adbit_cluster']:
         print('a')
-    spk_waveform = spk_waveform / (10/65536 * 1E3)
+    spk_waveform_new = convert_adbit_volts(spk_waveform)
+    break
+    new_spk_txt_file = \
+        spk_txt_file.rename(Path(spk_txt_file.parent, f"{spk_txt_file.stem}_new{spk_txt_file.suffix}"))
