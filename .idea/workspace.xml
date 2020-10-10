@@ -3,7 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/convert_adbit2volts.py" beforeDir="false" afterPath="$PROJECT_DIR$/convert_adbit2volts.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/deafening.db" beforeDir="false" afterPath="$PROJECT_DIR$/database/deafening.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/snr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/snr_analysis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spike/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/spike/load.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,7 +121,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.snr_analysis">
+  <component name="RunManager" selected="Python.convert_adbit2volts">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -155,6 +158,25 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="convert_adbit2volts" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="SongAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/convert_adbit2volts.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -233,28 +255,6 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/database" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/database/practice.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="practice" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="SongAnalysis" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -310,19 +310,19 @@
     </configuration>
     <list>
       <item itemvalue="Python.SongAnalysis" />
-      <item itemvalue="Python.practice" />
       <item itemvalue="Python.practice (1)" />
       <item itemvalue="Python.get_song_bout_v2" />
       <item itemvalue="Python.get_song_bout_v3" />
       <item itemvalue="Python.snr_analysis" />
+      <item itemvalue="Python.convert_adbit2volts" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.convert_adbit2volts" />
         <item itemvalue="Python.snr_analysis" />
         <item itemvalue="Python.get_song_bout_v3" />
         <item itemvalue="Python.practice (1)" />
         <item itemvalue="Python.get_song_bout_v2" />
-        <item itemvalue="Python.practice" />
       </list>
     </recent_temporary>
   </component>
@@ -462,14 +462,7 @@
       <workItem from="1602042644166" duration="7359000" />
       <workItem from="1602183629997" duration="621000" />
       <workItem from="1602189723699" duration="617000" />
-      <workItem from="1602211169675" duration="3168000" />
-    </task>
-    <task id="LOCAL-00021" summary="07/04/2020">
-      <created>1593914138821</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1593914138821</updated>
+      <workItem from="1602211169675" duration="10575000" />
     </task>
     <task id="LOCAL-00022" summary="An updated code to calculate duration for all syllables">
       <created>1593992073487</created>
@@ -807,7 +800,14 @@
       <option name="project" value="LOCAL" />
       <updated>1602042970869</updated>
     </task>
-    <option name="localTasksCounter" value="70" />
+    <task id="LOCAL-00070" summary="update the database (adbit_cut)">
+      <created>1602215696109</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1602215696109</updated>
+    </task>
+    <option name="localTasksCounter" value="71" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -828,7 +828,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Based on SAP features, motif syllables only" />
     <MESSAGE value="07/04/2020" />
     <MESSAGE value="An updated code to calculate duration for all syllables" />
     <MESSAGE value="label files differentially according to undir and dir" />
@@ -853,7 +852,8 @@
     <MESSAGE value="snr analysis" />
     <MESSAGE value="." />
     <MESSAGE value="added site info in the cell name" />
-    <option name="LAST_COMMIT_MESSAGE" value="added site info in the cell name" />
+    <MESSAGE value="update the database (adbit_cut)" />
+    <option name="LAST_COMMIT_MESSAGE" value="update the database (adbit_cut)" />
   </component>
   <component name="WindowStateProjectService">
     <state x="773" y="276" key="#SQL_Dialects" timestamp="1595728466323">
@@ -874,11 +874,11 @@
     </state>
     <state x="-2949" y="927" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965258023" />
     <state x="496" y="681" width="1407" height="685" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602044772135" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1602042970319">
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1602215695585">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-3263" y="425" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1597636743087" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602042970319" />
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602215695585" />
     <state width="314" height="242" key="DatabaseViewActions_Filter" timestamp="1601782217542">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -993,18 +993,26 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3527" y="255" width="1540" height="1102" maximized="true" key="dock-window-2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602215402320" />
-    <state x="-3301" y="248" width="1540" height="1102" maximized="true" key="dock-window-3" timestamp="1602215402320">
+    <state x="-3301" y="248" width="1540" height="1102" maximized="true" key="dock-window-3" timestamp="1602221371527">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3301" y="248" width="1540" height="1102" maximized="true" key="dock-window-3/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602215402320" />
-    <state x="-3493" y="387" width="1803" height="1103" key="dock-window-4" timestamp="1593913336759">
+    <state x="-3301" y="248" width="1540" height="1102" maximized="true" key="dock-window-3/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602221371527" />
+    <state x="-3101" y="346" width="1732" height="1087" key="dock-window-4" timestamp="1602298825894">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3493" y="387" width="1803" height="1103" key="dock-window-4/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593913336759" />
+    <state x="-3101" y="346" width="1732" height="1087" key="dock-window-4/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602298825894" />
+    <state x="-3182" y="605" width="1058" height="1102" key="dock-window-5" timestamp="1602300034401">
+      <screen x="-3840" y="262" width="2560" height="1400" />
+    </state>
+    <state x="-3182" y="605" width="1058" height="1102" key="dock-window-5/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602300034401" />
     <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1601783505726">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="479" y="429" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601783505726" />
+    <state width="750" height="530" key="javadoc.popup" timestamp="1602299698187">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="750" height="530" key="javadoc.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602299698187" />
     <state x="-3005" y="623" width="875" height="663" key="recent.locations.popup" timestamp="1594964061601">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
