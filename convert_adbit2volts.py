@@ -7,9 +7,7 @@ This program converts the amplitude of those clusters by using ADbit value
 
 from database import load
 import numpy as np
-import matplotlib.pyplot as plt
 from pathlib import Path
-from spike.load import read_spk_txt
 
 
 def convert_adbit_volts(spk_waveform):
@@ -18,9 +16,8 @@ def convert_adbit_volts(spk_waveform):
     '''Parameters on the Offline Sorter'''
     volt_range = 10  # in milivolts +- 5mV
     sampling_bits = 16
-    volt_resolution = 2**sampling_bits
-
-    spk_waveform_new = spk_waveform / ((volt_range / volt_resolution) * 1E3)
+    volt_resolution = 0.000153  # volt_range/(2**sampling_bits)
+    spk_waveform_new = spk_waveform / (0.000153 * 1E3)  # convert to microvolts
     return spk_waveform_new
 
 
@@ -32,13 +29,22 @@ for row in cur.fetchall():
     print('Loading... ' + cell_name)
     unit_nb = int(row['unit'][-2:])
 
+    # Read from the cluster .txt file
     spk_txt_file = list(cell_path.glob('*' + row['channel'] + '(merged).txt'))[0]
 
-    '''Read from the cluster .txt file'''
-    spk_ts, spk_waveform, nb_spk = read_spk_txt(spk_txt_file)
-    if row['adbit_cluster']:
-        print('a')
+    # Get the header
+    f = open(spk_txt_file, 'r')
+    header = f.readline()[:-1]
+
+    spk_info = np.loadtxt(spk_txt_file, delimiter='\t', skiprows=1)  # skip header
+    spk_waveform = spk_info[:, 3:]  # spike waveform
+
+    # Convert the value
     spk_waveform_new = convert_adbit_volts(spk_waveform)
-    break
-    new_spk_txt_file = \
-        spk_txt_file.rename(Path(spk_txt_file.parent, f"{spk_txt_file.stem}_new{spk_txt_file.suffix}"))
+    spk_txt_file_new = Path(spk_txt_file.parent, f"{spk_txt_file.stem}_new{spk_txt_file.suffix}")
+
+    # Replace the waveform  with new values
+    spk_info[:, 3:] = spk_waveform_new
+
+    # Save to a new cluster .txt file
+    np.savetxt(spk_txt_file_new, spk_info, delimiter='\t', header=header, comments='', fmt='%f')

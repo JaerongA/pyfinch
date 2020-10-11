@@ -4,9 +4,6 @@
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/convert_adbit2volts.py" beforeDir="false" afterPath="$PROJECT_DIR$/convert_adbit2volts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/deafening.db" beforeDir="false" afterPath="$PROJECT_DIR$/database/deafening.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/snr_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spike/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/spike/load.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -462,14 +459,7 @@
       <workItem from="1602042644166" duration="7359000" />
       <workItem from="1602183629997" duration="621000" />
       <workItem from="1602189723699" duration="617000" />
-      <workItem from="1602211169675" duration="10575000" />
-    </task>
-    <task id="LOCAL-00022" summary="An updated code to calculate duration for all syllables">
-      <created>1593992073487</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1593992073487</updated>
+      <workItem from="1602211169675" duration="15904000" />
     </task>
     <task id="LOCAL-00023" summary="label files differentially according to undir and dir">
       <created>1594179010360</created>
@@ -807,7 +797,14 @@
       <option name="project" value="LOCAL" />
       <updated>1602215696109</updated>
     </task>
-    <option name="localTasksCounter" value="71" />
+    <task id="LOCAL-00071" summary="update the database (adbit_cut)">
+      <created>1602302394187</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1602302394187</updated>
+    </task>
+    <option name="localTasksCounter" value="72" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1001,10 +998,10 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3101" y="346" width="1732" height="1087" key="dock-window-4/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602298825894" />
-    <state x="-3182" y="605" width="1058" height="1102" key="dock-window-5" timestamp="1602300034401">
+    <state x="-3182" y="605" width="1058" height="1102" maximized="true" key="dock-window-5" timestamp="1602302415109">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3182" y="605" width="1058" height="1102" key="dock-window-5/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602300034401" />
+    <state x="-3182" y="605" width="1058" height="1102" maximized="true" key="dock-window-5/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602302415109" />
     <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1601783505726">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
