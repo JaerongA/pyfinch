@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/convert_adbit2volts.py" beforeDir="false" afterPath="$PROJECT_DIR$/convert_adbit2volts.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -252,6 +251,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -290,6 +292,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -307,6 +312,7 @@
     </configuration>
     <list>
       <item itemvalue="Python.SongAnalysis" />
+      <item itemvalue="Python.practice" />
       <item itemvalue="Python.practice (1)" />
       <item itemvalue="Python.get_song_bout_v2" />
       <item itemvalue="Python.get_song_bout_v3" />
@@ -460,6 +466,7 @@
       <workItem from="1602183629997" duration="621000" />
       <workItem from="1602189723699" duration="617000" />
       <workItem from="1602211169675" duration="15904000" />
+      <workItem from="1602464182515" duration="721000" />
     </task>
     <task id="LOCAL-00023" summary="label files differentially according to undir and dir">
       <created>1594179010360</created>
@@ -880,10 +887,6 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="314" height="242" key="DatabaseViewActions_Filter/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601782217542" />
-    <state width="2138" height="582" key="DebuggerActiveHint" timestamp="1593751962392">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state width="2138" height="582" key="DebuggerActiveHint/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593751962392" />
     <state x="1049" y="343" key="ExecutionTargetDialog" timestamp="1596086293798">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -964,11 +967,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1602189723713">
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1602464197134">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1601330065273" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602189723713" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602464197134" />
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1594964072416">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -998,10 +1001,10 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3101" y="346" width="1732" height="1087" key="dock-window-4/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602298825894" />
-    <state x="-3182" y="605" width="1058" height="1102" maximized="true" key="dock-window-5" timestamp="1602302415109">
+    <state x="-3182" y="605" width="1058" height="1102" maximized="true" key="dock-window-5" timestamp="1602464292871">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3182" y="605" width="1058" height="1102" maximized="true" key="dock-window-5/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602302415109" />
+    <state x="-3182" y="605" width="1058" height="1102" maximized="true" key="dock-window-5/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602464292871" />
     <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1601783505726">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
