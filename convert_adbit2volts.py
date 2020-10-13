@@ -20,7 +20,8 @@ def convert_adbit2volts(spk_waveform):
 def converter(query):
     """
     Input: SQL query
-    Batch process from the database"""
+    Batch process from the database
+    """
     from database import load
     import numpy as np
     from pathlib import Path

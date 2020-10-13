@@ -4,6 +4,8 @@
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/convert_adbit2volts.py" beforeDir="false" afterPath="$PROJECT_DIR$/convert_adbit2volts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/save.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/save.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/snr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/snr_analysis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,19 +108,19 @@
     </option>
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="H:\Box\PythonToolbox\Deafening\database" />
-      <recent name="H:\Box\PythonToolbox\Deafening" />
-      <recent name="H:\Box\PythonToolbox\Deafening\summary" />
-      <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
-      <recent name="H:\Box\PythonToolbox\Deafening\load_intan_rhd_format\intanutil" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="H:\Box\PythonToolbox\Deafening" />
       <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="H:\Box\PythonToolbox\Deafening\utilities" />
+      <recent name="H:\Box\PythonToolbox\Deafening\database" />
+      <recent name="H:\Box\PythonToolbox\Deafening" />
+      <recent name="H:\Box\PythonToolbox\Deafening\summary" />
+      <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
+    </key>
   </component>
-  <component name="RunManager" selected="Python.convert_adbit2volts">
+  <component name="RunManager" selected="Python.snr_analysis">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -167,6 +169,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -293,9 +298,6 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -313,18 +315,17 @@
     </configuration>
     <list>
       <item itemvalue="Python.SongAnalysis" />
+      <item itemvalue="Python.get_song_bout" />
       <item itemvalue="Python.practice" />
       <item itemvalue="Python.practice (1)" />
       <item itemvalue="Python.get_song_bout_v2" />
-      <item itemvalue="Python.get_song_bout_v3" />
       <item itemvalue="Python.snr_analysis" />
       <item itemvalue="Python.convert_adbit2volts" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.convert_adbit2volts" />
         <item itemvalue="Python.snr_analysis" />
-        <item itemvalue="Python.get_song_bout_v3" />
+        <item itemvalue="Python.convert_adbit2volts" />
         <item itemvalue="Python.practice (1)" />
         <item itemvalue="Python.get_song_bout_v2" />
       </list>
@@ -467,21 +468,8 @@
       <workItem from="1602183629997" duration="621000" />
       <workItem from="1602189723699" duration="617000" />
       <workItem from="1602211169675" duration="15904000" />
-      <workItem from="1602464182515" duration="3231000" />
-    </task>
-    <task id="LOCAL-00024" summary="07/07/2020">
-      <created>1594179067101</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1594179067101</updated>
-    </task>
-    <task id="LOCAL-00025" summary=".">
-      <created>1594259571266</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1594259571266</updated>
+      <workItem from="1602464182515" duration="5070000" />
+      <workItem from="1602562800022" duration="1360000" />
     </task>
     <task id="LOCAL-00026" summary="updated with a tkinter gui">
       <created>1594259825371</created>
@@ -812,7 +800,21 @@
       <option name="project" value="LOCAL" />
       <updated>1602524096286</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="done">
+      <created>1602559916640</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1602559916640</updated>
+    </task>
+    <task id="LOCAL-00074" summary="done">
+      <created>1602559931356</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1602559931357</updated>
+    </task>
+    <option name="localTasksCounter" value="75" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -833,7 +835,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="An updated code to calculate duration for all syllables" />
     <MESSAGE value="label files differentially according to undir and dir" />
     <MESSAGE value="updated with a tkinter gui" />
     <MESSAGE value="07/10/2020" />
@@ -858,7 +859,8 @@
     <MESSAGE value="added site info in the cell name" />
     <MESSAGE value="update the database (adbit_cut)" />
     <MESSAGE value="remove files" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove files" />
+    <MESSAGE value="done" />
+    <option name="LAST_COMMIT_MESSAGE" value="done" />
   </component>
   <component name="WindowStateProjectService">
     <state x="773" y="276" key="#SQL_Dialects" timestamp="1595728466323">
@@ -879,11 +881,11 @@
     </state>
     <state x="-2949" y="927" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965258023" />
     <state x="496" y="681" width="1407" height="685" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602044772135" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1602524095512">
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1602559930915">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-3263" y="425" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1597636743087" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602524095512" />
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602559930915" />
     <state width="314" height="242" key="DatabaseViewActions_Filter" timestamp="1601782217542">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -940,10 +942,6 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="237" height="549" key="HiddenNamespacesPopup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597119712725" />
-    <state x="1084" y="345" key="RollbackChangesDialog" timestamp="1593834114415">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="1084" y="345" key="RollbackChangesDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1593834114415" />
     <state x="127" y="74" width="1819" height="1326" key="SettingsEditor" timestamp="1602045947570">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -968,11 +966,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1602464197134">
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1602562808038">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1601330065273" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602464197134" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602562808038" />
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1594964072416">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -1006,10 +1004,10 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3182" y="605" width="1058" height="1102" maximized="true" key="dock-window-5/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602464292871" />
-    <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1602559550568">
+    <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1602563420289">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="479" y="429" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602559550568" />
+    <state x="479" y="429" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602563420289" />
     <state width="750" height="530" key="javadoc.popup" timestamp="1602299698187">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -1059,6 +1057,11 @@
           <url>file://$PROJECT_DIR$/song/get_song_bout.py</url>
           <line>27</line>
           <option name="timeStamp" value="115" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/motif_syllable_duration_analysis.py</url>
+          <line>3</line>
+          <option name="timeStamp" value="120" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
