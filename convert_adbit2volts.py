@@ -51,7 +51,6 @@ def converter(query):
 
         # Save to a new cluster .txt file
         np.savetxt(spk_txt_file_new, spk_info, delimiter='\t', header=header, comments='', fmt='%f')
-        break
 
 
 if __name__ == '__main__':
