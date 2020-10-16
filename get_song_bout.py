@@ -43,7 +43,7 @@ for song_info in cur.fetchall():
     context_list = list()
     bout_list = list()
 
-    for site in [x for x in song_path.iterdir() if x.is_dir()]:  # loop through the sub-dir
+    for site in [x for x in song_path.iterdir() if x.is_dir()]:  # loop through different sites on the same day
 
         mat_files = [file for file in site.rglob('*.not.mat')]
 

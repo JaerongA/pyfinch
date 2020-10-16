@@ -4,14 +4,14 @@ Syllable duration for all syllables regardless of it type
 Calculation based on EventInfo.m
 """
 
-import os
 
-import pandas as pd
-from summary.read_config import parser
-from summary import load
 from datetime import date
-import scipy.io
 from math import ceil
+import os
+import pandas as pd
+from summary import load
+from summary.read_config import parser
+import scipy.io
 
 
 project_path = load.project(parser)  # find the project folder

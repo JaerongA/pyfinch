@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
+    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="done">
+      <change afterPath="$PROJECT_DIR$/syllable_duration_analysis_v2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/convert_adbit2volts.py" beforeDir="false" afterPath="$PROJECT_DIR$/convert_adbit2volts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/save.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/save.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/snr_analysis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/get_song_bout.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_song_bout.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/load_spk.py" beforeDir="false" afterPath="$PROJECT_DIR$/plot_rhd.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/syllable_duration_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_duration_analysis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -298,6 +299,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -469,14 +473,8 @@
       <workItem from="1602189723699" duration="617000" />
       <workItem from="1602211169675" duration="15904000" />
       <workItem from="1602464182515" duration="5070000" />
-      <workItem from="1602562800022" duration="1360000" />
-    </task>
-    <task id="LOCAL-00026" summary="updated with a tkinter gui">
-      <created>1594259825371</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1594259825371</updated>
+      <workItem from="1602562800022" duration="2062000" />
+      <workItem from="1602819695267" duration="871000" />
     </task>
     <task id="LOCAL-00027" summary="07/10/2020">
       <created>1594439868729</created>
@@ -814,7 +812,14 @@
       <option name="project" value="LOCAL" />
       <updated>1602559931357</updated>
     </task>
-    <option name="localTasksCounter" value="75" />
+    <task id="LOCAL-00075" summary="done">
+      <created>1602565684189</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1602565684189</updated>
+    </task>
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -881,11 +886,11 @@
     </state>
     <state x="-2949" y="927" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965258023" />
     <state x="496" y="681" width="1407" height="685" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602044772135" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1602559930915">
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1602565692395">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-3263" y="425" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1597636743087" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602559930915" />
+    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602565692395" />
     <state width="314" height="242" key="DatabaseViewActions_Filter" timestamp="1601782217542">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -966,23 +971,19 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="635" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594781085042" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1602562808038">
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1602819710178">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1601330065273" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602562808038" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602819710178" />
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1594964072416">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594964072416" />
-    <state x="1078" y="373" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog" timestamp="1594179031953">
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1602820458721">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1078" y="373" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1594179031953" />
-    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601784529414">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601784529414" />
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602820458721" />
     <state x="-3351" y="663" width="700" height="1102" key="dock-window-1" timestamp="1602214429859">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -1044,7 +1045,7 @@
           <option name="timeStamp" value="109" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/load_spk.py</url>
+          <url>file://$PROJECT_DIR$/plot_rhd.py</url>
           <line>29</line>
           <option name="timeStamp" value="113" />
         </line-breakpoint>
