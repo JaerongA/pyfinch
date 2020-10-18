@@ -2,11 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="done">
-      <change afterPath="$PROJECT_DIR$/syllable_duration_analysis_v2.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utilities/functions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/get_song_bout.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_song_bout.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/load_spk.py" beforeDir="false" afterPath="$PROJECT_DIR$/plot_rhd.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/syllable_duration_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_duration_analysis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/song/functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/syllable_duration_analysis_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_duration_analysis_v2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/save.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/save.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,10 +110,6 @@
     </option>
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="H:\Box\PythonToolbox\Deafening" />
-      <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="H:\Box\PythonToolbox\Deafening\utilities" />
       <recent name="H:\Box\PythonToolbox\Deafening\database" />
@@ -120,8 +117,12 @@
       <recent name="H:\Box\PythonToolbox\Deafening\summary" />
       <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
     </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="H:\Box\PythonToolbox\Deafening" />
+      <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
+    </key>
   </component>
-  <component name="RunManager" selected="Python.snr_analysis">
+  <component name="RunManager" selected="Python.syllable_duration_analysis_v2">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -188,28 +189,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="get_song_bout" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="SongAnalysis" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="H:\Box\PythonToolbox\Deafening\get_song_bout.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="get_song_bout_v2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -246,28 +225,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/practice.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="practice" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="SongAnalysis" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="H:\Box\PythonToolbox\Deafening\summary\practice.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -317,17 +274,36 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="syllable_duration_analysis_v2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="SongAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/syllable_duration_analysis_v2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.SongAnalysis" />
-      <item itemvalue="Python.get_song_bout" />
-      <item itemvalue="Python.practice" />
       <item itemvalue="Python.practice (1)" />
       <item itemvalue="Python.get_song_bout_v2" />
       <item itemvalue="Python.snr_analysis" />
       <item itemvalue="Python.convert_adbit2volts" />
+      <item itemvalue="Python.syllable_duration_analysis_v2" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.syllable_duration_analysis_v2" />
         <item itemvalue="Python.snr_analysis" />
         <item itemvalue="Python.convert_adbit2volts" />
         <item itemvalue="Python.practice (1)" />
@@ -474,14 +450,7 @@
       <workItem from="1602211169675" duration="15904000" />
       <workItem from="1602464182515" duration="5070000" />
       <workItem from="1602562800022" duration="2062000" />
-      <workItem from="1602819695267" duration="871000" />
-    </task>
-    <task id="LOCAL-00027" summary="07/10/2020">
-      <created>1594439868729</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
-      <option name="project" value="LOCAL" />
-      <updated>1594439868729</updated>
+      <workItem from="1602819695267" duration="17825000" />
     </task>
     <task id="LOCAL-00028" summary="07/07/2020">
       <created>1594439943977</created>
@@ -819,7 +788,14 @@
       <option name="project" value="LOCAL" />
       <updated>1602565684189</updated>
     </task>
-    <option name="localTasksCounter" value="76" />
+    <task id="LOCAL-00076" summary="moved functions to this module">
+      <created>1602865878615</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1602865878616</updated>
+    </task>
+    <option name="localTasksCounter" value="77" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -840,7 +816,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="label files differentially according to undir and dir" />
     <MESSAGE value="updated with a tkinter gui" />
     <MESSAGE value="07/10/2020" />
     <MESSAGE value="07/07/2020" />
@@ -865,7 +840,8 @@
     <MESSAGE value="update the database (adbit_cut)" />
     <MESSAGE value="remove files" />
     <MESSAGE value="done" />
-    <option name="LAST_COMMIT_MESSAGE" value="done" />
+    <MESSAGE value="moved functions to this module" />
+    <option name="LAST_COMMIT_MESSAGE" value="moved functions to this module" />
   </component>
   <component name="WindowStateProjectService">
     <state x="773" y="276" key="#SQL_Dialects" timestamp="1595728466323">
@@ -886,15 +862,19 @@
     </state>
     <state x="-2949" y="927" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965258023" />
     <state x="496" y="681" width="1407" height="685" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602044772135" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2" timestamp="1602565692395">
+    <state x="198" y="157" width="971" height="957" key="CommitChangelistDialog2" timestamp="1602865877981">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-3263" y="425" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1597636743087" />
-    <state x="577" y="163" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602565692395" />
+    <state x="198" y="157" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602865877981" />
     <state width="314" height="242" key="DatabaseViewActions_Filter" timestamp="1601782217542">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="314" height="242" key="DatabaseViewActions_Filter/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601782217542" />
+    <state x="93" y="93" width="2375" height="1215" key="DiffContextDialog" timestamp="1602821613905">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="93" y="93" width="2375" height="1215" key="DiffContextDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602821613905" />
     <state x="1049" y="343" key="ExecutionTargetDialog" timestamp="1596086293798">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -980,15 +960,15 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2988" y="487" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594964072416" />
-    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1602820458721">
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1602875181796">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602820458721" />
-    <state x="-3351" y="663" width="700" height="1102" key="dock-window-1" timestamp="1602214429859">
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602875181796" />
+    <state x="-2730" y="255" width="1249" height="1379" key="dock-window-1" timestamp="1602993136740">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3351" y="663" width="700" height="1102" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1602214429859" />
-    <state x="276" y="106" width="1658" height="1167" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602046713714" />
+    <state x="-2730" y="255" width="1249" height="1379" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602993136740" />
     <state x="-3527" y="255" width="1540" height="1102" maximized="true" key="dock-window-2" timestamp="1602215402320">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -1005,10 +985,10 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3182" y="605" width="1058" height="1102" maximized="true" key="dock-window-5/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602464292871" />
-    <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1602563420289">
+    <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1602821685994">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="479" y="429" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602563420289" />
+    <state x="479" y="429" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602821685994" />
     <state width="750" height="530" key="javadoc.popup" timestamp="1602299698187">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -1038,11 +1018,6 @@
           <url>file://$PROJECT_DIR$/SAP_features_pca.py</url>
           <line>47</line>
           <option name="timeStamp" value="78" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/syllable_duration_analysis.py</url>
-          <line>176</line>
-          <option name="timeStamp" value="109" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/plot_rhd.py</url>

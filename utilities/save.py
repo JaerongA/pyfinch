@@ -15,7 +15,7 @@ def make_save_dir(dir_name, add_date=True):
 
     if add_date:
         today = date.today()
-        save_dir = save_dir / today.strftime("%Y-%m-%d")
+        save_dir = save_dir / today.strftime("%Y-%m-%d")  # 2020-07-04
 
     # print(save_dir)
     if not save_dir.exists():

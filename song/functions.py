@@ -4,6 +4,23 @@ A collection of functions used for song analysis
 """
 
 
+def read_not_mat(file):
+    """ read from .not.mat files generated from uisonganal
+    Input : Name of the .not.mat file (path)
+    """
+    import scipy.io
+
+    onsets = scipy.io.loadmat(file)['onsets'].transpose()[0]  # syllable onset timestamp
+    offsets = scipy.io.loadmat(file)['offsets'].transpose()[0]  # syllable offset timestamp
+    intervals = onsets[1:] - offsets[:-1]  # syllable gap durations (interval)
+    duration = offsets - onsets  # duration of each syllable
+    syllables = scipy.io.loadmat(file)['syllables'][0]  # Load the syllable info
+    context = file.name.split('.')[0].split('_')[-1][
+        0].upper()  # extract 'U' (undirected) or 'D' (directed) from the file name
+
+    return onsets, offsets, intervals, duration, syllables, context
+
+
 def syl_type_(syllable, cluster):
     """ function to determine the category of the syllable """
     type_str = []
@@ -19,6 +36,27 @@ def syl_type_(syllable, cluster):
     return type_str
 
 
+def demarcate_bout(syllables, intervals):
+    """ Demarcate the song bout with an asterisk (*)
+    INPUT1: syllables (str)
+    INPUT2: intervals (array) syllable gap duration
+    """
+    from song.parameters import bout_crit
+    import numpy as np
+    ind = np.where(intervals > bout_crit)[0]
+    bout_labeling = syllables
+    if len(ind):
+        for i, item in enumerate(ind):
+            if i is 0:
+                bout_labeling = syllables[:item + 1]
+            else:
+                bout_labeling += '*' + syllables[ind[i - 1] + 1:ind[i] + 1]
+        bout_labeling += '*' + syllables[ind[i] + 1:]
+
+    bout_labeling += '*'  # end with an asterisk
+    return bout_labeling
+
+
 def unique_nb_notes_in_bout(note: str, bout: str):
     """ returns the unique number of notes within a single bout string """
     nb_song_note_in_bout = len([note for note in note if note in bout])
@@ -32,5 +70,14 @@ def total_nb_notes_in_bout(note: str, bout: str):
     for note in note:
         notes.append(note)
         nb_notes.append(sum([bout.count(note) for bout in bout]))
-
     return sum(nb_notes)
+
+
+def get_nb_bouts(song_note: str, bout_labeling: str):
+    """ Count the number of bouts (only includes those having a song note)
+    INPUT1: song_note (e.g., abcd, syllables that are part of a motif)
+    INPUT2: bout_labeling (e.g., iiiiiiiiabcdjiiiabcdji*, syllables that are demarcated by * (bout))
+    """
+    nb_bouts = len([bout for bout in bout_labeling.split('*')[:-1] if
+                    unique_nb_notes_in_bout(song_note, bout)])
+    return nb_bouts

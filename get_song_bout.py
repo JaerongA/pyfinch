@@ -6,32 +6,15 @@ Separates song bouts (*) and store them in the database
 from database import load
 from pathlib import Path
 from song.parameters import *
+from song.functions import *
 import scipy.io
 import numpy as np
 import sqlite3
 
-
-def unique_nb_notes_in_bout(note: str, bout: str):
-    # returns the unique number of notes within a single bout string
-    nb_song_note_in_bout = len([note for note in note if note in bout])
-    return nb_song_note_in_bout
-
-
-def total_nb_notes_in_bout(note: str, bout: str):
-    # returns the total number of song notes from a list of song bouts
-    notes = []
-    nb_notes = []
-    for note in note:
-        notes.append(note)
-        nb_notes.append(sum([bout.count(note) for bout in bout]))
-
-    return sum(nb_notes)
-
-
 # Load song database
 
-# query = "SELECT * FROM song WHERE id BETWEEN 3 AND 8"
 query = "SELECT * FROM song WHERE birdID = 'g35r38'"
+# query = "SELECT * FROM song WHERE id BETWEEN 3 AND 8"
 # query = "SELECT * FROM song WHERE id =3"
 
 cur, conn, col_names = load.database(query)
@@ -39,7 +22,7 @@ cur, conn, col_names = load.database(query)
 for song_info in cur.fetchall():
 
     song_name, song_path = load.song_info(song_info)
-    print(song_name)
+    print('Loading... ' + song_name)
     context_list = list()
     bout_list = list()
 
@@ -48,33 +31,21 @@ for song_info in cur.fetchall():
         mat_files = [file for file in site.rglob('*.not.mat')]
 
         for file in mat_files:
-            syllables = scipy.io.loadmat(file)['syllables'][0]  # Load the syllable info
-            onsets = scipy.io.loadmat(file)['onsets'].transpose()[0]  # syllable onset timestamp
-            offsets = scipy.io.loadmat(file)['offsets'].transpose()[0]  # syllable offset timestamp
-            intervals = onsets[1:] - offsets[:-1]  # interval among syllables
+            # Load variables from .not.mat
+            print(file.name)
+            onsets, offsets, intervals, duration, syllables, context = \
+                read_not_mat(file)
+
+            # Store values in a list
             context_list.append(
                 file.name.split('.')[0].split('_')[-1][0].upper())  # extract 'U' or 'D' from the file name
-            print(file)
-            # print(file.name)
 
-            # demarcate the song bout with an asterisk (stop)
-            ind = np.where(intervals > bout_crit)[0]
-            bout_labeling = syllables
-            if len(ind):
-                for i, item in enumerate(ind):
-                    if i is 0:
-                        bout_labeling = syllables[:item + 1]
-                    else:
-                        bout_labeling += '*' + syllables[ind[i - 1] + 1:ind[i] + 1]
-                bout_labeling += '*' + syllables[ind[i] + 1:]
-
-            bout_labeling += '*'
-            # print(bout_labeling)
+            # Demarcate the song bout with an asterisk (*)
+            bout_labeling = demarcate_bout(syllables, intervals)
             bout_list.append(bout_labeling)
 
-            # count the number of bouts (only includes those having a song note)
-            nb_bouts = len(
-                [bout for bout in bout_labeling.split('*')[:-1] if unique_nb_notes_in_bout(song_info['songNote'], bout)])
+            # Count the number of bouts (only includes those having a song note)
+            nb_bouts = get_nb_bouts(song_info['songNote'], bout_labeling)
 
         print(bout_list)
 
