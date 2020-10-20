@@ -21,19 +21,23 @@ def read_not_mat(file):
     return onsets, offsets, intervals, duration, syllables, context
 
 
-def syl_type_(syllable, cluster):
-    """ function to determine the category of the syllable """
-    type_str = []
-    for syllable in syllable:
-        if syllable in cluster.Motif:
-            type_str.append('M')  # motif
-        elif syllable in cluster.Calls:
-            type_str.append('C')  # call
-        elif syllable in cluster.IntroNotes:
-            type_str.append('I')  # intro notes
+def syl_type_(syllables, song_info):
+    """ function to determine the category of the syllable
+    INPUT1: syllables (str)
+    INPUT2: intervals (array) syllable gap duration
+    OUTPUT: type of the syllable (e.g., motif, intro notes, calls)
+    """
+    syl_type = []
+    for syllable in syllables:
+        if syllable in song_info['motif']:
+            syl_type.append('M')  # motif
+        elif syllable in song_info['calls']:
+            syl_type.append('C')  # call
+        elif syllable in song_info['introNotes']:
+            syl_type.append('I')  # intro notes
         else:
-            type_str.append(None)  # intro notes
-    return type_str
+            syl_type.append(None)
+    return syl_type
 
 
 def demarcate_bout(syllables, intervals):

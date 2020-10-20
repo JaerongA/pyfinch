@@ -50,6 +50,9 @@ for song_info in cur.fetchall():
             onsets, offsets, intervals, duration, syllables, context = \
                 read_not_mat(file)
 
+            # Type of the syllables
+            syl_type = syl_type_(syllables, song_info)
+
             # Store values in a list
             context_list.append(
                 file.name.split('.')[0].split('_')[-1][0].upper())  # extract 'U' or 'D' from the file name
@@ -59,29 +62,26 @@ for song_info in cur.fetchall():
 
             # Save results to a dataframe
             temp_df = []
-            temp_df = pd.DataFrame({'SongID': song_info['id'] * nb_syllable,
-                                    'BirdID': [song_info.BirdID] * nb_syllable,
-                                    'TaskName': [cluster.TaskName] * nb_syllable,
-                                    'TaskSession': [cluster.TaskSession] * nb_syllable,
-                                    'TaskSessionDeafening': [cluster.TaskSessionDeafening] * nb_syllable,
-                                    'TaskSessionPostdeafening': [cluster.TaskSessionPostdeafening] * nb_syllable,
-                                    'DPH': [cluster.DPH] * nb_syllable,
-                                    'Block_10days': [cluster.Block_10days] * nb_syllable,
-                                    'FileID': [file_id] * nb_syllable,
-                                    'Context': context,
+            temp_df = pd.DataFrame({'SongID': [song_info['id']] * nb_syllable,
+                                    'BirdID': [song_info['birdID']] * nb_syllable,
+                                    'TaskName': [song_info['taskName']] * nb_syllable,
+                                    'TaskSession': [song_info['taskSession']] * nb_syllable,
+                                    'TaskSessionDeafening': [song_info['taskSessionDeafening']] * nb_syllable,
+                                    'TaskSessionPostdeafening': [song_info['taskSessionPostDeafening']] * nb_syllable,
+                                    'DPH': [song_info['dph']] * nb_syllable,
+                                    'Block10days': [song_info['block10days']] * nb_syllable,
+                                    'FileID': [file.name] * nb_syllable,
+                                    'Context': [context] * nb_syllable,
                                     'SyllableType': syl_type,
-                                    'Syllable': syllable,
-                                    'Duration': syl_duration,
+                                    'Syllable': list(syllables),
+                                    'Duration': duration,
                                     })
             df = df.append(temp_df, ignore_index=True)
 
-
-
-
+    break
 
     import IPython
     IPython.embed()
-    break
 
     #
     #
