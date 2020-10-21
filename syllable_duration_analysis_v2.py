@@ -11,9 +11,6 @@ import numpy as np
 from pathlib import Path
 from song.functions import *
 import pandas as pd
-# from summary import load
-# from summary.read_config import parser
-import scipy.io
 from utilities import save
 
 # Create save dir
@@ -25,19 +22,19 @@ df = pd.DataFrame()
 
 # Load song database
 # query = "SELECT * FROM song"
-query = "SELECT * FROM song WHERE id = 3"
+query = "SELECT * FROM song WHERE id BETWEEN 15 AND 20"
 
 cur, conn, col_names = load.database(query)
 
 for song_info in cur.fetchall():
     song_name, song_path = load.song_info(song_info)
-    print('Accessing... ' + song_name)
+    print('\nAccessing... ' + song_name )
 
     # Store values in a list
-    duration_list = list()
-    syllable_list = list()
-    context_list = list()
-    bout_list = list()
+    # duration_list = list()
+    # syllable_list = list()
+    # context_list = list()
+    # bout_list = list()
 
     for site in [x for x in song_path.iterdir() if x.is_dir()]:  # loop through different sites on the same day
 
@@ -54,10 +51,10 @@ for song_info in cur.fetchall():
             syl_type = syl_type_(syllables, song_info)
 
             # Store values in a list
-            context_list.append(
-                file.name.split('.')[0].split('_')[-1][0].upper())  # extract 'U' or 'D' from the file name
-            duration_list.append(duration)
-            syllable_list.append(syllables)
+            # context_list.append(
+            #     file.name.split('.')[0].split('_')[-1][0].upper())  # extract 'U' or 'D' from the file name
+            # duration_list.append(duration)
+            # syllable_list.append(syllables)
             nb_syllable = len(syllables)
 
             # Save results to a dataframe
@@ -78,10 +75,8 @@ for song_info in cur.fetchall():
                                     })
             df = df.append(temp_df, ignore_index=True)
 
-    break
 
-    import IPython
-    IPython.embed()
+
 
     #
     #

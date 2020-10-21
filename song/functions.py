@@ -1,5 +1,5 @@
 """
-By Jaerong
+Written by Jaerong
 A collection of functions used for song analysis
 """
 
