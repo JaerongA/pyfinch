@@ -1,6 +1,6 @@
 """
 By Jaerong
-In some sessions, the raw data were mistakenly loaded as ADBit values in Offline sorter.
+In some sessions, the raw data were mistakenly loaded as ADBit values in Offline Sorter.
 It significantly decreased the amplitude of the waveform of those clusters isolated under that setting.
 This program converts the amplitude of those clusters by using ADbit value
 """
@@ -9,7 +9,7 @@ This program converts the amplitude of those clusters by using ADbit value
 def convert_adbit2volts(spk_waveform):
     """Input the waveform matrix extracted from the cluster .txt output"""
 
-    # Parameters on the Offline Sorter'''
+    # Parameters on the Offline Sorter
     volt_range = 10  # in milivolts +- 5mV
     sampling_bits = 16
     volt_resolution = 0.000153  # volt_range/(2**sampling_bits)
