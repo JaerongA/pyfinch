@@ -3,7 +3,6 @@ By Jaerong
 Load project information and read from the project database
 """
 import sqlite3
-import pandas as pd
 import os
 from pathlib import Path
 
@@ -23,6 +22,7 @@ def project():
     parser = ConfigParser()
     parser.read(config_file)
     project_path = parser.get('folders', 'project_path')
+    project_path = Path(project_path)
     return project_path
 
 
@@ -91,6 +91,3 @@ def song_info(row):
 
     return song_name, song_path
 
-
-if __name__ == '__main__':
-    cur = database()
