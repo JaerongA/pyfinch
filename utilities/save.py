@@ -11,7 +11,7 @@ from database import load
 def make_save_dir(dir_name, add_date=True):
 
     project_path = load.project()
-    save_dir = Path(project_path) / 'Analysis' / dir_name
+    save_dir = project_path / 'Analysis' / dir_name
 
     if add_date:
         today = date.today()
