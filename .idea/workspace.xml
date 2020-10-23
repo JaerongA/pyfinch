@@ -455,14 +455,7 @@
       <workItem from="1603228063611" duration="934000" />
       <workItem from="1603252753704" duration="6713000" />
       <workItem from="1603311337902" duration="9903000" />
-      <workItem from="1603384065933" duration="5943000" />
-    </task>
-    <task id="LOCAL-00034" summary=".">
-      <created>1594696343124</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1594696343124</updated>
+      <workItem from="1603384065933" duration="10831000" />
     </task>
     <task id="LOCAL-00035" summary="plot the raw data for each channel">
       <created>1594781128076</created>
@@ -800,7 +793,14 @@
       <option name="project" value="LOCAL" />
       <updated>1603329501249</updated>
     </task>
-    <option name="localTasksCounter" value="83" />
+    <task id="LOCAL-00083" summary="put sub-functions into a main function">
+      <created>1603393710683</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1603393710683</updated>
+    </task>
+    <option name="localTasksCounter" value="84" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -868,11 +868,11 @@
     </state>
     <state x="-2949" y="927" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1594965258023" />
     <state x="891" y="665" width="1407" height="685" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603295099834" />
-    <state x="198" y="157" width="971" height="957" key="CommitChangelistDialog2" timestamp="1603329500476">
+    <state x="198" y="157" width="971" height="957" key="CommitChangelistDialog2" timestamp="1603393710163">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-3263" y="425" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1597636743087" />
-    <state x="198" y="157" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603329500476" />
+    <state x="198" y="157" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603393710163" />
     <state width="314" height="242" key="DatabaseViewActions_Filter" timestamp="1601782217542">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -1049,11 +1049,6 @@
           <url>file://$PROJECT_DIR$/motif_syllable_duration_analysis.py</url>
           <line>3</line>
           <option name="timeStamp" value="120" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/syllable_duration_analysis_v2.py</url>
-          <line>11</line>
-          <option name="timeStamp" value="121" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

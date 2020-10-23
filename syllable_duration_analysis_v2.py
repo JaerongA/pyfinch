@@ -25,8 +25,6 @@ def get_data(query):
     df = pd.DataFrame()
 
     # Load song database
-    # query = "SELECT * FROM song"
-    query = "SELECT * FROM song WHERE id BETWEEN 1 AND 16"
     cur, conn, col_names = load.database(query)
 
     for song_info in cur.fetchall():
@@ -102,10 +100,10 @@ if __name__ == '__main__':
     data_file = project_path / 'Analysis' / 'SyllableDuration' / 'SyllableDuration.csv'
 
     if not data_file.exists():
-        # Get the syllable duration data
 
-        # query = "SELECT * FROM song"
-        query = "SELECT * FROM song WHERE id BETWEEN 1 AND 16"
+        # Get the syllable duration data
+        query = "SELECT * FROM song"
+        # query = "SELECT * FROM song WHERE id BETWEEN 1 AND 16"
         get_data(query)
         df = load_data(data_file, context='ALL', syl_type='ALL')
     else:
@@ -116,7 +114,6 @@ if __name__ == '__main__':
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-from math import ceil
 import IPython
 from utilities.functions import unique
 
@@ -136,6 +133,9 @@ for bird in bird_list:
         temp_df = []
         temp_df = df.loc[(df['BirdID'] == bird) & (df['TaskName'] == task)]
 
+        if temp_df.empty:
+            continue
+
         note_list = unique(temp_df.query('SyllableType == "M"')['Syllable'])  # only motif syllables
 
         title = '-'.join([bird, task])
@@ -143,7 +143,7 @@ for bird in bird_list:
         plt.suptitle(title, size=10)
         # ax = sns.distplot((temp_df['Duration'], hist= False, kde= True)
         ax = sns.kdeplot(temp_df['Duration'], bw=0.05, label='', color='k', linewidth=2)
-        kde = zip(ax.get_lines()[0].get_data()[0], ax.get_lines()[0].get_data()[1])
+        # kde = zip(ax.get_lines()[0].get_data()[0], ax.get_lines()[0].get_data()[1])
         # sns.rugplot(temp_df['Duration'])  # shows ticks
 
         # https: // stackoverflow.com / questions / 43565892 / python - seaborn - distplot - y - value - corresponding - to - a - given - x - value
@@ -159,8 +159,8 @@ for bird in bird_list:
         plt.xlabel('Duration (ms)')
         plt.ylabel('Probability Density')
         # plt.xlim(0, ceil(max(df.loc[(df['BirdID'] == bird)]['Duration']) / 100) * 100)
-        plt.xlim(0, 500)
-        plt.ylim(0, 0.05)
+        plt.xlim(0, 300)
+        plt.ylim(0, 0.06)
 
         # print('Prcessing... {} from Bird {}'.format(task, bird))
 
