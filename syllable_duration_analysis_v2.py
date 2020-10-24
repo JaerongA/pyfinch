@@ -18,7 +18,6 @@ def get_data(query):
 
     # Create save dir
     dir_name = 'SyllableDuration'
-
     save_dir = save.make_save_dir(dir_name, add_date=False)
 
     # Store results in the dataframe
