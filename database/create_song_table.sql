@@ -29,13 +29,3 @@ CREATE TABLE song2 AS
 
 
 
-
-
-
---CREATE VIEW song AS
---SELECT DISTINCT birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening,
---           dph, block10days, sessionDate FROM cluster;
-
-
-
-
