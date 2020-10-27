@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/fr_analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/create_song_table.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/create_song_table.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/deafening.db" beforeDir="false" afterPath="$PROJECT_DIR$/database/deafening.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -460,7 +459,8 @@
       <workItem from="1603252753704" duration="6713000" />
       <workItem from="1603311337902" duration="9903000" />
       <workItem from="1603384065933" duration="13175000" />
-      <workItem from="1603683157781" duration="1447000" />
+      <workItem from="1603683157781" duration="1529000" />
+      <workItem from="1603736701760" duration="2457000" />
     </task>
     <task id="LOCAL-00035" summary="plot the raw data for each channel">
       <created>1594781128076</created>
@@ -950,6 +950,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="766" y="352" width="675" height="655" key="StructurePopup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602045899587" />
+    <state width="629" height="498" key="SwitcherDM" timestamp="1603739317394">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="629" height="498" key="SwitcherDM/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603739317394" />
     <state width="1287" height="707" key="XDebugger.FullValuePopup" timestamp="1595735073448">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -963,20 +967,20 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602215326317" />
-    <state x="-2867" y="733" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1603683158535">
-      <screen x="-3840" y="262" width="2560" height="1400" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1603736736587">
+      <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603683158535" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603392301961" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603736736587" />
     <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1602875181796">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602875181796" />
-    <state x="-2989" y="243" width="804" height="1035" maximized="true" key="dock-window-1" timestamp="1603683197498">
+    <state x="-2567" y="262" width="1293" height="1407" key="dock-window-1" timestamp="1603771178338">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2989" y="243" width="804" height="1035" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603683197498" />
-    <state x="-3704" y="413" width="2397" height="1084" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603392359629" />
+    <state x="-2567" y="262" width="1293" height="1407" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603771178338" />
     <state x="297" y="-29" width="1462" height="955" maximized="true" key="dock-window-2" timestamp="1603684242889">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -1007,10 +1011,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="963" y="277" key="refactoring.ChangeSignatureDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596686148089" />
-    <state x="-2981" y="570" width="840" height="1034" key="search.everywhere.popup" timestamp="1597373624374">
+    <state x="-2981" y="570" width="840" height="1034" key="search.everywhere.popup" timestamp="1603739007367">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2981" y="570" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597373624374" />
+    <state x="-2981" y="570" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603739007367" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
