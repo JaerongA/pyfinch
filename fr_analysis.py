@@ -4,36 +4,39 @@ Run firing rate analysis
 Get mean firing rates per condition
 """
 
-
+from load_intan_rhd_format.load_intan_rhd_format import read_rhd
 from database import load
 import numpy as np
 from pathlib import Path
+from spike.load import read_spk_txt
+from song.functions import read_not_mat
 
 # query = "SELECT * FROM cluster WHERE ephysOK IS TRUE"
-query = "SELECT * FROM cluster WHERE ephysOK IS TRUE"
+query = "SELECT * FROM cluster WHERE id == 6"
 cur, conn, col_names = load.database(query)
 
 for row in cur.fetchall():
+
     cell_name, cell_path = load.cell_info(row)
     print('Loading... ' + cell_name)
-    unit_nb = int(row['unit'][-2:])
 
-    # Read from the cluster .txt file
+    # Get the cluster .txt file
+    unit_nb = int(row['unit'][-2:])
     spk_txt_file = list(cell_path.glob('*' + row['channel'] + '(merged).txt'))[0]
 
-    # Get the header
-    f = open(spk_txt_file, 'r')
-    header = f.readline()[:-1]
+    # Read from the cluster .txt file
+    spk_ts, _, _ = read_spk_txt(spk_txt_file, unit_nb)
 
-    spk_info = np.loadtxt(spk_txt_file, delimiter='\t', skiprows=1)  # skip header
-    spk_waveform = spk_info[:, 3:]  # spike waveform
+    # List .rhd files
+    rhd_files = list(cell_path.glob('*.rhd'))
+    for rhd in rhd_files:
 
-    # Convert the value
-    spk_waveform_new = convert_adbit2volts(spk_waveform)
-    spk_txt_file_new = Path(spk_txt_file.parent, f"{spk_txt_file.stem}_new{spk_txt_file.suffix}")
+        # Load the .rhd file
+        print('Loading... ' + rhd.name)
+        intan = read_rhd(rhd)
 
-    # Replace the waveform  with new values
-    spk_info[:, 3:] = spk_waveform_new
-
-    # Save to a new cluster .txt file
-    np.savetxt(spk_txt_file_new, spk_info, delimiter='\t', header=header, comments='', fmt='%f')
+        # Load the .not.mat file
+        notmat_file = rhd.with_suffix('.wav.not.mat')
+        print(notmat_file)
+        onsets, offsets, intervals, duration, syllables, context = read_not_mat(notmat_file)
+        break

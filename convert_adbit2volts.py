@@ -31,9 +31,9 @@ def converter(query):
     for row in cur.fetchall():
         cell_name, cell_path = load.cell_info(row)
         print('Loading... ' + cell_name)
-        unit_nb = int(row['unit'][-2:])
 
         # Read from the cluster .txt file
+        unit_nb = int(row['unit'][-2:])
         spk_txt_file = list(cell_path.glob('*' + row['channel'] + '(merged).txt'))[0]
 
         # Get the header

@@ -3,7 +3,7 @@ By Jaerong
 Extracts the audio signal (board_adc_data) from .rhd and convert it into .wav
 """
 
-from load_intan_rhd_format.load_intan_rhd_format import read_data
+from load_intan_rhd_format.load_intan_rhd_format import read_rhd
 import matplotlib.pyplot as plt
 from pathlib import Path
 from math import ceil
@@ -38,7 +38,7 @@ for rhd in rhd_files:
     file_name = Path(rhd).stem
     # fig_name = Path(file_name).with_suffix('.png')
     fig_name = Path(rhd).with_suffix('.png')
-    intan = read_data(rhd)  # load the .rhd file
+    intan = read_rhd(rhd)  # load the .rhd file
     # print(intan.keys())
 
     intan['t_amplifier'] -= intan['t_amplifier'][0]  # start from t = 0

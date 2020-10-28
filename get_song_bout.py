@@ -28,9 +28,9 @@ for song_info in cur.fetchall():
 
     for site in [x for x in song_path.iterdir() if x.is_dir()]:  # loop through different sites on the same day
 
-        mat_files = [file for file in site.rglob('*.not.mat')]
+        notmat_files = [file for file in site.rglob('*.not.mat')]
 
-        for file in mat_files:
+        for file in notmat_files:
             # Load variables from .not.mat
             print(file.name)
             onsets, offsets, intervals, duration, syllables, context = \

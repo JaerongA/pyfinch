@@ -25,8 +25,8 @@ for row in cur.fetchall():
     print('Loading... ' + cell_name)
     mat_file = list(cell_path.glob('*' + row['channel'] + '(merged).mat'))[0]
     channel_info = scipy.io.loadmat(mat_file)
-    spk_txt_file = list(cell_path.glob('*' + row['channel'] + '(merged).txt'))[0]
     unit_nb = int(row['unit'][-2:])
+    spk_txt_file = list(cell_path.glob('*' + row['channel'] + '(merged).txt'))[0]
 
     # Extract the raw neural trace (from the .mat file)
     raw_trace = channel_info['amplifier_data'][0]
