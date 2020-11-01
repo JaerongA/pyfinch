@@ -3,13 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/convert_adbit2volts.py" beforeDir="false" afterPath="$PROJECT_DIR$/convert_adbit2volts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dir_undir_labeling.py" beforeDir="false" afterPath="$PROJECT_DIR$/preprocessing/label_dir_undir.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/fr_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/get_song_bout.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_song_bout.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intan_to_wav_converter.py" beforeDir="false" afterPath="$PROJECT_DIR$/intan_to_wav_converter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/load_intan_rhd_format/load_intan_rhd_format.py" beforeDir="false" afterPath="$PROJECT_DIR$/load_intan_rhd_format/load_intan_rhd_format.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plot_rhd.py" beforeDir="false" afterPath="$PROJECT_DIR$/plot_rhd.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/snr_analysis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,15 +108,15 @@
     </option>
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="H:\Box\PythonToolbox\Deafening" />
-      <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="H:\Box\PythonToolbox\Deafening\preprocessing" />
       <recent name="H:\Box\PythonToolbox\Deafening\utilities" />
       <recent name="H:\Box\PythonToolbox\Deafening\database" />
       <recent name="H:\Box\PythonToolbox\Deafening" />
       <recent name="H:\Box\PythonToolbox\Deafening\summary" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="H:\Box\PythonToolbox\Deafening" />
       <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
     </key>
   </component>
@@ -195,6 +191,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -441,14 +440,10 @@
       <workItem from="1603384065933" duration="13175000" />
       <workItem from="1603683157781" duration="1529000" />
       <workItem from="1603736701760" duration="6495000" />
-      <workItem from="1603854160207" duration="2098000" />
-    </task>
-    <task id="LOCAL-00036" summary=".">
-      <created>1594781137327</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1594781137327</updated>
+      <workItem from="1603854160207" duration="8245000" />
+      <workItem from="1603988667861" duration="422000" />
+      <workItem from="1603989112709" duration="1205000" />
+      <workItem from="1604093911947" duration="5000" />
     </task>
     <task id="LOCAL-00037" summary="function to analyze syllable sequence entropy">
       <created>1594957567052</created>
@@ -786,7 +781,14 @@
       <option name="project" value="LOCAL" />
       <updated>1603771206710</updated>
     </task>
-    <option name="localTasksCounter" value="85" />
+    <task id="LOCAL-00085" summary="fr analysis">
+      <created>1603857350161</created>
+      <option name="number" value="00085" />
+      <option name="presentableId" value="LOCAL-00085" />
+      <option name="project" value="LOCAL" />
+      <updated>1603857350162</updated>
+    </task>
+    <option name="localTasksCounter" value="86" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -853,11 +855,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="891" y="665" width="1407" height="685" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603295099834" />
-    <state x="198" y="157" width="971" height="957" key="CommitChangelistDialog2" timestamp="1603771206178">
+    <state x="198" y="157" width="971" height="957" key="CommitChangelistDialog2" timestamp="1603857349637">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-3263" y="425" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1597636743087" />
-    <state x="198" y="157" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603771206178" />
+    <state x="198" y="157" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603857349637" />
     <state width="314" height="242" key="DatabaseViewActions_Filter" timestamp="1601782217542">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -948,11 +950,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602215326317" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1603855647303">
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1604093910831">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603683158535" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603855647303" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604093910831" />
     <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1603772265774">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -979,11 +981,11 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3182" y="605" width="1058" height="1102" maximized="true" key="dock-window-5/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602464292871" />
-    <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1603854960869">
+    <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1603857774993">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-3361" y="651" width="1167" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603296442971" />
-    <state x="479" y="429" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603854960869" />
+    <state x="479" y="429" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603857774993" />
     <state width="750" height="530" key="javadoc.popup" timestamp="1602299698187">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
