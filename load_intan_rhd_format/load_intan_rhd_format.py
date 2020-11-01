@@ -24,21 +24,21 @@ def read_rhd(filename):
 
     header = read_header(fid)
 
-    print('Found {} amplifier channel{}.'.format(header['num_amplifier_channels'],
-                                                 plural(header['num_amplifier_channels'])))
-    print('Found {} auxiliary input channel{}.'.format(header['num_aux_input_channels'],
-                                                       plural(header['num_aux_input_channels'])))
-    print('Found {} supply voltage channel{}.'.format(header['num_supply_voltage_channels'],
-                                                      plural(header['num_supply_voltage_channels'])))
-    print('Found {} board ADC channel{}.'.format(header['num_board_adc_channels'],
-                                                 plural(header['num_board_adc_channels'])))
-    print('Found {} board digital input channel{}.'.format(header['num_board_dig_in_channels'],
-                                                           plural(header['num_board_dig_in_channels'])))
-    print('Found {} board digital output channel{}.'.format(header['num_board_dig_out_channels'],
-                                                            plural(header['num_board_dig_out_channels'])))
-    print('Found {} temperature sensors channel{}.'.format(header['num_temp_sensor_channels'],
-                                                           plural(header['num_temp_sensor_channels'])))
-    print('')
+    # print('Found {} amplifier channel{}.'.format(header['num_amplifier_channels'],
+    #                                              plural(header['num_amplifier_channels'])))
+    # print('Found {} auxiliary input channel{}.'.format(header['num_aux_input_channels'],
+    #                                                    plural(header['num_aux_input_channels'])))
+    # print('Found {} supply voltage channel{}.'.format(header['num_supply_voltage_channels'],
+    #                                                   plural(header['num_supply_voltage_channels'])))
+    # print('Found {} board ADC channel{}.'.format(header['num_board_adc_channels'],
+    #                                              plural(header['num_board_adc_channels'])))
+    # print('Found {} board digital input channel{}.'.format(header['num_board_dig_in_channels'],
+    #                                                        plural(header['num_board_dig_in_channels'])))
+    # print('Found {} board digital output channel{}.'.format(header['num_board_dig_out_channels'],
+    #                                                         plural(header['num_board_dig_out_channels'])))
+    # print('Found {} temperature sensors channel{}.'.format(header['num_temp_sensor_channels'],
+    #                                                        plural(header['num_temp_sensor_channels'])))
+    # print('')
 
     # Determine how many samples the data file contains.
     bytes_per_block = get_bytes_per_data_block(header)
