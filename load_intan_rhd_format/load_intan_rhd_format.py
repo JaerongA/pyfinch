@@ -177,7 +177,7 @@ def read_rhd(filename):
         # If the software notch filter was selected during the recording, apply the
         # same notch filter to amplifier data here.
         if header['notch_filter_frequency'] > 0:
-            print('Applying notch filter...')
+            # print('Applying notch filter...')
 
             print_increment = 10
             percent_done = print_increment
@@ -187,7 +187,7 @@ def read_rhd(filename):
 
                 fraction_done = 100 * (i / header['num_amplifier_channels'])
                 if fraction_done >= percent_done:
-                    print('{}% done...'.format(percent_done))
+                    # print('{}% done...'.format(percent_done))
                     percent_done += print_increment
     else:
         data = [];
