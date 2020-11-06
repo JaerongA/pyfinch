@@ -1,21 +1,39 @@
 """
-Written by Jaerong
+By Jaerong
 A collection of functions used for song analysis
 """
 
-
-def read_not_mat(file):
+def read_not_mat(notmat):
     """ read from .not.mat files generated from uisonganal
-    Input : Name of the .not.mat file (path)
+
+    Parameters
+    ----------
+    notmat : str
+        Name of the .not.mat file (path)
+
+    Returns
+    -------
+    onsets : array
+        time stamp for syllable onset (in ms)
+    offsets : array
+        time stamp for syllable offset (in ms)
+    intervals : array
+        temporal interval between syllables (i.e. syllable gaps) (in ms)
+    duration : array
+        duration of each syllable (in ms)
+    syllables : str
+        song syllables
+    context : str
+        social context ('U' for undirected and 'D' for directed)
     """
     import scipy.io
 
-    onsets = scipy.io.loadmat(file)['onsets'].transpose()[0]  # syllable onset timestamp
-    offsets = scipy.io.loadmat(file)['offsets'].transpose()[0]  # syllable offset timestamp
+    onsets = scipy.io.loadmat(notmat)['onsets'].transpose()[0]  # syllable onset timestamp
+    offsets = scipy.io.loadmat(notmat)['offsets'].transpose()[0]  # syllable offset timestamp
     intervals = onsets[1:] - offsets[:-1]  # syllable gap durations (interval)
     duration = offsets - onsets  # duration of each syllable
-    syllables = scipy.io.loadmat(file)['syllables'][0]  # Load the syllable info
-    context = file.name.split('.')[0].split('_')[-1][
+    syllables = scipy.io.loadmat(notmat)['syllables'][0]  # Load the syllable info
+    context = notmat.name.split('.')[0].split('_')[-1][
         0].upper()  # extract 'U' (undirected) or 'D' (directed) from the file name
 
     return onsets, offsets, intervals, duration, syllables, context
