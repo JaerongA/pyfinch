@@ -11,3 +11,23 @@ def unique(list):
     """
     seen = set()
     return [x for x in list if not (x in seen or seen.add(x))]
+
+
+def find_str(pattern : str, string : str):
+    """ Find all indices of patterns in a string
+
+    Parameters
+    ----------
+    pattern : str
+        string pattern to search
+    string : str
+        input string
+
+    Returns
+    -------
+    ind : list
+        list of starting indices
+    """
+    import re
+    ind = [m.start() for m in re.finditer(pattern, string)]
+    return ind
