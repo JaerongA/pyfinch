@@ -9,10 +9,11 @@ from database import load
 import numpy as np
 from pathlib import Path
 from spike.load import read_spk_txt
-from song.functions import read_not_mat
+from song.functions import *
+from utilities.functions import *
 
 # query = "SELECT * FROM cluster WHERE ephysOK IS TRUE"
-query = "SELECT * FROM cluster WHERE id == 20"
+query = "SELECT * FROM cluster WHERE id == 50"
 cur, conn, col_names = load.database(query)
 
 for row in cur.fetchall():
@@ -33,6 +34,10 @@ for row in cur.fetchall():
     # Initialize variables
     t_amplifier_serialized = np.array([], dtype=np.float64)
 
+    nb_spk_vec = list()
+    time_vec = list()
+    context_list = list()
+
     # Loop through Intan .rhd files
     for rhd in rhd_files:
         # Load the .rhd file
@@ -45,6 +50,31 @@ for row in cur.fetchall():
         notmat_file = rhd.with_suffix('.wav.not.mat')
         print(notmat_file)
 
-        onsets, offsets, intervals, duration, syllables, context = read_not_mat(notmat_file)
+        onsets, offsets, intervals, duration, syllables, context = read_not_mat(notmat_file, unit='second')
 
-        break
+        # Find motifs
+        motif_ind = find_str(row['motif'], syllables)
+
+        # Get the time stamps
+        for ind in motif_ind:
+
+            start_ind = ind
+            stop_ind = ind + len(row['motif']) - 1
+
+            motif_onset = onsets[start_ind]
+            motif_offset = offsets[stop_ind]
+
+            motif_spk = spk_ts[np.where((spk_ts >= motif_onset) & (spk_ts <= motif_offset))]
+
+            nb_spk_vec.append(len(motif_spk))
+            time_vec.append(motif_offset - motif_onset)
+            context_list.append(context)
+
+    # Calculate firing rates per condition
+    fr = {'Undir' :
+              np.asarray([nb_spk / time for nb_spk, time, context in zip(nb_spk_vec, time_vec, context_list) if
+                          context == 'U']).mean(),
+          'Dir' :
+              np.asarray([nb_spk / time for nb_spk, time, context in zip(nb_spk_vec, time_vec, context_list) if
+                          context == 'D']).mean()
+    }
