@@ -3,13 +3,15 @@ By Jaerong
 A collection of functions used for song analysis
 """
 
-def read_not_mat(notmat):
+def read_not_mat(notmat, unit='second'):
     """ read from .not.mat files generated from uisonganal
 
     Parameters
     ----------
     notmat : str
         Name of the .not.mat file (path)
+    unit : (optional)
+        milli-second by default. Convert to seconds when specified
 
     Returns
     -------
@@ -33,8 +35,14 @@ def read_not_mat(notmat):
     intervals = onsets[1:] - offsets[:-1]  # syllable gap durations (interval)
     duration = offsets - onsets  # duration of each syllable
     syllables = scipy.io.loadmat(notmat)['syllables'][0]  # Load the syllable info
-    context = notmat.name.split('.')[0].split('_')[-1][
-        0].upper()  # extract 'U' (undirected) or 'D' (directed) from the file name
+    context = notmat.name.split('.')[0].split('_')[-1][0].upper()  # extract 'U' (undirected) or 'D' (directed) from the file name
+
+    # units are in ms by default, but convert to second with the argument
+    if unit is 'second':
+        onsets /= 1E3
+        offsets /= 1E3
+        intervals /= 1E3
+        duration /= 1E3
 
     return onsets, offsets, intervals, duration, syllables, context
 
