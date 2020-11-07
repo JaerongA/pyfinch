@@ -134,7 +134,7 @@ def read_rhd(filename):
     fid.close()
 
     if (data_present):
-        print('Parsing data...')
+        # print('Parsing data...')
 
         # Extract digital input channels to separate variables.
         for i in range(header['num_board_dig_in_channels']):
@@ -162,7 +162,8 @@ def read_rhd(filename):
         # Check for gaps in timestamps.
         num_gaps = np.sum(np.not_equal(data['t_amplifier'][1:] - data['t_amplifier'][:-1], 1))
         if num_gaps == 0:
-            print('No missing timestamps in data.')
+            pass
+            # print('No missing timestamps in data.')
         else:
             print('Warning: {0} gaps in timestamp data found.  Time scale will not be uniform!'.format(num_gaps))
 
