@@ -4,7 +4,7 @@ load neural data (from .rhd or .txt)
 """
 
 
-def read_spk_txt(spk_txt_file, *unit_nb):
+def read_spk_txt(spk_txt_file, *unit_nb, unit='second'):
     """
     Read the output .txt from the Offline Sorter
     Column header of the input .txt
@@ -23,6 +23,11 @@ def read_spk_txt(spk_txt_file, *unit_nb):
     spk_ts = spk_info[:, 2]  # spike time stamps
     spk_waveform = spk_info[:, 3:]  # spike waveform
     nb_spk = spk_waveform.shape[0]  # total number of spikes
+
+    # units are in second by default, but convert to  millisecond with the argument
+    if unit is 'ms':
+        spk_ts *= 1E3
+
     return spk_ts, spk_waveform, nb_spk
 
 
