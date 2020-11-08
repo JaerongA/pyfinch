@@ -23,6 +23,7 @@ for song_info in cur.fetchall():
 
     song_name, song_path = load.song_info(song_info)
     print('Loading... ' + song_name)
+
     context_list = list()
     bout_list = list()
 
