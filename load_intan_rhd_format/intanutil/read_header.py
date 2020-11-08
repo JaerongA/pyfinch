@@ -19,9 +19,9 @@ def read_header(fid):
     (version['major'], version['minor']) = struct.unpack('<hh', fid.read(4)) 
     header['version'] = version
 
-    print('')
-    print('Reading Intan Technologies RHD2000 Data File, Version {}.{}'.format(version['major'], version['minor']))
-    print('')
+    # print('')
+    # print('Reading Intan Technologies RHD2000 Data File, Version {}.{}'.format(version['major'], version['minor']))
+    # print('')
 
     freq = {}
 

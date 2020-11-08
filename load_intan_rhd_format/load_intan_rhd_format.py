@@ -63,18 +63,18 @@ def read_rhd(filename):
 
     record_time = num_amplifier_samples / header['sample_rate']
 
-    if data_present:
-        print('File contains {:0.3f} seconds of data.  Amplifiers were sampled at {:0.2f} kS/s.'.format(record_time,
-                                                                                                        header[
-                                                                                                            'sample_rate'] / 1000))
-    else:
-        print('Header file contains no data.  Amplifiers were sampled at {:0.2f} kS/s.'.format(
-            header['sample_rate'] / 1000))
+    # if data_present:
+    #     print('File contains {:0.3f} seconds of data.  Amplifiers were sampled at {:0.2f} kS/s.'.format(record_time,
+    #                                                                                                     header[
+    #                                                                                                         'sample_rate'] / 1000))
+    # else:
+    #     print('Header file contains no data.  Amplifiers were sampled at {:0.2f} kS/s.'.format(
+    #         header['sample_rate'] / 1000))
 
     if data_present:
         # Pre-allocate memory for data.
-        print('')
-        print('Allocating memory for data...')
+        # print('')
+        # print('Allocating memory for data...')
 
         data = {}
         if (header['version']['major'] == 1 and header['version']['minor'] >= 2) or (header['version']['major'] > 1):
