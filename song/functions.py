@@ -3,9 +3,8 @@ By Jaerong
 A collection of functions used for song analysis
 """
 
-def read_not_mat(notmat, unit='second'):
+def read_not_mat(notmat, unit='ms'):
     """ read from .not.mat files generated from uisonganal
-
     Parameters
     ----------
     notmat : str
@@ -67,9 +66,18 @@ def syl_type_(syllables, song_info):
 
 
 def demarcate_bout(syllables, intervals):
-    """ Demarcate the song bout with an asterisk (*)
-    INPUT1: syllables (str)
-    INPUT2: intervals (array) syllable gap duration
+    """ Demarcate the song bout with an asterisk (*) from a string of syllables
+    Parameters
+    ----------
+    syllables : str
+        e.g., 'iiiabcabckn'
+    intervals_ms : int
+        syllable gap duration in ms
+
+    Returns
+    -------
+    bout_labeling : str
+        demarcated syllable string (e.g., 'iiiabc*abckn*')
     """
     from song.parameters import bout_crit
     import numpy as np
