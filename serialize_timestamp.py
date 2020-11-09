@@ -93,7 +93,6 @@ for row in cur.fetchall():
         'context' : context_list
     }
 
-
     # Get baseline firing rates
     baseline_spk_vec = []
     nb_spk_vec = []
@@ -133,88 +132,51 @@ for row in cur.fetchall():
     # Calculate baseline firing rates
     fr = {'Baseline':sum(nb_spk_vec)/sum(time_vec)}
 
+    # Get motif firing rates
+    motif_spk_vec = []
+    nb_spk_vec = []
+    time_vec = []
+    context_vec = []
+
+    for file_ind, (onset, offset, syllable, context) in \
+            enumerate(zip(event_dic['onsets'], event_dic['offsets'], event_dic['syllables'], event_dic['context'])):
+
+        # Find motifs
+        motif_ind = find_str(row['motif'], syllable)
+
+        # Get syllable, spike time stamps
+        for ind in motif_ind:
+            start_ind = ind
+            stop_ind = ind + len(row['motif']) - 1
+
+            motif_onset = float(onset[start_ind])
+            motif_offset = float(offset[stop_ind])
+
+            motif_spk = spk_ts[np.where((spk_ts >= motif_onset) & (spk_ts <= motif_offset))]
+
+            motif_spk_vec.append(motif_spk)
+            nb_spk_vec.append(len(motif_spk))
+            time_vec.append((motif_offset - motif_onset)/1E3)  # convert to seconds for calculating in Hz
+            # Store context info
+            context_vec.append(context)
+
+
+    # Calculate motif firing rates per condition
+    if not bool(fr):  # if fr dictionary already exists
+        fr = {'Undir' :
+                  sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'U'])\
+                  / sum([time for time, context in zip(time_vec, context_vec) if context == 'U'])
+            ,
+              'Dir' :
+                  sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'D'])\
+                  / sum([time for time, context in zip(time_vec, context_vec) if context == 'D'])
+              }
+    else:
+        fr['Undir'] = sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'U'])\
+                  / sum([time for time, context in zip(time_vec, context_vec) if context == 'U'])
+
+        fr['Dir'] = sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'D'])\
+                  / sum([time for time, context in zip(time_vec, context_vec) if context == 'D'])
 
 
 
-
-
-
-
-
-
-
-
-
-
-    #     # Find motifs
-    #     motif_ind = find_str(row['motif'], syllables)
-    #
-    #     # Get syllable, spike time stamps
-    #     for ind in motif_ind:
-    #         start_ind = ind
-    #         stop_ind = ind + len(row['motif']) - 1
-    #
-    #         motif_onset = onsets[start_ind]
-    #         motif_offset = offsets[stop_ind]
-    #
-    #         motif_spk = spk_ts[np.where((spk_ts >= motif_onset) & (spk_ts <= motif_offset))]
-    #
-    #         nb_spk_vec.append(len(motif_spk))
-    #         time_vec.append((motif_offset - motif_onset)/1E3)  # convert to seconds for calculating in Hz
-    #         # Store context info
-    #         context_vec.append(context)
-    #
-    #
-    #     # Demarcate song bouts
-    #     # syllable_list.append(demarcate_bout(syllables, intervals))
-    #     # onset_list.append(demarcate_bout(onsets, intervals))
-    #     # offset_list.append(demarcate_bout(offsets, intervals))
-    #     #
-    #     # # Get baseline firing rates
-    #     # nb_spk_vec = []
-    #     # time_vec = []
-    #     #
-    #     # for ind, (syllable, onset, offset) in enumerate(zip(syllable_list, onset_list, offset_list)):
-    #     #     bout_ind_list = find_str('*', syllable_list[ind])
-    #     #     bout_ind_list.insert(0,0)  # start from the first index
-    #     #     for bout_ind in bout_ind_list:
-    #     #         if bout_ind == len(syllable)-1:  # skip if * indicates the end syllable
-    #     #             continue
-    #     #         baseline_onset = float(onset[bout_ind]) - baseline['time_buffer'] - baseline['time_win']
-    #     #         baseline_offset = float(onset[bout_ind]) - baseline['time_buffer']
-    #     #         if baseline_offset < 0:
-    #     #             continue
-    #     #         elif baseline_onset < 0 :
-    #     #             baseline_onset = 0
-    #     #
-    #     #         baseline_spk = spk_ts[np.where((spk_ts >= baseline_onset) & (spk_ts <= baseline_offset))]
-    #     #         nb_spk_vec.append(len(baseline_spk))
-    #     #         time_vec.append((baseline_offset - baseline_onset)/1E3)  # convert to seconds for calculating in Hz
-    #     #     break
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    # # Calculate motif firing rates per condition
-    # fr = {'Undir':
-    #           np.asarray([nb_spk / time for nb_spk, time, context in zip(nb_spk_vec, time_vec, context_vec) if
-    #                       context == 'U']).mean(),
-    #       'Dir':
-    #           np.asarray([nb_spk / time for nb_spk, time, context in zip(nb_spk_vec, time_vec, context_vec) if
-    #                       context == 'D']).mean()
-    #       }
-    #
-    #
-    #
-    #
-    # # Number of song bouts
-    # nb_bouts = get_nb_bouts(row['songNote'], ''.join(syllable_list))
-    #
-    #
-    #
-    #
-    #
-    # break

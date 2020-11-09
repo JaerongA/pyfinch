@@ -97,7 +97,7 @@ def read_rhd(filename):
         data['board_dig_out_raw'] = np.zeros(num_board_dig_out_samples, dtype=np.uint)
 
         # Read sampled data from file.
-        print('Reading data from file...')
+        # print('Reading data from file...')
 
         # Initialize indices used in looping
         indices = {}
@@ -123,7 +123,7 @@ def read_rhd(filename):
 
             fraction_done = 100 * (1.0 * i / num_data_blocks)
             if fraction_done >= percent_done:
-                print('{}% done...'.format(percent_done))
+                # print('{}% done...'.format(percent_done))
                 percent_done = percent_done + print_increment
 
         # Make sure we have read exactly the right amount of data.
@@ -196,7 +196,7 @@ def read_rhd(filename):
     # Move variables to result struct.
     result = data_to_result(header, data, data_present)
 
-    print('Done!  Elapsed time: {0:0.1f} seconds'.format(time.time() - tic))
+    # print('Done!  Elapsed time: {0:0.1f} seconds'.format(time.time() - tic))
     return result
 
 

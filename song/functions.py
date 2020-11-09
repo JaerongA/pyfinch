@@ -65,12 +65,11 @@ def syl_type_(syllables, song_info):
     return syl_type
 
 
-def demarcate_bout(syllables, intervals):
+def demarcate_bout(target, intervals):
     """ Demarcate the song bout with an asterisk (*) from a string of syllables
     Parameters
     ----------
-    syllables : str
-        e.g., 'iiiabcabckn'
+    target : str or numpy array
     intervals_ms : int
         syllable gap duration in ms
 
@@ -81,17 +80,36 @@ def demarcate_bout(syllables, intervals):
     """
     from song.parameters import bout_crit
     import numpy as np
-    ind = np.where(intervals > bout_crit)[0]
-    bout_labeling = syllables
-    if len(ind):
-        for i, item in enumerate(ind):
-            if i is 0:
-                bout_labeling = syllables[:item + 1]
-            else:
-                bout_labeling += '*' + syllables[ind[i - 1] + 1:ind[i] + 1]
-        bout_labeling += '*' + syllables[ind[i] + 1:]
 
-    bout_labeling += '*'  # end with an asterisk
+    ind = np.where(intervals > bout_crit)[0]
+    bout_labeling = target
+
+    if isinstance(target, str):
+        if len(ind):
+            for i, item in enumerate(ind):
+                if i is 0:
+                    bout_labeling = target[:item + 1]
+                else:
+                    bout_labeling += '*' + target[ind[i - 1] + 1:ind[i] + 1]
+            bout_labeling += '*' + target[ind[i] + 1:]
+
+        bout_labeling += '*'  # end with an asterisk
+
+
+    elif isinstance(target, np.ndarray):
+        if len(ind):
+            for i, item in enumerate(ind):
+                if i is 0:
+                    bout_labeling = target[:item + 1]
+                else:
+                    bout_labeling = np.append(bout_labeling, '*')
+                    bout_labeling = np.append(bout_labeling, target[ind[i - 1] + 1: ind[i] + 1])
+
+            bout_labeling = np.append(bout_labeling, '*')
+            bout_labeling = np.append(bout_labeling, target[ind[i] + 1:])
+
+        bout_labeling = np.append(bout_labeling, '*')  # end with an asterisk
+
     return bout_labeling
 
 
@@ -112,7 +130,7 @@ def total_nb_notes_in_bout(note: str, bout: str):
 
 
 def get_nb_bouts(song_note: str, bout_labeling: str):
-    """ Count the number of bouts (only includes those having a song note)
+    """ Count the number of bouts (only includes those having at least one song note)
     INPUT1: song_note (e.g., abcd, syllables that are part of a motif)
     INPUT2: bout_labeling (e.g., iiiiiiiiabcdjiiiabcdji*, syllables that are demarcated by * (bout))
     """

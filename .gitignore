@@ -6,3 +6,4 @@ practice2.p
 database/deafening.db
 test
 database/_pycache_
+*__pycache__*
