@@ -88,17 +88,19 @@ for row in cur.fetchall():
         'file_start' : file_start_list,
         'file_end': file_end_list,
         'onsets' :  onset_list,
-        'offset' : offset_list,
+        'offsets' : offset_list,
         'syllables': syllable_list,
         'context' : context_list
     }
+
 
     # Get baseline firing rates
     baseline_spk_vec = []
     nb_spk_vec = []
     time_vec = []
 
-    for file_ind, (onset, offset, syllable) in enumerate(zip(onset_list, offset_list, syllable_list)):
+    for file_ind, (onset, offset, syllable, file_start) in \
+            enumerate(zip(event_dic['onsets'], event_dic['offsets'], event_dic['syllables'], event_dic['file_start'])):
 
         baseline_spk = []
         bout_ind_list = find_str('*', syllable_list[file_ind])
@@ -113,13 +115,13 @@ for row in cur.fetchall():
             baseline_onset = float(onset[bout_ind + 1]) - baseline['time_buffer'] - baseline['time_win']
             baseline_offset = float(onset[bout_ind + 1]) - baseline['time_buffer']
 
-            if baseline_offset < 0:  # skip if there's not enough baseline period at the start of a file
+            if baseline_offset < file_start:  # skip if there's not enough baseline period at the start of a file
                 continue
             elif bout_ind > 0 and baseline_onset < float(
                     offset[bout_ind - 1]):  # skip if the baseline starts before the offset of the previous syllable
                 continue
-            elif baseline_onset < 0:
-                baseline_onset = 0
+            elif baseline_onset < file_start:
+                baseline_onset = file_start
 
             baseline_spk = spk_ts[np.where((spk_ts >= baseline_onset) & (spk_ts <= baseline_offset))]
 
@@ -127,7 +129,13 @@ for row in cur.fetchall():
             nb_spk_vec.append(len(baseline_spk))
             time_vec.append((baseline_offset - baseline_onset) / 1E3)  # convert to seconds for calculating in Hz
 
-    break
+
+    # Calculate baseline firing rates
+    fr = {'Baseline':sum(nb_spk_vec)/sum(time_vec)}
+
+
+
+
 
 
 
