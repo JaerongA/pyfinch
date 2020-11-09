@@ -12,7 +12,6 @@ import numpy as np
 import sqlite3
 
 # Load song database
-
 query = "SELECT * FROM song WHERE birdID = 'g35r38'"
 # query = "SELECT * FROM song WHERE id BETWEEN 3 AND 8"
 # query = "SELECT * FROM song WHERE id =3"
