@@ -14,7 +14,8 @@ def unique(list):
 
 
 def find_str(pattern : str, string : str):
-    """ Find all indices of patterns in a string
+    """
+    Find all indices of patterns in a string
 
     Parameters
     ----------
@@ -29,5 +30,8 @@ def find_str(pattern : str, string : str):
         list of starting indices
     """
     import re
+    if not pattern.isalpha(): # if the pattern contains non-alphabetic chars such as *
+        pattern = "\\" + pattern
+
     ind = [m.start() for m in re.finditer(pattern, string)]
     return ind
