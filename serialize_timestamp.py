@@ -14,7 +14,8 @@ from song.parameters import *
 from utilities.functions import *
 
 # query = "SELECT * FROM cluster WHERE ephysOK IS TRUE"
-query = "SELECT * FROM cluster WHERE id == 50"
+# query = "SELECT * FROM cluster WHERE id == 50 "
+query = "SELECT * FROM cluster WHERE analysisOK IS TRUE"
 cur, conn, col_names = load.database(query)
 
 for row in cur.fetchall():
@@ -163,20 +164,27 @@ for row in cur.fetchall():
 
     # Calculate motif firing rates per condition
     if not bool(fr):  # if fr dictionary already exists
-        fr = {'Undir' :
+        fr = {'MotifUndir' :
                   sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'U'])\
                   / sum([time for time, context in zip(time_vec, context_vec) if context == 'U'])
             ,
-              'Dir' :
+              'MotifDir' :
                   sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'D'])\
                   / sum([time for time, context in zip(time_vec, context_vec) if context == 'D'])
               }
     else:
-        fr['Undir'] = sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'U'])\
+        fr['MotifUndir'] = sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'U'])\
                   / sum([time for time, context in zip(time_vec, context_vec) if context == 'U'])
 
-        fr['Dir'] = sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'D'])\
+        fr['MotifDir'] = sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'D'])\
                   / sum([time for time, context in zip(time_vec, context_vec) if context == 'D'])
 
+
+    # Update the database
+    cur.execute("UPDATE cluster SET baselineFR= ? WHERE id = ?", (format(fr['Baseline'], '.3f'), row['id']))
+    cur.execute("UPDATE cluster SET motifFRUndir = ? WHERE id = ?", (format(fr['MotifUndir'], '.3f'), row['id']))
+    cur.execute("UPDATE cluster SET motifFRDir = ? WHERE id = ?", (format(fr['MotifDir'], '.3f'), row['id']))
+    conn.commit()
+    # break
 
 
