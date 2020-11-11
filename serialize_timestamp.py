@@ -163,27 +163,35 @@ for row in cur.fetchall():
 
 
     # Calculate motif firing rates per condition
-    if not bool(fr):  # if fr dictionary already exists
-        fr = {'MotifUndir' :
-                  sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'U'])\
-                  / sum([time for time, context in zip(time_vec, context_vec) if context == 'U'])
-            ,
-              'MotifDir' :
-                  sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'D'])\
-                  / sum([time for time, context in zip(time_vec, context_vec) if context == 'D'])
-              }
-    else:
+    # if not bool(fr):  # if fr dictionary does not exist
+    #     if ''.join(context_vec).find('U') >= 0:  # if undir exists
+    #         fr = {'MotifUndir' :
+    #                   sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'U'])\
+    #                   / sum([time for time, context in zip(time_vec, context_vec) if context == 'U'])
+    #               }
+    #     elif
+    #           'MotifDir' :
+    #               sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'D'])\
+    #               / sum([time for time, context in zip(time_vec, context_vec) if context == 'D'])
+    #           }
+    # else:
+
+    if ''.join(context_vec).find('U') >= 0:  # if undir exists
         fr['MotifUndir'] = sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'U'])\
                   / sum([time for time, context in zip(time_vec, context_vec) if context == 'U'])
 
+    if ''.join(context_vec).find('D') >= 0:  # if undir exists
         fr['MotifDir'] = sum([nb_spk for nb_spk, context in zip(nb_spk_vec, context_vec) if context == 'D'])\
                   / sum([time for time, context in zip(time_vec, context_vec) if context == 'D'])
 
 
     # Update the database
-    cur.execute("UPDATE cluster SET baselineFR= ? WHERE id = ?", (format(fr['Baseline'], '.3f'), row['id']))
-    cur.execute("UPDATE cluster SET motifFRUndir = ? WHERE id = ?", (format(fr['MotifUndir'], '.3f'), row['id']))
-    cur.execute("UPDATE cluster SET motifFRDir = ? WHERE id = ?", (format(fr['MotifDir'], '.3f'), row['id']))
+    if bool('Baseline' in fr):
+        cur.execute("UPDATE cluster SET baselineFR= ? WHERE id = ?", (format(fr['Baseline'], '.3f'), row['id']))
+    if bool('MotifUndir' in fr):
+        cur.execute("UPDATE cluster SET motifFRUndir = ? WHERE id = ?", (format(fr['MotifUndir'], '.3f'), row['id']))
+    if bool('MotifDir' in fr):
+        cur.execute("UPDATE cluster SET motifFRDir = ? WHERE id = ?", (format(fr['MotifDir'], '.3f'), row['id']))
     conn.commit()
     # break
 
