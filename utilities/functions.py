@@ -36,7 +36,7 @@ def find_str(pattern : str, string : str):
     return ind
 
 
-def find_data_dir():
+def find_data_path():
     """Request the user to manually find dir path and return it"""
     from pathlib import Path
     from tkinter import Tk
