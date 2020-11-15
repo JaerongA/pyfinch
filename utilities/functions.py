@@ -3,10 +3,9 @@ By Jaerong
 A collection of utility functions used for analysis
 """
 
-
 def unique(list):
     """
-    Inpur : list
+    Input : list
     Extract unique strings from the list in the order they appeared
     """
     seen = set()
@@ -35,3 +34,14 @@ def find_str(pattern : str, string : str):
 
     ind = [m.start() for m in re.finditer(pattern, string)]
     return ind
+
+
+def find_data_dir():
+    """Request the user to manually find dir path and return it"""
+    from pathlib import Path
+    from tkinter import Tk
+    from tkinter import filedialog
+    root = Tk()
+    root.withdraw()
+    data_dir = filedialog.askdirectory()
+    return Path(data_dir)
