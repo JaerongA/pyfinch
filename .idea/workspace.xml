@@ -3,9 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dir_undir_labeling.py" beforeDir="false" afterPath="$PROJECT_DIR$/preprocessing/label_dir_undir.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/fr_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/load_intan_rhd_format/load_intan_rhd_format.py" beforeDir="false" afterPath="$PROJECT_DIR$/load_intan_rhd_format/load_intan_rhd_format.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/copy_cluster_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/copy_cluster_mat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/deafening.db" beforeDir="false" afterPath="$PROJECT_DIR$/database/deafening.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/preprocessing/change_cbin_names.py" beforeDir="false" afterPath="$PROJECT_DIR$/preprocessing/change_cbin_names.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/preprocessing/label_dir_undir.py" beforeDir="false" afterPath="$PROJECT_DIR$/preprocessing/label_dir_undir.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,13 +101,6 @@
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="database.main" />
   </component>
-  <component name="PyConsoleOptionsProvider">
-    <option name="myPythonConsoleState">
-      <console-settings>
-        <option name="useSoftWraps" value="true" />
-      </console-settings>
-    </option>
-  </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="H:\Box\PythonToolbox\Deafening\preprocessing" />
@@ -120,7 +114,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.fr_analysis">
+  <component name="RunManager" selected="Python.change_cbin_names">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -165,20 +159,17 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="convert_adbit2volts" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="change_cbin_names" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/preprocessing" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/convert_adbit2volts.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/preprocessing/change_cbin_names.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -209,20 +200,17 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="practice (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="label_dir_undir" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/preprocessing" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/practice.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/preprocessing/label_dir_undir.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -231,7 +219,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="snr_analysis" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="serialize_timestamp" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -244,7 +232,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/snr_analysis.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/serialize_timestamp.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -277,19 +265,19 @@
     </configuration>
     <list>
       <item itemvalue="Python.SongAnalysis" />
-      <item itemvalue="Python.practice (1)" />
-      <item itemvalue="Python.snr_analysis" />
-      <item itemvalue="Python.convert_adbit2volts" />
       <item itemvalue="Python.syllable_duration_analysis_v2" />
       <item itemvalue="Python.fr_analysis" />
+      <item itemvalue="Python.serialize_timestamp" />
+      <item itemvalue="Python.change_cbin_names" />
+      <item itemvalue="Python.label_dir_undir" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.change_cbin_names" />
+        <item itemvalue="Python.label_dir_undir" />
+        <item itemvalue="Python.serialize_timestamp" />
         <item itemvalue="Python.fr_analysis" />
         <item itemvalue="Python.syllable_duration_analysis_v2" />
-        <item itemvalue="Python.snr_analysis" />
-        <item itemvalue="Python.convert_adbit2volts" />
-        <item itemvalue="Python.practice (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -444,48 +432,14 @@
       <workItem from="1603988667861" duration="422000" />
       <workItem from="1603989112709" duration="1205000" />
       <workItem from="1604093911947" duration="5000" />
-    </task>
-    <task id="LOCAL-00037" summary="function to analyze syllable sequence entropy">
-      <created>1594957567052</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
-      <option name="project" value="LOCAL" />
-      <updated>1594957567052</updated>
-    </task>
-    <task id="LOCAL-00038" summary="function to analyze syllable sequence entropy">
-      <created>1594957609544</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1594957609544</updated>
-    </task>
-    <task id="LOCAL-00039" summary="function to analyze syllable sequence entropy">
-      <created>1595044292520</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
-      <option name="project" value="LOCAL" />
-      <updated>1595044292520</updated>
-    </task>
-    <task id="LOCAL-00040" summary=".">
-      <created>1595044300128</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
-      <option name="project" value="LOCAL" />
-      <updated>1595044300128</updated>
-    </task>
-    <task id="LOCAL-00041" summary=".">
-      <created>1595130683272</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1595130683272</updated>
-    </task>
-    <task id="LOCAL-00042" summary="module for plotting figures">
-      <created>1595216217746</created>
-      <option name="number" value="00042" />
-      <option name="presentableId" value="LOCAL-00042" />
-      <option name="project" value="LOCAL" />
-      <updated>1595216217746</updated>
+      <workItem from="1604549533748" duration="1313000" />
+      <workItem from="1604631713475" duration="12660000" />
+      <workItem from="1604767780805" duration="33729000" />
+      <workItem from="1604875011502" duration="21390000" />
+      <workItem from="1605217354464" duration="1210000" />
+      <workItem from="1605235787683" duration="2586000" />
+      <workItem from="1605369311418" duration="498000" />
+      <workItem from="1605370983518" duration="16560000" />
     </task>
     <task id="LOCAL-00043" summary=".">
       <created>1595216228982</created>
@@ -788,7 +742,49 @@
       <option name="project" value="LOCAL" />
       <updated>1603857350162</updated>
     </task>
-    <option name="localTasksCounter" value="86" />
+    <task id="LOCAL-00086" summary="comment print">
+      <created>1604631831356</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
+      <option name="project" value="LOCAL" />
+      <updated>1604631831356</updated>
+    </task>
+    <task id="LOCAL-00087" summary="serialize timestamp &amp; calculate firing rates&#10;&#10;list version">
+      <created>1604887325204</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
+      <option name="project" value="LOCAL" />
+      <updated>1604887325204</updated>
+    </task>
+    <task id="LOCAL-00088" summary="added regular expression">
+      <created>1604895509286</created>
+      <option name="number" value="00088" />
+      <option name="presentableId" value="LOCAL-00088" />
+      <option name="project" value="LOCAL" />
+      <updated>1604895509286</updated>
+    </task>
+    <task id="LOCAL-00089" summary="comment out print">
+      <created>1604895538807</created>
+      <option name="number" value="00089" />
+      <option name="presentableId" value="LOCAL-00089" />
+      <option name="project" value="LOCAL" />
+      <updated>1604895538807</updated>
+    </task>
+    <task id="LOCAL-00090" summary="update the results to the database">
+      <created>1604897994837</created>
+      <option name="number" value="00090" />
+      <option name="presentableId" value="LOCAL-00090" />
+      <option name="project" value="LOCAL" />
+      <updated>1604897994837</updated>
+    </task>
+    <task id="LOCAL-00091" summary="added find_data_dir">
+      <created>1605416340427</created>
+      <option name="number" value="00091" />
+      <option name="presentableId" value="LOCAL-00091" />
+      <option name="project" value="LOCAL" />
+      <updated>1605416340428</updated>
+    </task>
+    <option name="localTasksCounter" value="92" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -809,12 +805,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="07/12/2020" />
-    <MESSAGE value="plot the raw data for each channel" />
-    <MESSAGE value="function to analyze syllable sequence entropy" />
-    <MESSAGE value="module for plotting figures" />
-    <MESSAGE value="added spectrogram" />
-    <MESSAGE value="separates song bouts" />
     <MESSAGE value="add db" />
     <MESSAGE value="changed the database loading scheme" />
     <MESSAGE value="updated mean intro notes, song/call prop" />
@@ -834,97 +824,93 @@
     <MESSAGE value="made project a path" />
     <MESSAGE value="put sub-functions into a main function" />
     <MESSAGE value="fr analysis" />
-    <option name="LAST_COMMIT_MESSAGE" value="fr analysis" />
+    <MESSAGE value="comment print" />
+    <MESSAGE value="serialize timestamp &amp; calculate firing rates&#10;&#10;list version" />
+    <MESSAGE value="added regular expression" />
+    <MESSAGE value="comment out print" />
+    <MESSAGE value="update the results to the database" />
+    <MESSAGE value="added find_data_dir" />
+    <option name="LAST_COMMIT_MESSAGE" value="" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="773" y="276" key="#SQL_Dialects" timestamp="1595728466323">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="773" y="276" key="#SQL_Dialects/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595728466323" />
     <state x="-3260" y="583" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1603253599270">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3260" y="583" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603253599270" />
     <state x="580" y="321" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597201607715" />
-    <state x="743" y="361" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1595967710379">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="-2531" y="560" width="1251" height="685" key="#xdebugger.evaluate" timestamp="1604886067261">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="743" y="361" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1595967710379" />
-    <state x="990" y="486" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595726535630" />
-    <state x="891" y="665" width="1407" height="685" key="#xdebugger.evaluate" timestamp="1603295099834">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="891" y="665" width="1407" height="685" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603295099834" />
-    <state x="198" y="157" width="971" height="957" key="CommitChangelistDialog2" timestamp="1603857349637">
+    <state x="-2531" y="560" width="1251" height="685" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604886067261" />
+    <state x="198" y="157" width="1925" height="1145" key="CommitChangelistDialog2" timestamp="1605416480902">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-3263" y="425" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1597636743087" />
-    <state x="198" y="157" width="971" height="957" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603857349637" />
+    <state x="198" y="157" width="1925" height="1145" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1605416480902" />
     <state width="314" height="242" key="DatabaseViewActions_Filter" timestamp="1601782217542">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="314" height="242" key="DatabaseViewActions_Filter/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1601782217542" />
-    <state x="93" y="93" width="2375" height="1215" key="DiffContextDialog" timestamp="1602821613905">
+    <state x="93" y="93" width="2375" height="1215" key="DiffContextDialog" timestamp="1605416365930">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="93" y="93" width="2375" height="1215" key="DiffContextDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602821613905" />
+    <state x="93" y="93" width="2375" height="1215" key="DiffContextDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1605416365930" />
     <state x="-2791" y="605" key="ExecutionTargetDialog" timestamp="1603683969683">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2791" y="605" key="ExecutionTargetDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603683969683" />
-    <state x="1049" y="343" key="ExecutionTargetDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596086293798" />
-    <state x="346" y="615" key="FileChooserDialogImpl" timestamp="1600370970166">
+    <state x="346" y="615" key="FileChooserDialogImpl" timestamp="1604860652460">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="346" y="615" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1600370970166" />
-    <state width="2505" height="315" key="GridCell.Tab.0.bottom" timestamp="1603311321801">
+    <state x="346" y="615" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604860652459" />
+    <state width="2505" height="410" key="GridCell.Tab.0.bottom" timestamp="1604886071339">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="315" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603258718416" />
-    <state width="2505" height="315" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603311321801" />
-    <state width="2505" height="315" key="GridCell.Tab.0.center" timestamp="1603311321801">
+    <state width="2505" height="410" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604886071339" />
+    <state width="2505" height="410" key="GridCell.Tab.0.center" timestamp="1604886071339">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="315" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603258718416" />
-    <state width="2505" height="315" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603311321801" />
-    <state width="2505" height="315" key="GridCell.Tab.0.left" timestamp="1603311321801">
+    <state width="2505" height="410" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604886071339" />
+    <state width="2505" height="410" key="GridCell.Tab.0.left" timestamp="1604886071339">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="315" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603258718416" />
-    <state width="2505" height="315" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603311321801" />
-    <state width="2505" height="315" key="GridCell.Tab.0.right" timestamp="1603311321801">
+    <state width="2505" height="410" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604886071339" />
+    <state width="2505" height="410" key="GridCell.Tab.0.right" timestamp="1604886071339">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="315" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603258718416" />
-    <state width="2505" height="315" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603311321801" />
-    <state width="2505" height="315" key="GridCell.Tab.1.bottom" timestamp="1603311321801">
+    <state width="2505" height="410" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604886071339" />
+    <state width="2505" height="410" key="GridCell.Tab.1.bottom" timestamp="1604886071339">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="315" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603258720352" />
-    <state width="2505" height="315" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603311321801" />
-    <state width="2505" height="315" key="GridCell.Tab.1.center" timestamp="1603311321801">
+    <state width="2505" height="410" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604886071339" />
+    <state width="2505" height="410" key="GridCell.Tab.1.center" timestamp="1604886071339">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="315" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603258720352" />
-    <state width="2505" height="315" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603311321801" />
-    <state width="2505" height="315" key="GridCell.Tab.1.left" timestamp="1603311321801">
+    <state width="2505" height="410" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604886071339" />
+    <state width="2505" height="410" key="GridCell.Tab.1.left" timestamp="1604886071339">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="315" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603258720352" />
-    <state width="2505" height="315" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603311321801" />
-    <state width="2505" height="315" key="GridCell.Tab.1.right" timestamp="1603311321801">
+    <state width="2505" height="410" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604886071339" />
+    <state width="2505" height="410" key="GridCell.Tab.1.right" timestamp="1604886071339">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2505" height="315" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603258720352" />
-    <state width="2505" height="315" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603311321801" />
+    <state width="2505" height="410" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604886071339" />
     <state width="237" height="549" key="HiddenNamespacesPopup" timestamp="1597119712725">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="237" height="549" key="HiddenNamespacesPopup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1597119712725" />
-    <state x="1084" y="345" key="RollbackChangesDialog" timestamp="1603391818889">
+    <state x="1084" y="345" key="RollbackChangesDialog" timestamp="1605416447891">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1084" y="345" key="RollbackChangesDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603391818889" />
+    <state x="1084" y="345" key="RollbackChangesDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1605416447891" />
     <state x="127" y="74" width="1819" height="1326" key="SettingsEditor" timestamp="1602045947570">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -933,14 +919,14 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="766" y="352" width="675" height="655" key="StructurePopup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602045899587" />
-    <state width="629" height="498" key="SwitcherDM" timestamp="1603739317394">
+    <state width="629" height="498" key="SwitcherDM" timestamp="1604868902487">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="629" height="498" key="SwitcherDM/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603739317394" />
-    <state width="1287" height="707" key="XDebugger.FullValuePopup" timestamp="1595735073448">
+    <state width="629" height="498" key="SwitcherDM/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604868902487" />
+    <state x="773" y="369" key="Vcs.Push.Dialog.v2" timestamp="1604898016474">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state width="1287" height="707" key="XDebugger.FullValuePopup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1595735073448" />
+    <state x="773" y="369" key="Vcs.Push.Dialog.v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604898016474" />
     <state x="-2686" y="812" width="380" height="323" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1" timestamp="1603684598283">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -950,20 +936,28 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="932" y="259" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602215326317" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1604093910831">
+    <state x="580" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1" timestamp="1604869153979">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="580" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604869153979" />
+    <state x="-296" y="131" width="2375" height="1215" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1605454298573">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="-296" y="131" width="2375" height="1215" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1605454298573" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1605370983528">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603683158535" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604093910831" />
-    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1603772265774">
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1605370983528" />
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1604724105662">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603772265774" />
-    <state x="-3847" y="262" width="1293" height="1407" key="dock-window-1" timestamp="1603855659298">
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604724105662" />
+    <state x="-3465" y="249" width="1352" height="1055" maximized="true" key="dock-window-1" timestamp="1604895737329">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2989" y="243" width="804" height="1035" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603683197498" />
-    <state x="-3847" y="262" width="1293" height="1407" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603855659298" />
+    <state x="-3465" y="249" width="1352" height="1055" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604895737329" />
     <state x="297" y="-29" width="1462" height="955" maximized="true" key="dock-window-2" timestamp="1603684242889">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -981,41 +975,27 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3182" y="605" width="1058" height="1102" maximized="true" key="dock-window-5/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602464292871" />
-    <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1603857774993">
+    <state x="479" y="429" width="737" height="971" key="find.popup" timestamp="1605416125536">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="-3361" y="651" width="1167" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603296442971" />
-    <state x="479" y="429" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603857774993" />
+    <state x="-3361" y="651" width="1167" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1605217363861" />
+    <state x="479" y="429" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1605416125536" />
     <state width="750" height="530" key="javadoc.popup" timestamp="1602299698187">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="750" height="530" key="javadoc.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602299698187" />
-    <state x="963" y="277" key="refactoring.ChangeSignatureDialog" timestamp="1596686148089">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="963" y="277" key="refactoring.ChangeSignatureDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1596686148089" />
-    <state x="-2981" y="570" width="840" height="1034" key="search.everywhere.popup" timestamp="1603739007367">
+    <state x="-2981" y="570" width="840" height="1034" key="search.everywhere.popup" timestamp="1604810812444">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2981" y="570" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1603739007367" />
+    <state x="-2981" y="570" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1604810812444" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/load_intan_rhd_format/intanutil/read_header.py</url>
-          <line>4</line>
-          <option name="timeStamp" value="53" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/SAP_features_pca.py</url>
           <line>47</line>
           <option name="timeStamp" value="78" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/plot_rhd.py</url>
-          <line>29</line>
-          <option name="timeStamp" value="113" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/song/get_song_bout.py</url>
@@ -1064,6 +1044,8 @@
     <SUITE FILE_PATH="coverage/Deafening$get_song_bout_v2.coverage" NAME="get_song_bout_v2 Coverage Results" MODIFIED="1597282743127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$SAP_features.coverage" NAME="SAP_features Coverage Results" MODIFIED="1593832745438" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$intan_to_wav_converter.coverage" NAME="intan_to_wav_converter Coverage Results" MODIFIED="1595209092331" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$serialize_timestamp.coverage" NAME="serialize_timestamp Coverage Results" MODIFIED="1604885465974" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$fr_analysis.coverage" NAME="fr_analysis Coverage Results" MODIFIED="1604884832373" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$get_song_bout_v3.coverage" NAME="get_song_bout_v3 Coverage Results" MODIFIED="1597374319283" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
