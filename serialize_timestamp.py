@@ -7,15 +7,15 @@ from database import load
 import numpy as np
 from pathlib import Path
 from spike.load import read_spk_txt, read_rhd
-from spike.analysis import SpkInfo
 from spike.parameters import *
+from spike.analysis import *
 from song.functions import *
 from song.parameters import *
 from utilities.functions import *
 
 # query = "SELECT * FROM cluster WHERE ephysOK IS TRUE"
-# query = "SELECT * FROM cluster WHERE id == 50 "
-query = "SELECT * FROM cluster WHERE analysisOK IS TRUE"
+query = "SELECT * FROM cluster WHERE id == 50 "
+#query = "SELECT * FROM cluster WHERE analysisOK IS TRUE"
 cur, conn, col_names = load.database(query)
 
 for row in cur.fetchall():
@@ -23,84 +23,86 @@ for row in cur.fetchall():
     cell_name, cell_path = load.cell_info(row)
     print('Accessing... ' + cell_name + '\n')
 
+    # # List .rhd files
+    # rhd_files = list(cell_path.glob('*.rhd'))
+    # 
+    # # Initialize variables
+    # t_amplifier_serialized = np.array([], dtype=np.float64)
+    #
+    # # Store values in these lists
+    # file_list = []
+    # file_start_list = []
+    # file_end_list = []
+    # onset_list = []
+    # offset_list = []
+    # syllable_list = []
+    # context_list = []
+    #
+    # # Loop through Intan .rhd files
+    # for file in rhd_files:
+    #
+    #     # Load the .rhd file
+    #     print('Loading... ' + file.stem)
+    #     intan = read_rhd(file)  # note that the timestamp is in second
+    #
+    #     # Load the .not.mat file
+    #     notmat_file = file.with_suffix('.wav.not.mat')
+    #     onsets, offsets, intervals, duration, syllables, context = read_not_mat(notmat_file, unit='ms')
+    #
+    #     # Serialize time stamps
+    #     intan['t_amplifier'] -= intan['t_amplifier'][0]  # start from t = 0
+    #     start_ind = t_amplifier_serialized.size  # start of the file
+    #
+    #     if t_amplifier_serialized.size == 0:
+    #         t_amplifier_serialized = np.append(t_amplifier_serialized, intan['t_amplifier'])
+    #     else:
+    #         intan['t_amplifier'] += (t_amplifier_serialized[-1] + (1/sample_rate['intan']))
+    #         t_amplifier_serialized = np.append(t_amplifier_serialized, intan['t_amplifier'])
+    #
+    #     # File information (name, start and end timestamp of each file)
+    #     file_list.append(file.stem)
+    #     file_start_list.append(t_amplifier_serialized[start_ind] * 1E3) # in ms
+    #     file_end_list.append(t_amplifier_serialized[-1] * 1E3)
+    #
+    #     onsets += intan['t_amplifier'][0] *1E3  # convert to ms
+    #     offsets += intan['t_amplifier'][0] *1E3
+    #
+    #     #Demarcate song bouts
+    #     onset_list.append(demarcate_bout(onsets, intervals))
+    #     offset_list.append(demarcate_bout(offsets, intervals))
+    #     syllable_list.append(demarcate_bout(syllables, intervals))
+    #     context_list.append(context)
+    #
+    # # Organize event-related info into a single dictionary object
+    # event_info = {
+    #     'file' : file_list,
+    #     'file_start' : file_start_list,
+    #     'file_end': file_end_list,
+    #     'onsets' :  onset_list,
+    #     'offsets' : offset_list,
+    #     'syllables': syllable_list,
+    #     'context' : context_list
+    # }
+
+    event_info = get_event_info(cell_path)
+
+
+
+    ## Get baseline firing rates
     # Get the cluster .txt file
-    unit_nb = int(row['unit'][-2:])
     spk_txt_file = list(cell_path.glob('*' + row['channel'] + '(merged).txt'))[0]
 
     # Read from the cluster .txt file
+    unit_nb = int(row['unit'][-2:])
     spk_ts, _, _ = read_spk_txt(spk_txt_file, unit_nb, unit='ms')
 
-    # List .rhd files
-    rhd_files = list(cell_path.glob('*.rhd'))
 
-    # Initialize variables
-    t_amplifier_serialized = np.array([], dtype=np.float64)
-
-    nb_spk_vec = []
-    time_vec = []
-    context_vec = []
-
-    file_list = []
-    file_start_list = []
-    file_end_list = []
-    onset_list = []
-    offset_list = []
-    syllable_list = []
-    context_list = []
-
-    # Loop through Intan .rhd files
-    for file in rhd_files:
-
-        # Load the .rhd file
-        print('Loading... ' + file.stem)
-        intan = read_rhd(file)  # note that the timestamp is in second
-
-        # Load the .not.mat file
-        notmat_file = file.with_suffix('.wav.not.mat')
-        onsets, offsets, intervals, duration, syllables, context = read_not_mat(notmat_file, unit='ms')
-
-        # Serialize time stamps
-        intan['t_amplifier'] -= intan['t_amplifier'][0]  # start from t = 0
-        start_ind = t_amplifier_serialized.size  # start of the file
-
-        if t_amplifier_serialized.size == 0:
-            t_amplifier_serialized = np.append(t_amplifier_serialized, intan['t_amplifier'])
-        else:
-            intan['t_amplifier'] += (t_amplifier_serialized[-1] + (1/sample_rate['intan']))
-            t_amplifier_serialized = np.append(t_amplifier_serialized, intan['t_amplifier'])
-
-        # File information (name, start and end timestamp of each file)
-        file_list.append(file.stem)
-        file_start_list.append(t_amplifier_serialized[start_ind] * 1E3) # in ms
-        file_end_list.append(t_amplifier_serialized[-1] * 1E3)
-
-        onsets += intan['t_amplifier'][0] *1E3  # convert to ms
-        offsets += intan['t_amplifier'][0] *1E3
-
-        #Demarcate song bouts
-        onset_list.append(demarcate_bout(onsets, intervals))
-        offset_list.append(demarcate_bout(offsets, intervals))
-        syllable_list.append(demarcate_bout(syllables, intervals))
-        context_list.append(context)
-
-    # Organize event-related info into a single dictionary object
-    event_dic = {
-        'file' : file_list,
-        'file_start' : file_start_list,
-        'file_end': file_end_list,
-        'onsets' :  onset_list,
-        'offsets' : offset_list,
-        'syllables': syllable_list,
-        'context' : context_list
-    }
-
-    # Get baseline firing rates
     baseline_spk_vec = []
     nb_spk_vec = []
     time_vec = []
 
     for file_ind, (onset, offset, syllable, file_start) in \
-            enumerate(zip(event_dic['onsets'], event_dic['offsets'], event_dic['syllables'], event_dic['file_start'])):
+            enumerate(zip(event_info['onsets'], event_info['offsets'], event_info['syllables'], event_info['file_start'])):
 
         baseline_spk = []
         bout_ind_list = find_str('*', syllable_list[file_ind])
@@ -140,7 +142,7 @@ for row in cur.fetchall():
     context_vec = []
 
     for file_ind, (onset, offset, syllable, context) in \
-            enumerate(zip(event_dic['onsets'], event_dic['offsets'], event_dic['syllables'], event_dic['context'])):
+            enumerate(zip(event_info['onsets'], event_info['offsets'], event_info['syllables'], event_info['context'])):
 
         # Find motifs
         motif_ind = find_str(row['motif'], syllable)
