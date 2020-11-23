@@ -19,6 +19,8 @@ def main(data_path=None):
 
     if not cbin_files:
         print('No .cbin files in the directory!')
+    if not rec_files:
+        print('No .rec files in the directory!')
     else:
 
         for cbin, rec in zip(cbin_files, rec_files):
