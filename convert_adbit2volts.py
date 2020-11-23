@@ -29,7 +29,7 @@ def converter(query):
     cur, conn, col_names = load.database(query)
 
     for row in cur.fetchall():
-        cell_name, cell_path = load.cell_info(row)
+        cell_name, cell_path = load.cluster_info(row)
         print('Loading... ' + cell_name)
 
         # Read from the cluster .txt file
