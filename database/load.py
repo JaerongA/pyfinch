@@ -44,29 +44,29 @@ def database(query):
     return cur, conn, col_names
 
 
-def cell_info(row):
+def cluster_info(row):
     project_path = project()
 
     if len(str(row['id'])) == 1:
-        cell_id = '00' + str(row['id'])
+        cluster_id = '00' + str(row['id'])
     elif len(str(row['id'])) == 2:
-        cell_id = '0' + str(row['id'])
+        cluster_id = '0' + str(row['id'])
 
     if len(str(row['taskSession'])) == 1:
-        cell_taskSession = 'D0' + str(str(row['taskSession']))
+        cluster_taskSession = 'D0' + str(str(row['taskSession']))
     elif len(str(row['taskSession'])) == 2:
-        cell_taskSession = 'D' + str(str(row['taskSession']))
+        cluster_taskSession = 'D' + str(str(row['taskSession']))
 
-    cell_name = [cell_id, row['birdID'], row['taskName'], cell_taskSession, row['sessionDate'], row['site'],
+    cluster_name = [cluster_id, row['birdID'], row['taskName'], cluster_taskSession, row['sessionDate'], row['site'],
                  row['channel'], row['unit']]
-    cell_name = '-'.join(map(str, cell_name))
+    cluster_name = '-'.join(map(str, cluster_name))
 
-    cell_path = os.path.join(project_path, row['birdID'], row['taskName'],
-                             cell_taskSession + '(' + str(row['sessionDate']) + ')', row['site'][-2:],
+    cluster_path = os.path.join(project_path, row['birdID'], row['taskName'],
+                             cluster_taskSession + '(' + str(row['sessionDate']) + ')', row['site'][-2:],
                              'Songs')
-    cell_path = Path(cell_path)
+    cluster_path = Path(cluster_path)
 
-    return cell_name, cell_path
+    return cluster_name, cluster_path
 
 
 def song_info(row):
