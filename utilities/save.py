@@ -41,7 +41,7 @@ def figure(fig, save_path, title, ext='.png'):
     plt.savefig(fig_name, transparent=True)
 
 
-def save_bout(filename, data):
+def save2json(filename, data):
 
     # save the song bout & number of bouts in .json
     import json
