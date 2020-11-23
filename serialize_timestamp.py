@@ -20,12 +20,12 @@ cur, conn, col_names = load.database(query)
 
 for row in cur.fetchall():
 
-    cell_name, cell_path = load.cell_info(row)
+    cell_name, cell_path = load.cluster_info(row)
     print('Accessing... ' + cell_name + '\n')
 
     # # List .rhd files
     # rhd_files = list(cell_path.glob('*.rhd'))
-    # 
+    #
     # # Initialize variables
     # t_amplifier_serialized = np.array([], dtype=np.float64)
     #
@@ -85,7 +85,7 @@ for row in cur.fetchall():
     # }
 
     event_info = get_event_info(cell_path)
-
+    break
 
 
     ## Get baseline firing rates
