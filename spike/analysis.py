@@ -82,7 +82,7 @@ def get_event_info(cell_path):
     return event_info
 
 
-class ClusterInfo():
+class ClusterInfo:
 
     def __init__(self, database):
         self.database = database  # sqlite3.Row object
@@ -159,23 +159,27 @@ class ClusterInfo():
         if unit is 'ms':
             spk_ts *= 1E3
 
-        self.spk_ts = spk_ts
-        self.spk_wf = spk_wf
-        self.nb_spk = nb_spk
+        self.spk_ts = spk_ts  # spike timestamps in ms
+        self.spk_wf = spk_wf  # individual waveforms
+        self.nb_spk = nb_spk  # the number of spikes
+        print("spk_ts, spk_wf, nb_spk added")
 
 
     def waveform_analysis(self):
 
         # Conduct waveform analysis
-        avg_wf = np.nanmean(self.spk_wf, axis=0)
-        spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
-        spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
-                1 / sample_rate[self.format]) * 1E6  # in microseconds
+        if not hasattr(self, 'avg_wf'):
+            print("waveform not loaded - run 'load_spk()' first!")
+        else:
+            avg_wf = np.nanmean(self.spk_wf, axis=0)
+            spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
+            spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
+                    1 / sample_rate[self.format]) * 1E6  # in microseconds
 
-        self.avg_wf = avg_wf
-        self.spk_height = spk_height  # in microvolts
-        self.spk_width = spk_width  # in microseconds
-
+            self.avg_wf = avg_wf
+            self.spk_height = spk_height  # in microvolts
+            self.spk_width = spk_width  # in microseconds
+            print("avg_wf, spk_height, spk_width added")
 
     def load_raw_data(self, concat=False):
 
@@ -282,15 +286,22 @@ class ClusterInfo():
         for key in event_dic:
             setattr(self, key, event_dic[key])
 
-    def load_not_mat(self):
-        pass
+        print("files, file_start, file_end, onsets, offsets, syllables, context added")
+
 
     def list_files(self):
         files = [file.stem for file in self.path.rglob('*.wav')]
         return files
 
+    def get_nb_files(self):
 
+        nb_files = {}
 
+        nb_files['D'] = len([context for context in self.context if context == 'D'])
+        nb_files['U'] = len([context for context in self.context if context == 'U'])
+        nb_files['ALL'] = len([context for context in self.context if context == 'U'])
+        return nb_files
 
 class RawData(ClusterInfo):
+    # def __init__(self, database):
     pass
