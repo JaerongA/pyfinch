@@ -9,9 +9,12 @@ from pathlib import Path
 from spike.load import read_spk_txt, read_rhd
 from spike.parameters import *
 from spike.analysis import *
-from song.functions import *
+from song.analysis import *
 from song.parameters import *
 from utilities.functions import *
+from scipy.io import wavfile
+
+
 
 # query = "SELECT * FROM cluster WHERE ephysOK IS TRUE"
 query = "SELECT * FROM cluster WHERE id == 50 "
@@ -23,70 +26,77 @@ for row in cur.fetchall():
     cell_name, cell_path = load.cluster_info(row)
     print('Accessing... ' + cell_name + '\n')
 
-    # # List .rhd files
-    # rhd_files = list(cell_path.glob('*.rhd'))
-    #
-    # # Initialize variables
-    # t_amplifier_serialized = np.array([], dtype=np.float64)
-    #
-    # # Store values in these lists
-    # file_list = []
-    # file_start_list = []
-    # file_end_list = []
-    # onset_list = []
-    # offset_list = []
-    # syllable_list = []
-    # context_list = []
-    #
-    # # Loop through Intan .rhd files
-    # for file in rhd_files:
-    #
-    #     # Load the .rhd file
-    #     print('Loading... ' + file.stem)
-    #     intan = read_rhd(file)  # note that the timestamp is in second
-    #
-    #     # Load the .not.mat file
-    #     notmat_file = file.with_suffix('.wav.not.mat')
-    #     onsets, offsets, intervals, duration, syllables, context = read_not_mat(notmat_file, unit='ms')
-    #
-    #     # Serialize time stamps
-    #     intan['t_amplifier'] -= intan['t_amplifier'][0]  # start from t = 0
-    #     start_ind = t_amplifier_serialized.size  # start of the file
-    #
-    #     if t_amplifier_serialized.size == 0:
-    #         t_amplifier_serialized = np.append(t_amplifier_serialized, intan['t_amplifier'])
-    #     else:
-    #         intan['t_amplifier'] += (t_amplifier_serialized[-1] + (1/sample_rate['intan']))
-    #         t_amplifier_serialized = np.append(t_amplifier_serialized, intan['t_amplifier'])
-    #
-    #     # File information (name, start and end timestamp of each file)
-    #     file_list.append(file.stem)
-    #     file_start_list.append(t_amplifier_serialized[start_ind] * 1E3) # in ms
-    #     file_end_list.append(t_amplifier_serialized[-1] * 1E3)
-    #
-    #     onsets += intan['t_amplifier'][0] *1E3  # convert to ms
-    #     offsets += intan['t_amplifier'][0] *1E3
-    #
-    #     #Demarcate song bouts
-    #     onset_list.append(demarcate_bout(onsets, intervals))
-    #     offset_list.append(demarcate_bout(offsets, intervals))
-    #     syllable_list.append(demarcate_bout(syllables, intervals))
-    #     context_list.append(context)
-    #
-    # # Organize event-related info into a single dictionary object
-    # event_info = {
-    #     'file' : file_list,
-    #     'file_start' : file_start_list,
-    #     'file_end': file_end_list,
-    #     'onsets' :  onset_list,
-    #     'offsets' : offset_list,
-    #     'syllables': syllable_list,
-    #     'context' : context_list
-    # }
+    # List audio files
+    audio_files = list(cell_path.glob('*.wav'))
 
-    event_info = get_event_info(cell_path)
-    break
+    # Initialize variables
+    timestamp_serialized = np.array([], dtype=np.float32)
 
+    # Store values in these lists
+    file_list = []
+    file_start_list = []
+    file_end_list = []
+    onset_list = []
+    offset_list = []
+    syllable_list = []
+    context_list = []
+
+    # Loop through Intan .rhd files
+    for file in audio_files:
+
+        # Load audio files
+        print('Loading... ' + file.stem)
+        sample_rate, data = wavfile.read(file) # note that the timestamp is in second
+        length = data.shape[0] / sample_rate
+        timestamp = np.linspace(0., length, data.shape[0]) *1E3  # start from t = 0 in ms
+
+        # Load the .not.mat file
+        notmat_file = file.with_suffix('.wav.not.mat')
+        onsets, offsets, intervals, duration, syllables, context = read_not_mat(notmat_file, unit='ms')
+
+
+        start_ind = timestamp_serialized.size  # start of the file
+
+        if timestamp_serialized.size:
+            timestamp += (timestamp_serialized[-1] + (1 / sample_rate))
+        timestamp_serialized = np.append(timestamp_serialized, timestamp)
+
+        # File information (name, start & end timestamp of each file)
+        file_list.append(file.stem)
+        file_start_list.append(timestamp_serialized[start_ind]) # in ms
+        file_end_list.append(timestamp_serialized[-1]) # in ms
+
+        onsets += timestamp[0]
+        offsets += timestamp[0]
+
+        #Demarcate song bouts
+        onset_list.append(demarcate_bout(onsets, intervals))
+        offset_list.append(demarcate_bout(offsets, intervals))
+        syllable_list.append(demarcate_bout(syllables, intervals))
+        context_list.append(context)
+
+
+    # Organize event-related info into a single dictionary object
+    event_info = {
+        'file' : file_list,
+        'file_start' : file_start_list,
+        'file_end': file_end_list,
+        'onsets' :  onset_list,
+        'offsets' : offset_list,
+        'syllables': syllable_list,
+        'context' : context_list
+    }
+
+    event = {}
+    event['Undir'] = {k: [x for i, x in enumerate(v) if event_info['context'][i] == 'U'] for k, v in event_info.items()}
+    event['Dir'] = {k: [x for i, x in enumerate(v) if event_info['context'][i] == 'D'] for k, v in event_info.items()}
+
+
+
+
+
+    import IPython
+    IPython.embed()
 
     ## Get baseline firing rates
     # Get the cluster .txt file
