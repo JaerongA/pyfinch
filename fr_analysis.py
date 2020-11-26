@@ -10,7 +10,7 @@ from pathlib import Path
 from spike.load import read_spk_txt, read_rhd
 from spike.analysis import SpkInfo
 from spike.parameters import *
-from song.functions import *
+from song.analysis import *
 from song.parameters import *
 from utilities.functions import *
 
