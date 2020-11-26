@@ -137,3 +137,11 @@ def get_nb_bouts(song_note: str, bout_labeling: str):
     nb_bouts = len([bout for bout in bout_labeling.split('*')[:-1] if
                     unique_nb_notes_in_bout(song_note, bout)])
     return nb_bouts
+
+
+class SongInfo:
+
+    def __init__(self, database):
+        self.database = database
+        pass
+    pass

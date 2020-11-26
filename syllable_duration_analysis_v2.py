@@ -5,7 +5,7 @@ Calculation based on EventInfo.m
 """
 from database import load
 import pandas as pd
-from song.functions import *
+from song.analysis import *
 from utilities import save
 
 
