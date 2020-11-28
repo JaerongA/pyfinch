@@ -82,9 +82,18 @@ def get_event_info(cell_path):
     }
     return event_info
 
-def get_isi(spk_list, context_list):
+
+def get_isi(spk_ts: list):
     """Get inter-spike interval of spikes"""
-    isi = np.diff(spk_ts)
+    isi = []
+    for spk_ts in spk_ts:
+        isi.append(np.diff(spk_ts))
+
+
+def get_autocorr(spk_list):
+    pass
+
+
 
 class ClusterInfo:
 
@@ -136,6 +145,15 @@ class ClusterInfo:
         cluster_path = project_path / self.birdID / self.taskName / cluster_taskSession / self.site[-2:] / 'Songs'
         cluster_path = Path(cluster_path)
         self.path = cluster_path
+
+
+    @classmethod
+    def from_database(cls, database):
+        """Create attributes from database"""
+        dic = {}
+        for col in database.keys():
+            dic[col] = database[col]
+        return cls(**dic)
 
 
     def __del__(self):
@@ -201,6 +219,11 @@ class ClusterInfo:
         self.spk_ts = spk_list  # spike timestamps in ms
         print("spk_ts, spk_wf, nb_spk attributes added")
 
+    @classmethod
+    def get_conditional_spk(cls):
+        pass
+
+
 
     def waveform_analysis(self):
 
@@ -218,32 +241,36 @@ class ClusterInfo:
             self.spk_width = spk_width  # in microseconds
             print("avg_wf, spk_height, spk_width added")
 
-    def load_raw_data(self, concat=False):
-
-        # List .rhd files
-        rhd_files = list(self.path.glob('*.rhd'))
-
-        # Initialize variables
-        t_amplifier_serialized = np.array([], dtype=np.float64)
-        amplifier_data_serialized = np.array([], dtype=np.float64)
-
-        # Loop through Intan .rhd files
-        for file in rhd_files:
-
-            # Load the .rhd file
-            intan = read_rhd(file)  # note that the timestamp is in second
-
-            # Serialize time stamps
-            intan['t_amplifier'] -= intan['t_amplifier'][0]  # start from t = 0
-
-            if t_amplifier_serialized.size == 0:
-                t_amplifier_serialized = np.append(t_amplifier_serialized, intan['t_amplifier'])
-            else:
-                intan['t_amplifier'] += (t_amplifier_serialized[-1] + (1 / sample_rate[self.format]))
-                t_amplifier_serialized = np.append(t_amplifier_serialized, intan['t_amplifier'])
 
 
-    def
+
+    @property
+    def isi(self):
+        isi = {}
+        spk_list = [spk_ts for spk_ts, context in zip(self.spk_ts, self.context) if context == 'U']
+        isi['U'] = get_isi(spk_list)
+        spk_list = [spk_ts for spk_ts, context in zip(self.spk_ts, self.context) if context == 'D']
+        isi['D'] = get_isi(spk_list)
+        return isi
+
+    @classmethod
+    def plot_isi(isi):
+        pass
+
+
+
+
+    def get_spk(self):
+        pass
+
+
+
+    def get_fr(self):
+        pass
+
+    def bursting_analysis(self):
+        pass
+
 
 
     @property
@@ -295,7 +322,7 @@ class ClusterInfo:
         pass
 
 
-class AudioData(data_path):
+class AudioData():
     pass
 
 
