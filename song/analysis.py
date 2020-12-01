@@ -35,6 +35,9 @@ def read_not_mat(notmat, unit='ms'):
     duration = offsets - onsets  # duration of each syllable
     syllables = scipy.io.loadmat(notmat)['syllables'][0]  # Load the syllable info
     context = notmat.name.split('.')[0].split('_')[-1][0].upper()  # extract 'U' (undirected) or 'D' (directed) from the file name
+    if context is not 'U' or context is not 'D':  # if the file was not tagged with Undir or Dir
+        context = None
+
 
     # units are in ms by default, but convert to second with the argument
     if unit is 'second':
