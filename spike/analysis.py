@@ -8,9 +8,36 @@ import matplotlib.pyplot as plt
 import numpy as np
 from song.analysis import *
 from spike.parameters import *
-from spike.load import read_rhd
+from spike.load import *
 from pathlib import Path
 from utilities.functions import *
+
+def get_cluster(database):
+
+    cluster_id = ''
+    if len(database['id']) == 1:
+        cluster_id = '00' + database['id']
+    elif len(database['id']) == 2:
+        cluster_id = '0' + database['id']
+    cluster_taskSession = ''
+    if len(str(database['taskSession'])) == 1:
+        cluster_taskSession = 'D0' + str(database['taskSession'])
+    elif len(str(database['taskSession'])) == 2:
+        cluster_taskSession = 'D' + str(database['taskSession'])
+    cluster_taskSession += '(' + str(database['sessionDate']) + ')'
+
+    cluster_name = [cluster_id, database['birdID'], database['taskName'], cluster_taskSession, database['sessionDate'],
+                    database['site'], database['channel'], database['unit']]
+    cluster_name = '-'.join(map(str, cluster_name))
+
+    # Get cluster path
+    project_path = project()
+    cluster_path = project_path / database['birdID'] / database['taskName'] / cluster_taskSession / database[
+        'site'][-2:] / 'Songs'
+    cluster_path = Path(cluster_path)
+
+    return cluster_name, cluster_path
+
 
 
 def get_event_info(cell_path):
@@ -40,14 +67,13 @@ def get_event_info(cell_path):
 
         # Load audio files
         print('Loading... ' + file.stem)
-        sample_rate, data = wavfile.read(file) # note that the timestamp is in second
+        sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
         length = data.shape[0] / sample_rate
-        timestamp = np.linspace(0., length, data.shape[0]) *1E3  # start from t = 0 in ms
+        timestamp = np.linspace(0., length, data.shape[0]) * 1E3  # start from t = 0 in ms
 
         # Load the .not.mat file
         notmat_file = file.with_suffix('.wav.not.mat')
         onsets, offsets, intervals, duration, syllables, context = read_not_mat(notmat_file, unit='ms')
-
 
         start_ind = timestamp_serialized.size  # start of the file
 
@@ -57,28 +83,27 @@ def get_event_info(cell_path):
 
         # File information (name, start & end timestamp of each file)
         file_list.append(file.stem)
-        file_start_list.append(timestamp_serialized[start_ind]) # in ms
-        file_end_list.append(timestamp_serialized[-1]) # in ms
+        file_start_list.append(timestamp_serialized[start_ind])  # in ms
+        file_end_list.append(timestamp_serialized[-1])  # in ms
 
         onsets += timestamp[0]
         offsets += timestamp[0]
 
-        #Demarcate song bouts
+        # Demarcate song bouts
         onset_list.append(demarcate_bout(onsets, intervals))
         offset_list.append(demarcate_bout(offsets, intervals))
         syllable_list.append(demarcate_bout(syllables, intervals))
         context_list.append(context)
 
-
     # Organize event-related info into a single dictionary object
     event_info = {
-        'file' : file_list,
-        'file_start' : file_start_list,
+        'file': file_list,
+        'file_start': file_start_list,
         'file_end': file_end_list,
-        'onsets' :  onset_list,
-        'offsets' : offset_list,
+        'onsets': onset_list,
+        'offsets': offset_list,
         'syllables': syllable_list,
-        'context' : context_list
+        'context': context_list
     }
     return event_info
 
@@ -94,66 +119,20 @@ def get_autocorr(spk_list):
     pass
 
 
-
 class ClusterInfo:
 
     def __init__(self, database):
-        self.database = database  # sqlite3.Row object
-        self.id = database['id']
-        self.birdID = database['birdID']
-        self.taskName = database['taskName']
-        self.taskSession = database['taskSession']
-        self.taskSessionDeafening = database['taskSessionDeafening']
-        self.taskSessionPostDeafening = database['taskSessionPostDeafening']
-        self.dph = database['dph']
-        self.block10days = database['block10days']
-        self.sessionDate = database['sessionDate']
-        self.site = database['site']
-        self.channel = database['channel']
-        self.unit = database['unit']
-        self.clusterQuality = database['clusterQuality']
-        self.region = database['region']
-        self.songNote = database['songNote']
-        self.motif = database['motif']
-        self.introNotes = database['introNotes']
-        self.calls = database['calls']
-        self.callSeqeunce = database['callSeqeunce']
-        self.format = database['format']  # ephys file format ('rdh', or 'cbin')
 
-        # Get cluster name
-        ## TODO : use the existing function load_cluster
-        cluster_id = ''
-        if len(str(self.id)) == 1:
-            cluster_id = '00' + str(self.id)
-        elif len(str(self.id)) == 2:
-            cluster_id = '0' + str(self.id)
-        cluster_taskSession = ''
-        if len(str(self.taskSession)) == 1:
-            cluster_taskSession = 'D0' + str(str(self.taskSession))
-        elif len(str(self.taskSession)) == 2:
-            cluster_taskSession = 'D' + str(str(self.taskSession))
-        cluster_taskSession += '(' + str(self.sessionDate) + ')'
-
-        cluster_name = [cluster_id, self.birdID, self.taskName, cluster_taskSession, self.sessionDate,
-                        self.site, self.channel, self.unit]
-        cluster_name = '-'.join(map(str, cluster_name))
-        self.name = cluster_name
-        print('')
-        print('Load cluster {self.name}'.format(self=self))
-        # Get cluster path
-        project_path = project()
-        cluster_path = project_path / self.birdID / self.taskName / cluster_taskSession / self.site[-2:] / 'Songs'
-        cluster_path = Path(cluster_path)
-        self.path = cluster_path
-
-
-    @classmethod
-    def from_database(cls, database):
-        """Create attributes from database"""
         dic = {}
         for col in database.keys():
             dic[col] = database[col]
-        return cls(**dic)
+        for key in dic:
+            setattr(self, key, dic[key])
+
+        # Get cluster name & path
+        self.name, self.path = get_cluster(database)
+        print('')
+        print('Load cluster {self.name}'.format(self=self))
 
 
     def __del__(self):
@@ -163,11 +142,9 @@ class ClusterInfo:
         '''Print out the name'''
         return '{self.name}'.format(self=self)
 
-
     def list_files(self):
         files = [file.stem for file in self.path.rglob('*.wav')]
         return files
-
 
     def load_events(self):
         """
@@ -188,7 +165,6 @@ class ClusterInfo:
             setattr(self, key, event_dic[key])
 
         print("files, file_start, file_end, onsets, offsets, syllables, context attributes added")
-
 
     def load_spk(self, unit='ms'):
 
@@ -223,8 +199,6 @@ class ClusterInfo:
     def get_conditional_spk(cls):
         pass
 
-
-
     def waveform_analysis(self):
 
         # Conduct waveform analysis
@@ -241,9 +215,6 @@ class ClusterInfo:
             self.spk_width = spk_width  # in microseconds
             print("avg_wf, spk_height, spk_width added")
 
-
-
-
     @property
     def isi(self):
         isi = {}
@@ -257,21 +228,14 @@ class ClusterInfo:
     def plot_isi(isi):
         pass
 
-
-
-
     def get_spk(self):
         pass
-
-
 
     def get_fr(self):
         pass
 
     def bursting_analysis(self):
         pass
-
-
 
     @property
     def nb_files(self):
@@ -326,7 +290,6 @@ class AudioData():
     pass
 
 
-
 class RawData(ClusterInfo):
     def __init__(self, database):
         super().__init__(database)
@@ -357,9 +320,10 @@ class RawData(ClusterInfo):
                 intan['t_amplifier'] += (amplifier_data_serialized[-1] + (1 / sample_rate[self.format]))
                 amplifier_data_serialized = np.append(amplifier_data_serialized, intan['t_amplifier'])
 
-
     def load_timestamp(self):
         pass
 
 
-
+class SpkCorr(ClusterInfo):
+    def __init__(self):
+        pass
