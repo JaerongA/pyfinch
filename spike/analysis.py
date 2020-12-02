@@ -97,7 +97,7 @@ def get_event_info(cell_path):
 
     # Organize event-related info into a single dictionary object
     event_info = {
-        'file': file_list,
+        'files': file_list,
         'file_start': file_start_list,
         'file_end': file_end_list,
         'onsets': onset_list,
@@ -123,11 +123,10 @@ class ClusterInfo:
 
     def __init__(self, database):
 
-        dic = {}
+        # Set all database fields as attributes
         for col in database.keys():
-            dic[col] = database[col]
-        for key in dic:
-            setattr(self, key, dic[key])
+            # dic[col] = database[col]
+            setattr(self, col, database[col])
 
         # Get cluster name & path
         self.name, self.path = get_cluster(database)
