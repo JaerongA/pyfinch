@@ -20,11 +20,11 @@ def read_not_mat(notmat, unit='ms'):
         time stamp for syllable offset (in ms)
     intervals : array
         temporal interval between syllables (i.e. syllable gaps) (in ms)
-    duration : array
-        duration of each syllable (in ms)
+    durations : array
+        durations of each syllable (in ms)
     syllables : str
         song syllables
-    context : str
+    contexts : str
         social context ('U' for undirected and 'D' for directed)
     """
     import scipy.io
@@ -32,11 +32,11 @@ def read_not_mat(notmat, unit='ms'):
     onsets = scipy.io.loadmat(notmat)['onsets'].transpose()[0]  # syllable onset timestamp
     offsets = scipy.io.loadmat(notmat)['offsets'].transpose()[0]  # syllable offset timestamp
     intervals = onsets[1:] - offsets[:-1]  # syllable gap durations (interval)
-    duration = offsets - onsets  # duration of each syllable
+    durations = offsets - onsets  # duration of each syllable
     syllables = scipy.io.loadmat(notmat)['syllables'][0]  # Load the syllable info
-    context = notmat.name.split('.')[0].split('_')[-1][0].upper()  # extract 'U' (undirected) or 'D' (directed) from the file name
-    if context is not 'U' or context is not 'D':  # if the file was not tagged with Undir or Dir
-        context = None
+    contexts = notmat.name.split('.')[0].split('_')[-1][0].upper()  # extract 'U' (undirected) or 'D' (directed) from the file name
+    if contexts is not 'U' or contexts is not 'D':  # if the file was not tagged with Undir or Dir
+        contexts = None
 
 
     # units are in ms by default, but convert to second with the argument
@@ -44,9 +44,9 @@ def read_not_mat(notmat, unit='ms'):
         onsets /= 1E3
         offsets /= 1E3
         intervals /= 1E3
-        duration /= 1E3
+        durations /= 1E3
 
-    return onsets, offsets, intervals, duration, syllables, context
+    return onsets, offsets, intervals, durations, syllables, contexts
 
 
 def syl_type_(syllables, song_info):
