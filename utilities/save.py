@@ -8,19 +8,20 @@ from datetime import date
 from database import load
 
 
-def make_save_dir(dir_name, add_date=True):
+def make_dir(dir_name: str, add_date=True):
 
+    # add date info in the sub-directory
     project_path = load.project()
-    save_dir = project_path / 'Analysis' / dir_name
+    save_path = project_path / 'Analysis' / dir_name
 
     if add_date:
         today = date.today()
-        save_dir = save_dir / today.strftime("%Y-%m-%d")  # 2020-07-04
+        save_path = save_path / today.strftime("%Y-%m-%d")  # 2020-07-04
 
-    # print(save_dir)
-    if not save_dir.exists():
-        save_dir.mkdir(parents=True)
-    return save_dir
+    # print(save_path)
+    if not save_path.exists():
+        save_path.mkdir(parents=True)
+    return save_path
 
 
 def figure(fig, save_path, title, ext='.png'):
