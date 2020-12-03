@@ -12,6 +12,7 @@ from spike.load import *
 from pathlib import Path
 from utilities.functions import *
 
+
 def get_cluster(database):
 
     cluster_id = ''
@@ -26,7 +27,7 @@ def get_cluster(database):
         cluster_taskSession = 'D' + str(database['taskSession'])
     cluster_taskSession += '(' + str(database['sessionDate']) + ')'
 
-    cluster_name = [cluster_id, database['birdID'], database['taskName'], cluster_taskSession, database['sessionDate'],
+    cluster_name = [cluster_id, database['birdID'], database['taskName'], cluster_taskSession,
                     database['site'], database['channel'], database['unit']]
     cluster_name = '-'.join(map(str, cluster_name))
 
@@ -59,6 +60,7 @@ def get_event_info(cell_path):
     file_end_list = []
     onset_list = []
     offset_list = []
+    duration_list = []
     syllable_list = []
     context_list = []
 
@@ -73,7 +75,7 @@ def get_event_info(cell_path):
 
         # Load the .not.mat file
         notmat_file = file.with_suffix('.wav.not.mat')
-        onsets, offsets, intervals, duration, syllables, context = read_not_mat(notmat_file, unit='ms')
+        onsets, offsets, intervals, durations, syllables, contexts = read_not_mat(notmat_file, unit='ms')
 
         start_ind = timestamp_serialized.size  # start of the file
 
@@ -89,11 +91,13 @@ def get_event_info(cell_path):
         onsets += timestamp[0]
         offsets += timestamp[0]
 
+
         # Demarcate song bouts
         onset_list.append(demarcate_bout(onsets, intervals))
         offset_list.append(demarcate_bout(offsets, intervals))
+        duration_list.append(demarcate_bout(durations, intervals))
         syllable_list.append(demarcate_bout(syllables, intervals))
-        context_list.append(context)
+        context_list.append(contexts)
 
     # Organize event-related info into a single dictionary object
     event_info = {
@@ -102,8 +106,9 @@ def get_event_info(cell_path):
         'file_end': file_end_list,
         'onsets': onset_list,
         'offsets': offset_list,
+        'durations': duration_list,
         'syllables': syllable_list,
-        'context': context_list
+        'contexts': context_list
     }
     return event_info
 
@@ -115,7 +120,7 @@ def get_isi(spk_ts: list):
         isi.append(np.diff(spk_ts))
 
 
-def get_autocorr(spk_list):
+def get_spkcorr(spk_list):
     pass
 
 
@@ -134,8 +139,8 @@ class ClusterInfo:
         print('Load cluster {self.name}'.format(self=self))
 
 
-    def __del__(self):
-        print('Delete cluster : {self.name}'.format(self=self))
+    # def __del__(self):
+    #     print('Delete cluster : {self.name}'.format(self=self))
 
     def __repr__(self):
         '''Print out the name'''
@@ -149,7 +154,7 @@ class ClusterInfo:
         """
         Obtain event info & serialized timestamps for song & neural analysis
         """
-        file_name = self.path / 'events.npy'
+        file_name = self.path / 'EventInfo.npy'
 
         if file_name.exists():
             event_dic = np.load(file_name, allow_pickle=True).item()
@@ -163,7 +168,7 @@ class ClusterInfo:
         for key in event_dic:
             setattr(self, key, event_dic[key])
 
-        print("files, file_start, file_end, onsets, offsets, syllables, context attributes added")
+        print("files, file_start, file_end, onsets, offsets, durations, syllables, context attributes added")
 
     def load_spk(self, unit='ms'):
 
@@ -268,11 +273,11 @@ class ClusterInfo:
 
         nb_motifs = {}
 
-        syllable_list = [syllable for syllable, context in zip(self.syllables, self.context) if context == 'U']
+        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
         syllables = ''.join(syllable_list)
         nb_motifs['U'] = len(find_str(self.motif, syllables))
 
-        syllable_list = [syllable for syllable, context in zip(self.syllables, self.context) if context == 'D']
+        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'D']
         syllables = ''.join(syllable_list)
         nb_motifs['D'] = len(find_str(self.motif, syllables))
 
