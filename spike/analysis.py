@@ -118,7 +118,7 @@ def get_isi(spk_ts: list):
     isi = []
     for spk_ts in spk_ts:
         isi.append(np.diff(spk_ts))
-
+    return isi
 
 def get_spkcorr(spk_list):
     pass
@@ -168,9 +168,9 @@ class ClusterInfo:
         for key in event_dic:
             setattr(self, key, event_dic[key])
 
-        print("files, file_start, file_end, onsets, offsets, durations, syllables, context attributes added")
+        print("files, file_start, file_end, onsets, offsets, durations, syllables, contexts attributes added")
 
-    def load_spk(self, unit='ms'):
+    def load_spk(self, unit='ms', update=False):
 
         spk_txt_file = list(self.path.glob('*' + self.channel + '(merged).txt'))[0]
         spk_info = np.loadtxt(spk_txt_file, delimiter='\t', skiprows=1)  # skip header
@@ -284,6 +284,13 @@ class ClusterInfo:
         nb_motifs['ALL'] = nb_motifs['U'] + nb_motifs['D']
 
         return nb_motifs
+
+    @property
+    def open_folder(self):
+        """Open the directory in win explorer"""
+        import webbrowser
+        webbrowser.open(self.path)
+
 
     def get_peth(self):
         """Get peri-event time histograms & rasters"""
