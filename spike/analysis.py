@@ -199,9 +199,6 @@ class ClusterInfo:
         self.spk_ts = spk_list  # spike timestamps in ms
         print("spk_ts, spk_wf, nb_spk attributes added")
 
-    @classmethod
-    def get_conditional_spk(cls):
-        pass
 
     def waveform_analysis(self):
 
@@ -222,9 +219,9 @@ class ClusterInfo:
     @property
     def isi(self):
         isi = {}
-        spk_list = [spk_ts for spk_ts, context in zip(self.spk_ts, self.context) if context == 'U']
+        spk_list = [spk_ts for spk_ts, context in zip(self.spk_ts, self.contexts) if context == 'U']
         isi['U'] = get_isi(spk_list)
-        spk_list = [spk_ts for spk_ts, context in zip(self.spk_ts, self.context) if context == 'D']
+        spk_list = [spk_ts for spk_ts, context in zip(self.spk_ts, self.contexts) if context == 'D']
         isi['D'] = get_isi(spk_list)
         return isi
 
@@ -246,8 +243,8 @@ class ClusterInfo:
 
         nb_files = {}
 
-        nb_files['U'] = len([context for context in self.context if context == 'U'])
-        nb_files['D'] = len([context for context in self.context if context == 'D'])
+        nb_files['U'] = len([context for context in self.contexts if context == 'U'])
+        nb_files['D'] = len([context for context in self.contexts if context == 'D'])
         nb_files['ALL'] = nb_files['U'] + nb_files['D']
 
         return nb_files
@@ -292,13 +289,97 @@ class ClusterInfo:
         webbrowser.open(self.path)
 
 
+
+
+
+class MotifInfo(ClusterInfo):
+
+    def __init__(self, database):
+        super().__init__(database)
+        self.load_events()
+        self.load_spk()
+
+        file_list = []
+        spk_list = []
+        onset_list = []
+        offset_list = []
+        syllable_list = []
+        duration_list = []
+        context_list = []
+        motif_dict = {}
+
+        list_zip = zip(self.files, self.spk_ts, self.onsets, self.offsets, self.syllables, self.contexts)
+
+        for file, spks, onsets, offsets, syllables, context in list_zip:
+
+            onsets = onsets.tolist()
+            offsets = offsets.tolist()
+
+            # Find motifs
+            motif_ind = find_str(self.motif, syllables)
+
+            # Get syllable, spike time stamps
+            for ind in motif_ind:
+
+                # start (first syllable) and stop (last syllable) index of a motif
+                start_ind = ind
+                stop_ind = ind + len(self.motif) - 1
+
+                motif_onset = float(onsets[start_ind])
+                motif_offset = float(offsets[stop_ind])
+
+                motif_spk = spks[np.where((spks >= motif_onset) & (spks <= motif_offset))]
+                onsets_in_motif = onsets[start_ind:stop_ind + 1]
+                offsets_in_motif = offsets[start_ind:stop_ind + 1]
+
+                # onsets_in_motif = [onset for onset in onsets if onset != '*' and motif_onset <= float(onset)  <= motif_offset]
+                # offsets_in_motif = [offset for offset in offsets if offset != '*' and motif_onset <= float(offset)  <= motif_offset]
+
+                file_list.append(file)
+                spk_list.append(motif_spk)
+                duration_list.append(motif_offset - motif_onset)
+                onset_list.append(onsets_in_motif)
+                offset_list.append(offsets_in_motif)
+                syllable_list.append(syllables[start_ind:stop_ind + 1])
+                context_list.append(context)
+
+        # Organize event-related info into a single dictionary object
+
+        motif_dict = {
+            'files': file_list,
+            'spk_ts': spk_list,
+            'onsets': onset_list,
+            'offsets': offset_list,
+            'durations': duration_list,
+            'syllables': syllable_list,
+            'contexts': context_list
+        }
+
+        # Set the dictionary values to class attributes
+        for key in motif_dict:
+            setattr(self, key, motif_dict[key])
+
+
     def get_peth(self):
         """Get peri-event time histograms & rasters"""
         pass
 
 
+
+
+class BoutInfo(ClusterInfo):
+    pass
+
+
+class BaselineInfo(ClusterInfo):
+    pass
+
+
+
 class AudioData():
     pass
+
+
 
 
 class RawData(ClusterInfo):
