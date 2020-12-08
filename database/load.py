@@ -2,34 +2,37 @@
 By Jaerong
 Load project information and read from the project database
 """
+from configparser import ConfigParser
 import sqlite3
 import os
 from pathlib import Path
 
 
-def config():
-    from configparser import ConfigParser
-    config_file = 'database/project.ini'
-    parser = ConfigParser()
-    parser.read(config_file)
-    print(parser.sections())
-    return parser
+
+config_file = 'database/project.ini'
+parser = ConfigParser()
+parser.read(config_file)
 
 
 def project():
     from configparser import ConfigParser
-    config_file = 'database/project.ini'
-    parser = ConfigParser()
-    parser.read(config_file)
-    project_path = parser.get('folders', 'project_path')
-    project_path = Path(project_path)
+    # config_file = 'database/project.ini'
+    # parser = ConfigParser()
+    # parser.read(config_file)
+    project_path = Path(parser.get('folders', 'project_path'))
     return project_path
 
 
 def database(query):
     # Apply query to the database
     # Return cursor, connection, col_name
-    conn = sqlite3.connect('database/deafening.db')
+
+    database_path = Path(parser.get('folders', 'database_path'))
+    file = Path(parser.get('files','database'))
+    database_path =  project() / database_path / file
+    print(database_path)
+    # conn = sqlite3.connect('database/deafening.db')
+    conn = sqlite3.connect(database_path)
     # conn.row_factory = lambda cursor, row: row[0]
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
@@ -42,6 +45,26 @@ def database(query):
     cur.execute(query)
 
     return cur, conn, col_names
+
+
+class ProjectLoader:
+    def __init__(self):
+        pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def cluster_info(row):
