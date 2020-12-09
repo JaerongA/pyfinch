@@ -35,6 +35,7 @@ class ProjectLoader:
         cur.execute(query)
         row = cur.fetchone()
         col_names = row.keys()
+        cur.execute(query)
 
         return cur, conn, col_names
 
