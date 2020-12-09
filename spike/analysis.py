@@ -120,41 +120,6 @@ def get_isi(spk_ts: list):
     return isi
 
 
-def get_spk_corr(ref_spk_list, target_spk_list, normalize=False):
-    """Get inter-spike interval of spikes"""
-
-    import math
-
-    time_bin = np.arange(-spk_corr_parm['lag'], spk_corr_parm['lag']+1, spk_corr_parm['bin_size'])
-    normalize = False
-
-    correlogram = np.zeros(len(time_bin))
-    spk_corr = np.array([], dtype=np.float32)
-
-    # Compute spk correlogram
-    for ref_spks, target_spks in zip(ref_spk_list, target_spk_list):
-        for ref_spk in ref_spks:
-            for target_spk in target_spks:
-                diff = target_spk - ref_spk
-
-                if (diff) and (diff <= spk_corr_parm['lag'] and diff >= -spk_corr_parm['lag']):
-                    if diff < 0:
-                        ind = np.where(time_bin == -math.ceil(abs(diff)))
-                    elif diff > 0:
-                        ind = np.where(time_bin == math.ceil((diff)))
-                    # print(diff, time_bin[ind])
-                    correlogram[ind] += 1
-
-    # Make sure the array is symmetrical
-    first_half = np.fliplr([correlogram[:spk_corr_parm['lag']]])[0]
-    second_half = correlogram[spk_corr_parm['lag']+1:]
-    assert np.sum(first_half - second_half) == 0
-
-    # Normalize correlogram by the total sum (probability density conversion)
-    if normalize:
-        correlogram = correlogram / np.sum(correlogram)
-    return correlogram
-
 
 class ClusterInfo:
 
@@ -233,7 +198,6 @@ class ClusterInfo:
 
 
     def analyze_waveform(self):
-
         # Conduct waveform analysis
         if not hasattr(self, 'avg_wf'):
             print("waveform not loaded - run 'load_spk()' first!")
@@ -264,37 +228,47 @@ class ClusterInfo:
         import math
 
         time_bin = np.arange(-spk_corr_parm['lag'], spk_corr_parm['lag'] + 1, spk_corr_parm['bin_size'])
-        normalize = False
+        correlogram = {}
 
-        correlogram = np.zeros(len(time_bin))
         spk_corr = np.array([], dtype=np.float32)
 
-        # Compute spk correlogram
-        for ref_spks, target_spks in zip(ref_spk_list, target_spk_list):
-            for ref_spk in ref_spks:
-                for target_spk in target_spks:
-                    diff = target_spk - ref_spk
+        for social_context in set(self.contexts):
+            # Compute spk correlogram
 
-                    if (diff) and (diff <= spk_corr_parm['lag'] and diff >= -spk_corr_parm['lag']):
-                        if diff < 0:
-                            ind = np.where(time_bin == -math.ceil(abs(diff)))
-                        elif diff > 0:
-                            ind = np.where(time_bin == math.ceil((diff)))
-                        # print(diff, time_bin[ind])
-                        correlogram[ind] += 1
+            corr_temp = np.zeros(len(time_bin))
 
-        # Make sure the array is symmetrical
-        first_half = np.fliplr([correlogram[:spk_corr_parm['lag']]])[0]
-        second_half = correlogram[spk_corr_parm['lag'] + 1:]
-        assert np.sum(first_half - second_half) == 0
+            for ref_spks, target_spks, context in zip(ref_spk_list, target_spk_list, self.contexts):
 
-        # Normalize correlogram by the total sum (probability density conversion)
-        if normalize:
-            correlogram = correlogram / np.sum(correlogram)
+                if context == social_context:
+                    for ref_spk in ref_spks:
+                        for target_spk in target_spks:
+                            diff = target_spk - ref_spk
+
+                            if (diff) and (diff <= spk_corr_parm['lag'] and diff >= -spk_corr_parm['lag']):
+                                if diff < 0:
+                                    ind = np.where(time_bin == -math.ceil(abs(diff)))
+                                elif diff > 0:
+                                    ind = np.where(time_bin == math.ceil((diff)))
+                                # print(diff, time_bin[ind])
+                                corr_temp[ind] += 1
+
+                    # Make sure the array is symmetrical
+                    first_half = np.fliplr([corr_temp[:spk_corr_parm['lag']]])[0]
+                    second_half = corr_temp[spk_corr_parm['lag'] + 1:]
+                    assert np.sum(first_half - second_half) == 0
+
+                    # Normalize correlogram by the total sum (probability density conversion)
+                    if normalize:
+                        corr_temp /= np.sum(correlogram)
+
+            correlogram[social_context] = corr_temp
+        correlogram['parameter'] = spk_corr_parm  # store parameters in the dictionary
+
         return correlogram
 
 
     def get_isi(self):
+
         isi = {}
         spk_list = [spk_ts for spk_ts, context in zip(self.spk_ts, self.contexts) if context == 'U']
         isi['U'] = get_isi(spk_list)
@@ -328,7 +302,6 @@ class ClusterInfo:
     def nb_bouts(self):
 
         nb_bouts = {}
-
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.context) if context == 'U']
         syllables = ''.join(syllable_list)
         nb_bouts['U'] = get_nb_bouts(self.songNote, syllables)
@@ -344,7 +317,6 @@ class ClusterInfo:
     def nb_motifs(self):
 
         nb_motifs = {}
-
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
         syllables = ''.join(syllable_list)
         nb_motifs['U'] = len(find_str(self.motif, syllables))
@@ -527,6 +499,20 @@ class BaselineInfo(ClusterInfo):
         isi = get_isi(self.spk_ts)
         return isi
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class AudioData():
     pass
 
@@ -566,7 +552,3 @@ class RawData(ClusterInfo):
     def load_timestamp(self):
         pass
 
-
-class SpkCorr(ClusterInfo):
-    def __init__(self):
-        pass
