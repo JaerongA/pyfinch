@@ -4,57 +4,39 @@ Load project information and read from the project database
 """
 from configparser import ConfigParser
 import sqlite3
-import os
 from pathlib import Path
 
 
 
-config_file = 'database/project.ini'
-parser = ConfigParser()
-parser.read(config_file)
-
-
-def project():
-    from configparser import ConfigParser
-    # config_file = 'database/project.ini'
-    # parser = ConfigParser()
-    # parser.read(config_file)
-    project_path = Path(parser.get('folders', 'project_path'))
-    return project_path
-
-
-def database(query):
-    # Apply query to the database
-    # Return cursor, connection, col_name
-
-    database_path = Path(parser.get('folders', 'database_path'))
-    file = Path(parser.get('files','database'))
-    database_path =  project() / database_path / file
-    print(database_path)
-    # conn = sqlite3.connect('database/deafening.db')
-    conn = sqlite3.connect(database_path)
-    # conn.row_factory = lambda cursor, row: row[0]
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-
-    # get column names
-    cur.execute(query)
-    row = cur.fetchone()
-    col_names = row.keys()
-
-    cur.execute(query)
-
-    return cur, conn, col_names
-
-
 class ProjectLoader:
     def __init__(self):
-        pass
+
+        parser = ConfigParser()
+        config_file = 'database/project.ini'
+        parser.read(config_file)
+        self.path = Path(parser.get('folders', 'project_path'))
+        self.db_path = Path(parser.get('folders', 'database_path'))
+        self.db = Path(parser.get('files','database'))
+
+    @property
+    def open_folder(self):
+        """Open the directory in win explorer"""
+        import webbrowser
+        webbrowser.open(self.path)
 
 
+    def load_db(self, query):
+        database_path = self.path / self.db_path / self.db
+        conn = sqlite3.connect(database_path)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
 
+        # get column names
+        cur.execute(query)
+        row = cur.fetchone()
+        col_names = row.keys()
 
-
+        return cur, conn, col_names
 
 
 
