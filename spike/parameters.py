@@ -12,7 +12,13 @@ baseline = {'time_win': 1000, 'time_buffer': 2000}  # in ms
 
 # For spike correlogram
 spk_corr_parm = {'bin_size': 1, 'lag': 100}  # in ms
-spk_corr_parm['time_bin'] = np.arange(-spk_corr_parm['lag'], spk_corr_parm['lag'] + 1, spk_corr_parm['bin_size'])
+
+if spk_corr_parm['lag']%spk_corr_parm['bin_size']:
+    raise Exception("lag should be divisible by bin size (e.g., bin_size = 2, lag = 100")
+
+spk_corr_parm['time_bin'] = np.arange(-spk_corr_parm['lag'], spk_corr_parm['lag'] + spk_corr_parm['bin_size'], spk_corr_parm['bin_size'])
 
 # For peth (peri-event time histogram) or rasters
 peth = {'buffer': 500}  # time buffer before the event onset in ms
+
+update = True  # cache the data in the data folder
