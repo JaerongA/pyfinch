@@ -1,11 +1,10 @@
 """
 By Jaerong
-Calculates a spike signal-to-noise ratio (SNR) relative to the background (raw neural trace)
+A main package for neural analysis
 """
 
 from database.load import ProjectLoader
 import matplotlib.pyplot as plt
-import numpy as np
 from song.analysis import *
 from spike.parameters import *
 from spike.load import *
@@ -13,8 +12,12 @@ from pathlib import Path
 from utilities.functions import *
 
 
-def get_cluster(database):
-
+def load_info(database):
+    """
+    Return the list of files in the current directory
+        Input: SQL object (database row)
+        Output: name of the cluster
+    """
     cluster_id = ''
     if len(database['id']) == 1:
         cluster_id = '00' + database['id']
@@ -33,15 +36,13 @@ def get_cluster(database):
 
     # Get cluster path
     project_path = ProjectLoader().path
-    cluster_path = project_path / database['birdID'] / database['taskName'] / cluster_taskSession / database[
-        'site'][-2:] / 'Songs'
+    cluster_path = project_path / database['birdID'] / database['taskName'] / cluster_taskSession / database['site'][-2:] / 'Songs'
     cluster_path = Path(cluster_path)
 
     return cluster_name, cluster_path
 
 
-
-def get_event_info(cell_path):
+def load_events(dir):
     """
     Obtain event info & serialized timestamps for song & neural analysis
     """
@@ -49,9 +50,9 @@ def get_event_info(cell_path):
     from scipy.io import wavfile
 
     # List audio files
-    audio_files = list(cell_path.glob('*.wav'))
+    audio_files = list(dir.glob('*.wav'))
 
-    # Initialize variables
+    # Initialize
     timestamp_serialized = np.array([], dtype=np.float32)
 
     # Store values in these lists
@@ -112,6 +113,63 @@ def get_event_info(cell_path):
     return event_info
 
 
+def load_audio(dir):
+    """
+    Load and concatenate all audio files (e.g., .wav) in the input dir (path)
+    """
+    from scipy.io import wavfile
+
+    file_name = dir / 'AudioData.npy'
+
+    if file_name.exists():
+        audio_info = np.load(file_name, allow_pickle=True).item()
+    else:
+
+        # List all audio files in the dir
+        files = list_files(dir, '.wav')
+
+        # Initialize
+        timestamp_concat = np.array([], dtype=np.float64)
+        data_concat = np.array([], dtype=np.float64)
+
+        # Store values in these lists
+        file_list = []
+        syllable_list = []
+        context_list = []
+
+        # Loop through audio files
+        for file in files:
+
+            sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
+            length = data.shape[0] / sample_rate
+            timestamp = np.round(np.linspace(0, length, data.shape[0]) *1E3, 3) # start from t = 0 in ms, reduce floating precision
+
+            start_ind = timestamp_concat.size  # start of the file
+
+            # print('timestamp size = {}, data size = {}'.format(len(timestamp), len(data)))
+
+            # Concatenate timestamp and data
+            if timestamp_concat.size:
+                timestamp += (timestamp_concat[-1] + (1 / sample_rate))
+            timestamp_concat = np.append(timestamp_concat, timestamp)
+
+            data_concat = np.append(data_concat, data)
+
+            # Store results
+            file_list.append(file)
+
+        # Organize data into a dictionary
+        audio_info = {
+            'files': file_list,
+            'timestamp': timestamp_concat,
+            'data': data_concat,
+            'sample_rate': sample_rate
+        }
+        np.save(file_name, audio_info)
+
+    return audio_info
+
+
 def get_isi(spk_ts: list):
     """Get inter-spike interval of spikes"""
     isi = []
@@ -120,9 +178,8 @@ def get_isi(spk_ts: list):
     return isi
 
 
-
 class ClusterInfo:
-
+    ##TODO: incorporate load_spk, load_events in __init__
     def __init__(self, database):
 
         # Set all database fields as attributes
@@ -131,10 +188,9 @@ class ClusterInfo:
             setattr(self, col, database[col])
 
         # Get cluster name & path
-        self.name, self.path = get_cluster(database)
+        self.name, self.path = load_info(database)
         print('')
         print('Load cluster {self.name}'.format(self=self))
-
 
     # def __del__(self):
     #     print('Delete cluster : {self.name}'.format(self=self))
@@ -143,9 +199,8 @@ class ClusterInfo:
         '''Print out the name'''
         return '{self.name}'.format(self=self)
 
-    def list_files(self):
-        files = [file.stem for file in self.path.rglob('*.wav')]
-        return files
+    def list_files(self, ext: str):
+        return list_files(self.path, ext)
 
     def load_events(self):
         """
@@ -156,7 +211,7 @@ class ClusterInfo:
         if file_name.exists():
             event_info = np.load(file_name, allow_pickle=True).item()
         else:
-            event_info = get_event_info(self.path)
+            event_info = load_events(self.path)
 
             # Save event_info as a numpy object
             np.save(file_name, event_info)
@@ -196,7 +251,6 @@ class ClusterInfo:
         self.spk_ts = spk_list  # spike timestamps in ms
         print("spk_ts, spk_wf, nb_spk attributes added")
 
-
     def analyze_waveform(self):
         # Conduct waveform analysis
         if not hasattr(self, 'avg_wf'):
@@ -212,7 +266,6 @@ class ClusterInfo:
             self.spk_width = spk_width  # in microseconds
             print("avg_wf, spk_height, spk_width added")
 
-
     def get_conditional_spk(self):
 
         conditional_spk = {}
@@ -221,21 +274,20 @@ class ClusterInfo:
 
         return conditional_spk
 
-
     def get_spk_corr(self, ref_spk_list, target_spk_list, normalize=False):
         """Get spike auto- or cross-correlogram"""
 
         import math
 
-        time_bin = np.arange(-spk_corr_parm['lag'], spk_corr_parm['lag'] + 1, spk_corr_parm['bin_size'])
+        # time_bin = np.arange(-spk_corr_parm['lag'], spk_corr_parm['lag'] + 1, spk_corr_parm['bin_size'])
         correlogram = {}
 
-        spk_corr = np.array([], dtype=np.float32)
+        # spk_corr = np.array([], dtype=np.float32)
 
         for social_context in set(self.contexts):
             # Compute spk correlogram
 
-            corr_temp = np.zeros(len(time_bin))
+            corr_temp = np.zeros(len(spk_corr_parm['time_bin']))
 
             for ref_spks, target_spks, context in zip(ref_spk_list, target_spk_list, self.contexts):
 
@@ -243,21 +295,20 @@ class ClusterInfo:
                     for ref_spk in ref_spks:
                         for target_spk in target_spks:
                             diff = target_spk - ref_spk
-
                             if (diff) and (diff <= spk_corr_parm['lag'] and diff >= -spk_corr_parm['lag']):
                                 if diff < 0:
-                                    ind = np.where(time_bin == -math.ceil(abs(diff)))
+                                    ind = np.where(spk_corr_parm['time_bin'] <= -math.ceil(abs(diff)))[0][-1]
                                 elif diff > 0:
-                                    ind = np.where(time_bin == math.ceil((diff)))
-                                # print(diff, time_bin[ind])
+                                    ind = np.where(spk_corr_parm['time_bin'] >= math.ceil(diff))[0][0]
+                                # print("diff = {}, bin index = {}".format(diff, spk_corr_parm['time_bin'][ind]))  # for debugging
                                 corr_temp[ind] += 1
 
                     # Make sure the array is symmetrical
-                    first_half = np.fliplr([corr_temp[:spk_corr_parm['lag']]])[0]
-                    second_half = corr_temp[spk_corr_parm['lag'] + 1:]
+                    first_half = np.fliplr([corr_temp[:int((spk_corr_parm['lag'] / spk_corr_parm['bin_size']))]])[0]
+                    second_half = corr_temp[int((spk_corr_parm['lag'] / spk_corr_parm['bin_size'])) + 1:]
                     assert np.sum(first_half - second_half) == 0
 
-                    # Normalize correlogram by the total sum (probability density conversion)
+                    # Normalize correlogram by the total sum (convert to probability density )
                     if normalize:
                         corr_temp /= np.sum(correlogram)
 
@@ -265,7 +316,6 @@ class ClusterInfo:
         correlogram['parameter'] = spk_corr_parm  # store parameters in the dictionary
 
         return correlogram
-
 
     def get_isi(self):
 
@@ -279,7 +329,6 @@ class ClusterInfo:
     @classmethod
     def plot_isi(isi):
         pass
-
 
     def get_fr(self):
         pass
@@ -331,85 +380,86 @@ class ClusterInfo:
 
     @property
     def open_folder(self):
-        """Open the directory in win explorer"""
-        import webbrowser
-        webbrowser.open(self.path)
+        open_folder(self.path)
 
 
 
 class MotifInfo(ClusterInfo):
 
-    def __init__(self, database):
+    def __init__(self, database, update=False):
         super().__init__(database)
+        # Load parent attributes but this will be overwritten
         self.load_events()
         self.load_spk()
 
-        file_list = []
-        spk_list = []
-        onset_list = []
-        offset_list = []
-        syllable_list = []
-        duration_list = []
-        context_list = []
-        motif_info = {}
+        file_name = self.path / 'MotifInfo.npy'
 
-        list_zip = zip(self.files, self.spk_ts, self.onsets, self.offsets, self.syllables, self.contexts)
+        if file_name.exists() or not update:
+            motif_info = np.load(file_name, allow_pickle=True).item()
+        else:  # create a new file
 
-        for file, spks, onsets, offsets, syllables, context in list_zip:
+            # Store values here
+            file_list = []
+            spk_list = []
+            onset_list = []
+            offset_list = []
+            syllable_list = []
+            duration_list = []
+            context_list = []
+            motif_info = {}
 
-            onsets = onsets.tolist()
-            offsets = offsets.tolist()
+            list_zip = zip(self.files, self.spk_ts, self.onsets, self.offsets, self.syllables, self.contexts)
 
-            # Find motifs
-            motif_ind = find_str(self.motif, syllables)
+            for file, spks, onsets, offsets, syllables, context in list_zip:
 
-            # Get syllable, spike time stamps
-            for ind in motif_ind:
+                onsets = onsets.tolist()
+                offsets = offsets.tolist()
 
-                # start (first syllable) and stop (last syllable) index of a motif
-                start_ind = ind
-                stop_ind = ind + len(self.motif) - 1
+                # Find motifs
+                motif_ind = find_str(self.motif, syllables)
 
-                motif_onset = float(onsets[start_ind])
-                motif_offset = float(offsets[stop_ind])
+                # Get syllable, spike time stamps
+                for ind in motif_ind:
+                    # start (first syllable) and stop (last syllable) index of a motif
+                    start_ind = ind
+                    stop_ind = ind + len(self.motif) - 1
 
-                motif_spk = spks[np.where((spks >= motif_onset) & (spks <= motif_offset))]
-                onsets_in_motif = onsets[start_ind:stop_ind + 1]
-                offsets_in_motif = offsets[start_ind:stop_ind + 1]
+                    motif_onset = float(onsets[start_ind])
+                    motif_offset = float(offsets[stop_ind])
 
-                # onsets_in_motif = [onset for onset in onsets if onset != '*' and motif_onset <= float(onset)  <= motif_offset]
-                # offsets_in_motif = [offset for offset in offsets if offset != '*' and motif_onset <= float(offset)  <= motif_offset]
+                    motif_spk = spks[np.where((spks >= motif_onset) & (spks <= motif_offset))]
+                    onsets_in_motif = onsets[start_ind:stop_ind + 1]
+                    offsets_in_motif = offsets[start_ind:stop_ind + 1]
 
-                file_list.append(file)
-                spk_list.append(motif_spk)
-                duration_list.append(motif_offset - motif_onset)
-                onset_list.append(onsets_in_motif)
-                offset_list.append(offsets_in_motif)
-                syllable_list.append(syllables[start_ind:stop_ind + 1])
-                context_list.append(context)
+                    file_list.append(file)
+                    spk_list.append(motif_spk)
+                    duration_list.append(motif_offset - motif_onset)
+                    onset_list.append(onsets_in_motif)
+                    offset_list.append(offsets_in_motif)
+                    syllable_list.append(syllables[start_ind:stop_ind + 1])
+                    context_list.append(context)
 
-        # Organize event-related info into a single dictionary object
-
-        motif_info = {
-            'files': file_list,
-            'spk_ts': spk_list,
-            'onsets': onset_list,
-            'offsets': offset_list,
-            'durations': duration_list,
-            'syllables': syllable_list,
-            'contexts': context_list
-        }
+            # Organize event-related info into a single dictionary object
+            motif_info = {
+                'files': file_list,
+                'spk_ts': spk_list,
+                'onsets': onset_list,
+                'offsets': offset_list,
+                'durations': duration_list,
+                'syllables': syllable_list,
+                'contexts': context_list
+            }
+            # Save baseline_info as a numpy object
+            np.save(file_name, motif_info)
 
         # Set the dictionary values to class attributes
         for key in motif_info:
             setattr(self, key, motif_info[key])
 
-
     def get_peth(self):
+
         """Get peri-event time histograms & rasters"""
         pass
-
-
 
 
 class BoutInfo(ClusterInfo):
@@ -418,29 +468,30 @@ class BoutInfo(ClusterInfo):
 
 class BaselineInfo(ClusterInfo):
 
-    def __init__(self, database):
+    def __init__(self, database, update=False):
         super().__init__(database)
-        # self.load_events()
-        # self.load_spk()
+        # Load parent attributes but this will be overwritten
+        self.load_events()
+        self.load_spk()
 
         file_name = self.path / 'BaselineInfo.npy'
 
-        if file_name.exists():
+        if not update:  # file already exists or you don't want to update the file
             baseline_info = np.load(file_name, allow_pickle=True).item()
-        else:
-            self.load_events()
-            self.load_spk()
+        else:  # create a new file
 
-            # Store values in these lists
+            # Store values in here
             file_list = []
             spk_list = []
             nb_spk_list = []
             duration_list = []
+            context_list = []
             baseline_info = {}
 
-            list_zip = zip(self.files, self.spk_ts, self.file_start, self.onsets, self.offsets, self.syllables)
+            list_zip = zip(self.files, self.spk_ts, self.file_start, self.onsets, self.offsets, self.syllables,
+                           self.contexts)
 
-            for file, spks, file_start, onsets, offsets, syllables in list_zip:
+            for file, spks, file_start, onsets, offsets, syllables, context in list_zip:
 
                 baseline_spk = []
                 bout_ind_list = find_str('*', syllables)
@@ -474,10 +525,11 @@ class BaselineInfo(ClusterInfo):
                     file_list.append(file)
                     spk_list.append(baseline_spk)
                     nb_spk_list.append(len(baseline_spk))
-                    duration_list.append((baseline_offset - baseline_onset) / 1E3)  # convert to seconds for calculating in Hz
+                    duration_list.append(
+                        (baseline_offset - baseline_onset) / 1E3)  # convert to seconds for calculating in Hz
+                    context_list.append(context)
 
             # set values into the database
-
             self.baselineFR = sum(nb_spk_list) / sum(duration_list)
 
             baseline_info = {
@@ -485,7 +537,8 @@ class BaselineInfo(ClusterInfo):
                 'spk_ts': spk_list,
                 'nb_spk': nb_spk_list,
                 'durations': duration_list,
-                'parameter':baseline
+                'contexts': context_list,
+                'parameter': baseline
             }
             # Save baseline_info as a numpy object
             np.save(file_name, baseline_info)
@@ -494,44 +547,56 @@ class BaselineInfo(ClusterInfo):
         for key in baseline_info:
             setattr(self, key, baseline_info[key])
 
+    def get_spk_corr(self, ref_spk_list, target_spk_list, normalize=False):
+        """Override the parent method
+        combine correlogram from undir and dir since no contextual differentiation is needed in baseline"""
+
+        correlogram_all = super().get_spk_corr(ref_spk_list, target_spk_list, normalize=False)
+        correlogram = np.zeros(len(spk_corr_parm['time_bin']))
+
+        # Combine correlogram from two contexts
+        for key, value in correlogram_all.items():
+            if key in ['U', 'D']:
+                correlogram += value
+        return correlogram
+
     @property
     def isi(self):
         isi = get_isi(self.spk_ts)
         return isi
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 class AudioData():
-    pass
+    """
+    Create an object that has concatenated audio signal and its timestamps
+    """
+    def __init__(self, database, update=False, ext='.wav'):
+        self.name, self.path = load_info(database)
+        self.files = list_files(self.path, ext)
+        audio_info = load_audio(self.path)
+
+        # Set the dictionary values to class attributes
+        for key in audio_info:
+            setattr(self, key, audio_info[key])
+
+    @property
+    def open_folder(self):
+        open_folder(self.path)
+
+    def get_spectrogram(self):
+        pass
 
 
-
-
-class RawData(ClusterInfo):
+class NerualData(ClusterInfo):
     def __init__(self, database):
         super().__init__(database)
-
-    def load_audio(self):
-        pass
 
     def load_neural_trace(self, channel):
 
         # List .rhd files
         rhd_files = list(self.path.glob('*.rhd'))
 
-        # Initialize variables
+        # Initialize
         amplifier_data_serialized = np.array([], dtype=np.float64)
 
         # Loop through Intan .rhd files
@@ -551,4 +616,3 @@ class RawData(ClusterInfo):
 
     def load_timestamp(self):
         pass
-
