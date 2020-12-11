@@ -37,7 +37,9 @@ def find_str(pattern : str, string : str):
 
 
 def find_data_path():
-    """Request the user to manually find dir path and return it"""
+    """
+    Request the user to manually find dir path and return it
+    """
     from pathlib import Path
     from tkinter import Tk
     from tkinter import filedialog
@@ -45,3 +47,15 @@ def find_data_path():
     root.withdraw()
     data_dir = filedialog.askdirectory()
     return Path(data_dir)
+
+
+def list_files(dir: str, ext: str):
+    """
+    Return the list of files in the current directory
+        INPUT1: directory name (path)
+        INPUT1: file extension (str) (e.g., .wav, .rhd etc)
+        OUTPUT: list of file path (list)
+    """
+    files = [file for file in dir.rglob('*' + ext)]
+    return files
+
