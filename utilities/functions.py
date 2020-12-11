@@ -52,10 +52,18 @@ def find_data_path():
 def list_files(dir: str, ext: str):
     """
     Return the list of files in the current directory
-        INPUT1: directory name (path)
-        INPUT1: file extension (str) (e.g., .wav, .rhd etc)
-        OUTPUT: list of file path (list)
+        Input1: directory name (path)
+        Input2: file extension (str) (e.g., .wav, .rhd etc)
+        Output: list of file path (list)
     """
     files = [file for file in dir.rglob('*' + ext)]
     return files
 
+
+def open_folder(dir: str):
+    """
+    Open the directory in win explorer
+        Input: directory name (path)
+    """
+    import webbrowser
+    webbrowser.open(dir)
