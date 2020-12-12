@@ -5,8 +5,15 @@ A collection of utility functions used for analysis
 
 def unique(list):
     """
-    Input : list
-    Extract unique strings from the list in the order they appeared
+    Extract unique strings from the list in the order they appear
+
+    Args:
+        list: list
+            list of strings
+
+    Returns:
+        list:
+            list of unique, ordered strings
     """
     seen = set()
     return [x for x in list if not (x in seen or seen.add(x))]
@@ -16,17 +23,15 @@ def find_str(pattern : str, string : str):
     """
     Find all indices of patterns in a string
 
-    Parameters
-    ----------
-    pattern : str
-        string pattern to search
-    string : str
-        input string
+    Args:
+        pattern: str
+            string pattern to search
+        string: str
+            input string
 
-    Returns
-    -------
-    ind : list
-        list of starting indices
+    Returns:
+        ind : list
+            list of starting index values
     """
     import re
     if not pattern.isalpha(): # if the pattern contains non-alphabetic chars such as *
