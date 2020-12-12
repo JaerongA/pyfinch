@@ -1,4 +1,3 @@
-.idea
 venv
 load_intan_rhd_format
 practice.py
@@ -6,4 +5,5 @@ practice2.p
 database/deafening.db
 test
 database/_pycache_
-*__pycache__*
+*__pycache__*/sphinx/_build
+.idea
