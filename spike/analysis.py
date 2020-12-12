@@ -386,7 +386,7 @@ class ClusterInfo:
 
 class MotifInfo(ClusterInfo):
 
-    def __init__(self, database, update=False):
+    def __init__(self, database, file_exist=False):
         super().__init__(database)
         # Load parent attributes but this will be overwritten
         self.load_events()
@@ -394,7 +394,7 @@ class MotifInfo(ClusterInfo):
 
         file_name = self.path / 'MotifInfo.npy'
 
-        if file_name.exists() or not update:
+        if file_exist:
             motif_info = np.load(file_name, allow_pickle=True).item()
         else:  # create a new file
 
@@ -428,8 +428,8 @@ class MotifInfo(ClusterInfo):
                     motif_offset = float(offsets[stop_ind])
 
                     motif_spk = spks[np.where((spks >= motif_onset) & (spks <= motif_offset))]
-                    onsets_in_motif = onsets[start_ind:stop_ind + 1]
-                    offsets_in_motif = offsets[start_ind:stop_ind + 1]
+                    onsets_in_motif = onsets[start_ind:stop_ind + 1]  # list of motif onset timestamps
+                    offsets_in_motif = offsets[start_ind:stop_ind + 1]  # list of motif offset timestamps
 
                     file_list.append(file)
                     spk_list.append(motif_spk)
@@ -569,6 +569,7 @@ class BaselineInfo(ClusterInfo):
 class AudioData():
     """
     Create an object that has concatenated audio signal and its timestamps
+    Get all data by default; specify time range if needed
     """
     def __init__(self, database, update=False, ext='.wav'):
         self.name, self.path = load_info(database)
@@ -582,6 +583,23 @@ class AudioData():
     @property
     def open_folder(self):
         open_folder(self.path)
+
+    def extract(self, time_range):
+        """
+        Extracts data from the specified range
+        Args:
+            time_range: list
+
+        Returns:
+        """
+        start = time_range[0]
+        end = time_range[-1]
+
+        ind = np.where((self.timestamp >= start) & (self.timestamp <= end))
+        self.timestamp = self.timestamp[ind]
+        self.data = self.data[ind]
+
+        return self
 
     def get_spectrogram(self):
         pass
