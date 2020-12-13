@@ -9,7 +9,8 @@ from song.analysis import *
 from spike.parameters import *
 from spike.load import *
 from pathlib import Path
-from utilities.functions import *
+from util.functions import *
+from util.spect import *
 
 
 def load_info(database):
@@ -601,8 +602,9 @@ class AudioData():
 
         return self
 
-    def get_spectrogram(self):
-        pass
+    def spectrogram(self, freq_range):
+        self.spect, self.freqbins, self.timebins = spectrogram(self.data, self.sample_rate, freq_range=freq_range)
+
 
 
 class NerualData(ClusterInfo):
