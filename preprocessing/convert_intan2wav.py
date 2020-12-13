@@ -10,7 +10,7 @@ from math import ceil
 from scipy.signal import hilbert
 from matplotlib import collections as mc
 from song.parameters import *
-from utilities.functions import find_data_path
+from util.functions import find_data_path
 
 # def find_data_path():
 #     """Find the data dir and return it"""
