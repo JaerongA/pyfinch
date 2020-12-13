@@ -5,23 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="added spect.py">
-      <change afterPath="$PROJECT_DIR$/analyze_spk_corr.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config.ini" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/import_audio.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/SongAnalysis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SongAnalysis.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SAP_features_pca.py" beforeDir="false" afterPath="$PROJECT_DIR$/sap.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/copy_cluster_mat.py" beforeDir="false" afterPath="$PROJECT_DIR$/preprocessing/copy_cluster_mat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SAP_features_pca.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/copy_cluster_mat.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/database/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/load.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/project.ini" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/fr_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/fr_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plot/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/preprocessing/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plot_rhd.py" beforeDir="false" afterPath="$PROJECT_DIR$/preprocessing/plot_rhd.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plot/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/plot_rhd.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/preprocessing/change_cbin_names.py" beforeDir="false" afterPath="$PROJECT_DIR$/preprocessing/change_cbin_names.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/preprocessing/convert_intan2wav.py" beforeDir="false" afterPath="$PROJECT_DIR$/preprocessing/convert_intan2wav.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/preprocessing/get_notestat.py" beforeDir="false" afterPath="$PROJECT_DIR$/preprocessing/get_notestat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/preprocessing/label_dir_undir.py" beforeDir="false" afterPath="$PROJECT_DIR$/preprocessing/label_dir_undir.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/serialize_timestamp.py" beforeDir="false" afterPath="$PROJECT_DIR$/serialize_timestamp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/snr.py" beforeDir="false" afterPath="$PROJECT_DIR$/snr.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sphinx/_build/html/_static/doctools.js" beforeDir="false" afterPath="$PROJECT_DIR$/sphinx/_build/html/_static/doctools.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sphinx/_build/html/_static/searchtools.js" beforeDir="false" afterPath="$PROJECT_DIR$/sphinx/_build/html/_static/searchtools.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spike/analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/spike/analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/summary/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/summary/load.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/spect.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/spect.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/syllable_duration_analysis_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_duration_analysis_v2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/util/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/database_utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/util/database_utilities.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/draw.py" beforeDir="false" afterPath="$PROJECT_DIR$/util/draw.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/util/functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/save.py" beforeDir="false" afterPath="$PROJECT_DIR$/util/save.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/spect.py" beforeDir="false" afterPath="$PROJECT_DIR$/util/spect.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,7 +117,7 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/utilities" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../PythonProject/BMI" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -142,7 +150,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.import_audio">
+  <component name="RunManager" selected="Python.label_dir_undir">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -187,42 +195,17 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="get_base_fr_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="get_notestat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/preprocessing" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/get_base_fr_test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="get_conditional_spk_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="SongAnalysis" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/get_conditional_spk_test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/preprocessing/get_notestat.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -235,6 +218,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -242,6 +228,25 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/import_audio.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="label_dir_undir" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="SongAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/preprocessing" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/preprocessing/label_dir_undir.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -297,18 +302,18 @@
     <list>
       <item itemvalue="Python.SongAnalysis" />
       <item itemvalue="Python.spk_corr (1)" />
-      <item itemvalue="Python.get_conditional_spk_test" />
-      <item itemvalue="Python.get_base_fr_test" />
       <item itemvalue="Python.practice" />
       <item itemvalue="Python.import_audio" />
+      <item itemvalue="Python.get_notestat" />
+      <item itemvalue="Python.label_dir_undir" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.label_dir_undir" />
+        <item itemvalue="Python.get_notestat" />
         <item itemvalue="Python.import_audio" />
         <item itemvalue="Python.practice" />
         <item itemvalue="Python.spk_corr (1)" />
-        <item itemvalue="Python.get_base_fr_test" />
-        <item itemvalue="Python.get_conditional_spk_test" />
       </list>
     </recent_temporary>
   </component>
@@ -496,7 +501,8 @@
       <workItem from="1607619043737" duration="1365000" />
       <workItem from="1607638374381" duration="32798000" />
       <workItem from="1607744204766" duration="5086000" />
-      <workItem from="1607794069096" duration="7721000" />
+      <workItem from="1607794069096" duration="9552000" />
+      <workItem from="1607828035278" duration="3946000" />
     </task>
     <task id="LOCAL-00066" summary="snr analysis">
       <created>1600919640437</created>
@@ -939,10 +945,10 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2791" y="605" key="ExecutionTargetDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603683969683" />
-    <state x="346" y="615" key="FileChooserDialogImpl" timestamp="1607058872124">
+    <state x="346" y="615" key="FileChooserDialogImpl" timestamp="1607822217424">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="346" y="615" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607058872124" />
+    <state x="346" y="615" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607822217424" />
     <state width="2505" height="280" key="GridCell.Tab.0.bottom" timestamp="1607527961799">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -983,10 +989,10 @@
     </state>
     <state width="2505" height="315" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1603258720352" />
     <state width="2505" height="280" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607527961799" />
-    <state x="1084" y="345" key="RollbackChangesDialog" timestamp="1607484040602">
+    <state x="1084" y="345" key="RollbackChangesDialog" timestamp="1607831999937">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1084" y="345" key="RollbackChangesDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607484040602" />
+    <state x="1084" y="345" key="RollbackChangesDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607831999937" />
     <state x="-3713" y="336" width="1819" height="1326" key="SettingsEditor" timestamp="1607808633054">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -1027,10 +1033,10 @@
     </state>
     <state x="-2867" y="733" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1607794071074" />
     <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607619224287" />
-    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1607650985483">
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1607829213704">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607650985483" />
+    <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607829213704" />
     <state x="722" y="376" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1606093739601">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -1057,11 +1063,11 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3182" y="605" width="1058" height="1102" maximized="true" key="dock-window-5/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1602464292871" />
-    <state x="-2798" y="564" width="737" height="971" key="find.popup" timestamp="1607715627980">
+    <state x="-2798" y="564" width="737" height="971" key="find.popup" timestamp="1607831134574">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3361" y="651" width="1167" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1605217363861" />
-    <state x="-2798" y="564" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607715627980" />
+    <state x="-2798" y="564" width="737" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607831134574" />
     <state width="750" height="530" key="javadoc.popup" timestamp="1602299698187">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
