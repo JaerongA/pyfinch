@@ -16,3 +16,7 @@ def set_fig_size(w, h, ax=None):
     figw = float(w) / (r - l)
     figh = float(h) / (t - b)
     ax.figure.set_size_inches(figw, figh)
+
+
+def remove_right_top(ax):
+    ax.spines['right'].set_visible(False), ax.spines['top'].set_visible(False)

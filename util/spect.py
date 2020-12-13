@@ -28,7 +28,7 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
 
 
 def spectrogram(dat, samp_freq, fft_size=512, step_size=64, thresh=None, transform_type=None,
-                freq_cutoffs=None):
+                freq_range=None):
     """creates a spectrogram
 
     Parameters
@@ -48,7 +48,7 @@ def spectrogram(dat, samp_freq, fft_size=512, step_size=64, thresh=None, transfo
         Default is None. If None, no transform is applied.
     thresh: int
         threshold minimum power for log spectrogram
-    freq_cutoffs : tuple
+    freq_range : tuple
         of two elements, lower and higher frequencies.
 
     Return
@@ -62,10 +62,10 @@ def spectrogram(dat, samp_freq, fft_size=512, step_size=64, thresh=None, transfo
     """
     noverlap = fft_size - step_size
 
-    if freq_cutoffs:
+    if freq_range:
         dat = butter_bandpass_filter(dat,
-                                     freq_cutoffs[0],
-                                     freq_cutoffs[1],
+                                     freq_range[0],
+                                     freq_range[1],
                                      samp_freq)
 
     # below only take [:3] from return of specgram because we don't need the image
@@ -86,13 +86,10 @@ def spectrogram(dat, samp_freq, fft_size=512, step_size=64, thresh=None, transfo
         if thresh:
             spect[spect < thresh] = thresh  # set anything less than the threshold as the threshold
 
-    if freq_cutoffs:
-        f_inds = np.nonzero((freqbins >= freq_cutoffs[0]) &
-                            (freqbins < freq_cutoffs[1]))[0]  # returns tuple
+    if freq_range:
+        f_inds = np.nonzero((freqbins >= freq_range[0]) &
+                            (freqbins < freq_range[1]))[0]  # returns tuple
         spect = spect[f_inds, :]
         freqbins = freqbins[f_inds]
-
-
-
 
     return spect, freqbins, timebins

@@ -72,3 +72,18 @@ def open_folder(dir: str):
     """
     import webbrowser
     webbrowser.open(dir)
+
+
+def myround(x, base=5):
+    """
+    Round to the next multiple of the base
+    Args:
+        x: int
+            input value
+        base: int
+            base value (by default at 5)
+
+    Returns: int
+
+    """
+    return base * round(x/base)
