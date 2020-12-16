@@ -450,19 +450,81 @@ class MotifInfo(ClusterInfo):
                 'syllables': syllable_list,
                 'contexts': context_list
             }
+
+            # Set the dictionary values to class attributes
+            for key in motif_info:
+                setattr(self, key, motif_info[key])
+
+            spk_ts_warp_list = self.piecewise_linear_warping()
+            motif_info['spk_ts_warp'] = spk_ts_warp_list
+            self.spk_ts_warp = spk_ts_warp_list
+
             # Save baseline_info as a numpy object
             np.save(file_name, motif_info)
-
-        # Set the dictionary values to class attributes
-        for key in motif_info:
-            setattr(self, key, motif_info[key])
 
 
     def __len__(self):
         return len(self.files)
 
-    def get_peth(self):
 
+    def piecewise_linear_warping(self):
+        """
+        Performs piecewise linear warping on raw spike timestamps
+        Based on each median note and gap durations
+        """
+
+        # Calculate note & gap duration per motif
+        durations = np.empty((len(self), len(self.motif) * 2 - 1))
+
+        list_zip = zip(self.onsets, self.offsets, self.spk_ts)
+
+        for motif_ind, (onset, offset, spk_ts) in enumerate(list_zip):
+
+            # Convert from string to array of floats
+            onset = np.asarray(list(map(float, onset)))
+            offset = np.asarray(list(map(float, offset)))
+
+            # Calculate note & interval duration
+            timestamp = [[onset, offset] for onset, offset in zip(onset, offset)]
+            timestamp = sum(timestamp, [])
+
+            for i in range(len(timestamp) - 1):
+                durations[motif_ind, i] = timestamp[i + 1] - timestamp[i]
+
+        # Get median duration
+        median_dur = np.median(durations, axis=0)
+
+        # Perform piecewise linear warping
+        spk_ts_warped_list = []
+
+        list_zip = zip(durations, self.onsets, self.offsets, self.spk_ts)
+
+        for motif_ind, (durations, onset, offset, spk_ts) in enumerate(list_zip):  # per motif
+
+            spk_ts_warped = np.array([], dtype=np.float32)
+            onset = np.asarray(list(map(float, onset)))
+            offset = np.asarray(list(map(float, offset)))
+
+            # Calculate note & interval duration
+            timestamp = [[onset, offset] for onset, offset in zip(onset, offset)]
+            timestamp = sum(timestamp, [])
+
+            for i in range(0, len(median_dur)):
+                ratio = median_dur[i] / durations[i]
+                diff = timestamp[i] - timestamp[0]
+                if i == 0:
+                    origin = 0
+                else:
+                    origin = sum(median_dur[:i])
+                ind, spk_ts_new = extract(spk_ts, [timestamp[i], timestamp[i + 1]])
+                ts = ((ratio * ((spk_ts_new - timestamp[0]) - diff)) + origin) + timestamp[0]
+                spk_ts_warped = np.append(spk_ts_warped, ts)
+
+            spk_ts_warped_list.append(spk_ts_warped)
+        return spk_ts_warped_list
+
+
+    def get_peth(self):
         """Get peri-event time histograms & rasters"""
         pass
 
