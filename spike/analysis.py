@@ -275,7 +275,7 @@ class ClusterInfo:
 
         return conditional_spk
 
-    def get_spk_corr(self, ref_spk_list, target_spk_list, normalize=False):
+    def get_correlogram(self, ref_spk_list, target_spk_list, normalize=False):
         """Get spike auto- or cross-correlogram"""
 
         import math
@@ -295,7 +295,7 @@ class ClusterInfo:
                 if context == social_context:
                     for ref_spk in ref_spks:
                         for target_spk in target_spks:
-                            diff = target_spk - ref_spk
+                            diff = target_spk - ref_spk  # time difference between two spikes
                             if (diff) and (diff <= spk_corr_parm['lag'] and diff >= -spk_corr_parm['lag']):
                                 if diff < 0:
                                     ind = np.where(spk_corr_parm['time_bin'] <= -math.ceil(abs(diff)))[0][-1]
@@ -428,7 +428,7 @@ class MotifInfo(ClusterInfo):
                     motif_onset = float(onsets[start_ind])
                     motif_offset = float(offsets[stop_ind])
 
-                    motif_spk = spks[np.where((spks >= motif_onset) & (spks <= motif_offset))]
+                    motif_spk = spks[np.where((spks >= motif_onset - peth_parm['buffer']) & (spks <= motif_offset))]
                     onsets_in_motif = onsets[start_ind:stop_ind + 1]  # list of motif onset timestamps
                     offsets_in_motif = offsets[start_ind:stop_ind + 1]  # list of motif offset timestamps
 
@@ -457,10 +457,22 @@ class MotifInfo(ClusterInfo):
         for key in motif_info:
             setattr(self, key, motif_info[key])
 
+
+    def __len__(self):
+        return len(self.files)
+
     def get_peth(self):
 
         """Get peri-event time histograms & rasters"""
         pass
+
+
+class PethInfo():
+    def __init__(self, peth):
+        self.peth = peth
+
+    pass
+
 
 
 class BoutInfo(ClusterInfo):
@@ -548,11 +560,11 @@ class BaselineInfo(ClusterInfo):
         for key in baseline_info:
             setattr(self, key, baseline_info[key])
 
-    def get_spk_corr(self, ref_spk_list, target_spk_list, normalize=False):
+    def get_correlogram(self, ref_spk_list, target_spk_list, normalize=False):
         """Override the parent method
         combine correlogram from undir and dir since no contextual differentiation is needed in baseline"""
 
-        correlogram_all = super().get_spk_corr(ref_spk_list, target_spk_list, normalize=False)
+        correlogram_all = super().get_correlogram(ref_spk_list, target_spk_list, normalize=False)
         correlogram = np.zeros(len(spk_corr_parm['time_bin']))
 
         # Combine correlogram from two contexts
@@ -604,7 +616,7 @@ class AudioData():
 
     def spectrogram(self, freq_range):
         self.spect, self.freqbins, self.timebins = spectrogram(self.data, self.sample_rate, freq_range=freq_range)
-
+        print("spect, freqbins, timebins added")
 
 
 class NerualData(ClusterInfo):
