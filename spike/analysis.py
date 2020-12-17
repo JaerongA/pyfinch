@@ -179,6 +179,25 @@ def get_isi(spk_ts: list):
     return isi
 
 
+def get_peth(evt_ts_list, spk_ts_list, *cond_list):
+    """Get peri-event histogram & firing rates"""
+
+    import math
+
+    peth = np.zeros((len(evt_ts_list), peth_parm['bin_size'] * peth_parm['nb_bins']))  # nb of trials x nb of time bins
+
+    for trial_ind, (evt_ts, spk_ts) in enumerate(zip(evt_ts_list, spk_ts_list)):
+
+        evt_ts = np.asarray(list(map(float, evt_ts)))
+        spk_ts -= evt_ts[0]
+
+        for spk in spk_ts:
+            ind = math.ceil(spk / peth_parm['bin_size'])
+            # print("spk = {}, bin index = {}".format(spk, ind))  # for debugging
+            peth[trial_ind, ind] += 1
+    return peth
+
+
 class ClusterInfo:
     ##TODO: incorporate load_spk, load_events in __init__
     def __init__(self, database):
@@ -533,17 +552,46 @@ class MotifInfo(ClusterInfo):
         return spk_ts_warped_list
 
 
-    def get_peth(self):
-        """Get peri-event time histograms & rasters"""
-        pass
+    def get_peth(self, warped=True):
+        """Get peri-event time histograms & rasters during song motif"""
+        peth_dict = {}
+
+        if warped:  # peth calculated from time-warped spikes by default
+            peth = get_peth(self.onsets, self.spk_ts_warp)
+        else:
+            peth = get_peth(self.onsets, self.spk_ts)
+
+        peth_dict['peth'] = peth
+        peth_dict['contexts'] = self.contexts
+        return PethInfo(peth_dict)  # return peth class object for further analysis
 
 
 class PethInfo():
-    def __init__(self, peth):
-        self.peth = peth
+    def __init__(self, peth_dict):
+        """
+        Args:
+            peth_dict : dict
+                "peth" : array  (nb of trials (motifs) x time bins)
+                    numbers indicate spike counts in that bin
+                "contexts" : list of strings
+                    social contexts
+        """
 
-    pass
+        # Set the dictionary values to class attributes
+        for key in peth_dict:
+            setattr(self, key, peth_dict[key])
 
+        self.peth = peth_dict['peth']
+        self.count = sum(self.peth)  # sum number of spikes per time bin
+        self.fr = self.count / peth_parm['bin_size']
+        self.time_bin = peth_parm['time_bin'] - peth_parm['buffer']
+        ##TODO: add self.fr, normalize, plot option
+
+    def __len__(self):
+        return self.peth.shape[0]
+
+    def __repr__(self):  # print attributes
+        return str([key for key in self.__dict__.keys()])
 
 
 class BoutInfo(ClusterInfo):
