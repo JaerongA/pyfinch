@@ -384,10 +384,9 @@ class ClusterInfo:
         open_folder(self.path)
 
 
-
 class MotifInfo(ClusterInfo):
 
-    def __init__(self, database, file_exist=False):
+    def __init__(self, database, update=False):
         super().__init__(database)
         # Load parent attributes but this will be overwritten
         self.load_events()
@@ -395,8 +394,8 @@ class MotifInfo(ClusterInfo):
 
         file_name = self.path / 'MotifInfo.npy'
 
-        if file_exist:
-            motif_info = np.load(file_name, allow_pickle=True).item()
+        if not update:  # file already exists or you don't want to update the file
+            baseline_info = np.load(file_name, allow_pickle=True).item()
         else:  # create a new file
 
             # Store values here
@@ -501,7 +500,6 @@ class MotifInfo(ClusterInfo):
 
         for motif_ind, (durations, onset, offset, spk_ts) in enumerate(list_zip):  # per motif
 
-            spk_ts_warped = np.array([], dtype=np.float32)
             onset = np.asarray(list(map(float, onset)))
             offset = np.asarray(list(map(float, offset)))
 
@@ -517,10 +515,10 @@ class MotifInfo(ClusterInfo):
                 else:
                     origin = sum(median_dur[:i])
                 ind, spk_ts_new = extract(spk_ts, [timestamp[i], timestamp[i + 1]])
-                ts = ((ratio * ((spk_ts_new - timestamp[0]) - diff)) + origin) + timestamp[0]
-                spk_ts_warped = np.append(spk_ts_warped, ts)
+                spk_ts_new = ((ratio * ((spk_ts_new - timestamp[0]) - diff)) + origin) + timestamp[0]
+                np.put(spk_ts, ind, spk_ts_new)  # replace original spk timestamps with warped timestamps
 
-            spk_ts_warped_list.append(spk_ts_warped)
+            spk_ts_warped_list.append(spk_ts)
         return spk_ts_warped_list
 
 
