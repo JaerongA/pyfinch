@@ -8,14 +8,36 @@ sample_rate = {'intan': 30000, 'cbin': 32000, 'recorder': 44000}  # sampling rat
 freq_range = [300, 8000]  # frequency range for bandpass filter for spectrogram (Hz)
 
 
-def get_syl_color():
-    # color for each syllable
-    import numpy as np
-    syl_color = np.zeros((5, 3))  # colors for song notes
-    syl_color[0, :] = [247, 198, 199]
-    syl_color[1, :] = [186, 229, 247]
-    syl_color[2, :] = [187, 255, 195]
-    syl_color[3, :] = [249, 170, 249]
-    syl_color[4, :] = [255, 127.5, 0]
-    syl_color = syl_color / 255
-    return syl_color
+# def get_syl_color():
+#     # color for each syllable
+#     import numpy as np
+#     syl_color = np.zeros((5, 3))  # colors for song notes
+#     syl_color[0, :] = [247, 198, 199]
+#     syl_color[1, :] = [186, 229, 247]
+#     syl_color[2, :] = [187, 255, 195]
+#     syl_color[3, :] = [249, 170, 249]
+#     syl_color[4, :] = [255, 127.5, 0]
+#     syl_color = syl_color / 255
+#     return syl_color
+
+
+# Set syllable colors
+syl_color = {'Intro': ['k', 'gray', 'darkseagreen', 'olive'],
+    'Motif': ['r', 'b', 'lime', 'm', 'darkorange', 'purple', 'saddlebrown'],
+    'Call': ['teal', 'darklategray', 'darkgray', 'indigo']}
+
+
+
+# syl_color = []
+#
+# for i, note in enumerate(note_seq[:-1]):
+#     if note in song_note:
+#         syl_color.append(motif_color.pop(0))
+#     elif note in intro_notes:
+#         syl_color.append(intro_color.pop(0))
+#     elif note in calls:
+#         syl_color.append(call_color.pop(0))
+#     else:
+#         syl_color.append(intro_color.pop(0))
+#
+# syl_color.append('y')  # for stop at the end
