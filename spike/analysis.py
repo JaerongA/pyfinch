@@ -404,7 +404,7 @@ class MotifInfo(ClusterInfo):
             onset_list = []
             offset_list = []
             syllable_list = []
-            duration_list = []
+            motif_duration_list = []
             context_list = []
             motif_info = {}
 
@@ -433,7 +433,7 @@ class MotifInfo(ClusterInfo):
 
                     file_list.append(file)
                     spk_list.append(motif_spk)
-                    duration_list.append(motif_offset - motif_onset)
+                    motif_duration_list.append(motif_offset - motif_onset)
                     onset_list.append(onsets_in_motif)
                     offset_list.append(offsets_in_motif)
                     syllable_list.append(syllables[start_ind:stop_ind + 1])
@@ -445,7 +445,7 @@ class MotifInfo(ClusterInfo):
                 'spk_ts': spk_list,
                 'onsets': onset_list,
                 'offsets': offset_list,
-                'durations': duration_list,
+                'motif_durations': motif_duration_list,
                 'syllables': syllable_list,
                 'contexts': context_list
             }
@@ -454,6 +454,14 @@ class MotifInfo(ClusterInfo):
             for key in motif_info:
                 setattr(self, key, motif_info[key])
 
+            # Get duration
+            note_durations, median_durations = self.get_note_duration()
+            motif_info['note_durations'] = note_durations
+            motif_info['median_durations'] = median_durations
+            self.note_durations = note_durations
+            self.median_durations = median_durations
+
+            # Get PLW (piecewise linear warping)
             spk_ts_warp_list = self.piecewise_linear_warping()
             motif_info['spk_ts_warp'] = spk_ts_warp_list
             self.spk_ts_warp = spk_ts_warp_list
@@ -466,18 +474,13 @@ class MotifInfo(ClusterInfo):
         return len(self.files)
 
 
-    def piecewise_linear_warping(self):
-        """
-        Performs piecewise linear warping on raw spike timestamps
-        Based on each median note and gap durations
-        """
-
+    def get_note_duration(self):
         # Calculate note & gap duration per motif
-        durations = np.empty((len(self), len(self.motif) * 2 - 1))
+        note_durations = np.empty((len(self), len(self.motif) * 2 - 1))
 
-        list_zip = zip(self.onsets, self.offsets, self.spk_ts)
+        list_zip = zip(self.onsets, self.offsets)
 
-        for motif_ind, (onset, offset, spk_ts) in enumerate(list_zip):
+        for motif_ind, (onset, offset) in enumerate(list_zip):
 
             # Convert from string to array of floats
             onset = np.asarray(list(map(float, onset)))
@@ -488,15 +491,23 @@ class MotifInfo(ClusterInfo):
             timestamp = sum(timestamp, [])
 
             for i in range(len(timestamp) - 1):
-                durations[motif_ind, i] = timestamp[i + 1] - timestamp[i]
+                note_durations[motif_ind, i] = timestamp[i + 1] - timestamp[i]
 
         # Get median duration
-        median_dur = np.median(durations, axis=0)
+        median_durations = np.median(note_durations, axis=0)
 
-        # Perform piecewise linear warping
+        return note_durations, median_durations
+
+
+    def piecewise_linear_warping(self):
+        """
+        Performs piecewise linear warping on raw spike timestamps
+        Based on each median note and gap durations
+        """
+
         spk_ts_warped_list = []
 
-        list_zip = zip(durations, self.onsets, self.offsets, self.spk_ts)
+        list_zip = zip(self.note_durations, self.onsets, self.offsets, self.spk_ts)
 
         for motif_ind, (durations, onset, offset, spk_ts) in enumerate(list_zip):  # per motif
 
@@ -507,13 +518,13 @@ class MotifInfo(ClusterInfo):
             timestamp = [[onset, offset] for onset, offset in zip(onset, offset)]
             timestamp = sum(timestamp, [])
 
-            for i in range(0, len(median_dur)):
-                ratio = median_dur[i] / durations[i]
+            for i in range(0, len(self.median_durations)):
+                ratio = self.median_durations[i] / durations[i]
                 diff = timestamp[i] - timestamp[0]
                 if i == 0:
                     origin = 0
                 else:
-                    origin = sum(median_dur[:i])
+                    origin = sum(self.median_durations[:i])
                 ind, spk_ts_new = extract(spk_ts, [timestamp[i], timestamp[i + 1]])
                 spk_ts_new = ((ratio * ((spk_ts_new - timestamp[0]) - diff)) + origin) + timestamp[0]
                 np.put(spk_ts, ind, spk_ts_new)  # replace original spk timestamps with warped timestamps
