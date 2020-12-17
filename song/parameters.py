@@ -22,22 +22,22 @@ freq_range = [300, 8000]  # frequency range for bandpass filter for spectrogram 
 
 
 # Set syllable colors
-syl_color = {'Intro': ['k', 'gray', 'darkseagreen', 'olive'],
-    'Motif': ['r', 'b', 'lime', 'm', 'darkorange', 'purple', 'saddlebrown'],
+note_color = {'Intro': ['k', 'gray', 'darkseagreen', 'olive'],
+    'Motif': ['r', 'b', 'lime', 'saddlebrown', 'm', 'darkorange', 'purple'],
     'Call': ['teal', 'darklategray', 'darkgray', 'indigo']}
 
 
 
-# syl_color = []
+# note_color = []
 #
 # for i, note in enumerate(note_seq[:-1]):
 #     if note in song_note:
-#         syl_color.append(motif_color.pop(0))
+#         note_color.append(motif_color.pop(0))
 #     elif note in intro_notes:
-#         syl_color.append(intro_color.pop(0))
+#         note_color.append(intro_color.pop(0))
 #     elif note in calls:
-#         syl_color.append(call_color.pop(0))
+#         note_color.append(call_color.pop(0))
 #     else:
-#         syl_color.append(intro_color.pop(0))
+#         note_color.append(intro_color.pop(0))
 #
-# syl_color.append('y')  # for stop at the end
+# note_color.append('y')  # for stop at the end
