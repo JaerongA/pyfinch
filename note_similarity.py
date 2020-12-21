@@ -119,8 +119,8 @@ def get_psd_mat(path, fig_ok=False):
         sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
 
         # data = filtersong(data)
-        filt = sc.signal.iirdesign(wp=0.04, ws=0.02, gpass=1, gstop=60, ftype='ellip')
-        data = sc.signal.filtfilt(filt[0], filt[1], data)
+        # filt = sc.signal.iirdesign(wp=0.04, ws=0.02, gpass=1, gstop=60, ftype='ellip')
+        # data = sc.signal.filtfilt(filt[0], filt[1], data)
 
 
         length = data.shape[0] / sample_rate
@@ -146,7 +146,7 @@ def get_psd_mat(path, fig_ok=False):
 
             segstart = int(round(freq_range[0] / (sample_rate / float(nfft))))  # 307
             segend = int(round(freq_range[1] / (sample_rate / float(nfft))))  # 8192
-            pow = psd_seg[0][segstart:segend]
+            pow = norm(psd_seg[0][segstart:segend])
             freq = psd_seg[1][segstart:segend]
 
             if fig_ok:
@@ -174,7 +174,7 @@ def get_psd_mat(path, fig_ok=False):
 
                 ax_psd = plt.subplot(gs[1:5,2], sharey=ax_spect)
 
-                pow = np.mean(spect, axis=1)  # time-resolved average
+                # pow = np.mean(spect, axis=1)  # time-resolved average
                 freq = freqbins
                 ax_psd.plot(pow, freq, 'k')
 
@@ -252,14 +252,30 @@ similarity = 1 - (distance / np.max(distance))
 
 
 
-# plot similiarity matrix
-fig = plt.figure(figsize=(3,6))
-ax = plt.subplot(111)
+# # plot similiarity matrix
+# fig = plt.figure(figsize=(3,6))
+# ax = plt.subplot(111)
+#
+# # ax =sns.heatmap(distance, cmap='hot_r')
+# # ax =sns.heatmap(similarity[:100,:], vmin=0.2, vmax=1)
+# ax = sns.heatmap(similarity[:100,:], cmap='hot_r')
+# ax.set_title('Sim matrix')
+# ax.set_ylabel('N sample PSDs')
+# ax.set_xlabel('Basis syllables')
+# ax.set_xticklabels(syl_list_basis)
+# ax.set_yticks([])
+# plt.show()
 
-# ax =sns.heatmap(distance, cmap='hot_r')
-ax =sns.heatmap(similarity[:100,:], vmin=0.0, vmax=1)
-# ax =sns.heatmap(similarity[:100,:], cmap='hot_r')
-ax.set_title('Sim matrix')
-ax.set_ylabel('N sample PSDs')
-ax.set_xlabel('Basis syllables')
-plt.show()
+
+
+# # plot similiarity matrix (samples)
+# fig = plt.figure(figsize=(3,6))
+# ax = plt.subplot(111)
+# ax = sns.heatmap(similarity[30:60,:], cmap='hot_r')
+# ax.set_title('Sim matrix')
+# ax.set_ylabel('Test syllables')
+# ax.set_xlabel('Basis syllables')
+# ax.set_xticklabels(syl_list_basis)
+# ax.set_yticklabels(list(all_syllables_testing[30:60]))
+# plt.yticks(rotation=0)
+# plt.show()
