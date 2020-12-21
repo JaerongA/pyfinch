@@ -11,6 +11,7 @@ from scipy import ndimage
 from scipy import signal
 from scipy import spatial
 from matplotlib.pylab import psd
+import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
@@ -27,6 +28,7 @@ import seaborn as sns
 from  util.functions import *
 from  util.spect import *
 from util.draw import *
+from util import save
 
 from song.parameters import *
 
@@ -52,41 +54,10 @@ def filtersong(a):
     """highpass iir filter for song."""
     out = []
     b = sc.signal.iirdesign(wp=0.04, ws=0.02, gpass=1, gstop=60, ftype='ellip')
-    out.append(sc.signal.filtfilt(b[0], b[1], a[0]))
-    out.append(a[1])
+    out.append(sc.signal.filtfilt(b[0], b[1], a))
+    # out.append(a[1])
     return (out)
 
-
-def threshold(a, thresh=None):
-    """Returns a thresholded array of the same length as input
- with everything below a specific threshold set to 0.
- By default threshold is sigma."""
-    if thresh == None: thresh = sc.std(a)
-    out = np.where(abs(a) > thresh, a, np.zeros(a.shape))
-    return out
-
-
-def findobject(file):
-    """finds objects.  Expects a smoothed rectified amplitude envelope"""
-    value = (otsu(np.array(file, dtype=np.uint32))) / 2  # calculate a threshold
-    # value=(np.average(file))/2 #heuristically, this also usually works  for establishing threshold
-    thresh = threshold(file, value)  # threshold the envelope data
-    thresh = threshold(sc.ndimage.convolve(thresh, np.ones(512)), 0.5)  # pad the threshold
-    label = (sc.ndimage.label(thresh)[0])  # label objects in the threshold
-    objs = sc.ndimage.find_objects(label)  # recover object positions
-    return (objs)
-
-
-def smoothrect(a, window=None, freq=None):
-    """smooths and rectifies a song.  Expects (data,samprate)"""
-    if freq == None: freq = 32000  # baseline values if none are provided
-    if window == None: window = 2  # baseline if none are provided
-    le = int(round(freq * window / 1000))  # calculate boxcar kernel length
-    h = np.ones(le) / le  # make boxcar
-    smooth = np.convolve(h, abs(a))  # convovlve boxcar with signal
-    offset = int(round((len(smooth) - len(a)) / 2))  # calculate offset imposed by convolution
-    smooth = smooth[(1 + offset):(len(a) + offset)]  # correct for offset
-    return smooth
 
 
 def getsyls(a):
@@ -122,52 +93,173 @@ font_size = 12
 #     if len(segedpsds) > datano: break
 
 note_buffer = 10  # in ms before and after each note
+fig_ok = False
 
 training_path = Path('H:\Box\Data\BMI\k71o7\TrainingSet(withX)')
 testing_path = Path('H:\Box\Data\BMI\k71o7\TestSet2')
 
-training_files = list(training_path.glob('*.wav'))
-testing_Files = list(testing_path.glob('*.wav'))
+
+
+## Obtain basis data from training files
+
+def get_psd_mat(path, fig_ok=False):
+
+    # Load files
+    psd_list = []  # store psd vectors for training
+    all_syllables = ''
+
+    files = list(path.glob('*.wav'))
+
+    for file in files:
+
+        notmat_file = file.with_suffix('.wav.not.mat')
+
+        onsets, offsets, intervals, durations, syllables, contexts = read_not_mat(notmat_file, unit='ms')
+
+        sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
+
+        # data = filtersong(data)
+        filt = sc.signal.iirdesign(wp=0.04, ws=0.02, gpass=1, gstop=60, ftype='ellip')
+        data = sc.signal.filtfilt(filt[0], filt[1], data)
+
+
+        length = data.shape[0] / sample_rate
+        timestamp = np.round(np.linspace(0, length, data.shape[0]) * 1E3,
+                             3)  # start from t = 0 in ms, reduce floating precision
+
+        list_zip = zip(onsets, offsets, syllables)
+
+        for i, (onset, offset, syllable) in enumerate(list_zip):
+
+            ind = extract_ind(timestamp, [onset - note_buffer, offset + note_buffer])
+            # ind = extract_ind(timestamp, [onset, offset])
+            extracted_data = data[ind]
+
+            spect, freqbins, timebins = spectrogram(extracted_data, sample_rate, freq_range=freq_range)
+
+
+            # Get power spectral density
+
+            nfft = int(round(2 ** 14 / 32000.0 * sample_rate))
+            # nfft = 2**10
+            psd_seg = psd(norm(extracted_data), NFFT=nfft, Fs=sample_rate)
+
+            segstart = int(round(freq_range[0] / (sample_rate / float(nfft))))  # 307
+            segend = int(round(freq_range[1] / (sample_rate / float(nfft))))  # 8192
+            pow = psd_seg[0][segstart:segend]
+            freq = psd_seg[1][segstart:segend]
+
+            if fig_ok:
+
+                # Plot spectrogram & PSD
+                fig = plt.figure(figsize=(3.5, 3))
+                fig_name = "{}, note#{} - {}".format(file.name, i, syllable)
+                fig.suptitle(fig_name, y=0.95)
+
+                gs = gridspec.GridSpec(6, 3)
+
+                ax_spect = plt.subplot(gs[1:5,0:2])
+                ax_spect.pcolormesh(timebins * 1E3, freqbins, spect,  # data
+                                    cmap='hot_r',
+                                    norm=colors.SymLogNorm(linthresh=0.05,
+                                                           linscale=0.03,
+                                                           vmin=0.5,
+                                                           vmax=100
+                                                           ))
+
+                remove_right_top(ax_spect)
+                ax_spect.set_ylim(freq_range[0], freq_range[1])
+                ax_spect.set_xlabel('Time (ms)', fontsize=font_size)
+                ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
+
+                ax_psd = plt.subplot(gs[1:5,2], sharey=ax_spect)
+
+                pow = np.mean(spect, axis=1)  # time-resolved average
+                freq = freqbins
+                ax_psd.plot(pow, freq, 'k')
+
+                ax_psd.spines['right'].set_visible(False), ax_psd.spines['top'].set_visible(False)
+                ax_psd.spines['bottom'].set_visible(False)
+                ax_psd.set_xticks([])
+                plt.setp(ax_psd.set_yticks([]))
+                plt.close(fig)
+
+            # save_path = save.make_dir(file.parent, 'Spectrograms')
+            # save.save_fig(fig, save_path, fig_name, ext='.png')
+
+            all_syllables += syllable
+            # psd_array = np.hstack((psd_array, pow))
+            psd_list.append(pow)
+        #
+        #     break
+
+    psd_array = np.asarray(psd_list)  # power x number of syllables
+
+    return psd_array, psd_list, all_syllables
+
+
+
+psd_array_training, psd_list_training, all_syllables_training = get_psd_mat(training_path)
+
+## Get avg psd from the training set (will serve as a basis)
+
+psd_dict = {}
+psd_list_basis = []
+syl_list_basis = []
+
+for syllable in unique(all_syllables_training):
+
+    if syllable != 'x':
+        ind  = find_str(all_syllables_training, syllable)
+        syl_pow_array = psd_array_training[ind,:]
+        syl_pow_avg= syl_pow_array.mean(axis=0)
+        # plt.plot(syl_pow_avg), plt.show()
+        temp_dict = {syllable: syl_pow_avg}
+        psd_list_basis.append(syl_pow_avg)
+        syl_list_basis.append(syllable)
+        psd_dict.update(temp_dict)  # basis
+        # plt.plot(psd_dict[syllable])
+
+# plt.show()
+
+# basis_psd_arr = np.asarray(basis_psd_list)
+
+
+
+## Get psd from the testing set
+psd_array_testing, psd_list_testing, all_syllables_testing = get_psd_mat(testing_path)
+
+## Get similarity per syllable
+
+# for i, (psd, syllable) in enumerate(zip(psd_list_testing, all_syllables_testing)):
 #
-# training_files = [x for x in os.listdir(path1) if x[-4:] == '.wav']
-# testing_Files = [x for x in os.listdir(path2) if x[-4:] == '.wav']
+#     if i ==0:
+#         syllable = all_syllables_testing[i]
+#
+#         for basis_psd, basis_syllable in psd_dict.items():
+#
+#             print("Basis {} vs. Test {}".format(basis_syllable, syllable))
+#
+#             distance = sc.spatial.distance.cdist(psd_list_testing, basis_psd_list, 'sqeuclidean')
+#             print(distance)
 
-# Load files
 
-for file in training_files:
+distance = sc.spatial.distance.cdist(psd_list_testing, psd_list_basis, 'sqeuclidean')  # (number of syllables x basis syllables)
 
-    notmat_file = file.with_suffix('.wav.not.mat')
+#convert to similarity matrices:
+similarity = 1 - (distance / np.max(distance))
 
-    onsets, offsets, intervals, durations, syllables, contexts = read_not_mat(notmat_file, unit='ms')
 
-    sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
 
-    length = data.shape[0] / sample_rate
-    timestamp = np.round(np.linspace(0, length, data.shape[0]) * 1E3,
-                         3)  # start from t = 0 in ms, reduce floating precision
 
-    list_zip = zip(onsets, offsets, syllables)
+# plot similiarity matrix
+fig = plt.figure(figsize=(3,6))
+ax = plt.subplot(111)
 
-    for onset, offset, syllable in list_zip:
-
-        # data_list =
-        # ind = extract_ind(timestamp, [onset - note_buffer, offset + note_buffer])
-        ind = extract_ind(timestamp, [onset, offset])
-        extracted_data = data[ind]
-        spect, freqbins, timebins = spectrogram(extracted_data, sample_rate, freq_range=freq_range)
-
-        # Plot spectrogram
-        ax_spect = plt.subplot(111)
-        ax_spect.pcolormesh(timebins * 1E3, freqbins, spect,  # data
-                            cmap='hot_r',
-                            norm=colors.SymLogNorm(linthresh=0.05,
-                                                   linscale=0.03,
-                                                   vmin=0.5,
-                                                   vmax=100
-                                                   ))
-
-        remove_right_top(ax_spect)
-        ax_spect.set_ylim(freq_range[0], freq_range[1])
-        ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
-
-        break
+# ax =sns.heatmap(distance, cmap='hot_r')
+ax =sns.heatmap(similarity[:100,:], vmin=0.0, vmax=1)
+# ax =sns.heatmap(similarity[:100,:], cmap='hot_r')
+ax.set_title('Sim matrix')
+ax.set_ylabel('N sample PSDs')
+ax.set_xlabel('Basis syllables')
+plt.show()
