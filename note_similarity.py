@@ -140,8 +140,9 @@ def get_psd_mat(path, fig_ok=False):
 
             # Get power spectral density
 
-            nfft = int(round(2 ** 14 / 32000.0 * sample_rate))
-            # nfft = 2**10
+            # nfft = int(round(2 ** 14 / 32000.0 * sample_rate))
+            nfft = 2**10
+            # nfft = 2**8
             psd_seg = psd(norm(extracted_data), NFFT=nfft, Fs=sample_rate)
 
             segstart = int(round(freq_range[0] / (sample_rate / float(nfft))))  # 307
@@ -250,8 +251,6 @@ distance = sc.spatial.distance.cdist(psd_list_testing, psd_list_basis, 'sqeuclid
 similarity = 1 - (distance / np.max(distance))
 
 
-
-
 # # plot similiarity matrix
 # fig = plt.figure(figsize=(3,6))
 # ax = plt.subplot(111)
@@ -279,3 +278,43 @@ similarity = 1 - (distance / np.max(distance))
 # ax.set_yticklabels(list(all_syllables_testing[30:60]))
 # plt.yticks(rotation=0)
 # plt.show()
+
+
+
+# Plot similarity matrix per syllable
+
+
+
+for syllable in unique(all_syllables_testing):
+    if syllable != '0':
+        print(syllable)
+
+        fig = plt.figure(figsize=(5,6))
+
+        gs = gridspec.GridSpec(6, 1)
+        ax = plt.subplot(gs[0:5])
+
+        title = "Sim matrix: syllable = {}".format(syllable)
+        ind  = find_str(all_syllables_testing, syllable)
+        similarity_syllable = similarity[ind,:]
+        # ax = sns.heatmap(similarity_syllable, cmap='binary', vmin=0, vmax=1)
+        ax = sns.heatmap(similarity_syllable, cmap='binary')
+        # ax.imshow(similarity_syllable, cmap='hot_r')
+        ax.set_title(title)
+        ax.set_ylabel('Test syllables')
+        ax.set_xlabel('Basis syllables')
+        ax.set_xticklabels(syl_list_basis)
+        plt.yticks(rotation=0)
+
+        ax = plt.subplot(gs[-1], sharex=ax)
+        similarity_vec = np.expand_dims(np.mean(similarity_syllable, axis=0), axis=0)  # or axis=1
+        ax = sns.heatmap(similarity_vec, annot=True, cmap='binary', vmin=0, vmax=1)
+        ax.set_yticks([])
+        ax.set_xticklabels(syl_list_basis)
+
+        plt.show()
+
+
+        save_path = save.make_dir(testing_path, 'Spectrograms')
+        save.save_fig(fig, save_path, title, ext='.png')
+
