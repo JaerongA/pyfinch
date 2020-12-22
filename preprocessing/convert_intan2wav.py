@@ -95,7 +95,7 @@ for rhd in rhd_files:
     plt.margins(0.05)
     plt.tight_layout()
 
-    # Save figure
+    # Save save_fig
     # fig_name = Path(rhd).with_suffix('.png')
     # plt.savefig(fig_name)
     # fig_name = Path(rhd).with_suffix('.pdf')  # vector format

@@ -13,7 +13,7 @@ import math
 
 # Store results in the dataframe
 df = pd.DataFrame()
-data_path = Path("H:\Box\Data\BMI\g20r5\TrainingSet")
+data_path = Path("H:\Box\Data\BMI\k71o7\TestSet")
 audio_files = list(data_path.glob('*.wav'))
 
 for file in audio_files:
@@ -35,7 +35,7 @@ for file in audio_files:
 # Plot the results
 syllable_list = sorted(list(set(df['Syllable'].to_list())))
 
-# fig, ax = plt.figure(figsize=(8,5))
+# fig, ax = plt.save_fig(figsize=(8,5))
 fig, ax = plt.subplots(figsize=(6,5))
 # fig.suptitle("{} - {}".format(birdID, data_path.name))
 plt.title("{} - {}".format(birdID, data_path.name))
@@ -54,7 +54,7 @@ for syllable, x_loc in zip(syllable_list, ax.get_xticks()):
     y_loc = max_dur +  ax.get_ylim()[1]*0.05
     plt.text(x_loc, y_loc, text)
 
-ax.set_ylim([0, myround(math.ceil(ax.get_ylim()[1]), base=50)])
+ax.set_ylim([0, myround(math.ceil(ax.get_ylim()[1]), base=100)])
 remove_right_top(ax)
 plt.ylabel('Duration (ms)')
 fig.tight_layout()
