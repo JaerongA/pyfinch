@@ -11,7 +11,7 @@ def main():
     import shutil
     from tkinter import Tk
     from tkinter import messagebox as mb
-    from utilities.functions import find_data_path
+    from util.functions import find_data_path
 
     data_path = find_data_path()
     os.chdir(data_path)

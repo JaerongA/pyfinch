@@ -13,6 +13,7 @@ def change_cbin_names(data_path=None):
     from pathlib import Path
     from util.functions import find_data_path
 
+    # Find data path
     if data_path:
         data_path = Path(data_path)
     else:  # Search for data dir manually
@@ -96,6 +97,5 @@ def convert2syllable(data_path=None):
 
 
 if __name__ == '__main__':
-
-    # dir_path = "H:\Box\Data\BMI\y3y18\BMI"
-    convert2syllable()
+    data_path = r"H:\Box\Data\BMI\y58y59\pre-control1"
+    convert2syllable(data_path)

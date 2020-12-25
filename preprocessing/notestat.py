@@ -9,15 +9,16 @@ import pandas as pd
 import seaborn as sns
 from song.analysis import read_not_mat
 from util.draw import *
+from util.functions import *
 import math
 
 # Store results in the dataframe
-df = pd.DataFrame()
-data_path = Path("H:\Box\Data\BMI\k71o7\TestSet")
+data_path = Path("H:\Box\Data\BMI\y3y18\BMI")
 audio_files = list(data_path.glob('*.wav'))
 
-for file in audio_files:
+df = pd.DataFrame()
 
+for file in audio_files:
     # Load the .not.mat file
     # print('Loading... ' + file.stem)
     notmat_file = file.with_suffix('.wav.not.mat')
@@ -25,7 +26,7 @@ for file in audio_files:
     onsets, offsets, intervals, durations, syllables, context = read_not_mat(notmat_file)
 
     nb_syllable = len(syllables)
-
+    breakpoint()
     temp_df = pd.DataFrame({'FileID': [notmat_file] * nb_syllable,
                             'Syllable': list(syllables),
                             'Duration': durations,
@@ -35,23 +36,16 @@ for file in audio_files:
 # Plot the results
 syllable_list = sorted(list(set(df['Syllable'].to_list())))
 
-# fig, ax = plt.save_fig(figsize=(8,5))
-fig, ax = plt.subplots(figsize=(6,5))
-# fig.suptitle("{} - {}".format(birdID, data_path.name))
+fig, ax = plt.subplots(figsize=(6, 5))
 plt.title("{} - {}".format(birdID, data_path.name))
-sns.stripplot(ax=ax, x='Syllable', y= 'Duration', order=syllable_list, s=4, jitter=0.15, data=df)
-
-def myround(x, base=5):
-    return base * round(x/base)
-
+sns.stripplot(ax=ax, x='Syllable', y='Duration', order=syllable_list, s=4, jitter=0.15, data=df)
 
 for syllable, x_loc in zip(syllable_list, ax.get_xticks()):
-
-    nb_syllable = df[df['Syllable']== syllable]['Syllable'].count()
-    max_dur = df[df['Syllable']== syllable]['Duration'].max()
+    nb_syllable = df[df['Syllable'] == syllable]['Syllable'].count()
+    max_dur = df[df['Syllable'] == syllable]['Duration'].max()
     text = "({})".format(nb_syllable)
-    x_loc -= ax.get_xticks()[-1]*0.03
-    y_loc = max_dur +  ax.get_ylim()[1]*0.05
+    x_loc -= ax.get_xticks()[-1] * 0.03
+    y_loc = max_dur + ax.get_ylim()[1] * 0.05
     plt.text(x_loc, y_loc, text)
 
 ax.set_ylim([0, myround(math.ceil(ax.get_ylim()[1]), base=100)])
