@@ -1,6 +1,6 @@
 """
 By Jaerong
-Helper functions for drawing a figure
+Helper functions for drawing a save_fig
 """
 
 import matplotlib.pyplot as plt

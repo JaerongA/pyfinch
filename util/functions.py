@@ -20,15 +20,15 @@ def unique(list):
     return [x for x in list if not (x in seen or seen.add(x))]
 
 
-def find_str(pattern: str, string: str):
+def find_str(string: str, pattern: str):
     """
     Find all indices of patterns in a string
 
     Args:
-        pattern: str
-            string pattern to search
         string: str
             input string
+        pattern: str
+            string pattern to search
 
     Returns:
         ind : list
@@ -113,3 +113,7 @@ def extract_ind(timestamp, range):
     ind = np.where((timestamp >= start) & (timestamp <= end))
     new_array = timestamp[ind]
     return ind
+
+
+def myround(x, base=5):
+    return base * round(x/base)

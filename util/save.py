@@ -8,11 +8,13 @@ from datetime import date
 from database import load
 
 
-def make_dir(dir_name: str, add_date=True):
+def make_dir(parent_path, dir_name: str, add_date=True):
 
-    # add date info in the sub-directory
-    project_path = load.project()
-    save_path = project_path / 'Analysis' / dir_name
+    # # add date info in the sub-directory
+    # project_path = load.project()
+    # save_path = project_path / 'Analysis' / dir_name
+
+    save_path = Path(parent_path) /  dir_name
 
     if add_date:
         today = date.today()
@@ -24,7 +26,7 @@ def make_dir(dir_name: str, add_date=True):
     return save_path
 
 
-def figure(fig, save_path, title, ext='.png'):
+def save_fig(fig, save_path, title, ext='.png'):
 
     import matplotlib.pyplot as plt
     import matplotlib
@@ -40,7 +42,7 @@ def figure(fig, save_path, title, ext='.png'):
 
     fig_name = save_path / (title + ext)
     plt.savefig(fig_name, transparent=True)
-
+    plt.close(fig)
 
 def save2json(filename, data):
 
