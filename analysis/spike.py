@@ -3,11 +3,10 @@ By Jaerong
 A main package for neural analysis
 """
 
+from analysis.functions import *
+from analysis.parameters import *
+from analysis.load import *
 from database.load import ProjectLoader
-import matplotlib.pyplot as plt
-from song.analysis import *
-from spike.parameters import *
-from spike.load import *
 from pathlib import Path
 from util.functions import *
 from util.spect import *
@@ -186,7 +185,7 @@ def load_audio(dir):
 
 
 def get_isi(spk_ts: list):
-    """Get inter-spike interval of spikes"""
+    """Get inter-analysis interval of spikes"""
     isi = []
     for spk_ts in spk_ts:
         isi.append(np.diff(spk_ts))
@@ -216,7 +215,7 @@ class ClusterInfo:
     ##TODO: incorporate load_spk, load_events in __init__
     def __init__(self, database):
 
-        # Set all database fields as attributes
+        #Set all database fields as attributes
         for col in database.keys():
             # dic[col] = database[col]
             setattr(self, col, database[col])
@@ -225,9 +224,6 @@ class ClusterInfo:
         self.name, self.path = load_info(database)
         print('')
         print('Load cluster {self.name}'.format(self=self))
-
-    # def __del__(self):
-    #     print('Delete cluster : {self.name}'.format(self=self))
 
     def __repr__(self):
         '''Print out the name'''
@@ -266,8 +262,8 @@ class ClusterInfo:
         if unit_nb:  # if the unit number is specified
             spk_info = spk_info[spk_info[:, 1] == unit_nb, :]
 
-        spk_ts = spk_info[:, 2]  # spike time stamps
-        spk_wf = spk_info[:, 3:]  # spike waveform
+        spk_ts = spk_info[:, 2]  # analysis time stamps
+        spk_wf = spk_info[:, 3:]  # analysis waveform
         nb_spk = spk_wf.shape[0]  # total number of spikes
 
         self.spk_wf = spk_wf  # individual waveforms
@@ -277,12 +273,12 @@ class ClusterInfo:
         if unit is 'ms':
             spk_ts *= 1E3
 
-        # Output spike timestamps per file in a list
+        # Output analysis timestamps per file in a list
         spk_list = []
         for file_start, file_end in zip(self.file_start, self.file_end):
             spk_list.append(spk_ts[np.where((spk_ts >= file_start) & (spk_ts <= file_end))])
 
-        self.spk_ts = spk_list  # spike timestamps in ms
+        self.spk_ts = spk_list  # analysis timestamps in ms
         print("spk_ts, spk_wf, nb_spk attributes added")
 
     def analyze_waveform(self):
@@ -309,7 +305,7 @@ class ClusterInfo:
         return conditional_spk
 
     def get_correlogram(self, ref_spk_list, target_spk_list, normalize=False):
-        """Get spike auto- or cross-correlogram"""
+        """Get analysis auto- or cross-correlogram"""
 
         import math
 
@@ -451,7 +447,7 @@ class MotifInfo(ClusterInfo):
                 # Find motifs
                 motif_ind = find_str(self.motif, syllables)
 
-                # Get syllable, spike time stamps
+                # Get syllable, analysis time stamps
                 for ind in motif_ind:
                     # start (first syllable) and stop (last syllable) index of a motif
                     start_ind = ind
@@ -534,7 +530,7 @@ class MotifInfo(ClusterInfo):
 
     def piecewise_linear_warping(self):
         """
-        Performs piecewise linear warping on raw spike timestamps
+        Performs piecewise linear warping on raw analysis timestamps
         Based on each median note and gap durations
         """
 
@@ -558,7 +554,7 @@ class MotifInfo(ClusterInfo):
                     origin = 0
                 else:
                     origin = sum(self.median_durations[:i])
-                ind, spk_ts_new = extract(spk_ts, [timestamp[i], timestamp[i + 1]])
+                ind, spk_ts_new = extract_ind(spk_ts, [timestamp[i], timestamp[i + 1]])
                 spk_ts_new = ((ratio * ((spk_ts_new - timestamp[0]) - diff)) + origin) + timestamp[0]
                 np.put(spk_ts, ind, spk_ts_new)  # replace original spk timestamps with warped timestamps
 
@@ -586,7 +582,7 @@ class PethInfo():
         Args:
             peth_dict : dict
                 "peth" : array  (nb of trials (motifs) x time bins)
-                    numbers indicate spike counts in that bin
+                    numbers indicate analysis counts in that bin
                 "contexts" : list of strings
                     social contexts
         """
@@ -608,8 +604,9 @@ class PethInfo():
         return str([key for key in self.__dict__.keys()])
 
     def normalize_fr(self):
-        """Normalize firing rates by the total sum of spike counts"""
-        self.fr_norm = self.fr / sum(pi.fr)
+        """Normalize firing rates by the total sum of analysis counts"""
+        self.fr_norm = self.fr / sum(self.fr)
+
 
 class BoutInfo(ClusterInfo):
     pass
