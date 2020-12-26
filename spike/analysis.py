@@ -13,6 +13,20 @@ from util.functions import *
 from util.spect import *
 
 
+class DBLoader:
+    def __init__(self, database):
+
+        # Set all database fields as attributes
+        for col in database.keys():
+            # dic[col] = database[col]
+            setattr(self, col, database[col])
+
+        # Get cluster name & path
+        self.name, self.path = load_info(database)
+        print('')
+        print('Load cluster {self.name}'.format(self=self))
+
+
 def load_info(database):
     """
     Return the list of files in the current directory
@@ -593,6 +607,9 @@ class PethInfo():
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
+    def normalize_fr(self):
+        """Normalize firing rates by the total sum of spike counts"""
+        self.fr_norm = self.fr / sum(pi.fr)
 
 class BoutInfo(ClusterInfo):
     pass
