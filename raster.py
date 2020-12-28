@@ -1,12 +1,12 @@
 # Practice creating an audio object
 
 from database.load import ProjectLoader
-from spike.analysis import *
-from spike.parameters import *
+from analysis.spike import *
+from analysis.parameters import *
 from scipy.io import wavfile
 from song.parameters import *
 from pathlib import Path
-from spike.load import read_rhd
+from analysis.load import read_rhd
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
@@ -27,8 +27,8 @@ font_size = 12
 
 for row in cur.fetchall():
 
-    # ci = ClusterInfo(row)
-    # ci.load_events()
+    ci = ClusterInfo(row)
+    ci.load_events()
     mi = MotifInfo(row, update=True)
 
     # Plot spectrogram & peri-event histogram (Just the first rendition)
@@ -46,11 +46,11 @@ for row in cur.fetchall():
         audio = AudioData(row).extract([start, end])
         audio.spectrogram(freq_range=freq_range)
 
-        # Plot figure
+        # Plot save_fig
         fig = plt.figure(figsize=(6,6.5))
         plt.suptitle(mi.name, y=.95)
-        gs = gridspec.GridSpec(9, 1)
-        gs.update(hspace=0.2)
+        gs = gridspec.GridSpec(2, 1)
+        gs.update(hspace=0.1)
 
         # Plot spectrogram
         ax_spect = plt.subplot(gs[1:3])
@@ -76,7 +76,7 @@ for row in cur.fetchall():
         for i, syl in enumerate(mi.motif):
             # Mark syllables
             rectangle = plt.Rectangle((onset[i], rec_yloc), note_dur[i], 0.2,
-                                      linewidth=1, alpha = 0.5, edgecolor='k', facecolor=syl_color['Motif'][i])
+                                      linewidth=1, alpha = 0.5, edgecolor='k', facecolor=note_color['Motif'][i])
             ax_syl.add_patch(rectangle)
             ax_syl.text((onset[i] + (offset[i] - onset[i]) / 2), text_yloc, syl, size=font_size)
         ax_syl.axis('off')
@@ -86,7 +86,7 @@ for row in cur.fetchall():
     # Plot raster
     line_offsets = np.arange(0.5,len(mi))
     list_zip = zip(mi.spk_ts_warp, mi.onsets, line_offsets)
-    ax_raster = plt.subplot(gs[4:-1], sharex= ax_spect)
+    ax_raster = plt.subplot(gs[4:6], sharex= ax_spect)
 
     for motif_ind, (spk_ts_warp, onset, line_offset) in enumerate(list_zip):
         # print(spk_ts_warp)
@@ -108,14 +108,14 @@ for row in cur.fetchall():
                                           # fill=True,
                                           linewidth=1,
                                           alpha=0.05,
-                                          facecolor=syl_color['Motif'][i])
+                                          facecolor=note_color['Motif'][i])
             elif not i%2:
                 # print("i is {}, color is {}".format(i, i-k))
                 rectangle = plt.Rectangle((sum(mi.median_durations[:i]), motif_ind), mi.median_durations[i], rec_height,
                                           # fill=True,
                                           linewidth=1,
                                           alpha=0.05,
-                                          facecolor=syl_color['Motif'][i-k])
+                                          facecolor=note_color['Motif'][i - k])
                 k += 1
 
             ax_raster.add_patch(rectangle)
@@ -124,5 +124,14 @@ for row in cur.fetchall():
     ax_raster.set_ylabel('Trial #', fontsize=font_size)
     ax_raster.set_xlabel('Time (ms)', fontsize=font_size)
     remove_right_top(ax_raster)
+
+    ax_peth = plt.subplot(gs[7:-1])
+
+
+
+
+
+
+
 
     plt.show()

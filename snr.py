@@ -1,15 +1,15 @@
 """
 By Jaerong
-Calculates a spike signal-to-noise ratio (SNR) relative to the background (raw neural trace)
+Calculates a analysis signal-to-noise ratio (SNR) relative to the background (raw neural trace)
 """
 
 from database import load
 import numpy as np
 import scipy.io
-from spike.parameters import sample_rate
-from spike.load import read_spk_txt
+from analysis.parameters import sample_rate
+from analysis.load import read_spk_txt
 import matplotlib.pyplot as plt
-from utilities import draw, save
+from util import draw, save
 
 # Load from the database
 
@@ -74,16 +74,16 @@ for row in cur.fetchall():
     plt.text(0.1, 0.3, 'Spk Height = {:.2f} µV'.format(spk_height), fontsize=12)
     plt.text(0.1, 0.5, 'Spk Width = {:.2f} µs'.format(spk_width), fontsize=12)
     plt.text(0.1, 0.7, '# of Spk = {}'.format(nb_spk), fontsize=12)
-    draw.set_fig_size(4.2, 2.5)  # set the physical size of the figure in inches (width, height)
+    draw.set_fig_size(4.2, 2.5)  # set the physical size of the save_fig in inches (width, height)
 
     # Create a folder to store output files
 
     dir_name = 'WaveformAnalysis'
     save_dir = save.make_save_dir(dir_name)
 
-    # Save figure (.pdf or .png)
-    # save.figure(fig, save_dir, cell_name, ext='.pdf')  # in vector format
-    save.figure(fig, save_dir, cell_name, ext='.png')
+    # Save save_fig (.pdf or .png)
+    # save.save_fig(fig, save_dir, cell_name, ext='.pdf')  # in vector format
+    save.save_fig(fig, save_dir, cell_name, ext='.png')
     # plt.show()
     plt.close(fig)
 

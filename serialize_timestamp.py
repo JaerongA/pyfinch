@@ -6,12 +6,12 @@ Serialize timestamps across multiple files recorded in the same session
 from database import load
 import numpy as np
 from pathlib import Path
-from spike.load import read_spk_txt, read_rhd
-from spike.parameters import *
-from spike.analysis import *
+from analysis.load import read_spk_txt, read_rhd
+from analysis.parameters import *
+from analysis.spike import *
 from song.analysis import *
 from song.parameters import *
-from utilities.functions import *
+from util.functions import *
 from scipy.io import wavfile
 
 
@@ -30,7 +30,7 @@ for row in cur.fetchall():
     audio_files = list(cell_path.glob('*.wav'))
 
     # Initialize variables
-    timestamp_serialized = np.array([], dtype=np.float32)
+    timestamp_concat = np.array([], dtype=np.float32)
 
     # Store values in these lists
     file_list = []
@@ -54,17 +54,16 @@ for row in cur.fetchall():
         notmat_file = file.with_suffix('.wav.not.mat')
         onsets, offsets, intervals, duration, syllables, context = read_not_mat(notmat_file, unit='ms')
 
+        start_ind = timestamp_concat.size  # start of the file
 
-        start_ind = timestamp_serialized.size  # start of the file
-
-        if timestamp_serialized.size:
-            timestamp += (timestamp_serialized[-1] + (1 / sample_rate))
-        timestamp_serialized = np.append(timestamp_serialized, timestamp)
+        if timestamp_concat.size:
+            timestamp += (timestamp_concat[-1] + (1 / sample_rate))
+        timestamp_concat = np.append(timestamp_concat, timestamp)
 
         # File information (name, start & end timestamp of each file)
         file_list.append(file.stem)
-        file_start_list.append(timestamp_serialized[start_ind]) # in ms
-        file_end_list.append(timestamp_serialized[-1]) # in ms
+        file_start_list.append(timestamp_concat[start_ind])  # in ms
+        file_end_list.append(timestamp_concat[-1])  # in ms
 
         onsets += timestamp[0]
         offsets += timestamp[0]
@@ -90,9 +89,6 @@ for row in cur.fetchall():
     event = {}
     event['Undir'] = {k: [x for i, x in enumerate(v) if event_info['context'][i] == 'U'] for k, v in event_info.items()}
     event['Dir'] = {k: [x for i, x in enumerate(v) if event_info['context'][i] == 'D'] for k, v in event_info.items()}
-
-
-
 
 
     import IPython
@@ -157,7 +153,7 @@ for row in cur.fetchall():
         # Find motifs
         motif_ind = find_str(row['motif'], syllable)
 
-        # Get syllable, spike time stamps
+        # Get syllable, analysis time stamps
         for ind in motif_ind:
             start_ind = ind
             stop_ind = ind + len(row['motif']) - 1

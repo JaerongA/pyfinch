@@ -34,15 +34,7 @@ from song.parameters import *
 
 
 # functions
-
-def impwav(a):
-    """Imports a wave file as an array where a[1]
- is the sampling frequency and a[0] is the data"""
-    out = []
-    wav = sc.io.wavfile.read(a)
-    out = [wav[1], wav[0]]
-    return out
-
+# Add duration
 
 def norm(a):
     """normalizes a string by it's average and sd"""
@@ -57,7 +49,6 @@ def filtersong(a):
     out.append(sc.signal.filtfilt(b[0], b[1], a))
     # out.append(a[1])
     return (out)
-
 
 
 def getsyls(a):

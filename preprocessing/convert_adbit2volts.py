@@ -41,7 +41,7 @@ def main(query):
         header = f.readline()[:-1]
 
         spk_info = np.loadtxt(spk_txt_file, delimiter='\t', skiprows=1)  # skip header
-        spk_waveform = spk_info[:, 3:]  # spike waveform
+        spk_waveform = spk_info[:, 3:]  # analysis waveform
 
         # Convert the value
         spk_waveform_new = convert_adbit2volts(spk_waveform)
