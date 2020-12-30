@@ -2,6 +2,7 @@ from matplotlib.pylab import psd
 import matplotlib.pyplot as plt
 from pathlib import Path
 from analysis.functions import *
+from analysis.parameters import *
 import sys as sys
 import os as os
 import scipy as sc
@@ -14,7 +15,6 @@ from matplotlib.pylab import psd
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
-
 import numpy as np
 import sklearn as skl
 from sklearn import cluster
@@ -30,10 +30,7 @@ from util.spect import *
 from util.draw import *
 from util import save
 
-from analysis.parameters import *
-
 # Parameters
-datano = -1  # use all syllables
 font_size = 12  # figure font size
 note_buffer = 10  # in ms before and after each note
 
@@ -42,19 +39,16 @@ training_path = Path('H:\Box\Data\BMI\y3y18\pre-control1')
 testing_path = Path('H:\Box\Data\BMI\y3y18\BMI')
 
 
-def norm(a):
-    """normalizes a string by it's average and sd"""
-    a = (np.array(a) - np.average(a)) / np.std(a)
-    return a
-
 
 # Obtain basis data from training files
-def get_psd_mat(path, fig_ok=False):
+def get_psd_mat(data_path, save_fig=False, nfft = 2**10):
+
     # Load files
     psd_list = []  # store psd vectors for training
-    all_syllables = ''
+    all_syllables = ''  # concatenate all syllables
 
-    files = list(path.glob('*.wav'))
+    files = list(data_path.glob('*.wav'))
+    files = files[:2]
 
     for file in files:
 
@@ -73,16 +67,16 @@ def get_psd_mat(path, fig_ok=False):
             spect, freqbins, timebins = spectrogram(extracted_data, sample_rate, freq_range=freq_range)
 
             # Get power spectral density
-            # nfft = int(round(2 ** 14 / 32000.0 * sample_rate))
-            nfft = 2 ** 10
+            # nfft = int(round(2 ** 14 / 32000.0 * sample_rate))  # used by Dave Mets
 
-            psd_seg = psd(norm(extracted_data), NFFT=nfft, Fs=sample_rate)  # PSD segment from the time range
+            # Get psd after normalization
+            psd_seg = psd(normalize(extracted_data), NFFT=nfft, Fs=sample_rate)  # PSD segment from the time range
             seg_start = int(round(freq_range[0] / (sample_rate / float(nfft))))  # 307
             seg_end = int(round(freq_range[1] / (sample_rate / float(nfft))))  # 8192
-            psd_power = norm(psd_seg[0][seg_start:seg_end])
-            psd_freq = psd_seg[1][seg_start:seg_end]
+            power_psd = normalize(psd_seg[0][seg_start:seg_end])
+            freq_psd = psd_seg[1][seg_start:seg_end]
 
-            if fig_ok:
+            if save_fig:
                 # Plot spectrogram & PSD
                 fig = plt.figure(figsize=(3.5, 3))
                 fig_name = "{}, note#{} - {}".format(file.name, i, syllable)
@@ -106,29 +100,30 @@ def get_psd_mat(path, fig_ok=False):
 
                 # Plot psd
                 ax_psd = plt.subplot(gs[1:5, 2], sharey=ax_spect)
-                ax_psd.plot(psd_power, psd_freq, 'k')
+                ax_psd.plot(power_psd, freq_psd, 'k')
 
                 ax_psd.spines['right'].set_visible(False), ax_psd.spines['top'].set_visible(False)
                 ax_psd.spines['bottom'].set_visible(False)
                 ax_psd.set_xticks([])
                 plt.setp(ax_psd.set_yticks([]))
                 # plt.show()
-                plt.close(fig)
+
 
             save_path = save.make_dir(file.parent, 'Spectrograms')
             save.save_fig(fig, save_path, fig_name, ext='.png')
+            plt.close(fig)
 
+
+            breakpoint()
             all_syllables += syllable
-            psd_list.append(psd_power)
+            psd_list.append(power_psd)
 
     psd_array = np.asarray(psd_list)  # power x number of syllables
 
     return psd_array, psd_list, all_syllables
 
 
-psd_array_training, psd_list_training, all_syllables_training = get_psd_mat(training_path, fig_ok=True)
-
-
+psd_array_training, psd_list_training, syllables_training = get_psd_mat(training_path, save_fig=True)
 
 
 
@@ -138,10 +133,10 @@ psd_dict = {}
 psd_list_basis = []
 syl_list_basis = []
 
-for syllable in unique(all_syllables_training):
+for syllable in unique(syllables_training):
 
     if syllable != 'x':
-        ind = find_str(all_syllables_training, syllable)
+        ind = find_str(syllables_training, syllable)
         syl_pow_array = psd_array_training[ind, :]
         syl_pow_avg = syl_pow_array.mean(axis=0)
         # plt.plot(syl_pow_avg), plt.show()
@@ -156,10 +151,10 @@ for syllable in unique(all_syllables_training):
 # basis_psd_arr = np.asarray(basis_psd_list)
 
 
-## Get psd from the testing set
+# Get psd from the testing set
 psd_array_testing, psd_list_testing, all_syllables_testing = get_psd_mat(testing_path)
 
-## Get similarity per syllable
+# Get similarity per syllable
 
 # for i, (psd, syllable) in enumerate(zip(psd_list_testing, all_syllables_testing)):
 #
@@ -174,8 +169,7 @@ psd_array_testing, psd_list_testing, all_syllables_testing = get_psd_mat(testing
 #             print(distance)
 
 
-distance = sc.spatial.distance.cdist(psd_list_testing, psd_list_basis,
-                                     'sqeuclidean')  # (number of syllables x basis syllables)
+distance = sc.spatial.distance.cdist(psd_list_testing, psd_list_basis, 'sqeuclidean')  # (number of syllables x basis syllables)
 
 # convert to similarity matrices:
 similarity = 1 - (distance / np.max(distance))
@@ -209,7 +203,6 @@ similarity = 1 - (distance / np.max(distance))
 
 
 # Plot similarity matrix per syllable
-
 
 for syllable in unique(all_syllables_testing):
     if syllable != '0':
