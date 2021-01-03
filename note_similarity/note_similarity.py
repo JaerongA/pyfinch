@@ -8,6 +8,7 @@ import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from pathlib import Path
+import pandas as pd
 import seaborn as sns
 from util.functions import *
 from util.spect import *
@@ -138,9 +139,7 @@ def get_basis_psd(psd_array, notes):
         unique_note.remove('x')
 
     for note in unique_note:
-
         ind = find_str(notes, note)
-
         if len(ind) >= num_note_crit:  # number should exceed the  criteria
             syl_pow_array = psd_array[ind, :]
             syl_pow_avg = syl_pow_array.mean(axis=0)
@@ -167,10 +166,11 @@ psd_array_testing, psd_list_testing, notes_testing = get_psd_mat(testing_path, s
 distance = scipy.spatial.distance.cdist(psd_list_testing, psd_basis_list, 'sqeuclidean')  # (number of notes x number of basis notes)
 
 # Convert to similarity matrices
-similarity = 1 - (distance / np.max(distance))   # (number of notes x number of basis notes)
+similarity = 1 - (distance / np.max(distance))  # (number of notes x number of basis notes)
 
 # Plot similarity matrix per syllable
 note_testing_list = unique(notes_testing)  # convert syllable string into a list of unique syllables
+
 
 # Remove non-syllables (e.g., '0' or 'x')
 if '0' in note_testing_list:
@@ -178,35 +178,56 @@ if '0' in note_testing_list:
 
 for note in note_testing_list:
 
-    if note in note_basis_list:
+    fig = plt.figure(figsize=(5, 5))
+    # title = "Sim matrix: note = {}".format(note)
+    fig_name = f"note - {note}"
+    gs = gridspec.GridSpec(7, 8)
 
-        fig = plt.figure(figsize=(4, 5))
-        title = "Sim matrix: syllable = {}".format(note)
-        fig_name = f"note - {note}"
+    ax = plt.subplot(gs[0:5,1:7])
+    ind = find_str(notes_testing, note)
+    note_similarity = similarity[ind, :]
+    nb_note = len(ind)
+    title = f"Sim matrix: note = {note} ({nb_note})"
+    ax = sns.heatmap(note_similarity,
+                     vmin=0,
+                     vmax=1,
+                     cmap='binary')
+    ax.set_title(title)
+    ax.set_ylabel('Test syllables')
+    ax.set_xticklabels(note_basis_list)
+    plt.tick_params(left=False)
+    plt.yticks([0.5, nb_note-0.5], ['1',str(nb_note)])
 
-        gs = gridspec.GridSpec(7, 1)
+    ax = plt.subplot(gs[-1,1:7], sharex=ax)
+    similarity_vec = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
+    ax = sns.heatmap(similarity_vec, annot=True, cmap='binary', vmin=0, vmax=1, annot_kws={"fontsize":7})
+    ax.set_xlabel('Basis syllables')
+    ax.set_yticks([])
+    ax.set_xticklabels(note_basis_list)
+    # plt.show()
 
-        ax = plt.subplot(gs[0:5])
-        ind = find_str(notes_testing, note)
-        note_similarity = similarity[ind, :]
-        ax = sns.heatmap(note_similarity,
-                         vmin=0,
-                         vmax=1,
-                         cmap='binary')
-        ax.set_title(title)
-        ax.set_ylabel('Test syllables')
-        ax.set_xticklabels(note_basis_list)
-        plt.yticks(rotation=0)
+    # Save figure
+    save_path = save.make_dir(testing_path, 'NoteSimilarity',add_date=True)
+    save.save_fig(fig, save_path, fig_name, ext='.png')
 
-        ax = plt.subplot(gs[-1], sharex=ax)
-        similarity_vec = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
-        ax = sns.heatmap(similarity_vec, annot=True, cmap='binary', vmin=0, vmax=1)
-        ax.set_xlabel('Basis syllables')
-        ax.set_yticks([])
-        ax.set_xticklabels(note_basis_list)
-        # plt.show()
 
-        # Save figure
-        save_path = save.make_dir(testing_path, 'NoteSimilarity',add_date=True)
-        save.save_fig(fig, save_path, fig_name, ext='.png')
-
+# # Save results to a dataframe
+# df = pd.DataFrame()
+#
+# temp_df = []
+# temp_df = pd.DataFrame({'SongID': [song_info['id']] * nb_syllable,
+#                         'BirdID': [song_info['birdID']] * nb_syllable,
+#                         'TaskName': [song_info['taskName']] * nb_syllable,
+#                         'TaskSession': [song_info['taskSession']] * nb_syllable,
+#                         'TaskSessionDeafening': [song_info['taskSessionDeafening']] * nb_syllable,
+#                         'TaskSessionPostdeafening': [song_info[
+#                                                          'taskSessionPostDeafening']] * nb_syllable,
+#                         'DPH': [song_info['dph']] * nb_syllable,
+#                         'Block10days': [song_info['block10days']] * nb_syllable,
+#                         'FileID': [file.name] * nb_syllable,
+#                         'Context': [context] * nb_syllable,
+#                         'SyllableType': syl_type,
+#                         'Syllable': list(syllables),
+#                         'Duration': duration,
+#                         })
+# df = df.append(temp_df, ignore_index=True)
