@@ -1,29 +1,13 @@
-from matplotlib.pylab import psd
-import matplotlib.pyplot as plt
-from pathlib import Path
 from analysis.functions import *
 from analysis.parameters import *
-import sys as sys
-import os as os
-import scipy as sc
-from scipy import io
-from scipy.io import wavfile
-from scipy import ndimage
-from scipy import signal
+import scipy
 from scipy import spatial
+from scipy.io import wavfile
 from matplotlib.pylab import psd
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
-import numpy as np
-import sklearn as skl
-from sklearn import cluster
-from sklearn import metrics
-from scipy import spatial
-from sklearn.mixture import GaussianMixture as GMM
-from sklearn import decomposition
-import random as rnd
-from array import array
+from pathlib import Path
 import seaborn as sns
 from util.functions import *
 from util.spect import *
@@ -33,205 +17,196 @@ from util import save
 # Parameters
 font_size = 12  # figure font size
 note_buffer = 10  # in ms before and after each note
+num_note_crit = 30  # the number of basis note should be >= this criteria
 
 # Data path
 training_path = Path('H:\Box\Data\BMI\y3y18\pre-control1')
 testing_path = Path('H:\Box\Data\BMI\y3y18\BMI')
 
 
+# Obtain basis data from training files
+def get_psd_mat(data_path, save_fig=False, nfft=2 ** 10):
+
+    file_name = data_path / 'PSD.npy'
+
+    # Read from a file if it already exists
+    if file_name.exists():
+        data = np.load(file_name, allow_pickle=True).item()
+        psd_array, psd_list, all_notes = data['psd_array'], data['psd_list'], data['all_notes']
+    else:
+
+        # Load files
+        files = list(data_path.glob('*.wav'))
+        # files = files[:10]
+
+        psd_list = []  # store psd vectors for training
+        all_notes = ''  # concatenate all syllables
+
+        for file in files:
+
+            notmat_file = file.with_suffix('.wav.not.mat')
+            onsets, offsets, intervals, durations, syllables, contexts = read_not_mat(notmat_file, unit='ms')
+            sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
+            length = data.shape[0] / sample_rate
+            timestamp = np.round(np.linspace(0, length, data.shape[0]) * 1E3,
+                                 3)  # start from t = 0 in ms, reduce floating precision
+            list_zip = zip(onsets, offsets, syllables)
+
+            for i, (onset, offset, syllable) in enumerate(list_zip):
+
+                # Get spectrogram
+                ind, _ = extract_ind(timestamp, [onset - note_buffer, offset + note_buffer])
+                extracted_data = data[ind]
+                spect, freqbins, timebins = spectrogram(extracted_data, sample_rate, freq_range=freq_range)
+
+                # Get power spectral density
+                # nfft = int(round(2 ** 14 / 32000.0 * sample_rate))  # used by Dave Mets
+
+                # Get psd after normalization
+                psd_seg = psd(normalize(extracted_data), NFFT=nfft, Fs=sample_rate)  # PSD segment from the time range
+                seg_start = int(round(freq_range[0] / (sample_rate / float(nfft))))  # 307
+                seg_end = int(round(freq_range[1] / (sample_rate / float(nfft))))  # 8192
+                psd_power = normalize(psd_seg[0][seg_start:seg_end])
+                psd_freq = psd_seg[1][seg_start:seg_end]
+
+                if save_fig:
+                    # Plot spectrogram & PSD
+                    fig = plt.figure(figsize=(3.5, 3))
+                    fig_name = "{}, note#{} - {}".format(file.name, i, syllable)
+                    fig.suptitle(fig_name, y=0.95)
+                    gs = gridspec.GridSpec(6, 3)
+
+                    # Plot spectrogram
+                    ax_spect = plt.subplot(gs[1:5, 0:2])
+                    ax_spect.pcolormesh(timebins * 1E3, freqbins, spect,  # data
+                                        cmap='hot_r',
+                                        norm=colors.SymLogNorm(linthresh=0.05,
+                                                               linscale=0.03,
+                                                               vmin=0.5,
+                                                               vmax=100
+                                                               ))
+
+                    remove_right_top(ax_spect)
+                    ax_spect.set_ylim(freq_range[0], freq_range[1])
+                    ax_spect.set_xlabel('Time (ms)', fontsize=font_size)
+                    ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
+
+                    # Plot psd
+                    ax_psd = plt.subplot(gs[1:5, 2], sharey=ax_spect)
+                    ax_psd.plot(psd_power, psd_freq, 'k')
+
+                    ax_psd.spines['right'].set_visible(False), ax_psd.spines['top'].set_visible(False)
+                    ax_psd.spines['bottom'].set_visible(False)
+                    ax_psd.set_xticks([])
+                    plt.setp(ax_psd.set_yticks([]))
+                    # plt.show()
+
+                    # Save figure
+                    save_path = save.make_dir(file.parent, 'Spectrograms')
+                    save.save_fig(fig, save_path, fig_name, ext='.png')
+
+                all_notes += syllable
+                psd_list.append(psd_power)
+
+        psd_array = np.asarray(psd_list)  # number of syllables x psd
+
+        # Organize data into a dictionary
+        data = {
+            'psd_array': psd_array,
+            'psd_list': psd_list,
+            'all_notes': all_notes,
+        }
+
+        # Save results
+        np.save(file_name, data)
+
+    return psd_array, psd_list, all_notes
+
+
+def get_basis_psd(psd_array, notes):
+    # Get avg psd from the training set (will serve as a basis)
+    psd_dict = {}
+    psd_basis_list = []
+    syl_basis_list = []
+
+    unique_note = unique(notes)  # convert note string into a list of unique syllables
+
+    # Remove unidentifiable note (e.g., '0' or 'x')
+    if '0' in unique_note:
+        unique_note.remove('0')
+    if 'x' in unique_note:
+        unique_note.remove('x')
+
+    for note in unique_note:
+
+        ind = find_str(notes, note)
+
+        if len(ind) >= num_note_crit:  # number should exceed the  criteria
+            syl_pow_array = psd_array[ind, :]
+            syl_pow_avg = syl_pow_array.mean(axis=0)
+            temp_dict = {note: syl_pow_avg}
+            psd_basis_list.append(syl_pow_avg)
+            syl_basis_list.append(note)
+            psd_dict.update(temp_dict)  # basis
+            # plt.plot(psd_dict[note])
+            # plt.show()
+    return psd_basis_list, syl_basis_list
+
 
 # Obtain basis data from training files
-def get_psd_mat(data_path, save_fig=False, nfft = 2**10):
+psd_array_training, psd_list_training, notes_training = get_psd_mat(training_path, save_fig=False)
 
-    # Load files
-    psd_list = []  # store psd vectors for training
-    all_syllables = ''  # concatenate all syllables
-
-    files = list(data_path.glob('*.wav'))
-    files = files[:2]
-
-    for file in files:
-
-        notmat_file = file.with_suffix('.wav.not.mat')
-        onsets, offsets, intervals, durations, syllables, contexts = read_not_mat(notmat_file, unit='ms')
-        sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
-        length = data.shape[0] / sample_rate
-        timestamp = np.round(np.linspace(0, length, data.shape[0]) * 1E3, 3)  # start from t = 0 in ms, reduce floating precision
-        list_zip = zip(onsets, offsets, syllables)
-
-        for i, (onset, offset, syllable) in enumerate(list_zip):
-
-            # Get spectrogram
-            ind, _ = extract_ind(timestamp, [onset - note_buffer, offset + note_buffer])
-            extracted_data = data[ind]
-            spect, freqbins, timebins = spectrogram(extracted_data, sample_rate, freq_range=freq_range)
-
-            # Get power spectral density
-            # nfft = int(round(2 ** 14 / 32000.0 * sample_rate))  # used by Dave Mets
-
-            # Get psd after normalization
-            psd_seg = psd(normalize(extracted_data), NFFT=nfft, Fs=sample_rate)  # PSD segment from the time range
-            seg_start = int(round(freq_range[0] / (sample_rate / float(nfft))))  # 307
-            seg_end = int(round(freq_range[1] / (sample_rate / float(nfft))))  # 8192
-            power_psd = normalize(psd_seg[0][seg_start:seg_end])
-            freq_psd = psd_seg[1][seg_start:seg_end]
-
-            if save_fig:
-                # Plot spectrogram & PSD
-                fig = plt.figure(figsize=(3.5, 3))
-                fig_name = "{}, note#{} - {}".format(file.name, i, syllable)
-                fig.suptitle(fig_name, y=0.95)
-                gs = gridspec.GridSpec(6, 3)
-
-                # Plot spectrogram
-                ax_spect = plt.subplot(gs[1:5, 0:2])
-                ax_spect.pcolormesh(timebins * 1E3, freqbins, spect,  # data
-                                    cmap='hot_r',
-                                    norm=colors.SymLogNorm(linthresh=0.05,
-                                                           linscale=0.03,
-                                                           vmin=0.5,
-                                                           vmax=100
-                                                           ))
-
-                remove_right_top(ax_spect)
-                ax_spect.set_ylim(freq_range[0], freq_range[1])
-                ax_spect.set_xlabel('Time (ms)', fontsize=font_size)
-                ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
-
-                # Plot psd
-                ax_psd = plt.subplot(gs[1:5, 2], sharey=ax_spect)
-                ax_psd.plot(power_psd, freq_psd, 'k')
-
-                ax_psd.spines['right'].set_visible(False), ax_psd.spines['top'].set_visible(False)
-                ax_psd.spines['bottom'].set_visible(False)
-                ax_psd.set_xticks([])
-                plt.setp(ax_psd.set_yticks([]))
-                # plt.show()
-
-
-            save_path = save.make_dir(file.parent, 'Spectrograms')
-            save.save_fig(fig, save_path, fig_name, ext='.png')
-            plt.close(fig)
-
-
-            breakpoint()
-            all_syllables += syllable
-            psd_list.append(power_psd)
-
-    psd_array = np.asarray(psd_list)  # power x number of syllables
-
-    return psd_array, psd_list, all_syllables
-
-
-psd_array_training, psd_list_training, syllables_training = get_psd_mat(training_path, save_fig=True)
-
-
-
-# Get avg psd from the training set (will serve as a basis)
-
-psd_dict = {}
-psd_list_basis = []
-syl_list_basis = []
-
-for syllable in unique(syllables_training):
-
-    if syllable != 'x':
-        ind = find_str(syllables_training, syllable)
-        syl_pow_array = psd_array_training[ind, :]
-        syl_pow_avg = syl_pow_array.mean(axis=0)
-        # plt.plot(syl_pow_avg), plt.show()
-        temp_dict = {syllable: syl_pow_avg}
-        psd_list_basis.append(syl_pow_avg)
-        syl_list_basis.append(syllable)
-        psd_dict.update(temp_dict)  # basis
-        # plt.plot(psd_dict[syllable])
-
-# plt.show()
-
-# basis_psd_arr = np.asarray(basis_psd_list)
-
+# Get basis psds per note
+psd_basis_list, note_basis_list = get_basis_psd(psd_array_training, notes_training)
 
 # Get psd from the testing set
-psd_array_testing, psd_list_testing, all_syllables_testing = get_psd_mat(testing_path)
+psd_array_testing, psd_list_testing, notes_testing = get_psd_mat(testing_path, save_fig=False)
 
 # Get similarity per syllable
+# Get psd distance
+distance = scipy.spatial.distance.cdist(psd_list_testing, psd_basis_list, 'sqeuclidean')  # (number of notes x number of basis notes)
 
-# for i, (psd, syllable) in enumerate(zip(psd_list_testing, all_syllables_testing)):
-#
-#     if i ==0:
-#         syllable = all_syllables_testing[i]
-#
-#         for basis_psd, basis_syllable in psd_dict.items():
-#
-#             print("Basis {} vs. Test {}".format(basis_syllable, syllable))
-#
-#             distance = sc.spatial.distance.cdist(psd_list_testing, basis_psd_list, 'sqeuclidean')
-#             print(distance)
-
-
-distance = sc.spatial.distance.cdist(psd_list_testing, psd_list_basis, 'sqeuclidean')  # (number of syllables x basis syllables)
-
-# convert to similarity matrices:
-similarity = 1 - (distance / np.max(distance))
-
-# # plot similiarity matrix
-# fig = plt.figure(figsize=(3,6))
-# ax = plt.subplot(111)
-#
-# # ax =sns.heatmap(distance, cmap='hot_r')
-# # ax =sns.heatmap(similarity[:100,:], vmin=0.2, vmax=1)
-# ax = sns.heatmap(similarity[:100,:], cmap='hot_r')
-# ax.set_title('Sim matrix')
-# ax.set_ylabel('N sample PSDs')
-# ax.set_xlabel('Basis syllables')
-# ax.set_xticklabels(syl_list_basis)
-# ax.set_yticks([])
-# plt.show()
-
-
-# # plot similiarity matrix (samples)
-# fig = plt.figure(figsize=(3,6))
-# ax = plt.subplot(111)
-# ax = sns.heatmap(similarity[30:60,:], cmap='hot_r')
-# ax.set_title('Sim matrix')
-# ax.set_ylabel('Test syllables')
-# ax.set_xlabel('Basis syllables')
-# ax.set_xticklabels(syl_list_basis)
-# ax.set_yticklabels(list(all_syllables_testing[30:60]))
-# plt.yticks(rotation=0)
-# plt.show()
-
+# Convert to similarity matrices
+similarity = 1 - (distance / np.max(distance))   # (number of notes x number of basis notes)
 
 # Plot similarity matrix per syllable
+note_testing_list = unique(notes_testing)  # convert syllable string into a list of unique syllables
 
-for syllable in unique(all_syllables_testing):
-    if syllable != '0':
-        print(syllable)
+# Remove non-syllables (e.g., '0' or 'x')
+if '0' in note_testing_list:
+    note_testing_list.remove('0')
 
-        fig = plt.figure(figsize=(5, 6))
+for note in note_testing_list:
 
-        gs = gridspec.GridSpec(6, 1)
+    if note in note_basis_list:
+
+        fig = plt.figure(figsize=(4, 5))
+        title = "Sim matrix: syllable = {}".format(note)
+        fig_name = f"note - {note}"
+
+        gs = gridspec.GridSpec(7, 1)
+
         ax = plt.subplot(gs[0:5])
-
-        title = "Sim matrix: syllable = {}".format(syllable)
-        ind = find_str(all_syllables_testing, syllable)
-        similarity_syllable = similarity[ind, :]
-        # ax = sns.heatmap(similarity_syllable, cmap='binary', vmin=0, vmax=1)
-        ax = sns.heatmap(similarity_syllable, cmap='binary')
-        # ax.imshow(similarity_syllable, cmap='hot_r')
+        ind = find_str(notes_testing, note)
+        note_similarity = similarity[ind, :]
+        ax = sns.heatmap(note_similarity,
+                         vmin=0,
+                         vmax=1,
+                         cmap='binary')
         ax.set_title(title)
         ax.set_ylabel('Test syllables')
-        ax.set_xlabel('Basis syllables')
-        ax.set_xticklabels(syl_list_basis)
+        ax.set_xticklabels(note_basis_list)
         plt.yticks(rotation=0)
 
         ax = plt.subplot(gs[-1], sharex=ax)
-        similarity_vec = np.expand_dims(np.mean(similarity_syllable, axis=0), axis=0)  # or axis=1
+        similarity_vec = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
         ax = sns.heatmap(similarity_vec, annot=True, cmap='binary', vmin=0, vmax=1)
+        ax.set_xlabel('Basis syllables')
         ax.set_yticks([])
-        ax.set_xticklabels(syl_list_basis)
+        ax.set_xticklabels(note_basis_list)
+        # plt.show()
 
-        plt.show()
+        # Save figure
+        save_path = save.make_dir(testing_path, 'NoteSimilarity',add_date=True)
+        save.save_fig(fig, save_path, fig_name, ext='.png')
 
-        save_path = save.make_dir(testing_path, 'Spectrograms')
-        save.save_fig(fig, save_path, title, ext='.png')
