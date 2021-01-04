@@ -1,14 +1,14 @@
 {
+
   "project_dir" : "H:\\Box\\Data\\BMI",
 
-  "birdID" : ["g20r5", "y58y59", "k71o7", "y3y18", "o54w8", "k77r57", "b86g86"],
+  "birdID" : ["g20r5"],
 
   "sessions": ["pre-control1", "pre-control2", "BMI"],
 
-  "condition": ["control", "BMI"]
+  "condition": ["baseline", "BMI"]
 
 }
-
 
 
 
