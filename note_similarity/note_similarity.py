@@ -14,15 +14,13 @@ from util.functions import *
 from util.spect import *
 from util.draw import *
 from util import save
+import json
+
 
 # Parameters
 font_size = 12  # figure font size
 note_buffer = 10  # in ms before and after each note
 num_note_crit = 30  # the number of basis note should be >= this criteria
-
-# Data path
-training_path = Path('H:\Box\Data\BMI\y3y18\pre-control1')
-testing_path = Path('H:\Box\Data\BMI\y3y18\BMI')
 
 
 # Obtain basis data from training files
@@ -152,82 +150,124 @@ def get_basis_psd(psd_array, notes):
     return psd_basis_list, syl_basis_list
 
 
-# Obtain basis data from training files
-psd_array_training, psd_list_training, notes_training = get_psd_mat(training_path, save_fig=False)
-
-# Get basis psds per note
-psd_basis_list, note_basis_list = get_basis_psd(psd_array_training, notes_training)
-
-# Get psd from the testing set
-psd_array_testing, psd_list_testing, notes_testing = get_psd_mat(testing_path, save_fig=False)
-
-# Get similarity per syllable
-# Get psd distance
-distance = scipy.spatial.distance.cdist(psd_list_testing, psd_basis_list, 'sqeuclidean')  # (number of notes x number of basis notes)
-
-# Convert to similarity matrices
-similarity = 1 - (distance / np.max(distance))  # (number of notes x number of basis notes)
-
-# Plot similarity matrix per syllable
-note_testing_list = unique(notes_testing)  # convert syllable string into a list of unique syllables
+# Data path (Read from .json config file)
+# training_path = Path('H:\Box\Data\BMI\y3y18\pre-control1')
+# testing_path = Path('H:\Box\Data\BMI\y3y18\BMI')
 
 
-# Remove non-syllables (e.g., '0' or 'x')
-if '0' in note_testing_list:
-    note_testing_list.remove('0')
+config_file = 'config.json'
+with open(config_file, 'r') as f:
+    config = json.load(f)
 
-for note in note_testing_list:
+project_path = Path(config['project_dir'])
 
-    fig = plt.figure(figsize=(5, 5))
-    # title = "Sim matrix: note = {}".format(note)
-    fig_name = f"note - {note}"
-    gs = gridspec.GridSpec(7, 8)
+for bird in config['birdID']:
 
-    ax = plt.subplot(gs[0:5,1:7])
-    ind = find_str(notes_testing, note)
-    note_similarity = similarity[ind, :]
-    nb_note = len(ind)
-    title = f"Sim matrix: note = {note} ({nb_note})"
-    ax = sns.heatmap(note_similarity,
-                     vmin=0,
-                     vmax=1,
-                     cmap='binary')
-    ax.set_title(title)
-    ax.set_ylabel('Test syllables')
-    ax.set_xticklabels(note_basis_list)
-    plt.tick_params(left=False)
-    plt.yticks([0.5, nb_note-0.5], ['1',str(nb_note)])
+    training_path = ''
 
-    ax = plt.subplot(gs[-1,1:7], sharex=ax)
-    similarity_vec = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
-    ax = sns.heatmap(similarity_vec, annot=True, cmap='binary', vmin=0, vmax=1, annot_kws={"fontsize":7})
-    ax.set_xlabel('Basis syllables')
-    ax.set_yticks([])
-    ax.set_xticklabels(note_basis_list)
-    # plt.show()
+    for session in config['sessions']:
 
-    # Save figure
-    save_path = save.make_dir(testing_path, 'NoteSimilarity',add_date=True)
-    save.save_fig(fig, save_path, fig_name, ext='.png')
+        testing_path = ''
+        condition = ''
+
+        data_path = project_path / bird / session
+
+        if session == "pre-control1":
+            training_path = data_path
+            # print(f"training path = {training_path}")
+        else:
+            testing_path = data_path
+            # print(f"testing path = {testing_path}")
+
+        if training_path and testing_path:
+            if training_path.name == "pre-control1" and testing_path.name == "pre-control2":
+                condition = 'baseline'
+            elif training_path.name == "pre-control1" and testing_path.name == "BMI":
+                condition = 'BMI'
+
+        if condition:
+            print(f"training path = {training_path}")
+            print(f"testing path = {testing_path}")
+            print(condition)
+            print("")
 
 
-# # Save results to a dataframe
-# df = pd.DataFrame()
-#
-# temp_df = []
-# temp_df = pd.DataFrame({'SongID': [song_info['id']] * nb_syllable,
-#                         'BirdID': [song_info['birdID']] * nb_syllable,
-#                         'TaskName': [song_info['taskName']] * nb_syllable,
-#                         'TaskSession': [song_info['taskSession']] * nb_syllable,
-#                         'TaskSessionDeafening': [song_info['taskSessionDeafening']] * nb_syllable,
-#                         'TaskSessionPostdeafening': [song_info[
-#                                                          'taskSessionPostDeafening']] * nb_syllable,
-#                         'DPH': [song_info['dph']] * nb_syllable,
-#                         'Block10days': [song_info['block10days']] * nb_syllable,
-#                         'FileID': [file.name] * nb_syllable,
-#                         'Context': [context] * nb_syllable,
-#                         'SyllableType': syl_type,
-#                         'Syllable': list(syllables),
-#                         'Duration': duration,
-#                         })
-# df = df.append(temp_df, ignore_index=True)
+            # Obtain basis data from training files
+            psd_array_training, psd_list_training, notes_training = get_psd_mat(training_path, save_fig=False)
+
+            # Get basis psds per note
+            psd_basis_list, note_basis_list = get_basis_psd(psd_array_training, notes_training)
+
+            # Get psd from the testing set
+            psd_array_testing, psd_list_testing, notes_testing = get_psd_mat(testing_path, save_fig=False)
+
+            # Get similarity per syllable
+            # Get psd distance
+            distance = scipy.spatial.distance.cdist(psd_list_testing, psd_basis_list, 'sqeuclidean')  # (number of notes x number of basis notes)
+
+            # Convert to similarity matrices
+            similarity = 1 - (distance / np.max(distance))  # (number of notes x number of basis notes)
+
+            # Plot similarity matrix per syllable
+            note_testing_list = unique(notes_testing)  # convert syllable string into a list of unique syllables
+
+            # Remove non-syllables (e.g., '0' or 'x')
+            if '0' in note_testing_list:
+                note_testing_list.remove('0')
+
+            for note in note_testing_list:
+
+                fig = plt.figure(figsize=(5, 5))
+                # title = "Sim matrix: note = {}".format(note)
+                fig_name = f"note - {note}"
+                gs = gridspec.GridSpec(7, 8)
+
+                ax = plt.subplot(gs[0:5,1:7])
+                ind = find_str(notes_testing, note)
+                note_similarity = similarity[ind, :]
+                nb_note = len(ind)
+                title = f"Sim matrix: note = {note} ({nb_note})"
+                ax = sns.heatmap(note_similarity,
+                                 vmin=0,
+                                 vmax=1,
+                                 cmap='binary')
+                ax.set_title(title)
+                ax.set_ylabel('Test syllables')
+                ax.set_xticklabels(note_basis_list)
+                plt.tick_params(left=False)
+                plt.yticks([0.5, nb_note-0.5], ['1',str(nb_note)])
+
+                # Get mean or meadian similarity index
+                ax = plt.subplot(gs[-1,1:7], sharex=ax)
+                # similarity_vec = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
+                similarity_vec = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
+                ax = sns.heatmap(similarity_vec, annot=True, cmap='binary', vmin=0, vmax=1, annot_kws={"fontsize":7})
+                ax.set_xlabel('Basis syllables')
+                ax.set_yticks([])
+                ax.set_xticklabels(note_basis_list)
+                # plt.show()
+
+                # Save figure
+                save_path = save.make_dir(testing_path, 'NoteSimilarity',add_date=True)
+                save.save_fig(fig, save_path, fig_name, ext='.png')
+
+                # # Save results to a dataframe
+                # df = pd.DataFrame()
+                #
+                # temp_df = []
+                # temp_df = pd.DataFrame({'SongID': [song_info['id']] * nb_syllable,
+                #                         'BirdID': [song_info['birdID']] * nb_syllable,
+                #                         'TaskName': [song_info['taskName']] * nb_syllable,
+                #                         'TaskSession': [song_info['taskSession']] * nb_syllable,
+                #                         'TaskSessionDeafening': [song_info['taskSessionDeafening']] * nb_syllable,
+                #                         'TaskSessionPostdeafening': [song_info[
+                #                                                          'taskSessionPostDeafening']] * nb_syllable,
+                #                         'DPH': [song_info['dph']] * nb_syllable,
+                #                         'Block10days': [song_info['block10days']] * nb_syllable,
+                #                         'FileID': [file.name] * nb_syllable,
+                #                         'Context': [context] * nb_syllable,
+                #                         'SyllableType': syl_type,
+                #                         'Syllable': list(syllables),
+                #                         'Duration': duration,
+                #                         })
+                # df = df.append(temp_df, ignore_index=True)
