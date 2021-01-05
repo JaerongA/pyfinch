@@ -115,7 +115,6 @@ def get_psd_mat(data_path, save_fig=False, nfft=2 ** 10):
             'psd_list': psd_list,
             'all_notes': all_notes,
         }
-
         # Save results
         np.save(file_name, data)
 
@@ -210,9 +209,11 @@ for bird in config['birdID']:
             # Plot similarity matrix per syllable
             note_testing_list = unique(notes_testing)  # convert syllable string into a list of unique syllables
 
-            # Remove non-syllables (e.g., '0' or 'x')
+            # Remove non-syllables (e.g., '0')
             if '0' in note_testing_list:
                 note_testing_list.remove('0')
+            if condition == 'control' and 'x' in note_testing_list:  # remove 'x' if it appears in the control data
+                note_testing_list.remove('x')
 
             for note in note_testing_list:
 
@@ -260,7 +261,7 @@ for bird in config['birdID']:
                     similarity_mean_val = np.max(similarity_mean[0])
                     similarity_median_val = np.max(similarity_median[0])
 
-                ##TODO: Get entropy & softmax prob
+                #TODO: Get entropy & softmax prob
 
                 # Save figure
                 save_path = save.make_dir(testing_path, 'NoteSimilarity', add_date=True)
