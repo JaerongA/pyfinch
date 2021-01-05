@@ -16,16 +16,16 @@ from util.draw import *
 from util import save
 import json
 
-
 # Parameters
 font_size = 12  # figure font size
 note_buffer = 10  # in ms before and after each note
-num_note_crit = 30  # the number of basis note should be >= this criteria
+
+num_note_crit_basis = 30  # the number of basis note should be >= this criteria
+num_note_crit_testing = 10  # the number of testing syllables should be >= this criteria
 
 
 # Obtain basis data from training files
 def get_psd_mat(data_path, save_fig=False, nfft=2 ** 10):
-
     file_name = data_path / 'PSD.npy'
 
     # Read from a file if it already exists
@@ -138,7 +138,7 @@ def get_basis_psd(psd_array, notes):
 
     for note in unique_note:
         ind = find_str(notes, note)
-        if len(ind) >= num_note_crit:  # number should exceed the  criteria
+        if len(ind) >= num_note_crit_basis:  # number should exceed the  criteria
             syl_pow_array = psd_array[ind, :]
             syl_pow_avg = syl_pow_array.mean(axis=0)
             temp_dict = {note: syl_pow_avg}
@@ -150,11 +150,10 @@ def get_basis_psd(psd_array, notes):
     return psd_basis_list, syl_basis_list
 
 
+# Store results in the dataframe
+df = pd.DataFrame()
+
 # Data path (Read from .json config file)
-# training_path = Path('H:\Box\Data\BMI\y3y18\pre-control1')
-# testing_path = Path('H:\Box\Data\BMI\y3y18\BMI')
-
-
 config_file = 'config.json'
 with open(config_file, 'r') as f:
     config = json.load(f)
@@ -191,7 +190,6 @@ for bird in config['birdID']:
             print(condition)
             print("")
 
-
             # Obtain basis data from training files
             psd_array_training, psd_list_training, notes_training = get_psd_mat(training_path, save_fig=False)
 
@@ -203,7 +201,8 @@ for bird in config['birdID']:
 
             # Get similarity per syllable
             # Get psd distance
-            distance = scipy.spatial.distance.cdist(psd_list_testing, psd_basis_list, 'sqeuclidean')  # (number of notes x number of basis notes)
+            distance = scipy.spatial.distance.cdist(psd_list_testing, psd_basis_list,
+                                                    'sqeuclidean')  # (number of notes x number of basis notes)
 
             # Convert to similarity matrices
             similarity = 1 - (distance / np.max(distance))  # (number of notes x number of basis notes)
@@ -222,10 +221,14 @@ for bird in config['birdID']:
                 fig_name = f"note - {note}"
                 gs = gridspec.GridSpec(7, 8)
 
-                ax = plt.subplot(gs[0:5,1:7])
+                ax = plt.subplot(gs[0:5, 1:7])
                 ind = find_str(notes_testing, note)
                 note_similarity = similarity[ind, :]
                 nb_note = len(ind)
+
+                if nb_note < num_note_crit_testing:
+                    continue
+
                 title = f"Sim matrix: note = {note} ({nb_note})"
                 ax = sns.heatmap(note_similarity,
                                  vmin=0,
@@ -235,39 +238,49 @@ for bird in config['birdID']:
                 ax.set_ylabel('Test syllables')
                 ax.set_xticklabels(note_basis_list)
                 plt.tick_params(left=False)
-                plt.yticks([0.5, nb_note-0.5], ['1',str(nb_note)])
+                plt.yticks([0.5, nb_note - 0.5], ['1', str(nb_note)])
 
                 # Get mean or meadian similarity index
-                ax = plt.subplot(gs[-1,1:7], sharex=ax)
-                # similarity_vec = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
-                similarity_vec = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
-                ax = sns.heatmap(similarity_vec, annot=True, cmap='binary', vmin=0, vmax=1, annot_kws={"fontsize":7})
+                ax = plt.subplot(gs[-1, 1:7], sharex=ax)
+                similarity_mean = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
+                similarity_median = np.expand_dims(np.median(note_similarity, axis=0), axis=0)  # or axis=1
+
+                ax = sns.heatmap(similarity_mean, annot=True, cmap='binary', vmin=0, vmax=1, annot_kws={"fontsize": 7})
                 ax.set_xlabel('Basis syllables')
                 ax.set_yticks([])
                 ax.set_xticklabels(note_basis_list)
                 # plt.show()
 
+                if note in note_basis_list:  # if the testing note is in the basis set
+                    note_in_basis = True
+                    similarity_mean_val = similarity_mean[0][note_basis_list.index(note)]
+                    similarity_median_val = similarity_median[0][note_basis_list.index(note)]
+                else:  # if it's a novel note, pick the max value
+                    note_in_basis = False
+                    similarity_mean_val = np.max(similarity_mean[0])
+                    similarity_median_val = np.max(similarity_median[0])
+
+                ##TODO: Get entropy & softmax prob
+
                 # Save figure
-                save_path = save.make_dir(testing_path, 'NoteSimilarity',add_date=True)
+                save_path = save.make_dir(testing_path, 'NoteSimilarity', add_date=True)
                 save.save_fig(fig, save_path, fig_name, ext='.png')
 
-                # # Save results to a dataframe
-                # df = pd.DataFrame()
-                #
-                # temp_df = []
-                # temp_df = pd.DataFrame({'SongID': [song_info['id']] * nb_syllable,
-                #                         'BirdID': [song_info['birdID']] * nb_syllable,
-                #                         'TaskName': [song_info['taskName']] * nb_syllable,
-                #                         'TaskSession': [song_info['taskSession']] * nb_syllable,
-                #                         'TaskSessionDeafening': [song_info['taskSessionDeafening']] * nb_syllable,
-                #                         'TaskSessionPostdeafening': [song_info[
-                #                                                          'taskSessionPostDeafening']] * nb_syllable,
-                #                         'DPH': [song_info['dph']] * nb_syllable,
-                #                         'Block10days': [song_info['block10days']] * nb_syllable,
-                #                         'FileID': [file.name] * nb_syllable,
-                #                         'Context': [context] * nb_syllable,
-                #                         'SyllableType': syl_type,
-                #                         'Syllable': list(syllables),
-                #                         'Duration': duration,
-                #                         })
-                # df = df.append(temp_df, ignore_index=True)
+                # Save results to a dataframe
+                temp_df = []
+                temp_df = pd.DataFrame({'BirdID': bird,
+                                        'Condition': condition,
+                                        'Note': note,  # testing note
+                                        'NoteInBasis': [note_in_basis],
+                                        'NoteX': note is 'x',
+                                        'NbNotes': [nb_note],
+                                        'SimilarityMean': [similarity_mean_val],
+                                        'SimilarityMedian': [similarity_median_val]
+                                        })
+                df = df.append(temp_df, ignore_index=True)
+
+# Save to csv
+df.index.name = 'Index'
+outputfile = project_path / 'Results' / 'SimilarityIndex.csv'
+df.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
+print('Done!')
