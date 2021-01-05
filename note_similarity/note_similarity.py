@@ -217,6 +217,9 @@ for bird in config['birdID']:
 
             for note in note_testing_list:
 
+                if note not in note_basis_list and note != 'x':
+                    continue
+
                 fig = plt.figure(figsize=(5, 5))
                 # title = "Sim matrix: note = {}".format(note)
                 fig_name = f"note - {note}"
@@ -252,16 +255,15 @@ for bird in config['birdID']:
                 ax.set_xticklabels(note_basis_list)
                 # plt.show()
 
-                if note in note_basis_list:  # if the testing note is in the basis set
-                    note_in_basis = True
-                    similarity_mean_val = similarity_mean[0][note_basis_list.index(note)]
-                    similarity_median_val = similarity_median[0][note_basis_list.index(note)]
-                else:  # if it's a novel note, pick the max value
-                    note_in_basis = False
+                if note is 'x':  # get the max if 'x'
                     similarity_mean_val = np.max(similarity_mean[0])
                     similarity_median_val = np.max(similarity_median[0])
+                else:  # get the value from the matching note
+                    similarity_mean_val = similarity_mean[0][note_basis_list.index(note)]
+                    similarity_median_val = similarity_median[0][note_basis_list.index(note)]
 
                 #TODO: Get entropy & softmax prob
+
 
                 # Save figure
                 save_path = save.make_dir(testing_path, 'NoteSimilarity', add_date=True)
@@ -272,7 +274,6 @@ for bird in config['birdID']:
                 temp_df = pd.DataFrame({'BirdID': bird,
                                         'Condition': condition,
                                         'Note': note,  # testing note
-                                        'NoteInBasis': [note_in_basis],
                                         'NoteX': note is 'x',
                                         'NbNotes': [nb_note],
                                         'SimilarityMean': [similarity_mean_val],
