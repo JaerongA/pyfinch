@@ -3,6 +3,7 @@ from analysis.parameters import *
 import scipy
 from scipy import spatial
 from scipy.io import wavfile
+from scipy.stats import sem
 from matplotlib.pylab import psd
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
@@ -151,6 +152,7 @@ def get_basis_psd(psd_array, notes):
 
 # Store results in the dataframe
 df = pd.DataFrame()
+df_x = pd.DataFrame()
 
 # Data path (Read from .json config file)
 config_file = 'config.json'
@@ -244,9 +246,10 @@ for bird in config['birdID']:
                 plt.tick_params(left=False)
                 plt.yticks([0.5, nb_note - 0.5], ['1', str(nb_note)])
 
-                # Get mean or meadian similarity index
+                # Get mean or median similarity index
                 ax = plt.subplot(gs[-1, 1:7], sharex=ax)
                 similarity_mean = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
+                similarity_sem = sem(note_similarity, ddof=1)
                 similarity_median = np.expand_dims(np.median(note_similarity, axis=0), axis=0)  # or axis=1
 
                 ax = sns.heatmap(similarity_mean, annot=True, cmap='binary', vmin=0, vmax=1, annot_kws={"fontsize": 7})
@@ -264,12 +267,12 @@ for bird in config['birdID']:
 
                 #TODO: Get entropy & softmax prob
 
-
                 # Save figure
                 save_path = save.make_dir(testing_path, 'NoteSimilarity', add_date=True)
                 save.save_fig(fig, save_path, fig_name, ext='.png')
 
                 # Save results to a dataframe
+                # All notes
                 temp_df = []
                 temp_df = pd.DataFrame({'BirdID': bird,
                                         'Condition': condition,
@@ -281,8 +284,28 @@ for bird in config['birdID']:
                                         })
                 df = df.append(temp_df, ignore_index=True)
 
+                # 'x' in BMI condition only
+                if condition == 'BMI' and note is 'x':  # store mean similarity values for 'x'
+                    for ind, basis_note in enumerate(note_basis_list):
+                        temp_df = []
+                        temp_df = pd.DataFrame({'BirdID': bird,
+                                                'BasisNote': basis_note,  # testing note
+                                                'SimilarityMean': [similarity_mean[0][ind]],
+                                                'SimilaritySEM': [similarity_sem[ind]],
+                                                })
+                        df_x = df_x.append(temp_df, ignore_index=True)
+
+
 # Save to csv
 df.index.name = 'Index'
 outputfile = project_path / 'Results' / 'SimilarityIndex.csv'
 df.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
+
+df_x.index.name = 'Index'
+outputfile = project_path / 'Results' / 'NoteX.csv'
+df_x.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
+
+
 print('Done!')
+
+
