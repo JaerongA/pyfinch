@@ -11,7 +11,7 @@ freq_range = [300, 8000]  # frequency range for bandpass filter for spectrogram 
 
 # Set syllable colors
 note_color = {'Intro': ['k', 'gray', 'darkseagreen', 'olive'],
-              'Motif': ['r', 'b', 'lime', 'saddlebrown', 'm', 'darkorange', 'purple'],
+              'Motif': ['r', 'b', 'lime',  'darkorange', 'purple', 'saddlebrown', 'm'],
               'Call': ['teal', 'darklategray', 'darkgray', 'indigo']}
 
 # Define baseline period 1 sec window & 2 sec prior to syllable onset

@@ -148,12 +148,3 @@ def get_dur():
 
     """
     pass
-
-
-
-class SongInfo:
-
-    def __init__(self, database):
-        self.database = database
-        pass
-    pass

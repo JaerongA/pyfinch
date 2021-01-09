@@ -12,21 +12,7 @@ from util.functions import *
 from util.spect import *
 
 
-class DBLoader:
-    def __init__(self, database):
-
-        # Set all database fields as attributes
-        for col in database.keys():
-            # dic[col] = database[col]
-            setattr(self, col, database[col])
-
-        # Get cluster name & path
-        self.name, self.path = load_info(database)
-        print('')
-        print('Load cluster {self.name}'.format(self=self))
-
-
-def load_info(database):
+def load_cluster(database):
     """
     Return the list of files in the current directory
         Input: SQL object (database row)
@@ -211,9 +197,23 @@ def get_peth(evt_ts_list, spk_ts_list, *cond_list):
     return peth
 
 
-class ClusterInfo:
-    ##TODO: incorporate load_spk, load_events in __init__
+class DBLoader:
     def __init__(self, database):
+
+        # Set all database fields as attributes
+        for col in database.keys():
+            # dic[col] = database[col]
+            setattr(self, col, database[col])
+
+        # Get cluster name & path
+        self.name, self.path = load_cluster(database)
+        print('')
+        print('Load cluster {self.name}'.format(self=self))
+
+
+class ClusterInfo:
+
+    def __init__(self, database, update=False):
 
         #Set all database fields as attributes
         for col in database.keys():
@@ -221,9 +221,26 @@ class ClusterInfo:
             setattr(self, col, database[col])
 
         # Get cluster name & path
-        self.name, self.path = load_info(database)
+        self.name, self.path = load_cluster(database)
         print('')
         print('Load cluster {self.name}'.format(self=self))
+
+        # Load events
+        file_name = self.path / 'EventInfo.npy'
+        if update or not file_name.exists():
+            event_info = load_events(self.path)
+        else:
+            event_info = np.load(file_name, allow_pickle=True).item()
+            # Save event_info as a numpy object
+            np.save(file_name, event_info)
+
+        # Set the dictionary values to class attributes
+        for key in event_info:
+            setattr(self, key, event_info[key])
+        #     print("files, file_start, file_end, onsets, offsets, durations, syllables, contexts attributes added")
+
+        # Load spike
+        self._load_spk()
 
     def __repr__(self):
         '''Print out the name'''
@@ -232,27 +249,27 @@ class ClusterInfo:
     def list_files(self, ext: str):
         return list_files(self.path, ext)
 
-    def load_events(self):
-        """
-        Obtain event info & serialized timestamps for song & neural analysis
-        """
-        file_name = self.path / 'EventInfo.npy'
+    # def _load_events(self):
+    #     """
+    #     Obtain event info & serialized timestamps for song & neural analysis
+    #     """
+    #     file_name = self.path / 'EventInfo.npy'
+    #
+    #     if file_name.exists():
+    #         event_info = np.load(file_name, allow_pickle=True).item()
+    #     else:
+    #         event_info = load_events(self.path)
+    #
+    #         # Save event_info as a numpy object
+    #         np.save(file_name, event_info)
+    #
+    #     # Set the dictionary values to class attributes
+    #     for key in event_info:
+    #         setattr(self, key, event_info[key])
+    #
+    #     print("files, file_start, file_end, onsets, offsets, durations, syllables, contexts attributes added")
 
-        if file_name.exists():
-            event_info = np.load(file_name, allow_pickle=True).item()
-        else:
-            event_info = load_events(self.path)
-
-            # Save event_info as a numpy object
-            np.save(file_name, event_info)
-
-        # Set the dictionary values to class attributes
-        for key in event_info:
-            setattr(self, key, event_info[key])
-
-        print("files, file_start, file_end, onsets, offsets, durations, syllables, contexts attributes added")
-
-    def load_spk(self, unit='ms', update=False):
+    def _load_spk(self, unit='ms', update=False):
 
         spk_txt_file = list(self.path.glob('*' + self.channel + '(merged).txt'))[0]
         spk_info = np.loadtxt(spk_txt_file, delimiter='\t', skiprows=1)  # skip header
@@ -279,12 +296,12 @@ class ClusterInfo:
             spk_list.append(spk_ts[np.where((spk_ts >= file_start) & (spk_ts <= file_end))])
 
         self.spk_ts = spk_list  # analysis timestamps in ms
-        print("spk_ts, spk_wf, nb_spk attributes added")
+        # print("spk_ts, spk_wf, nb_spk attributes added")
 
     def analyze_waveform(self):
         # Conduct waveform analysis
         if not hasattr(self, 'avg_wf'):
-            print("waveform not loaded - run 'load_spk()' first!")
+            print("waveform not loaded - run '_load_spk()' first!")
         else:
             avg_wf = np.nanmean(self.spk_wf, axis=0)
             spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
@@ -417,9 +434,6 @@ class MotifInfo(ClusterInfo):
 
     def __init__(self, database, update=False):
         super().__init__(database)
-        # Load parent attributes but this will be overwritten
-        self.load_events()
-        self.load_spk()
 
         file_name = self.path / 'MotifInfo.npy'
 
@@ -445,7 +459,7 @@ class MotifInfo(ClusterInfo):
                 offsets = offsets.tolist()
 
                 # Find motifs
-                motif_ind = find_str(self.motif, syllables)
+                motif_ind = find_str(syllables, self.motif)
 
                 # Get syllable, analysis time stamps
                 for ind in motif_ind:
@@ -561,6 +575,10 @@ class MotifInfo(ClusterInfo):
             spk_ts_warped_list.append(spk_ts)
         return spk_ts_warped_list
 
+    def jitter_spk(self, jitter):
+        ##TODO: add spike jitter
+        pass
+
 
     def get_peth(self, warped=True):
         """Get peri-event time histograms & rasters during song motif"""
@@ -617,8 +635,8 @@ class BaselineInfo(ClusterInfo):
     def __init__(self, database, update=False):
         super().__init__(database)
         # Load parent attributes but this will be overwritten
-        self.load_events()
-        self.load_spk()
+        self._load_events()
+        self._load_spk()
 
         file_name = self.path / 'BaselineInfo.npy'
 
@@ -718,7 +736,7 @@ class AudioData():
     Get all data by default; specify time range if needed
     """
     def __init__(self, database, update=False, ext='.wav'):
-        self.name, self.path = load_info(database)
+        self.name, self.path = load_cluster(database)
         self.files = list_files(self.path, ext)
         audio_info = load_audio(self.path)
 
@@ -752,7 +770,7 @@ class AudioData():
         print("spect, freqbins, timebins added")
 
 
-class NerualData(ClusterInfo):
+class NeuralData(ClusterInfo):
     def __init__(self, database):
         super().__init__(database)
 
