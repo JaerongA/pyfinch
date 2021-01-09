@@ -112,8 +112,13 @@ def extract_ind(timestamp, range):
 
     ind = np.where((timestamp >= start) & (timestamp <= end))
     new_array = timestamp[ind]
-    return ind
+    return ind, new_array
 
 
-def myround(x, base=5):
-    return base * round(x/base)
+def normalize(array):
+    """
+    Normalizes an array by its average and sd
+    """
+    import numpy as np
+
+    return (np.array(array) - np.average(array)) / np.std(array)
