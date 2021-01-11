@@ -1,6 +1,6 @@
 """
 By Jaerong
-A main package for neural analysis
+main package for neural analysis
 """
 
 from analysis.functions import *
@@ -36,7 +36,8 @@ def load_cluster(database):
 
     # Get cluster path
     project_path = ProjectLoader().path
-    cluster_path = project_path / database['birdID'] / database['taskName'] / cluster_taskSession / database['site'][-2:] / 'Songs'
+    cluster_path = project_path / database['birdID'] / database['taskName'] / cluster_taskSession / database['site'][
+                                                                                                    -2:] / 'Songs'
     cluster_path = Path(cluster_path)
 
     return cluster_name, cluster_path
@@ -142,17 +143,15 @@ def load_audio(dir):
 
             sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
             length = data.shape[0] / sample_rate
-            timestamp = np.round(np.linspace(0, length, data.shape[0]) *1E3, 3) # start from t = 0 in ms, reduce floating precision
-
+            timestamp = np.round(np.linspace(0, length, data.shape[0]) * 1E3,
+                                 3)  # start from t = 0 in ms, reduce floating precision
             start_ind = timestamp_concat.size  # start of the file
-
             # print('timestamp size = {}, data size = {}'.format(len(timestamp), len(data)))
 
             # Concatenate timestamp and data
             if timestamp_concat.size:
                 timestamp += (timestamp_concat[-1] + (1 / sample_rate))
             timestamp_concat = np.append(timestamp_concat, timestamp)
-
             data_concat = np.append(data_concat, data)
 
             # Store results
@@ -178,28 +177,59 @@ def get_isi(spk_ts: list):
     return isi
 
 
-def get_peth(evt_ts_list, spk_ts_list, *cond_list):
-    """Get peri-event histogram & firing rates"""
+def get_peth(evt_ts: list, spk_ts: list, duration: float):
+    """Get peri-event histogram & firing rates
+
+    for song peth event_ts indicates syllable onset
+    """
 
     import math
 
-    peth = np.zeros((len(evt_ts_list), peth_parm['bin_size'] * peth_parm['nb_bins']))  # nb of trials x nb of time bins
+    peth = np.zeros((len(evt_ts), peth_parm['bin_size'] * peth_parm['nb_bins']))  # nb of trials x nb of time bins
 
-    for trial_ind, (evt_ts, spk_ts) in enumerate(zip(evt_ts_list, spk_ts_list)):
+    for trial_ind, (evt_ts, spk_ts) in enumerate(zip(evt_ts, spk_ts)):
 
-        evt_ts = np.asarray(list(map(float, evt_ts)))
+        evt_ts = np.asarray(list(map(float, evt_ts))) - peth_parm['buffer']
         spk_ts -= evt_ts[0]
 
         for spk in spk_ts:
             ind = math.ceil(spk / peth_parm['bin_size'])
             # print("spk = {}, bin index = {}".format(spk, ind))  # for debugging
             peth[trial_ind, ind] += 1
-    return peth
 
+    time_bin = peth_parm['time_bin'] - peth_parm['buffer']
+
+    # Truncate the array leaving out only the portion of our interest
+    ind = (((0 - peth_parm['buffer']) <= time_bin) & (time_bin <= duration))
+    peth = peth[:,ind]
+    time_bin = time_bin[ind]
+
+    return peth, time_bin
+
+def get_pcc(fr_array):
+    """
+    Get pairwise cross-correlation
+    Args:
+        fr_array: arr (trials x time_bin)
+
+    Returns:
+        pcc_dict : dict
+    """
+    pcc_dict = {}
+    pcc_arr = np.array([])
+
+    for ind1, fr1 in enumerate(fr_array):
+        for ind2, fr2 in enumerate(fr_array):
+            if ind2 > ind1:
+                if np.linalg.norm((fr2 - fr2.mean()), ord=1):
+                    pcc_arr = np.append(pcc_arr, np.corrcoef(fr1, fr2)[0, 1])  # get correlation coefficient
+
+    pcc_dict['array'] = pcc_arr
+    pcc_dict['mean'] = pcc_arr.mean()
+    return pcc_dict
 
 class DBLoader:
     def __init__(self, database):
-
         # Set all database fields as attributes
         for col in database.keys():
             # dic[col] = database[col]
@@ -213,9 +243,9 @@ class DBLoader:
 
 class ClusterInfo:
 
-    def __init__(self, database, update=False):
+    def __init__(self, database, update=False, unit='ms'):
 
-        #Set all database fields as attributes
+        # Set all database fields as attributes
         for col in database.keys():
             # dic[col] = database[col]
             setattr(self, col, database[col])
@@ -227,7 +257,7 @@ class ClusterInfo:
 
         # Load events
         file_name = self.path / 'EventInfo.npy'
-        if update or not file_name.exists():
+        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
             event_info = load_events(self.path)
         else:
             event_info = np.load(file_name, allow_pickle=True).item()
@@ -240,7 +270,7 @@ class ClusterInfo:
         #     print("files, file_start, file_end, onsets, offsets, durations, syllables, contexts attributes added")
 
         # Load spike
-        self._load_spk()
+        self._load_spk(unit=unit)
 
     def __repr__(self):
         '''Print out the name'''
@@ -249,27 +279,7 @@ class ClusterInfo:
     def list_files(self, ext: str):
         return list_files(self.path, ext)
 
-    # def _load_events(self):
-    #     """
-    #     Obtain event info & serialized timestamps for song & neural analysis
-    #     """
-    #     file_name = self.path / 'EventInfo.npy'
-    #
-    #     if file_name.exists():
-    #         event_info = np.load(file_name, allow_pickle=True).item()
-    #     else:
-    #         event_info = load_events(self.path)
-    #
-    #         # Save event_info as a numpy object
-    #         np.save(file_name, event_info)
-    #
-    #     # Set the dictionary values to class attributes
-    #     for key in event_info:
-    #         setattr(self, key, event_info[key])
-    #
-    #     print("files, file_start, file_end, onsets, offsets, durations, syllables, contexts attributes added")
-
-    def _load_spk(self, unit='ms', update=False):
+    def _load_spk(self, unit):
 
         spk_txt_file = list(self.path.glob('*' + self.channel + '(merged).txt'))[0]
         spk_info = np.loadtxt(spk_txt_file, delimiter='\t', skiprows=1)  # skip header
@@ -377,8 +387,6 @@ class ClusterInfo:
     def plot_isi(isi):
         pass
 
-    def get_fr(self):
-        pass
 
     def bursting_analysis(self):
         pass
@@ -435,87 +443,87 @@ class MotifInfo(ClusterInfo):
     def __init__(self, database, update=False):
         super().__init__(database)
 
+        # Load motif info
         file_name = self.path / 'MotifInfo.npy'
+        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+            motif_info = self._load_motif()
+        else:
+            motif_info = np.load(file_name, allow_pickle=True).item()
 
-        if not update:  # file already exists or you don't want to update the file
-            baseline_info = np.load(file_name, allow_pickle=True).item()
-        else:  # create a new file
+        # Set the dictionary values to class attributes
+        for key in motif_info:
+            setattr(self, key, motif_info[key])
 
-            # Store values here
-            file_list = []
-            spk_list = []
-            onset_list = []
-            offset_list = []
-            syllable_list = []
-            motif_duration_list = []
-            context_list = []
-            motif_info = {}
+        # Get duration
+        note_durations, median_durations = self.get_note_duration()
+        motif_info['note_durations'] = note_durations
+        motif_info['median_durations'] = median_durations
+        self.note_durations = note_durations
+        self.median_durations = median_durations
 
-            list_zip = zip(self.files, self.spk_ts, self.onsets, self.offsets, self.syllables, self.contexts)
+        # Get PLW (piecewise linear warping)
+        spk_ts_warp_list = self.piecewise_linear_warping()
+        motif_info['spk_ts_warp'] = spk_ts_warp_list
+        self.spk_ts_warp = spk_ts_warp_list
 
-            for file, spks, onsets, offsets, syllables, context in list_zip:
+    def _load_motif(self):
 
-                onsets = onsets.tolist()
-                offsets = offsets.tolist()
+        # Store values here
+        file_list = []
+        spk_list = []
+        onset_list = []
+        offset_list = []
+        syllable_list = []
+        motif_duration_list = []
+        context_list = []
+        motif_info = {}
 
-                # Find motifs
-                motif_ind = find_str(syllables, self.motif)
+        list_zip = zip(self.files, self.spk_ts, self.onsets, self.offsets, self.syllables, self.contexts)
 
-                # Get syllable, analysis time stamps
-                for ind in motif_ind:
-                    # start (first syllable) and stop (last syllable) index of a motif
-                    start_ind = ind
-                    stop_ind = ind + len(self.motif) - 1
+        for file, spks, onsets, offsets, syllables, context in list_zip:
 
-                    motif_onset = float(onsets[start_ind])
-                    motif_offset = float(offsets[stop_ind])
+            onsets = onsets.tolist()
+            offsets = offsets.tolist()
 
-                    motif_spk = spks[np.where((spks >= motif_onset - peth_parm['buffer']) & (spks <= motif_offset))]
-                    onsets_in_motif = onsets[start_ind:stop_ind + 1]  # list of motif onset timestamps
-                    offsets_in_motif = offsets[start_ind:stop_ind + 1]  # list of motif offset timestamps
+            # Find motifs
+            motif_ind = find_str(syllables, self.motif)
 
-                    file_list.append(file)
-                    spk_list.append(motif_spk)
-                    motif_duration_list.append(motif_offset - motif_onset)
-                    onset_list.append(onsets_in_motif)
-                    offset_list.append(offsets_in_motif)
-                    syllable_list.append(syllables[start_ind:stop_ind + 1])
-                    context_list.append(context)
+            # Get syllable, analysis time stamps
+            for ind in motif_ind:
+                # start (first syllable) and stop (last syllable) index of a motif
+                start_ind = ind
+                stop_ind = ind + len(self.motif) - 1
 
-            # Organize event-related info into a single dictionary object
-            motif_info = {
-                'files': file_list,
-                'spk_ts': spk_list,
-                'onsets': onset_list,
-                'offsets': offset_list,
-                'motif_durations': motif_duration_list,
-                'syllables': syllable_list,
-                'contexts': context_list
-            }
+                motif_onset = float(onsets[start_ind])
+                motif_offset = float(offsets[stop_ind])
 
-            # Set the dictionary values to class attributes
-            for key in motif_info:
-                setattr(self, key, motif_info[key])
+                motif_spk = spks[np.where((spks >= motif_onset - peth_parm['buffer']) & (spks <= motif_offset))]
+                onsets_in_motif = onsets[start_ind:stop_ind + 1]  # list of motif onset timestamps
+                offsets_in_motif = offsets[start_ind:stop_ind + 1]  # list of motif offset timestamps
 
-            # Get duration
-            note_durations, median_durations = self.get_note_duration()
-            motif_info['note_durations'] = note_durations
-            motif_info['median_durations'] = median_durations
-            self.note_durations = note_durations
-            self.median_durations = median_durations
+                file_list.append(file)
+                spk_list.append(motif_spk)
+                motif_duration_list.append(motif_offset - motif_onset)
+                onset_list.append(onsets_in_motif)
+                offset_list.append(offsets_in_motif)
+                syllable_list.append(syllables[start_ind:stop_ind + 1])
+                context_list.append(context)
 
-            # Get PLW (piecewise linear warping)
-            spk_ts_warp_list = self.piecewise_linear_warping()
-            motif_info['spk_ts_warp'] = spk_ts_warp_list
-            self.spk_ts_warp = spk_ts_warp_list
-
-            # Save baseline_info as a numpy object
-            np.save(file_name, motif_info)
-
+        # Organize event-related info into a single dictionary object
+        motif_info = {
+            'files': file_list,
+            'spk_ts': spk_list,
+            'onsets': onset_list,
+            'offsets': offset_list,
+            'motif_durations': motif_duration_list,
+            'syllables': syllable_list,
+            'contexts': context_list,
+            'parameter': peth_parm
+        }
+        return motif_info
 
     def __len__(self):
         return len(self.files)
-
 
     def get_note_duration(self):
         # Calculate note & gap duration per motif
@@ -540,7 +548,6 @@ class MotifInfo(ClusterInfo):
         median_durations = np.median(note_durations, axis=0)
 
         return note_durations, median_durations
-
 
     def piecewise_linear_warping(self):
         """
@@ -579,17 +586,17 @@ class MotifInfo(ClusterInfo):
         ##TODO: add spike jitter
         pass
 
-
     def get_peth(self, warped=True):
         """Get peri-event time histograms & rasters during song motif"""
         peth_dict = {}
 
         if warped:  # peth calculated from time-warped spikes by default
-            peth = get_peth(self.onsets, self.spk_ts_warp)
+            peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())
         else:
-            peth = get_peth(self.onsets, self.spk_ts)
+            peth, time_bin = get_peth(self.onsets, self.spk_ts, self.median_durations.sum())
 
         peth_dict['peth'] = peth
+        peth_dict['time_bin'] = time_bin
         peth_dict['contexts'] = self.contexts
         return PethInfo(peth_dict)  # return peth class object for further analysis
 
@@ -609,11 +616,70 @@ class PethInfo():
         for key in peth_dict:
             setattr(self, key, peth_dict[key])
 
-        self.peth = peth_dict['peth']
-        self.count = sum(self.peth)  # sum number of spikes per time bin
-        self.fr = self.count / peth_parm['bin_size']
-        self.time_bin = peth_parm['time_bin'] - peth_parm['buffer']
-        ##TODO: add self.fr, normalize, plot option
+        # Get conditional peth, fr, spike counts
+        peth_dict = {}
+        peth_dict['All'] = self.peth
+        for context in unique(self.contexts):
+             ind = np.array(self.contexts) == context
+             peth_dict[context] = self.peth[ind,:]
+        self.peth = peth_dict
+
+    def get_fr(self, smoothing=True, norm_method=None, norm_factor=None):
+        """
+        Get trials-by-trial firing rates by default
+        Args:
+            smoothing: bool
+                performs gaussian smoothing on the firing rates
+            norm_method: str ['sum', 'factor']
+                normalization by the sum (default)
+            norm_factor:  float
+                (e.g., baseline firing rates).
+        """
+
+        from scipy.ndimage import gaussian_filter1d
+
+        fr_dict = {}
+        for k, v in self.peth.items():  # loop through different conditions in peth dict
+            fr = v / (peth_parm['bin_size'] / 1E3)  # in Hz
+
+            if smoothing:  # Gaussian smoothing
+                fr = gaussian_filter1d(fr, gauss_std)
+            fr_dict[k] = fr
+        self.fr = fr_dict
+
+        fr_dict = {}
+        for k, v in self.fr.items():
+            fr = np.mean(v,axis=0)
+            if norm_method == 'sum':  # normalize by the total sum
+                fr = fr / sum(fr)
+            elif norm_method == 'factor':  # normalize by a normalization factor (e.g., baseline firing rates)
+                fr = fr / norm_factor
+            fr_dict[k] = fr
+        self.mean_fr = fr_dict
+
+    def get_pcc(self):
+        "Get pairwise cross-correlation"
+        pcc_dict = {}
+        for k, v in self.fr.items():  # loop through different conditions in peth dict
+            pcc = get_pcc(v)
+            pcc_dict[k] = pcc
+        self.pcc = pcc_dict
+
+
+    def get_spk_count(self, fr_dict):
+
+        spk_count_dict = {}
+        for k, v in fr_dict.items():  # loop through different conditions in peth dict
+            spk_count_dict[k] = sum(v)
+        self.spk_count = spk_count_dict
+
+
+    def get_fano(self):
+        """
+        Calculate Fano factor of spike counts
+        Returns:
+
+        """
 
     def __len__(self):
         return self.peth.shape[0]
@@ -621,9 +687,6 @@ class PethInfo():
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
-    def normalize_fr(self):
-        """Normalize firing rates by the total sum of analysis counts"""
-        self.fr_norm = self.fr / sum(self.fr)
 
 
 class BoutInfo(ClusterInfo):
@@ -634,9 +697,6 @@ class BaselineInfo(ClusterInfo):
 
     def __init__(self, database, update=False):
         super().__init__(database)
-        # Load parent attributes but this will be overwritten
-        self._load_events()
-        self._load_spk()
 
         file_name = self.path / 'BaselineInfo.npy'
 
@@ -735,6 +795,7 @@ class AudioData():
     Create an object that has concatenated audio signal and its timestamps
     Get all data by default; specify time range if needed
     """
+
     def __init__(self, database, update=False, ext='.wav'):
         self.name, self.path = load_cluster(database)
         self.files = list_files(self.path, ext)
@@ -767,7 +828,10 @@ class AudioData():
 
     def spectrogram(self, freq_range):
         self.spect, self.freqbins, self.timebins = spectrogram(self.data, self.sample_rate, freq_range=freq_range)
-        print("spect, freqbins, timebins added")
+        # print("spect, freqbins, timebins added")
+
+    def plot_spectrogram(self, MotifInfo):
+        pass
 
 
 class NeuralData(ClusterInfo):
