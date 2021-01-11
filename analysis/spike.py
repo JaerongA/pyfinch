@@ -406,11 +406,11 @@ class ClusterInfo:
     def nb_bouts(self):
 
         nb_bouts = {}
-        syllable_list = [syllable for syllable, context in zip(self.syllables, self.context) if context == 'U']
+        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
         syllables = ''.join(syllable_list)
         nb_bouts['U'] = get_nb_bouts(self.songNote, syllables)
 
-        syllable_list = [syllable for syllable, context in zip(self.syllables, self.context) if context == 'D']
+        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'D']
         syllables = ''.join(syllable_list)
         nb_bouts['D'] = get_nb_bouts(self.songNote, syllables)
         nb_bouts['ALL'] = nb_bouts['U'] + nb_bouts['D']
@@ -423,11 +423,11 @@ class ClusterInfo:
         nb_motifs = {}
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
         syllables = ''.join(syllable_list)
-        nb_motifs['U'] = len(find_str(self.motif, syllables))
+        nb_motifs['U'] = len(find_str(syllables, self.motif))
 
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'D']
         syllables = ''.join(syllable_list)
-        nb_motifs['D'] = len(find_str(self.motif, syllables))
+        nb_motifs['D'] = len(find_str(syllables, self.motif))
 
         nb_motifs['ALL'] = nb_motifs['U'] + nb_motifs['D']
 
@@ -439,6 +439,7 @@ class ClusterInfo:
 
 
 class MotifInfo(ClusterInfo):
+    """Child class of ClusterInfo"""
 
     def __init__(self, database, update=False):
         super().__init__(database)
@@ -718,7 +719,7 @@ class BaselineInfo(ClusterInfo):
             for file, spks, file_start, onsets, offsets, syllables, context in list_zip:
 
                 baseline_spk = []
-                bout_ind_list = find_str('*', syllables)
+                bout_ind_list = find_str(syllables, '*')
                 bout_ind_list.insert(0, -1)  # start from the first index
 
                 for bout_ind in bout_ind_list:
