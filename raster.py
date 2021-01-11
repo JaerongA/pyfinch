@@ -235,20 +235,23 @@ for row in cur.fetchall():
 
     for context, mean_fr in pi.mean_fr.items():
         if context == 'U':
-            ax_peth.plot(pi.time_bin, mean_fr, 'b')
+            ax_peth.plot(pi.time_bin, mean_fr, 'b', label=context)
         elif context == 'D':
-            ax_peth.plot(pi.time_bin, mean_fr, 'm')
+            ax_peth.plot(pi.time_bin, mean_fr, 'm', label=context)
+
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': 6})  # print out legend
 
     ax_peth.set_ylabel('Norm. FR', fontsize=font_size)
-    # fr_ymax = myround(ax_peth.get_ylim()[1], base=10)
-    # ax_peth.set_ylim(0, fr_ymax)
-    # plt.yticks([0, ax_peth.get_ylim()[1]], [str(0), str(int(fr_ymax))])
+    # fr_ymax = myround(ax_peth.get_ylim()[1], base=3)
+    fr_ymax = ax_peth.get_ylim()[1]
+    ax_peth.set_ylim(0, fr_ymax)
+    plt.yticks([0, ax_peth.get_ylim()[1]], [str(0), str(int(fr_ymax))])
 
-    # Mark the baseline firing rat    es
-    # ax_raster.axhline(y=motif_ind - 1, color='k', ls='-', lw=0.5)
+    # Mark the baseline firing rates
+    # ax_peth.axhline(y=row['baselineFR'], color='k', ls='--', lw=0.5)
 
-    # pi.fr_smoothed = gaussian_filter1d(pi.fr, gauss_std)
-    # ax_peth.plot(pi.time_bin, np.mean(pi.fr_smoothed, axis=0), 'k')
+    # Mark end of the motif
+    ax_peth.axvline(x=mi.median_durations.sum(), color='k', ls='--', lw=0.5)
     remove_right_top(ax_peth)
 
 
