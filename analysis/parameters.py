@@ -11,7 +11,7 @@ freq_range = [300, 8000]  # frequency range for bandpass filter for spectrogram 
 
 # Set syllable colors
 note_color = {'Intro': ['k', 'gray', 'darkseagreen', 'olive'],
-              'Motif': ['r', 'b', 'lime',  'darkorange', 'purple', 'saddlebrown', 'm'],
+              'Motif': ['r', 'b', 'lime', 'm', 'brown', 'purple', 'saddlebrown'],
               'Call': ['teal', 'darklategray', 'darkgray', 'indigo']}
 
 # Define baseline period 1 sec window & 2 sec prior to syllable onset
@@ -28,12 +28,13 @@ spk_corr_parm['time_bin'] = np.arange(-spk_corr_parm['lag'], spk_corr_parm['lag'
 
 # For peth (peri-event time histogram) or rasters
 peth_parm = {'buffer': 50,  # time buffer before the event onset (in ms)
-             'bin_size': 1,  # peth time bin size
+             'bin_size': 1,  # peth time bin size (in ms)
              'nb_bins': 1000  # number of bins
              }
 peth_parm['time_bin'] = np.arange(0, peth_parm['nb_bins'], peth_parm['bin_size'])
 
 gauss_filter = 40  # for peth smoothing (in ms)
+gauss_std = 8
 # gauss_filter = gausswin(filter_size);  %% Gaussian smoothing parameter
 # gauss_filter = gauss_filter/sum(gauss_filter);
 
