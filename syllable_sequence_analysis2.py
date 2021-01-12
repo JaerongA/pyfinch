@@ -5,7 +5,7 @@ performs syllable sequence analysis and calculates transition entropy
 
 import os
 from summary import load
-from song.parameters import *
+from analysis.parameters import *
 import scipy.io
 import numpy as np
 
@@ -91,14 +91,14 @@ for cluster_run in range(0, summary_df.shape[0]):
             'Dir': {'notes': bout['Dir'],
                     'nb_bout': len([bout for bout in bout['Dir'].split('*')[:-1] if is_song_bout(cluster.SongNote, bout)])}
             }
+
     # {'Undir': {'bout': 'kiiiiabcdjiabcdjiabcd*iiiabcdk*iiii*',
     #   'nb_bout': 2},
     #  'Dir': {'bout': 'kiiiiabcdjiabcdjiabcd*iiiabcdk*iiii*iiiabcdjiabcdk*kiiiiiabcdjia*',
     #   'nb_bout': 4}}
 
-
     pre_path = session_path
 
     # Save the results in .json format in the session path
     os.chdir(session_path)
-    save_bout('song_bout.json', bout)
+    save_bout('config.json', bout)

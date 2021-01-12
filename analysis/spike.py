@@ -225,7 +225,7 @@ def get_pcc(fr_array):
                     pcc_arr = np.append(pcc_arr, np.corrcoef(fr1, fr2)[0, 1])  # get correlation coefficient
 
     pcc_dict['array'] = pcc_arr
-    pcc_dict['mean'] = pcc_arr.mean()
+    pcc_dict['mean'] = round(pcc_arr.mean(),3)
     return pcc_dict
 
 class DBLoader:
@@ -395,10 +395,9 @@ class ClusterInfo:
     def nb_files(self):
 
         nb_files = {}
-
         nb_files['U'] = len([context for context in self.contexts if context == 'U'])
         nb_files['D'] = len([context for context in self.contexts if context == 'D'])
-        nb_files['ALL'] = nb_files['U'] + nb_files['D']
+        nb_files['All'] = nb_files['U'] + nb_files['D']
 
         return nb_files
 
@@ -413,7 +412,7 @@ class ClusterInfo:
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'D']
         syllables = ''.join(syllable_list)
         nb_bouts['D'] = get_nb_bouts(self.songNote, syllables)
-        nb_bouts['ALL'] = nb_bouts['U'] + nb_bouts['D']
+        nb_bouts['All'] = nb_bouts['U'] + nb_bouts['D']
 
         return nb_bouts
 
@@ -429,7 +428,7 @@ class ClusterInfo:
         syllables = ''.join(syllable_list)
         nb_motifs['D'] = len(find_str(syllables, self.motif))
 
-        nb_motifs['ALL'] = nb_motifs['U'] + nb_motifs['D']
+        nb_motifs['All'] = nb_motifs['U'] + nb_motifs['D']
 
         return nb_motifs
 

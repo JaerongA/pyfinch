@@ -17,6 +17,8 @@ def unique(list):
 
 def main(csv_path):
 
+    csv_path = Path(csv_path)
+
     # Save new .not.mat in this folder
     save_dir = csv_path.parent
 
@@ -37,9 +39,6 @@ def main(csv_path):
                  'onsets': onsets,
                  'offsets': offsets}
 
-        # import pdb
-        # pdb.set_trace()
-
         file_name = save_dir / notmat_file
         scipy.io.savemat(file_name, mdict)  # store above values to new .not.mat
 
@@ -48,6 +47,6 @@ def main(csv_path):
 
 if __name__ == '__main__':
 
-    csv_name = Path('H:/Box/Data/BMI/TestSet/results/k71o7_annotation_results.csv')  # vak prediction output
+    csv_path = 'H:/Box/Data/BMI/TestSet/results/k71o7_annotation_results.csv'  # vak prediction output
 
-    main(csv_name)
+    main(csv_path)

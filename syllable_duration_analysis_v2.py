@@ -6,7 +6,7 @@ Calculation based on EventInfo.m
 from database import load
 import pandas as pd
 from song.analysis import *
-from utilities import save
+from util import save
 
 
 def get_data(query):
@@ -65,12 +65,12 @@ def get_data(query):
                                         })
                 df = df.append(temp_df, ignore_index=True)
 
+
     # Save to a file
     df.index.name = 'Index'
     outputfile = save_dir / 'SyllableDuration.csv'
     df.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
     print('Done!')
-
 
 def load_data(data_file, context='ALL', syl_type='ALL'):
 
@@ -114,7 +114,7 @@ if __name__ == '__main__':
 import matplotlib.pyplot as plt
 import seaborn as sns
 import IPython
-from utilities.functions import unique
+from util.functions import unique
 
 
 bird_list = unique(df['BirdID'].tolist())
@@ -165,7 +165,7 @@ for bird in bird_list:
 
         # Save results
         save_dir = project_path / 'Analysis' / 'SyllableDuration'
-        save.figure(fig, save_dir, title, ext='.png')
+        save.save_fig(fig, save_dir, title, ext='.png')
     # IPython.embed()
     #     break
     # break

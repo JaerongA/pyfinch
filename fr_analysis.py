@@ -7,12 +7,12 @@ Get mean firing rates per condition
 from database import load
 import numpy as np
 from pathlib import Path
-from spike.load import read_spk_txt, read_rhd
-from spike.analysis import SpkInfo
-from spike.parameters import *
+from analysis.load import read_spk_txt, read_rhd
+from analysis.spike import SpkInfo
+from analysis.parameters import *
 from song.analysis import *
 from song.parameters import *
-from utilities.functions import *
+from util.functions import *
 
 # query = "SELECT * FROM cluster WHERE ephysOK IS TRUE"
 query = "SELECT * FROM cluster WHERE id == 50"
@@ -61,26 +61,29 @@ for row in cur.fetchall():
         # Find motifs
         motif_ind = find_str(row['motif'], syllables)
 
-        # # Get syllable, spike time stamps
-        # for ind in motif_ind:
-        #     start_ind = ind
-        #     stop_ind = ind + len(row['motif']) - 1
-        #
-        #     motif_onset = onsets[start_ind]
-        #     motif_offset = offsets[stop_ind]
-        #
-        #     motif_spk = spk_ts[np.where((spk_ts >= motif_onset) & (spk_ts <= motif_offset))]
-        #
-        #     nb_spk_vec.append(len(motif_spk))
-        #     time_vec.append((motif_offset - motif_onset)/1E3)  # convert to seconds for calculating in Hz
-        #     # Store context info
-        #     context_vec.append(context)
+        # Get syllable, analysis time stamps
+        for ind in motif_ind:
+            start_ind = ind
+            stop_ind = ind + len(row['motif']) - 1
+
+            motif_onset = onsets[start_ind]
+            motif_offset = offsets[stop_ind]
+
+            motif_spk = spk_ts[np.where((spk_ts >= motif_onset) & (spk_ts <= motif_offset))]
+
+            nb_spk_vec.append(len(motif_spk))
+            time_vec.append((motif_offset - motif_onset)/1E3)  # convert to seconds for calculating in Hz
+            # Store context info
+            context_vec.append(context)
 
         # Demarcate song bouts
-        onset_list.append(demarcate_bout(onsets, intervals))
-        offset_list.append(demarcate_bout(offsets, intervals))
-        syllable_list.append(demarcate_bout(syllables, intervals))
-        context_list.append(context)
+        # onset_list.append(demarcate_bout(onsets, intervals))
+        # offset_list.append(demarcate_bout(offsets, intervals))
+        # syllable_list.append(demarcate_bout(syllables, intervals))
+        # context_list.append(context)
+
+
+
 
     # Get baseline firing rates
     baseline_spk_vec = []

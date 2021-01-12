@@ -4,7 +4,7 @@ Load all info relating to the project """
 
 def config():
     from configparser import ConfigParser
-    config_file = 'summary/project.ini'
+    config_file = 'summary/config.ini'
     parser = ConfigParser()
     parser.read(config_file)
     print(parser.sections())

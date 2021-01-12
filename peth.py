@@ -15,15 +15,11 @@ from util.draw import *
 import math
 from scipy.ndimage import gaussian_filter1d
 
-
 query = "SELECT * FROM cluster WHERE id == 96"
 # query = "SELECT * FROM cluster WHERE ephysOK"
 
 project = ProjectLoader()
 cur, conn, col_names = project.load_db(query)
-
-
-
 
 # def get_peth(evt_ts_list, spk_ts_list):
 #     """Get peri-event histogram & firing rates"""
@@ -45,15 +41,8 @@ cur, conn, col_names = project.load_db(query)
 #     return peth
 
 
-
 for row in cur.fetchall():
-
-
-    cluster = DBLoader(row)
-
-    ci = ClusterInfo(row)
-    ci.load_events()
-    mi = MotifInfo(row, update=True)
+    mi = MotifInfo(row)
 
     # peth = np.zeros((len(mi),peth_parm['bin_size'] * peth_parm['nb_bins']))  # nb of motifs x nb of time bins
     # peth_warp = np.zeros((len(mi),peth_parm['bin_size'] * peth_parm['nb_bins']))  # nb of motifs x nb of time bins
@@ -75,14 +64,14 @@ for row in cur.fetchall():
     #         peth[motif_ind, ind] += 1
     #
     #     for spk in spk_train_warp:
-    #         ind = math.ceil(spk / peth_parm['bin_size'])
+    #         ind = math.ceil(spk / peth_parm['b)in_size'])
     #         print("spk = {}, bin index = {}".format(spk, ind))  # for debugging
     #         peth_warp[motif_ind, ind] += 1
 
     # peth = get_peth(mi.onsets, mi.spk_ts)
 
     # pi = mi.get_peth()
-    pi = mi.get_peth()
+    pi = mi.get_peth()  # peth info
 
     pi.fr_smoothed = gaussian_filter1d(pi.fr, 8)
 
@@ -91,7 +80,7 @@ for row in cur.fetchall():
 # a = np.asarray(mi.contexts)
 # ind = np.where(a=='U')
 # peth[ind]
-plt.plot(pi.time_bin, pi.fr,'k')
-plt.plot(pi.time_bin, pi.fr_smoothed,'r')
+plt.plot(pi.time_bin, pi.fr, 'k')
+plt.plot(pi.time_bin, pi.fr_smoothed, 'r')
 # plt.plot()
 plt.show()

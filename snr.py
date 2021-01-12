@@ -15,7 +15,7 @@ from util import draw, save
 
 # query = "SELECT * FROM cluster WHERE id = 29"
 # query = "SELECT * FROM cluster WHERE ephysOK = 1 AND id == 12"
-query = "SELECT * FROM cluster WHERE ephysOK = 1"
+query = "SELECT * FROM cluster WHERE ephysOK = 96"
 # query = "SELECT * FROM cluster WHERE id BETWEEN 25 AND 28"
 
 cur, conn, col_names = load.database(query)

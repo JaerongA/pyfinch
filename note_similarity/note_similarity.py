@@ -97,7 +97,7 @@ def get_psd_mat(data_path, save_fig=False, nfft=2 ** 10):
 
                     ax_psd.spines['right'].set_visible(False), ax_psd.spines['top'].set_visible(False)
                     ax_psd.spines['bottom'].set_visible(False)
-                    ax_psd.set_xticks([])
+                    ax_psd.set_xticks([])  # remove xticks
                     plt.setp(ax_psd.set_yticks([]))
                     # plt.show()
 
@@ -307,5 +307,3 @@ df_x.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs f
 
 
 print('Done!')
-
-
