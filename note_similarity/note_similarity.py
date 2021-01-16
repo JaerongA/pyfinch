@@ -58,7 +58,7 @@ def get_basis_psd(psd_array, notes):
 
 
 # Obtain basis data from training files
-def get_psd_mat(data_path, save_fig=False, nfft=2 ** 10):
+def get_psd_mat(data_path, fig_save_ok=False, nfft=2 ** 10):
     file_name = data_path / 'PSD.npy'
 
     # Read from a file if it already exists
@@ -101,7 +101,7 @@ def get_psd_mat(data_path, save_fig=False, nfft=2 ** 10):
                 psd_power = normalize(psd_seg[0][seg_start:seg_end])
                 psd_freq = psd_seg[1][seg_start:seg_end]
 
-                if save_fig:
+                if fig_save_ok:
                     # Plot spectrogram & PSD
                     fig = plt.figure(figsize=(3.5, 3))
                     fig_name = "{}, note#{} - {}".format(file.name, i, syllable)
@@ -137,6 +137,9 @@ def get_psd_mat(data_path, save_fig=False, nfft=2 ** 10):
                     if fig_save_ok:
                         save_path = save.make_dir(file.parent, 'Spectrograms')
                         save.save_fig(fig, save_path, fig_name, ext='.png')
+                    else:
+                        plt.close(fig)
+
 
                 all_notes += syllable
                 psd_list.append(psd_power)
@@ -198,13 +201,13 @@ for bird in config['birdID']:
             print("")
 
             # Obtain basis data from training files
-            psd_array_training, psd_list_training, notes_training = get_psd_mat(training_path, save_fig=False)
+            psd_array_training, psd_list_training, notes_training = get_psd_mat(training_path, fig_save_ok=False)
 
             # Get basis psds per note
             psd_basis_list, note_basis_list = get_basis_psd(psd_array_training, notes_training)
 
             # Get psd from the testing set
-            psd_array_testing, psd_testing_list, notes_testing = get_psd_mat(testing_path, save_fig=False)
+            psd_array_testing, psd_testing_list, notes_testing = get_psd_mat(testing_path, fig_save_ok=False)
 
             # Get similarity per syllable
             # Get psd distance
@@ -278,6 +281,9 @@ for bird in config['birdID']:
                 if fig_save_ok:
                     save_path = save.make_dir(testing_path, 'NoteSimilarity', add_date=True)
                     save.save_fig(fig, save_path, fig_name, ext='.png')
+                else:
+                    plt.close(fig)
+
 
                 # Save results to a dataframe
                 # All notes
@@ -312,6 +318,7 @@ for bird in config['birdID']:
 
     # 'x' similarity matrix
     ind = find_str(notes_testing, 'x')
+    nb_note = len(ind)
     if len(ind) < num_note_crit_testing:  # if there are not enough 'x's, skip
         continue
     x_similarity = similarity[ind, :]  # number of the test notes x basis note
@@ -333,12 +340,12 @@ for bird in config['birdID']:
 
     # Plot x with
     frame_width = 2
-    fig = plt.figure(figsize=(6, 3))
-    title = f"{bird}_SimilarityMat(x) - SigProb = {round(prob_sig_notes,3)}"
-    plt.suptitle(title, size=9)
+    fig = plt.figure(figsize=(8, 5))
+    title = f"{bird} SimilarityMat (x) - SigProb = {round(prob_sig_notes,3)}"
+    plt.suptitle(title, size=15)
     fig_name = f"{bird}_SimilarityMat(x)"
-    gs = gridspec.GridSpec(8, 8)
-    ax = plt.subplot(gs[1:7, 1:4])
+    gs = gridspec.GridSpec(8, 10)
+    ax = plt.subplot(gs[1:7, 1:5])
     ax = sns.heatmap(x_similarity,
                      vmin=0,
                      vmax=1,
@@ -352,7 +359,7 @@ for bird in config['birdID']:
     # Plot with a boolean mask (sig bins only)
     x_similarity[x_similarity < sim_basis_mean[0]] = np.nan  # replace non-sig values with nan
 
-    ax = plt.subplot(gs[1:7, 5:8])
+    ax = plt.subplot(gs[1:7, 5:-1])
     ax = sns.heatmap(x_similarity,
                      vmin=0,
                      vmax=1,
@@ -364,18 +371,17 @@ for bird in config['birdID']:
     ax.axvline(x=x_similarity.shape[1], color='k', linewidth=frame_width)
 
     ax.set_xticklabels(note_basis_list)
+    ax.set_yticklabels([])
     plt.tick_params(left=False)
-    plt.yticks([0.5, nb_note - 0.5], ['1', str(nb_note)])
-    # plt.show()
+    plt.show()
+
     # Save the figure
-    save_path = save.make_dir(project_path / 'Results', 'SigProb', add_date=True)
-    save.save_fig(fig, save_path, fig_name, ext='.png')
+    # save_path = save.make_dir(project_path / 'Results', 'SigProb', add_date=True)
+    # save.save_fig(fig, save_path, fig_name, ext='.png')
 
 # Save to csv (sig proportion)
 outputfile = project_path / 'Results' / 'SigProportion.csv'
 df_sig_prob.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
-
-
 
 
 # Save to csv
