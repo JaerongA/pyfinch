@@ -25,9 +25,9 @@ note_buffer = 10  # in ms before and after each note
 
 num_note_crit_basis = 30  # the number of basis note should be >= this criteria
 num_note_crit_testing = 10  # the number of testing syllables should be >= this criteria
-fig_save_ok = False
+fig_save_ok = True
 save_ok = False
-
+save_psd = False
 
 def get_basis_psd(psd_array, notes):
     # Get avg psd from the training set (will serve as a basis)
@@ -58,7 +58,7 @@ def get_basis_psd(psd_array, notes):
 
 
 # Obtain basis data from training files
-def get_psd_mat(data_path, fig_save_ok=False, nfft=2 ** 10):
+def get_psd_mat(data_path, save_psd=False, nfft=2 ** 10):
     file_name = data_path / 'PSD.npy'
 
     # Read from a file if it already exists
@@ -101,7 +101,7 @@ def get_psd_mat(data_path, fig_save_ok=False, nfft=2 ** 10):
                 psd_power = normalize(psd_seg[0][seg_start:seg_end])
                 psd_freq = psd_seg[1][seg_start:seg_end]
 
-                if fig_save_ok:
+                if save_psd:
                     # Plot spectrogram & PSD
                     fig = plt.figure(figsize=(3.5, 3))
                     fig_name = "{}, note#{} - {}".format(file.name, i, syllable)
@@ -114,8 +114,7 @@ def get_psd_mat(data_path, fig_save_ok=False, nfft=2 ** 10):
                                         cmap='hot_r',
                                         norm=colors.SymLogNorm(linthresh=0.05,
                                                                linscale=0.03,
-                                                               vmin=0.5,
-                                                               vmax=100
+                                                               vmin=0.5, vmax=100
                                                                ))
 
                     remove_right_top(ax_spect)
@@ -134,12 +133,11 @@ def get_psd_mat(data_path, fig_save_ok=False, nfft=2 ** 10):
                     # plt.show()
 
                     # Save figure
-                    if fig_save_ok:
+                    if save_psd:
                         save_path = save.make_dir(file.parent, 'Spectrograms')
                         save.save_fig(fig, save_path, fig_name, ext='.png')
                     else:
                         plt.close(fig)
-
 
                 all_notes += syllable
                 psd_list.append(psd_power)
@@ -201,13 +199,13 @@ for bird in config['birdID']:
             print("")
 
             # Obtain basis data from training files
-            psd_array_training, psd_list_training, notes_training = get_psd_mat(training_path, fig_save_ok=False)
+            psd_array_training, psd_list_training, notes_training = get_psd_mat(training_path, save_psd=False)
 
             # Get basis psds per note
             psd_basis_list, note_basis_list = get_basis_psd(psd_array_training, notes_training)
 
             # Get psd from the testing set
-            psd_array_testing, psd_testing_list, notes_testing = get_psd_mat(testing_path, fig_save_ok=False)
+            psd_array_testing, psd_testing_list, notes_testing = get_psd_mat(testing_path, save_psd=False)
 
             # Get similarity per syllable
             # Get psd distance
@@ -232,23 +230,32 @@ for bird in config['birdID']:
                 if note not in note_basis_list and note != 'x':
                     continue
 
-                fig = plt.figure(figsize=(5, 5))
-                # title = "Sim matrix: note = {}".format(note)
-                fig_name = f"note - {note}"
-                gs = gridspec.GridSpec(7, 8)
-
-                ax = plt.subplot(gs[0:5, 1:7])
                 ind = find_str(notes_testing, note)
-                note_similarity = similarity[ind, :]  # number of the test notes x basis note
                 nb_note = len(ind)
-
                 if nb_note < num_note_crit_testing:
                     continue
 
-                title = f"Sim matrix: note = {note} ({nb_note})"
+                # Get similarity matrix per note
+                note_similarity = similarity[ind, :]  # number of the test notes x basis note
+
+                # Get entropy per note (per row)
+                # Convert to probability distribution first
+                note_similarity_prob = (note_similarity / note_similarity.sum(axis=1, keepdims=True))
+                note_similarity_entropy = (-note_similarity_prob * np.log2(note_similarity_prob)).sum(axis=1)
+                if note == 'a':
+                    breakpoint()
+
+                note_similarity_entropy = round(note_similarity_entropy.mean(),3)
+
+                # Plot the similarity matrix
+                fig = plt.figure(figsize=(5, 5))
+                # title = "Sim matrix: note = {}".format(note)
+                fig_name = f"note - {note}"
+                title = f"Sim matrix: note = {note} ({nb_note}), entropy = {note_similarity_entropy}"
+                gs = gridspec.GridSpec(7, 8)
+                ax = plt.subplot(gs[0:5, 1:7])
                 ax = sns.heatmap(note_similarity,
-                                 vmin=0,
-                                 vmax=1,
+                                 vmin=0, vmax=1,
                                  cmap='binary')
                 ax.set_title(title)
                 ax.set_ylabel('Test syllables')
@@ -262,7 +269,9 @@ for bird in config['birdID']:
                 similarity_sem = sem(note_similarity, ddof=1)
                 similarity_median = np.expand_dims(np.median(note_similarity, axis=0), axis=0)  # or axis=1
 
-                ax = sns.heatmap(similarity_mean, annot=True, cmap='binary', vmin=0, vmax=1, annot_kws={"fontsize": 7})
+                ax = sns.heatmap(similarity_mean, annot=True, cmap='binary',
+                                 vmin=0, vmax=1,
+                                 annot_kws={"fontsize": 7})
                 ax.set_xlabel('Basis syllables')
                 ax.set_yticks([])
                 ax.set_xticklabels(note_basis_list)
@@ -275,15 +284,12 @@ for bird in config['birdID']:
                     similarity_mean_val = similarity_mean[0][note_basis_list.index(note)]
                     similarity_median_val = similarity_median[0][note_basis_list.index(note)]
 
-                #TODO: Get entropy & softmax prob
-
                 # Save figure
                 if fig_save_ok:
                     save_path = save.make_dir(testing_path, 'NoteSimilarity', add_date=True)
                     save.save_fig(fig, save_path, fig_name, ext='.png')
                 else:
                     plt.close(fig)
-
 
                 # Save results to a dataframe
                 # All notes
@@ -294,7 +300,8 @@ for bird in config['birdID']:
                                         'NoteX': note is 'x',
                                         'NbNotes': [nb_note],
                                         'SimilarityMean': [similarity_mean_val],
-                                        'SimilarityMedian': [similarity_median_val]
+                                        'SimilarityMedian': [similarity_median_val],
+                                        'Entropy': [note_similarity_entropy]
                                         })
                 df = df.append(temp_df, ignore_index=True)
 
@@ -303,27 +310,26 @@ for bird in config['birdID']:
                     for ind, basis_note in enumerate(note_basis_list):
                         temp_df_x = []
                         temp_df_x = pd.DataFrame({'BirdID': bird,
-                                                'BasisNote': basis_note,  # testing note
-                                                'SimilarityMean': [similarity_mean[0][ind]],
-                                                'SimilaritySEM': [similarity_sem[ind]],
-                                                })
+                                                  'BasisNote': basis_note,  # testing note
+                                                  'SimilarityMean': [similarity_mean[0][ind]],
+                                                  'SimilaritySEM': [similarity_sem[ind]],
+                                                  })
                         df_x = df_x.append(temp_df_x, ignore_index=True)
 
-
-
     # Calculate the proportion of 'x's that exceeds the mean value of the similarity matrix in the control condition
-
-    new_df = df.groupby(['Condition'])['SimilarityMean'].mean().reset_index()
-    new_df = new_df[new_df['Condition'] == 'baseline']
-
     # 'x' similarity matrix
     ind = find_str(notes_testing, 'x')
     nb_note = len(ind)
     if len(ind) < num_note_crit_testing:  # if there are not enough 'x's, skip
         continue
+
+    new_df = df.groupby(['Condition'])['SimilarityMean'].mean().reset_index()
+    new_df = new_df[new_df['Condition'] == 'baseline']
+
     x_similarity = similarity[ind, :]  # number of the test notes x basis note
     sim_basis_mean = new_df['SimilarityMean'].values
-    prob_sig_notes = (x_similarity > sim_basis_mean[0]).sum() / x_similarity.size  # proportion of notes having a higher similarity index relative to the baseline (mean similarity ind from the control (pre1 vs. pre2)
+    prob_sig_notes = (x_similarity > sim_basis_mean[
+        0]).sum() / x_similarity.size  # proportion of notes having a higher similarity index relative to the baseline (mean similarity ind from the control (pre1 vs. pre2)
 
     # Select the maximum note only
     # max_col = x_similarity[:, x_similarity.mean(axis=0).argmax()]
@@ -337,18 +343,16 @@ for bird in config['birdID']:
                             })
     df_sig_prob = df_sig_prob.append(temp_df, ignore_index=True)
 
-
     # Plot x with
     frame_width = 2
     fig = plt.figure(figsize=(8, 5))
-    title = f"{bird} SimilarityMat (x) - SigProb = {round(prob_sig_notes,3)}"
+    title = f"{bird} SimilarityMat (x) - SigProb = {round(prob_sig_notes, 3)}"
     plt.suptitle(title, size=15)
     fig_name = f"{bird}_SimilarityMat(x)"
     gs = gridspec.GridSpec(8, 10)
     ax = plt.subplot(gs[1:7, 1:5])
     ax = sns.heatmap(x_similarity,
-                     vmin=0,
-                     vmax=1,
+                     vmin=0, vmax=1,
                      cmap='binary')
 
     ax.set_ylabel('Test syllables')
@@ -361,13 +365,12 @@ for bird in config['birdID']:
 
     ax = plt.subplot(gs[1:7, 5:-1])
     ax = sns.heatmap(x_similarity,
-                     vmin=0,
-                     vmax=1,
+                     vmin=0, vmax=1,
                      cmap='binary')
 
-    ax.axhline(y=0, color='k', linewidth=frame_width/4)
+    ax.axhline(y=0, color='k', linewidth=frame_width / 4)
     ax.axhline(y=x_similarity.shape[0], color='k', linewidth=frame_width)
-    ax.axvline(x=0, color='k', linewidth=frame_width/4)
+    ax.axvline(x=0, color='k', linewidth=frame_width / 4)
     ax.axvline(x=x_similarity.shape[1], color='k', linewidth=frame_width)
 
     ax.set_xticklabels(note_basis_list)
@@ -383,7 +386,6 @@ for bird in config['birdID']:
 outputfile = project_path / 'Results' / 'SigProportion.csv'
 df_sig_prob.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
 
-
 # Save to csv
 if save_ok:
     df.index.name = 'Index'
@@ -395,4 +397,3 @@ if save_ok:
     df_x.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
 
 print('Done!')
-
