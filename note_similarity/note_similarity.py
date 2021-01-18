@@ -25,9 +25,10 @@ note_buffer = 10  # in ms before and after each note
 
 num_note_crit_basis = 30  # the number of basis note should be >= this criteria
 num_note_crit_testing = 10  # the number of testing syllables should be >= this criteria
-fig_save_ok = True
-save_ok = False
+fig_save_ok = False
+file_save_ok = True
 save_psd = False
+update = False  # generate a new .npz file or update the file
 
 def get_basis_psd(psd_array, notes):
     # Get avg psd from the training set (will serve as a basis)
@@ -58,20 +59,17 @@ def get_basis_psd(psd_array, notes):
 
 
 # Obtain basis data from training files
-def get_psd_mat(data_path, save_psd=False, nfft=2 ** 10):
-    file_name = data_path / 'PSD.npy'
-
+def get_psd_mat(data_path, save_psd=False, update=False, nfft=2 ** 10):
     # Read from a file if it already exists
-    if file_name.exists():
-        data = np.load(file_name, allow_pickle=True).item()
-        psd_array, psd_list, all_notes = data['psd_array'], data['psd_list'], data['all_notes']
-    else:
+    file_name = data_path / 'PSD.npy'
+    if update or not file_name.exists():
 
         # Load files
         files = list(data_path.glob('*.wav'))
         # files = files[:10]
 
         psd_list = []  # store psd vectors for training
+        file_list = []  # store files names containing psds
         all_notes = ''  # concatenate all syllables
 
         for file in files:
@@ -135,12 +133,13 @@ def get_psd_mat(data_path, save_psd=False, nfft=2 ** 10):
                     # Save figure
                     if save_psd:
                         save_path = save.make_dir(file.parent, 'Spectrograms')
-                        save.save_fig(fig, save_path, fig_name, ext='.png')
+                        save.save_fig(fig, save_path, fig_name, ext='.png', open_folder=False)
                     else:
                         plt.close(fig)
 
                 all_notes += syllable
                 psd_list.append(psd_power)
+                file_list.append(file.name)
 
         psd_array = np.asarray(psd_list)  # number of syllables x psd
 
@@ -148,12 +147,18 @@ def get_psd_mat(data_path, save_psd=False, nfft=2 ** 10):
         data = {
             'psd_array': psd_array,
             'psd_list': psd_list,
+            'file_list': file_list,
             'all_notes': all_notes,
         }
         # Save results
         np.save(file_name, data)
 
-    return psd_array, psd_list, all_notes
+    else:  # if not update or file already exists
+        data = np.load(file_name, allow_pickle=True).item()
+        psd_array, psd_list, file_list, all_notes = data['psd_array'], data['psd_list'], data['file_list'], data[
+            'all_notes']
+
+    return psd_array, psd_list, file_list, all_notes
 
 
 # Store results in the dataframe
@@ -199,17 +204,21 @@ for bird in config['birdID']:
             print("")
 
             # Obtain basis data from training files
-            psd_array_training, psd_list_training, notes_training = get_psd_mat(training_path, save_psd=False)
+            psd_array_training, psd_list_training, file_list_training, notes_training = get_psd_mat(training_path,
+                                                                                                    update=update,
+                                                                                                    save_psd=False)
 
             # Get basis psds per note
             psd_basis_list, note_basis_list = get_basis_psd(psd_array_training, notes_training)
 
             # Get psd from the testing set
-            psd_array_testing, psd_testing_list, notes_testing = get_psd_mat(testing_path, save_psd=False)
+            psd_array_testing, psd_list_testing, file_list_testing, notes_testing = get_psd_mat(testing_path,
+                                                                                                update=update,
+                                                                                                save_psd=False)
 
             # Get similarity per syllable
             # Get psd distance
-            distance = scipy.spatial.distance.cdist(psd_testing_list, psd_basis_list,
+            distance = scipy.spatial.distance.cdist(psd_list_testing, psd_basis_list,
                                                     'sqeuclidean')  # (number of test notes x number of basis notes)
 
             # Convert to similarity matrices
@@ -238,14 +247,21 @@ for bird in config['birdID']:
                 # Get similarity matrix per note
                 note_similarity = similarity[ind, :]  # number of the test notes x basis note
 
+                # Get mean or median similarity index
+                similarity_mean = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
+                similarity_sem = sem(note_similarity, ddof=1)
+                similarity_median = np.expand_dims(np.median(note_similarity, axis=0), axis=0)  # or axis=1
+
                 # Get entropy per note (per row)
                 # Convert to probability distribution first
-                note_similarity_prob = (note_similarity / note_similarity.sum(axis=1, keepdims=True))
-                note_similarity_entropy = (-note_similarity_prob * np.log2(note_similarity_prob)).sum(axis=1)
-                if note == 'a':
-                    breakpoint()
+                # note_similarity_prob = (note_similarity / note_similarity.sum(axis=1, keepdims=True))
+                # note_similarity_entropy = (-note_similarity_prob * np.log2(note_similarity_prob)).sum(axis=1)
+                # note_similarity_entropy = round(np.nanmean(note_similarity_entropy), 3)
 
-                note_similarity_entropy = round(note_similarity_entropy.mean(),3)
+                # Get entropy from the mean similarity index
+                note_similarity_prob = (similarity_mean / similarity_mean.sum(axis=1, keepdims=True))
+                note_similarity_entropy = (-note_similarity_prob * np.log2(note_similarity_prob)).sum(axis=1)
+                note_similarity_entropy = round(np.nanmean(note_similarity_entropy), 3)
 
                 # Plot the similarity matrix
                 fig = plt.figure(figsize=(5, 5))
@@ -263,11 +279,8 @@ for bird in config['birdID']:
                 plt.tick_params(left=False)
                 plt.yticks([0.5, nb_note - 0.5], ['1', str(nb_note)])
 
-                # Get mean or median similarity index
                 ax = plt.subplot(gs[-1, 1:7], sharex=ax)
-                similarity_mean = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
-                similarity_sem = sem(note_similarity, ddof=1)
-                similarity_median = np.expand_dims(np.median(note_similarity, axis=0), axis=0)  # or axis=1
+
 
                 ax = sns.heatmap(similarity_mean, annot=True, cmap='binary',
                                  vmin=0, vmax=1,
@@ -287,7 +300,7 @@ for bird in config['birdID']:
                 # Save figure
                 if fig_save_ok:
                     save_path = save.make_dir(testing_path, 'NoteSimilarity', add_date=True)
-                    save.save_fig(fig, save_path, fig_name, ext='.png')
+                    save.save_fig(fig, save_path, fig_name, ext='.png', open_folder=False)
                 else:
                     plt.close(fig)
 
@@ -382,12 +395,22 @@ for bird in config['birdID']:
     # save_path = save.make_dir(project_path / 'Results', 'SigProb', add_date=True)
     # save.save_fig(fig, save_path, fig_name, ext='.png')
 
+    # Save the x similarity matrix (with nans) in .csv for visual verification (01/17/2021)
+    x_csv_path = project_path / 'Results' / f'{bird}_SimilarityMat(x).csv'
+    temp_df = []
+    temp_df = pd.DataFrame(np.round(x_similarity,3), columns=note_basis_list)
+    file_array = np.asarray(file_list_testing)
+    temp_df['File'] = file_array[ind].tolist()
+    temp_df.to_csv(x_csv_path, index=True, header=True)  # save the dataframe to .cvs format
+
+
+
 # Save to csv (sig proportion)
 outputfile = project_path / 'Results' / 'SigProportion.csv'
 df_sig_prob.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
 
 # Save to csv
-if save_ok:
+if file_save_ok:
     df.index.name = 'Index'
     outputfile = project_path / 'Results' / 'SimilarityIndex.csv'
     df.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
@@ -397,3 +420,4 @@ if save_ok:
     df_x.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
 
 print('Done!')
+
