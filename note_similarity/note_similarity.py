@@ -1,23 +1,26 @@
-from analysis.functions import *
-from analysis.parameters import *
+import json
+from pathlib import Path
+
+import matplotlib.colors as colors
+import matplotlib.gridspec as gridspec
+import pandas as pd
 import scipy
+import seaborn as sns
+from matplotlib.pylab import psd
 from scipy import spatial
 from scipy.io import wavfile
 from scipy.stats import sem
-from matplotlib.pylab import psd
-import matplotlib.gridspec as gridspec
-import matplotlib.pyplot as plt
-import matplotlib.colors as colors
-from pathlib import Path
-import pandas as pd
-import seaborn as sns
+
+from analysis.functions import *
+from analysis.parameters import *
+from util import save
+from util.draw import *
 from util.functions import *
 from util.spect import *
-from util.draw import *
-from util import save
-import json
 
 # "birdID": ["g20r5", "y58y59", "k71o7", "y3y18", "o54w8", "k77r57", "b86g86"],
+
+# "birdID": ["o54w8", "k77r57", "b86g86"]  # birds to make figures
 
 # Parameters
 font_size = 12  # figure font size
@@ -25,10 +28,11 @@ note_buffer = 10  # in ms before and after each note
 
 num_note_crit_basis = 30  # the number of basis note should be >= this criteria
 num_note_crit_testing = 10  # the number of testing syllables should be >= this criteria
-fig_save_ok = False
+fig_save_ok = True
 file_save_ok = True
-save_psd = False
-update = False  # generate a new .npz file or update the file
+save_psd = True
+update = True  # generate a new .npz file or update the file
+fig_ext = '.pdf'  # figure file extension
 
 def get_basis_psd(psd_array, notes):
     # Get avg psd from the training set (will serve as a basis)
@@ -59,9 +63,13 @@ def get_basis_psd(psd_array, notes):
 
 
 # Obtain basis data from training files
-def get_psd_mat(data_path, save_psd=False, update=False, nfft=2 ** 10):
+def get_psd_mat(data_path, save_psd=False, update=False, open_folder=False, nfft=2 ** 10, fig_ext='.png'):
     # Read from a file if it already exists
     file_name = data_path / 'PSD.npy'
+
+    if save_psd and not update:
+        raise Exception ("psd can only be save in an update mode or when the .npy does not exist!")
+
     if update or not file_name.exists():
 
         # Load files
@@ -99,6 +107,7 @@ def get_psd_mat(data_path, save_psd=False, update=False, nfft=2 ** 10):
                 psd_power = normalize(psd_seg[0][seg_start:seg_end])
                 psd_freq = psd_seg[1][seg_start:seg_end]
 
+                # Plt & save figure
                 if save_psd:
                     # Plot spectrogram & PSD
                     fig = plt.figure(figsize=(3.5, 3))
@@ -123,19 +132,16 @@ def get_psd_mat(data_path, save_psd=False, update=False, nfft=2 ** 10):
                     # Plot psd
                     ax_psd = plt.subplot(gs[1:5, 2], sharey=ax_spect)
                     ax_psd.plot(psd_power, psd_freq, 'k')
-
                     ax_psd.spines['right'].set_visible(False), ax_psd.spines['top'].set_visible(False)
                     ax_psd.spines['bottom'].set_visible(False)
                     ax_psd.set_xticks([])  # remove xticks
                     plt.setp(ax_psd.set_yticks([]))
                     # plt.show()
 
-                    # Save figure
-                    if save_psd:
-                        save_path = save.make_dir(file.parent, 'Spectrograms')
-                        save.save_fig(fig, save_path, fig_name, ext='.png', open_folder=False)
-                    else:
-                        plt.close(fig)
+                    # Save figures
+                    save_path = save.make_dir(file.parent, 'Spectrograms')
+                    save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, open_folder=open_folder)
+                    plt.close(fig)
 
                 all_notes += syllable
                 psd_list.append(psd_power)
@@ -206,7 +212,8 @@ for bird in config['birdID']:
             # Obtain basis data from training files
             psd_array_training, psd_list_training, file_list_training, notes_training = get_psd_mat(training_path,
                                                                                                     update=update,
-                                                                                                    save_psd=False)
+                                                                                                    save_psd=save_psd,
+                                                                                                    fig_ext=fig_ext)
 
             # Get basis psds per note
             psd_basis_list, note_basis_list = get_basis_psd(psd_array_training, notes_training)
@@ -214,7 +221,8 @@ for bird in config['birdID']:
             # Get psd from the testing set
             psd_array_testing, psd_list_testing, file_list_testing, notes_testing = get_psd_mat(testing_path,
                                                                                                 update=update,
-                                                                                                save_psd=False)
+                                                                                                save_psd=save_psd,
+                                                                                                fig_ext=fig_ext)
 
             # Get similarity per syllable
             # Get psd distance
@@ -281,7 +289,6 @@ for bird in config['birdID']:
 
                 ax = plt.subplot(gs[-1, 1:7], sharex=ax)
 
-
                 ax = sns.heatmap(similarity_mean, annot=True, cmap='binary',
                                  vmin=0, vmax=1,
                                  annot_kws={"fontsize": 7})
@@ -300,7 +307,7 @@ for bird in config['birdID']:
                 # Save figure
                 if fig_save_ok:
                     save_path = save.make_dir(testing_path, 'NoteSimilarity', add_date=True)
-                    save.save_fig(fig, save_path, fig_name, ext='.png', open_folder=False)
+                    save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, open_folder=False)
                 else:
                     plt.close(fig)
 
@@ -341,8 +348,14 @@ for bird in config['birdID']:
 
     x_similarity = similarity[ind, :]  # number of the test notes x basis note
     sim_basis_mean = new_df['SimilarityMean'].values
-    prob_sig_notes = (x_similarity > sim_basis_mean[
-        0]).sum() / x_similarity.size  # proportion of notes having a higher similarity index relative to the baseline (mean similarity ind from the control (pre1 vs. pre2)
+
+    # proportion of notes having a higher similarity index relative to the baseline (mean similarity ind from the control (pre1 vs. pre2)
+    # the total number of cells as a denominator
+    # prob_sig_notes = (x_similarity > sim_basis_mean[0]).sum() / x_similarity.size
+
+    # the number of x's having at least one significant note as a denominator
+    non_zero_prob = np.nonzero((x_similarity > sim_basis_mean[0]).sum(axis=1))[0].shape
+    prob_sig_notes = non_zero_prob[0] / x_similarity.shape[0]
 
     # Select the maximum note only
     # max_col = x_similarity[:, x_similarity.mean(axis=0).argmax()]
@@ -389,7 +402,7 @@ for bird in config['birdID']:
     ax.set_xticklabels(note_basis_list)
     ax.set_yticklabels([])
     plt.tick_params(left=False)
-    plt.show()
+    # plt.show()
 
     # Save the figure
     # save_path = save.make_dir(project_path / 'Results', 'SigProb', add_date=True)
@@ -398,12 +411,10 @@ for bird in config['birdID']:
     # Save the x similarity matrix (with nans) in .csv for visual verification (01/17/2021)
     x_csv_path = project_path / 'Results' / f'{bird}_SimilarityMat(x).csv'
     temp_df = []
-    temp_df = pd.DataFrame(np.round(x_similarity,3), columns=note_basis_list)
+    temp_df = pd.DataFrame(np.round(x_similarity, 3), columns=note_basis_list)
     file_array = np.asarray(file_list_testing)
     temp_df['File'] = file_array[ind].tolist()
     temp_df.to_csv(x_csv_path, index=True, header=True)  # save the dataframe to .cvs format
-
-
 
 # Save to csv (sig proportion)
 outputfile = project_path / 'Results' / 'SigProportion.csv'
@@ -420,4 +431,3 @@ if file_save_ok:
     df_x.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
 
 print('Done!')
-
