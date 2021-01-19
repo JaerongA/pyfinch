@@ -29,7 +29,7 @@ spk_corr_parm['time_bin'] = np.arange(-spk_corr_parm['lag'], spk_corr_parm['lag'
 # For peth (peri-event time histogram) or rasters
 peth_parm = {'buffer': 50,  # time buffer before the event onset (in ms)
              'bin_size': 1,  # peth time bin size (in ms)
-             'nb_bins': 1000  # number of bins
+             'nb_bins': 1500  # number of bins
              }
 peth_parm['time_bin'] = np.arange(0, peth_parm['nb_bins'], peth_parm['bin_size'])
 

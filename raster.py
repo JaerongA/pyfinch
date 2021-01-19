@@ -17,7 +17,7 @@ from util.draw import *
 from scipy.ndimage import gaussian_filter1d
 
 # Select statement
-query = "SELECT * FROM cluster WHERE id == 96"
+query = "SELECT * FROM cluster WHERE id=2"
 
 project = ProjectLoader()
 cur, conn, col_names = project.load_db(query)
@@ -231,7 +231,8 @@ for row in cur.fetchall():
 
     # Get peth object
     pi = mi.get_peth()  # peth info
-    pi.get_fr(norm_method='factor', norm_factor=row['baselineFR'])  # get firing rates
+    # pi.get_fr(norm_method='factor', norm_factor=row['baselineFR'])  # get firing rates
+    pi.get_fr(norm_method='sum')  # get firing rates
 
     for context, mean_fr in pi.mean_fr.items():
         if context == 'U':
@@ -286,13 +287,13 @@ for row in cur.fetchall():
     txt_yloc -= txt_offset
     print(txt_yloc)
     corr_context = None
-    try:
-        corr_context = round(np.corrcoef(pi.mean_fr['U'], pi.mean_fr['D'])[0, 1], 3)
-    finally:
-        ax_text.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
+    # try:
+    #     corr_context = round(np.corrcoef(pi.mean_fr['U'], pi.mean_fr['D'])[0, 1], 3)
+    # finally:
+    #     ax_text.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
 
     # Save results
     save_path = save.make_dir(project.path / 'Analysis', 'Spk')
     save.save_fig(fig, save_path, mi.name, ext='.png')
 
-    # plt.show()
+    plt.show()

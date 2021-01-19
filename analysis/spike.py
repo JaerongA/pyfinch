@@ -19,10 +19,10 @@ def load_cluster(database):
         Output: name of the cluster
     """
     cluster_id = ''
-    if len(database['id']) == 1:
-        cluster_id = '00' + database['id']
-    elif len(database['id']) == 2:
-        cluster_id = '0' + database['id']
+    if len(str(database['id'])) == 1:
+        cluster_id = '00' + str(database['id'])
+    elif len(str(database['id'])) == 2:
+        cluster_id = '0' + str(database['id'])
     cluster_taskSession = ''
     if len(str(database['taskSession'])) == 1:
         cluster_taskSession = 'D0' + str(database['taskSession'])
@@ -78,6 +78,10 @@ def load_events(dir):
         # Load the .not.mat file
         notmat_file = file.with_suffix('.wav.not.mat')
         onsets, offsets, intervals, durations, syllables, contexts = read_not_mat(notmat_file, unit='ms')
+
+        # Todo: add a statement if the program can't find a matching .not.mat
+        # if len(set(syllables)) == 1 and '0' in set(syllables):
+        #     continue
 
         start_ind = timestamp_serialized.size  # start of the file
 
@@ -649,7 +653,7 @@ class PethInfo():
 
         fr_dict = {}
         for k, v in self.fr.items():
-            fr = np.mean(v,axis=0)
+            fr = np.mean(v, axis=0)
             if norm_method == 'sum':  # normalize by the total sum
                 fr = fr / sum(fr)
             elif norm_method == 'factor':  # normalize by a normalization factor (e.g., baseline firing rates)

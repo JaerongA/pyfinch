@@ -3,6 +3,7 @@ By Jaerong
 A collection of functions used for song analysis
 """
 
+
 def read_not_mat(notmat, unit='ms'):
     """ read from .not.mat files generated from uisonganal
     Parameters
@@ -34,9 +35,8 @@ def read_not_mat(notmat, unit='ms'):
     durations = offsets - onsets  # duration of each syllable
     syllables = scipy.io.loadmat(notmat)['syllables'][0]  # Load the syllable info
     contexts = notmat.name.split('.')[0].split('_')[-1][0].upper()  # extract 'U' (undirected) or 'D' (directed) from the file name
-    if contexts not in ['U','D']:  # if the file was not tagged with Undir or Dir
+    if contexts not in ['U', 'D']:  # if the file was not tagged with Undir or Dir
         contexts = None
-
 
     # units are in ms by default, but convert to second with the argument
     if unit is 'second':

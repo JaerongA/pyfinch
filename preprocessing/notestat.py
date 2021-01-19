@@ -7,13 +7,13 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import pandas as pd
 import seaborn as sns
-from song.analysis import read_not_mat
+from analysis.functions import read_not_mat
 from util.draw import *
 from util.functions import *
 import math
 
 # Store results in the dataframe
-data_path = Path("H:\Box\Data\BMI\y3y18\BMI")
+data_path = Path(r"C:\Users\dreill03\Box\AreaX\p84w29\DougPreProcess\DKR\20201208\02\Songs3\Songs4\To Analyze")
 audio_files = list(data_path.glob('*.wav'))
 
 df = pd.DataFrame()
@@ -26,7 +26,6 @@ for file in audio_files:
     onsets, offsets, intervals, durations, syllables, context = read_not_mat(notmat_file)
 
     nb_syllable = len(syllables)
-    breakpoint()
     temp_df = pd.DataFrame({'FileID': [notmat_file] * nb_syllable,
                             'Syllable': list(syllables),
                             'Duration': durations,
