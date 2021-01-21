@@ -283,10 +283,19 @@ class ClusterInfo:
     def list_files(self, ext: str):
         return list_files(self.path, ext)
 
-    def _load_spk(self, unit):
+    def _load_spk(self, unit, delimiter='\t'):
+        """
+        Load spike information
+        Args:
+            unit: unit # (in the cluster file)
+            delimiter: delimiter of the cluster file (tab (\t) by default)
+
+        Returns:
+            sets spk_wf, spk_ts, nb_spk as attributes
+        """
 
         spk_txt_file = list(self.path.glob('*' + self.channel + '(merged).txt'))[0]
-        spk_info = np.loadtxt(spk_txt_file, delimiter='\t', skiprows=1)  # skip header
+        spk_info = np.loadtxt(spk_txt_file, delimiter=delimiter, skiprows=1)  # skip header
         unit_nb = int(self.unit[-2:])
 
         # Select only the unit (there could be multiple isolated units in the same file)
@@ -450,7 +459,7 @@ class MotifInfo(ClusterInfo):
         # Load motif info
         file_name = self.path / 'MotifInfo.npy'
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
-            motif_info = self._load_motif()
+            motif_info = self.load_motif()
         else:
             motif_info = np.load(file_name, allow_pickle=True).item()
 
@@ -470,7 +479,7 @@ class MotifInfo(ClusterInfo):
         motif_info['spk_ts_warp'] = spk_ts_warp_list
         self.spk_ts_warp = spk_ts_warp_list
 
-    def _load_motif(self):
+    def load_motif(self):
 
         # Store values here
         file_list = []
