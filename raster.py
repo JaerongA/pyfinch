@@ -22,10 +22,11 @@ rec_height = 1  # syllable duration rect
 text_yloc = 0.5  # text height
 font_size = 10
 update = True
+norm_method=None
 
 # Load database
 # Select statement
-query = "SELECT * FROM cluster WHERE id = 96"
+query = "SELECT * FROM cluster"
 db = ProjectLoader().load_db()
 db.execute(query)
 
@@ -231,8 +232,10 @@ for row in db.cur.fetchall():
 
     # Get peth object
     pi = mi.get_peth()  # peth info
-    pi.get_fr(norm_method='factor', norm_factor=row['baselineFR'])  # get firing rates
+
+    # pi.get_fr(norm_method=norm_method, norm_factor=row['baselineFR'])  # get firing rates
     # pi.get_fr(norm_method='sum')  # get firing rates
+    pi.get_fr(norm_method=norm_method)  # get firing rates
 
     for context, mean_fr in pi.mean_fr.items():
         if context == 'U':
@@ -242,7 +245,11 @@ for row in db.cur.fetchall():
 
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': 6})  # print out legend
 
-    ax_peth.set_ylabel('Norm. FR', fontsize=font_size)
+    if norm_method:  # Normalize FR
+        ax_peth.set_ylabel('Norm. FR', fontsize=font_size)
+    else:  # Raw FR
+        ax_peth.set_ylabel('FR', fontsize=font_size)
+
     # fr_ymax = myround(ax_peth.get_ylim()[1], base=3)
     fr_ymax = round(ax_peth.get_ylim()[1],3)
     ax_peth.set_ylim(0, fr_ymax)
@@ -264,32 +271,31 @@ for row in db.cur.fetchall():
     txt_inc = 0.05  # y-distance between texts within the same section
     txt_offset = 0.1
 
-    ax_text = plt.subplot(gs[::, 5])
-    ax_text.set_axis_off()  # remove all axes
+    ax_txt = plt.subplot(gs[::, 5])
+    ax_txt.set_axis_off()  # remove all axes
 
     # # of motifs
     nb_motifs = mi.nb_motifs
     nb_motifs.pop('All', None)
     for i, (k, v) in enumerate(nb_motifs.items()):
         txt_yloc -= txt_inc
-        ax_text.text(txt_xloc, txt_yloc, f"# of motifs ({k}) = {v}", fontsize=font_size)
+        ax_txt.text(txt_xloc, txt_yloc, f"# of motifs ({k}) = {v}", fontsize=font_size)
 
     # PCC
     txt_yloc -= txt_offset
     v = pi.pcc['U']['mean'] if "U" in pi.pcc else np.nan
-    ax_text.text(txt_xloc, txt_yloc, f"PCC (U) = {v}", fontsize=font_size)
+    ax_txt.text(txt_xloc, txt_yloc, f"PCC (U) = {v}", fontsize=font_size)
     txt_yloc -= txt_inc
 
     v = pi.pcc['D']['mean'] if "D" in pi.pcc else np.nan
-    ax_text.text(txt_xloc, txt_yloc, f"PCC (D) = {v}", fontsize=font_size)
+    ax_txt.text(txt_xloc, txt_yloc, f"PCC (D) = {v}", fontsize=font_size)
 
     # Corr context (correlation of firing rates between two contexts)
     txt_yloc -= txt_offset
-    corr_context = None
-    try:
+    corr_context = np.nan
+    if 'U' in pi.mean_fr.keys() and 'D' in pi.mean_fr.keys():
         corr_context = round(np.corrcoef(pi.mean_fr['U'], pi.mean_fr['D'])[0, 1], 3)
-    finally:
-        ax_text.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
+    ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
 
     # Save results
     # save_path = save.make_dir(project.path / 'Analysis', 'Spk')
