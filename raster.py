@@ -16,12 +16,6 @@ from util.spect import *
 from util.draw import *
 from scipy.ndimage import gaussian_filter1d
 
-# Select statement
-query = "SELECT * FROM cluster WHERE id = 2"
-
-project = ProjectLoader()
-cur, conn, col_names = project.load_db(query)
-
 # Figure parameters
 rec_yloc = 0.05
 rec_height = 1  # syllable duration rect
@@ -29,8 +23,14 @@ text_yloc = 0.5  # text height
 font_size = 10
 update = True
 
+# Load database
+# Select statement
+query = "SELECT * FROM cluster WHERE id = 96"
+db = ProjectLoader().load_db()
+db.execute(query)
+
 # Loop through neurons
-for row in cur.fetchall():
+for row in db.cur.fetchall():
 
     # ci = ClusterInfo(row, update=True)
     mi = MotifInfo(row, update=update)
@@ -231,8 +231,8 @@ for row in cur.fetchall():
 
     # Get peth object
     pi = mi.get_peth()  # peth info
-    # pi.get_fr(norm_method='factor', norm_factor=row['baselineFR'])  # get firing rates
-    pi.get_fr(norm_method='sum')  # get firing rates
+    pi.get_fr(norm_method='factor', norm_factor=row['baselineFR'])  # get firing rates
+    # pi.get_fr(norm_method='sum')  # get firing rates
 
     for context, mean_fr in pi.mean_fr.items():
         if context == 'U':
@@ -285,15 +285,14 @@ for row in cur.fetchall():
 
     # Corr context (correlation of firing rates between two contexts)
     txt_yloc -= txt_offset
-    print(txt_yloc)
     corr_context = None
-    # try:
-    #     corr_context = round(np.corrcoef(pi.mean_fr['U'], pi.mean_fr['D'])[0, 1], 3)
-    # finally:
-    #     ax_text.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
+    try:
+        corr_context = round(np.corrcoef(pi.mean_fr['U'], pi.mean_fr['D'])[0, 1], 3)
+    finally:
+        ax_text.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
 
     # Save results
-    save_path = save.make_dir(project.path / 'Analysis', 'Spk')
-    save.save_fig(fig, save_path, mi.name, fig_ext='.png')
+    # save_path = save.make_dir(project.path / 'Analysis', 'Spk')
+    # save.save_fig(fig, save_path, mi.name, fig_ext='.png')
 
     plt.show()
