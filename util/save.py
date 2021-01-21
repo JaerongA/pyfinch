@@ -32,7 +32,7 @@ def make_dir(parent_path, dir_name, add_date=True):
     return save_path
 
 
-def save_fig(fig, save_path, title, ext='.png', open_folder=True):
+def save_fig(fig, save_path, title, fig_ext='.png', open_folder=True):
     import matplotlib.pyplot as plt
     import matplotlib
     from util.functions import open_folder
@@ -46,7 +46,7 @@ def save_fig(fig, save_path, title, ext='.png', open_folder=True):
     matplotlib.rcParams['font.sans-serif'] = "Arial"
     matplotlib.rcParams['font.family'] = "sans-serif"
 
-    fig_name = save_path / (title + ext)
+    fig_name = save_path / (title + fig_ext)
     plt.savefig(fig_name, transparent=True)
     plt.close(fig)
 
