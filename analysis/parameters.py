@@ -40,6 +40,15 @@ gauss_std = 8
 
 update = True  # cache the data in the data folder
 
+# Raster
+tick_width = 0.5
+
+
+
+
+
+
+
 # def get_syl_color():
 #     # color for each syllable
 #     import numpy as np

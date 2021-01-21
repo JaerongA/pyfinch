@@ -107,7 +107,7 @@ for row in db.cur.fetchall():
         # print("spk ={}, nb = {}".format(spk, len(spk)))
         # print('')
         ax_raster.eventplot(spk, colors='k', lineoffsets=line_offsets[motif_ind],
-                            linelengths=1, orientation='horizontal')
+                            linelengths=tick_width, orientation='horizontal')
 
         # Demarcate the note
         k = 1  # index for setting the motif color
@@ -178,7 +178,7 @@ for row in db.cur.fetchall():
         # print("spk ={}, nb = {}".format(spk, len(spk)))
         # print('')
         ax_raster.eventplot(spk, colors='k', lineoffsets=line_offsets[motif_ind],
-                            linelengths=1, orientation='horizontal')
+                            linelengths=tick_width, orientation='horizontal')
 
         # Demarcate the note
         k = 1  # index for setting the motif color
