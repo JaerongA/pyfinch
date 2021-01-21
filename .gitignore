@@ -7,3 +7,4 @@ test
 database/_pycache_
 *__pycache__*/sphinx/_build
 .idea
+config.ini

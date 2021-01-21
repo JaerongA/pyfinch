@@ -17,7 +17,7 @@ from util.draw import *
 from scipy.ndimage import gaussian_filter1d
 
 # Select statement
-query = "SELECT * FROM cluster WHERE id=2"
+query = "SELECT * FROM cluster WHERE id = 2"
 
 project = ProjectLoader()
 cur, conn, col_names = project.load_db(query)
@@ -27,13 +27,13 @@ rec_yloc = 0.05
 rec_height = 1  # syllable duration rect
 text_yloc = 0.5  # text height
 font_size = 10
-update = False
+update = True
 
 # Loop through neurons
 for row in cur.fetchall():
 
     # ci = ClusterInfo(row, update=True)
-    mi = MotifInfo(row, update=True)
+    mi = MotifInfo(row, update=update)
 
     # Plot spectrogram & peri-event histogram (Just the first rendition)
     # for onset, offset in zip(mi.onsets, mi.offsets):
@@ -244,7 +244,7 @@ for row in cur.fetchall():
 
     ax_peth.set_ylabel('Norm. FR', fontsize=font_size)
     # fr_ymax = myround(ax_peth.get_ylim()[1], base=3)
-    fr_ymax = ax_peth.get_ylim()[1]
+    fr_ymax = round(ax_peth.get_ylim()[1],3)
     ax_peth.set_ylim(0, fr_ymax)
     plt.yticks([0, ax_peth.get_ylim()[1]], [str(0), str(int(fr_ymax))])
 
@@ -294,6 +294,6 @@ for row in cur.fetchall():
 
     # Save results
     save_path = save.make_dir(project.path / 'Analysis', 'Spk')
-    save.save_fig(fig, save_path, mi.name, ext='.png')
+    save.save_fig(fig, save_path, mi.name, fig_ext='.png')
 
     plt.show()
