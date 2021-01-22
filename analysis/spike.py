@@ -263,10 +263,10 @@ class ClusterInfo:
         file_name = self.path / 'EventInfo.npy'
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
             event_info = load_events(self.path)
-        else:
-            event_info = np.load(file_name, allow_pickle=True).item()
             # Save event_info as a numpy object
             np.save(file_name, event_info)
+        else:
+            event_info = np.load(file_name, allow_pickle=True).item()
 
         # Set the dictionary values to class attributes
         for key in event_info:
@@ -533,6 +533,11 @@ class MotifInfo(ClusterInfo):
             'contexts': context_list,
             'parameter': peth_parm
         }
+
+        # Save motif_info as a numpy object
+        file_name = self.path / 'MotifInfo.npy'
+        np.save(file_name, motif_info)
+
         return motif_info
 
     def __len__(self):
@@ -588,6 +593,7 @@ class MotifInfo(ClusterInfo):
                     origin = 0
                 else:
                     origin = sum(self.median_durations[:i])
+
                 ind, spk_ts_new = extract_ind(spk_ts, [timestamp[i], timestamp[i + 1]])
                 spk_ts_new = ((ratio * ((spk_ts_new - timestamp[0]) - diff)) + origin) + timestamp[0]
                 np.put(spk_ts, ind, spk_ts_new)  # replace original spk timestamps with warped timestamps
@@ -755,7 +761,6 @@ class BaselineInfo(ClusterInfo):
 
                     if baseline_onset > baseline_offset:
                         print('start time ={} to end time = {}'.format(baseline_onset, baseline_offset))
-                        breakpoint()
 
                     baseline_spk = spks[np.where((spks >= baseline_onset) & (spks <= baseline_offset))]
 

@@ -38,11 +38,10 @@ gauss_std = 8
 # gauss_filter = gausswin(filter_size);  %% Gaussian smoothing parameter
 # gauss_filter = gauss_filter/sum(gauss_filter);
 
-update = True  # cache the data in the data folder
 
 # Raster
-tick_width = 0.5
-
+tick_length = 1
+tick_width = 1
 
 
 
