@@ -16,17 +16,21 @@ from util.spect import *
 from util.draw import *
 from scipy.ndimage import gaussian_filter1d
 
-# Figure parameters
+# parameters
 rec_yloc = 0.05
 rec_height = 1  # syllable duration rect
 text_yloc = 0.5  # text height
 font_size = 10
-update = True
+update = False  # Set True for recreating a cache file
 norm_method=None
+fig_ext='.png'  # .png or .pdf
+save_fig = False
+save_db = True  # save results to DB
+# save figure
 
 # Load database
 # Select statement
-query = "SELECT * FROM cluster"
+query = "SELECT * FROM cluster WHERE id = 96"
 db = ProjectLoader().load_db()
 db.execute(query)
 
@@ -107,7 +111,7 @@ for row in db.cur.fetchall():
         # print("spk ={}, nb = {}".format(spk, len(spk)))
         # print('')
         ax_raster.eventplot(spk, colors='k', lineoffsets=line_offsets[motif_ind],
-                            linelengths=tick_width, orientation='horizontal')
+                            linelengths=tick_length, linewidths=tick_width, orientation='horizontal')
 
         # Demarcate the note
         k = 1  # index for setting the motif color
@@ -178,7 +182,7 @@ for row in db.cur.fetchall():
         # print("spk ={}, nb = {}".format(spk, len(spk)))
         # print('')
         ax_raster.eventplot(spk, colors='k', lineoffsets=line_offsets[motif_ind],
-                            linelengths=tick_width, orientation='horizontal')
+                            linelengths=tick_length, linewidths=tick_width, orientation='horizontal')
 
         # Demarcate the note
         k = 1  # index for setting the motif color
@@ -298,7 +302,23 @@ for row in db.cur.fetchall():
     ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
 
     # Save results
-    # save_path = save.make_dir(project.path / 'Analysis', 'Spk')
-    # save.save_fig(fig, save_path, mi.name, fig_ext='.png')
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Spk')
+        save.save_fig(fig, save_path, mi.name, fig_ext='.png')
 
-    plt.show()
+    # plt.show()
+
+    # Save results to database
+    if save_db:
+        db.create_col('cluster', 'pairwiseCorrUndir', 'REAL')
+        db.update('cluster', 'pairwiseCorrUndir', pi.pcc['U']['mean'], row['id'])
+        db.create_col('cluster', 'pairwiseCorrDir', 'REAL')
+        db.update('cluster', 'pairwiseCorrDir', pi.pcc['D']['mean'], row['id'])
+        db.create_col('cluster', 'corrRContext', 'REAL')
+        db.update('cluster', 'corrRContext', corr_context, row['id'])
+
+    # db.cur.execute("UPDATE cluster SET pairwiseCorrUndir = ? WHERE id = ?", (pi.pcc['U']['mean'], int(row['id'])))
+    # db.cur.execute("UPDATE cluster SET pairwiseCorrUndir = ? WHERE id = ?", (pi.pcc['U']['mean'], row['id']))
+    # db.cur.execute("UPDATE cluster SET pairwiseCorrUndir = ? WHERE id = ?", (pi.pcc['U']['mean'], row['id']))
+    # db.conn.commit()
+
