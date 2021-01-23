@@ -698,11 +698,33 @@ class PethInfo():
             pcc_dict[k] = pcc
         self.pcc = pcc_dict
 
-    def get_spk_count(self, fr_dict):
+    def get_nb_spk(self):
+        """
+        Calculate the number of spikes per condition
+        """
+        nb_spk_dict = {}
+        for k, v in self.fr.items():  # loop through different conditions in peth dict
+            nb_spk_dict[k] = sum(v)
+        self.nb_spk = nb_spk_dict
 
+    def get_spk_count(self):
+
+        win_size = spk_count_parm['win_size']
         spk_count_dict = {}
-        for k, v in fr_dict.items():  # loop through different conditions in peth dict
-            spk_count_dict[k] = sum(v)
+
+        for k, v in self.peth.items():  # loop through different conditions in peth dict
+            spk_count = np.array([])
+            if k != 'All':  # skip all trials
+                win_inc = 0
+                for i in range(v.shape[1] - win_size):
+                    count = v[:, i: win_size + win_inc].sum()
+                    # print(f"from {i} to {win_size + win_inc}, count = {count}")
+                    spk_count = np.append(spk_count, count)
+                    win_inc += 1
+                # Truncate values outside the range
+                ind = (((0 - peth_parm['buffer']) <= self.time_bin) & (self.time_bin <= self.median_duration))
+                spk_count = spk_count[:ind.shape[0]]
+                spk_count_dict[k] = spk_count
         self.spk_count = spk_count_dict
 
     def get_fano(self):
