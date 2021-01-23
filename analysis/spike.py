@@ -181,7 +181,7 @@ def get_isi(spk_ts: list):
     return isi
 
 
-def get_peth(evt_ts: list, spk_ts: list, duration: float):
+def get_peth(evt_ts: list, spk_ts: list, *duration: float):
     """Get peri-event histogram & firing rates
 
     for song peth event_ts indicates syllable onset
@@ -204,11 +204,13 @@ def get_peth(evt_ts: list, spk_ts: list, duration: float):
     time_bin = peth_parm['time_bin'] - peth_parm['buffer']
 
     # Truncate the array leaving out only the portion of our interest
-    ind = (((0 - peth_parm['buffer']) <= time_bin) & (time_bin <= duration))
-    peth = peth[:,ind]
-    time_bin = time_bin[ind]
+    if duration:
+        ind = (((0 - peth_parm['buffer']) <= time_bin) & (time_bin <= duration))
+        peth = peth[:, ind]
+        time_bin = time_bin[ind]
 
     return peth, time_bin
+
 
 def get_pcc(fr_array):
     """
@@ -229,8 +231,9 @@ def get_pcc(fr_array):
                     pcc_arr = np.append(pcc_arr, np.corrcoef(fr1, fr2)[0, 1])  # get correlation coefficient
 
     pcc_dict['array'] = pcc_arr
-    pcc_dict['mean'] = round(pcc_arr.mean(),3)
+    pcc_dict['mean'] = round(pcc_arr.mean(), 3)
     return pcc_dict
+
 
 class DBLoader:
     def __init__(self, database):
@@ -400,7 +403,6 @@ class ClusterInfo:
     def plot_isi(isi):
         pass
 
-
     def bursting_analysis(self):
         pass
 
@@ -480,7 +482,6 @@ class MotifInfo(ClusterInfo):
         self.spk_ts_warp = spk_ts_warp_list
 
     def load_motif(self):
-
         # Store values here
         file_list = []
         spk_list = []
@@ -572,7 +573,6 @@ class MotifInfo(ClusterInfo):
         Performs piecewise linear warping on raw analysis timestamps
         Based on each median note and gap durations
         """
-
         spk_ts_warped_list = []
 
         list_zip = zip(self.note_durations, self.onsets, self.offsets, self.spk_ts)
@@ -610,13 +610,16 @@ class MotifInfo(ClusterInfo):
         peth_dict = {}
 
         if warped:  # peth calculated from time-warped spikes by default
-            peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())
+            # peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
+            peth, time_bin = get_peth(self.onsets, self.spk_ts_warp)
         else:
-            peth, time_bin = get_peth(self.onsets, self.spk_ts, self.median_durations.sum())
+            # peth, time_bin = get_peth(self.onsets, self.spk_ts, self.median_durations.sum())
+            peth, time_bin = get_peth(self.onsets, self.spk_ts)
 
         peth_dict['peth'] = peth
         peth_dict['time_bin'] = time_bin
         peth_dict['contexts'] = self.contexts
+        peth_dict['median_duration'] = self.median_durations.sum()
         return PethInfo(peth_dict)  # return peth class object for further analysis
 
 
@@ -639,8 +642,8 @@ class PethInfo():
         peth_dict = {}
         peth_dict['All'] = self.peth
         for context in unique(self.contexts):
-             ind = np.array(self.contexts) == context
-             peth_dict[context] = self.peth[ind,:]
+            ind = np.array(self.contexts) == context
+            peth_dict[context] = self.peth[ind, :]
         self.peth = peth_dict
 
     def get_fr(self, smoothing=True, norm_method=None, norm_factor=None):
@@ -654,18 +657,29 @@ class PethInfo():
             norm_factor:  float
                 (e.g., baseline firing rates).
         """
+        # if duration:
+        #     ind = (((0 - peth_parm['buffer']) <= time_bin) & (time_bin <= duration))
+        #     peth = peth[:, ind]
+        #     time_bin = time_bin[ind]
 
         from scipy.ndimage import gaussian_filter1d
 
+        # Get trial-by-trial firing rates
         fr_dict = {}
         for k, v in self.peth.items():  # loop through different conditions in peth dict
             fr = v / (peth_parm['bin_size'] / 1E3)  # in Hz
 
             if smoothing:  # Gaussian smoothing
                 fr = gaussian_filter1d(fr, gauss_std)
+
+            # Truncate values outside the range
+            ind = (((0 - peth_parm['buffer']) <= self.time_bin) & (self.time_bin <= self.median_duration))
+            fr = fr[:, ind]
             fr_dict[k] = fr
         self.fr = fr_dict
+        self.time_bin = self.time_bin[ind]
 
+        # Get mean firing rates
         fr_dict = {}
         for k, v in self.fr.items():
             fr = np.mean(v, axis=0)
@@ -684,14 +698,12 @@ class PethInfo():
             pcc_dict[k] = pcc
         self.pcc = pcc_dict
 
-
     def get_spk_count(self, fr_dict):
 
         spk_count_dict = {}
         for k, v in fr_dict.items():  # loop through different conditions in peth dict
             spk_count_dict[k] = sum(v)
         self.spk_count = spk_count_dict
-
 
     def get_fano(self):
         """
@@ -705,7 +717,6 @@ class PethInfo():
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
-
 
 
 class BoutInfo(ClusterInfo):
