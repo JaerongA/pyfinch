@@ -698,15 +698,6 @@ class PethInfo():
             pcc_dict[k] = pcc
         self.pcc = pcc_dict
 
-    def get_nb_spk(self):
-        """
-        Calculate the number of spikes per condition
-        """
-        nb_spk_dict = {}
-        for k, v in self.fr.items():  # loop through different conditions in peth dict
-            nb_spk_dict[k] = sum(v)
-        self.nb_spk = nb_spk_dict
-
     def get_spk_count(self):
 
         win_size = spk_count_parm['win_size']
