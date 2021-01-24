@@ -702,35 +702,40 @@ class PethInfo():
 
         win_size = spk_count_parm['win_size']
         spk_count_dict = {}
+        fano_factor_dict = {}
+        spk_count_cv_dict = {}
 
         for k, v in self.peth.items():  # loop through different conditions in peth dict
-            spk_count = np.array([])
+            spk_arr = np.empty((v.shape[0], 0), int)  # (renditions x time bins)
             if k != 'All':  # skip all trials
                 win_inc = 0
                 for i in range(v.shape[1] - win_size):
-                    count = v[:, i: win_size + win_inc].sum()
+                    count = v[:, i: win_size + win_inc].sum(axis=1)
                     # print(f"from {i} to {win_size + win_inc}, count = {count}")
-                    spk_count = np.append(spk_count, count)
+                    spk_arr = np.append(spk_arr, np.array([count]).transpose(), axis=1)
                     win_inc += 1
                 # Truncate values outside the range
                 ind = (((0 - peth_parm['buffer']) <= self.time_bin) & (self.time_bin <= self.median_duration))
-                spk_count = spk_count[:ind.shape[0]]
+                spk_arr = spk_arr[:,:ind.shape[0]]
+
+                spk_count = spk_arr.sum(axis=0)
+                fano_factor = spk_arr.var(axis=0) / spk_arr.mean(axis=0)  # per time window (across renditions) (renditions x time window)
+                spk_count_cv = spk_count.std(axis=0)/ spk_count.mean(axis=0)  # cv across time (single value)
+
+                # store values in a dictionary
                 spk_count_dict[k] = spk_count
+                fano_factor_dict[k] = fano_factor
+                spk_count_cv_dict[k] = spk_count_cv
+
         self.spk_count = spk_count_dict
-
-    def get_fano(self):
-        """
-        Calculate Fano factor of spike counts
-        Returns:
-
-        """
+        self.fano_factor = fano_factor_dict
+        self.spk_count_cv = spk_count_cv_dict
 
     def __len__(self):
         return self.peth.shape[0]
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
-
 
 class BoutInfo(ClusterInfo):
     pass
