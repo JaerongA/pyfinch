@@ -28,11 +28,12 @@ note_buffer = 10  # in ms before and after each note
 
 num_note_crit_basis = 30  # the number of basis note should be >= this criteria
 num_note_crit_testing = 10  # the number of testing syllables should be >= this criteria
-fig_save_ok = True
-file_save_ok = True
+fig_save_ok = False
+file_save_ok = False
 save_psd = True
 update = True  # generate a new .npz file or update the file
-fig_ext = '.pdf'  # figure file extension
+fig_ext = '.png'  # figure file extension
+
 
 def get_basis_psd(psd_array, notes):
     # Get avg psd from the training set (will serve as a basis)
@@ -68,7 +69,7 @@ def get_psd_mat(data_path, save_psd=False, update=False, open_folder=False, nfft
     file_name = data_path / 'PSD.npy'
 
     if save_psd and not update:
-        raise Exception ("psd can only be save in an update mode or when the .npy does not exist!")
+        raise Exception("psd can only be save in an update mode or when the .npy does not exist!, set update to TRUE")
 
     if update or not file_name.exists():
 
@@ -343,12 +344,11 @@ for bird in config['birdID']:
     if len(ind) < num_note_crit_testing:  # if there are not enough 'x's, skip
         continue
 
-    new_df = df.groupby(['Condition'])['SimilarityMean'].mean().reset_index()
-    new_df = new_df[new_df['Condition'] == 'baseline']
+    new_df = df.groupby(['BirdID', 'Condition'])['SimilarityMean'].mean().reset_index()
+    new_df = new_df[(new_df['Condition'] == 'baseline') & (new_df['BirdID'] == bird)]
 
     x_similarity = similarity[ind, :]  # number of the test notes x basis note
     sim_basis_mean = new_df['SimilarityMean'].values
-
     # proportion of notes having a higher similarity index relative to the baseline (mean similarity ind from the control (pre1 vs. pre2)
     # the total number of cells as a denominator
     # prob_sig_notes = (x_similarity > sim_basis_mean[0]).sum() / x_similarity.size
@@ -369,10 +369,10 @@ for bird in config['birdID']:
                             })
     df_sig_prob = df_sig_prob.append(temp_df, ignore_index=True)
 
-    # Plot x with
+    # Plot x
     frame_width = 2
     fig = plt.figure(figsize=(8, 5))
-    title = f"{bird} SimilarityMat (x) - SigProb = {round(prob_sig_notes, 3)}"
+    title = f"{bird} SimilarityMat (x) - SigProb = {round(prob_sig_notes, 3)}, baseline SI = {round(sim_basis_mean[0], 3)}"
     plt.suptitle(title, size=15)
     fig_name = f"{bird}_SimilarityMat(x)"
     gs = gridspec.GridSpec(8, 10)
@@ -405,8 +405,8 @@ for bird in config['birdID']:
     # plt.show()
 
     # Save the figure
-    # save_path = save.make_dir(project_path / 'Results', 'SigProb', add_date=True)
-    # save.save_fig(fig, save_path, fig_name, ext='.png')
+    save_path = save.make_dir(project_path / 'Results', 'SigProb', add_date=True)
+    save.save_fig(fig, save_path, fig_name, fig_ext='.png')
 
     # Save the x similarity matrix (with nans) in .csv for visual verification (01/17/2021)
     x_csv_path = project_path / 'Results' / f'{bird}_SimilarityMat(x).csv'
