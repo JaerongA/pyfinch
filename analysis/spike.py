@@ -694,8 +694,9 @@ class PethInfo():
         "Get pairwise cross-correlation"
         pcc_dict = {}
         for k, v in self.fr.items():  # loop through different conditions in peth dict
-            pcc = get_pcc(v)
-            pcc_dict[k] = pcc
+            if k != 'All':
+                pcc = get_pcc(v)
+                pcc_dict[k] = pcc
         self.pcc = pcc_dict
 
     def get_spk_count(self):
@@ -725,7 +726,7 @@ class PethInfo():
                 # store values in a dictionary
                 spk_count_dict[k] = spk_count
                 fano_factor_dict[k] = fano_factor
-                spk_count_cv_dict[k] = spk_count_cv
+                spk_count_cv_dict[k] = round(spk_count_cv,3)
 
         self.spk_count = spk_count_dict
         self.fano_factor = fano_factor_dict
