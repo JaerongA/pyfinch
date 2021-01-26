@@ -21,12 +21,12 @@ rec_yloc = 0.05
 rec_height = 1  # syllable duration rect
 text_yloc = 0.5  # text height
 font_size = 10
+marker_size = 0.3  # for spike count
 update = False  # Set True for recreating a cache file
 norm_method=None
 fig_ext='.png'  # .png or .pdf
 save_fig = False
 save_db = True  # save results to DB
-# save figure
 
 # Load database
 # Select statement
@@ -137,7 +137,7 @@ for row in db.cur.fetchall():
         # Demarcate song block (undir vs dir) with a horizontal line
         if pre_context != context:
 
-            ax_raster.axhline(y=motif_ind - 1, color='k', ls='-', lw=0.5)
+            ax_raster.axhline(y=motif_ind, color='k', ls='-', lw=0.3)
             context_change = np.append(context_change, (motif_ind))
             if pre_context:
                 ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
@@ -208,7 +208,7 @@ for row in db.cur.fetchall():
         # Demarcate song block (undir vs dir) with a horizontal line
         if pre_context != context:
 
-            ax_raster.axhline(y=motif_ind - 1, color='k', ls='-', lw=0.5)
+            ax_raster.axhline(y=motif_ind, color='k', ls='-', lw=0.3)
             context_change = np.append(context_change, (motif_ind))
             if pre_context:
                 ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
@@ -217,6 +217,7 @@ for row in db.cur.fetchall():
                                size=6)
 
         pre_context = context
+
     # Demarcate the last block
     ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
                    ((ax_raster.get_ylim()[1] - context_change[-1]) / 3) + context_change[-1],
@@ -232,22 +233,20 @@ for row in db.cur.fetchall():
     remove_right_top(ax_raster)
 
     # Draw peri-event histogram (PETH)
-    ax_peth = plt.subplot(gs[10:12, 0:4], sharex=ax_spect)
-
     # Get peth object
     pi = mi.get_peth()  # peth info
-
     # pi.get_fr(norm_method=norm_method, norm_factor=row['baselineFR'])  # get firing rates
     # pi.get_fr(norm_method='sum')  # get firing rates
     pi.get_fr(norm_method=norm_method)  # get firing rates
 
+    ax_peth = plt.subplot(gs[10:12, 0:4], sharex=ax_spect)
     for context, mean_fr in pi.mean_fr.items():
         if context == 'U':
             ax_peth.plot(pi.time_bin, mean_fr, 'b', label=context)
         elif context == 'D':
             ax_peth.plot(pi.time_bin, mean_fr, 'm', label=context)
 
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': 6})  # print out legend
+    plt.legend(loc='center left', bbox_to_anchor=(0.95, 0.5), prop={'size': 6})  # print out legend
 
     if norm_method:  # Normalize FR
         ax_peth.set_ylabel('Norm. FR', fontsize=font_size)
@@ -301,13 +300,6 @@ for row in db.cur.fetchall():
         corr_context = round(np.corrcoef(pi.mean_fr['U'], pi.mean_fr['D'])[0, 1], 3)
     ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
 
-    # Save results
-    if save_fig:
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Spk')
-        save.save_fig(fig, save_path, mi.name, fig_ext='.png')
-
-    # plt.show()
-
     # Save results to database
     if save_db:
         db.create_col('cluster', 'pairwiseCorrUndir', 'REAL')
@@ -317,8 +309,79 @@ for row in db.cur.fetchall():
         db.create_col('cluster', 'corrRContext', 'REAL')
         db.update('cluster', 'corrRContext', corr_context, row['id'])
 
-    # db.cur.execute("UPDATE cluster SET pairwiseCorrUndir = ? WHERE id = ?", (pi.pcc['U']['mean'], int(row['id'])))
-    # db.cur.execute("UPDATE cluster SET pairwiseCorrUndir = ? WHERE id = ?", (pi.pcc['U']['mean'], row['id']))
-    # db.cur.execute("UPDATE cluster SET pairwiseCorrUndir = ? WHERE id = ?", (pi.pcc['U']['mean'], row['id']))
-    # db.conn.commit()
+    # Plot spike counts
+    pi.get_spk_count()  # spike count per time window
+    ax_spk_count = plt.subplot(gs[13:15, 0:4], sharex=ax_spect)
+    for context, spk_count in pi.spk_count.items():
+        if context == 'U':
+            ax_spk_count.plot(pi.time_bin, spk_count, 'o', color='b', mfc='none', linewidth=0.5, label=context, markersize=marker_size)
+        elif context == 'D':
+            ax_spk_count.plot(pi.time_bin, spk_count, 'o', color='m', mfc='none', linewidth=0.5, label=context, markersize=marker_size)
 
+    plt.legend(loc='center left', bbox_to_anchor=(0.95, 0.5), prop={'size': 6})  # print out legend
+    remove_right_top(ax_spk_count)
+    ymax = round(ax_spk_count.get_ylim()[1],3)
+    ax_spk_count.set_ylim(0, ymax)
+    plt.yticks([0, ax_spk_count.get_ylim()[1]], [str(0), str(int(ymax))])
+    ax_spk_count.set_ylabel('Spike Count', fontsize=font_size)
+    ax_spk_count.axvline(x=mi.median_durations.sum(), color='k', ls='--', lw=0.5)
+
+    # Print out results on the figure
+    txt_yloc -= txt_inc
+    for i, (k, v) in enumerate(pi.spk_count_cv.items()):
+        txt_yloc -= txt_inc
+        ax_txt.text(txt_xloc, txt_yloc, f"CV of spk count ({k}) = {v}", fontsize=font_size)
+
+    # Plot fano factor
+    ax_ff = plt.subplot(gs[16:-1, 0:4], sharex=ax_spect)
+    for context, fano_factor in pi.fano_factor.items():
+        if context == 'U':
+            ax_ff.plot(pi.time_bin, fano_factor, 'o', color='b', mfc='none', linewidth=0.5, label=context, markersize=marker_size)
+        elif context == 'D':
+            ax_ff.plot(pi.time_bin, fano_factor, 'o', color='m', mfc='none', linewidth=0.5, label=context, markersize=marker_size)
+
+    plt.legend(loc='center left', bbox_to_anchor=(0.95, 0.5), prop={'size': 6})  # print out legend
+    remove_right_top(ax_ff)
+    ymax = round(ax_ff.get_ylim()[1],3)
+    ax_ff.set_ylim(0, ymax)
+    plt.yticks([0, ax_ff.get_ylim()[1]], [str(0), str(int(ymax))])
+    ax_ff.set_ylabel('Spike Count', fontsize=font_size)
+    ax_ff.axvline(x=mi.median_durations.sum(), color='k', ls='--', lw=0.5)
+
+    # Print out results on the figure
+    txt_yloc -= txt_inc
+    for i, (k, v) in enumerate(pi.fano_factor.items()):
+        txt_yloc -= txt_inc
+        ax_txt.text(txt_xloc, txt_yloc, f"Fano Factor ({k}) = {round(np.nanmean(v),3)}", fontsize=font_size)
+
+    # Save results to database
+    if save_db:
+        db.create_col('cluster', 'cvSpkCountUndir', 'REAL')
+        if 'U' in pi.spk_count_cv.keys():
+            db.update('cluster', 'cvSpkCountUndir', pi.pcc['U']['mean'], row['id'])
+        db.create_col('cluster', 'cvSpkCountDir', 'REAL')
+        if 'D' in pi.spk_count_cv.keys():
+            db.update('cluster', 'cvSpkCountDir', pi.pcc['D']['mean'], row['id'])
+
+        db.create_col('cluster', 'fanoSpkCountUndir', 'REAL')
+        if 'U' in pi.fano_factor.keys():
+            db.update('cluster', 'fanoSpkCountUndir', pi.fano_factor['U']['mean'], row['id'])
+        db.create_col('cluster', 'fanoSpkCountDir', 'REAL')
+        if 'D' in pi.fano_factor.keys():
+            db.update('cluster', 'fanoSpkCountDir', pi.fano_factor['D']['mean'], row['id'])
+
+
+
+
+
+
+
+
+
+
+    # Save results
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Spk')
+        save.save_fig(fig, save_path, mi.name, fig_ext='.png')
+
+    plt.show()
