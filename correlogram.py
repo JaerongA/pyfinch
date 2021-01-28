@@ -7,28 +7,22 @@ from analysis.load import read_rhd
 import matplotlib.pyplot as plt
 from util import save
 
-query = "SELECT * FROM cluster WHERE id == 96"
-# query = "SELECT * FROM cluster WHERE ephysOK"
+query = "SELECT * FROM cluster WHERE id = 5"
+# query = "SELECT * FROM cluster"
+db = ProjectLoader().load_db()
+db.execute(query)
 
-project = ProjectLoader()
-cur, conn, col_names = project.load_db(query)
+# Loop through neurons
+for row in db.cur.fetchall():
 
-for row in cur.fetchall():
+    ci = ClusterInfo(row)  # cluster object
 
-    ci = ClusterInfo(row)
-    #
-    # ci._load_events()
-    # ci._load_spk()
-
-    bi = BaselineInfo(row)
+    bi = BaselineInfo(row)  # baseline object
 
     correlogram = ci.get_correlogram(ci.spk_ts, ci.spk_ts)
-
     correlogram['B'] = bi.get_correlogram(bi.spk_ts, bi.spk_ts)
 
-
     # Plot the results
-    #TODO plot the results
     fig = plt.figure(figsize=(12, 4))
     # plt.title(ci.name, size=10, y=1.08)
     plt.text(0.5, 1.08, ci.name,
