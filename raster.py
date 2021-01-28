@@ -81,6 +81,7 @@ for row in db.cur.fetchall():
     ax_spect.set_ylim(freq_range[0], freq_range[1])
     ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
     plt.yticks(freq_range, [str(freq_range[0]), str(freq_range[1])])
+    plt.setp(ax_spect.get_xticklabels(), visible=False)
 
     # Plot syllable duration
     ax_syl = plt.subplot(gs[0, 0:4], sharex=ax_spect)
@@ -158,7 +159,7 @@ for row in db.cur.fetchall():
 
     ax_raster.set_ylim(0, len(mi))
     ax_raster.set_ylabel('Trial #', fontsize=font_size)
-    # ax_raster.set_xlabel('Time (ms)', fontsize=font_size)
+    plt.setp(ax_raster.get_xticklabels(), visible=False)
     plt.yticks([0, len(mi)], [str(0), str(len(mi))])
     remove_right_top(ax_raster)
 
@@ -234,8 +235,8 @@ for row in db.cur.fetchall():
     ax_raster.set_ylabel('Trial #', fontsize=font_size)
     # ax_raster.set_xlabel('Time (ms)', fontsize=font_size)
     ax_raster.set_title('sorted raster', size=font_size)
-
     plt.yticks([0, len(mi)], [str(0), str(len(mi))])
+    plt.setp(ax_raster.get_xticklabels(), visible=False)
     remove_right_top(ax_raster)
 
     # Draw peri-event histogram (PETH)
@@ -265,12 +266,13 @@ for row in db.cur.fetchall():
     plt.yticks([0, ax_peth.get_ylim()[1]], [str(0), str(int(fr_ymax))])
 
     # Mark the baseline firing rates
-    # ax_peth.axhline(y=row['baselineFR'], color='k', ls='--', lw=0.5)
+    if 'baselineFR' in row.keys() and row['baselineFR']:
+        ax_peth.axhline(y=row['baselineFR'], color='k', ls='--', lw=0.5)
 
     # Mark end of the motif
     ax_peth.axvline(x=0, color='k', ls='--', lw=0.5)
     ax_peth.axvline(x=mi.median_durations.sum(), color='k', lw=0.1)
-
+    plt.setp(ax_peth.get_xticklabels(), visible=False)
     remove_right_top(ax_peth)
 
     # Calculate pairwise cross-correlation
@@ -359,7 +361,6 @@ for row in db.cur.fetchall():
     ax_ff.axvline(x=mi.median_durations.sum(), color='k', ls='--', lw=0.5)
     ax_ff.axhline(y=1, color='k', ls='--', lw=0.5)  # baseline for fano factor
     plt.setp(ax_spk_count.get_xticklabels(), visible=False)
-    # plt.xticks([0, pi.median_duration], [str(0), str(pi.median_duration)])
     ax_ff.set_xlabel('Time (ms)', fontsize=font_size)
 
     # Print out results on the figure
@@ -376,22 +377,12 @@ for row in db.cur.fetchall():
         db.create_col('cluster', 'cvSpkCountDir', 'REAL')
         if 'D' in pi.spk_count_cv.keys():
             db.update('cluster', 'cvSpkCountDir', pi.pcc['D']['mean'], row['id'])
-
         db.create_col('cluster', 'fanoSpkCountUndir', 'REAL')
         if 'U' in pi.fano_factor.keys():
             db.update('cluster', 'fanoSpkCountUndir', pi.fano_factor['U']['mean'], row['id'])
         db.create_col('cluster', 'fanoSpkCountDir', 'REAL')
         if 'D' in pi.fano_factor.keys():
             db.update('cluster', 'fanoSpkCountDir', pi.fano_factor['D']['mean'], row['id'])
-
-
-
-
-
-
-
-
-
 
     # Save results
     if save_fig:

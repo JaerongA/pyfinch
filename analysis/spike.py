@@ -465,21 +465,6 @@ class MotifInfo(ClusterInfo):
         else:
             motif_info = np.load(file_name, allow_pickle=True).item()
 
-        # Set the dictionary values to class attributes
-        for key in motif_info:
-            setattr(self, key, motif_info[key])
-
-        # Get duration
-        note_durations, median_durations = self.get_note_duration()
-        motif_info['note_durations'] = note_durations
-        motif_info['median_durations'] = median_durations
-        self.note_durations = note_durations
-        self.median_durations = median_durations
-
-        # Get PLW (piecewise linear warping)
-        spk_ts_warp_list = self.piecewise_linear_warping()
-        motif_info['spk_ts_warp'] = spk_ts_warp_list
-        self.spk_ts_warp = spk_ts_warp_list
 
     def load_motif(self):
         # Store values here
@@ -495,7 +480,7 @@ class MotifInfo(ClusterInfo):
         list_zip = zip(self.files, self.spk_ts, self.onsets, self.offsets, self.syllables, self.contexts)
 
         for file, spks, onsets, offsets, syllables, context in list_zip:
-
+            print(file)
             onsets = onsets.tolist()
             offsets = offsets.tolist()
 
@@ -534,6 +519,22 @@ class MotifInfo(ClusterInfo):
             'contexts': context_list,
             'parameter': peth_parm
         }
+
+        # Set the dictionary values to class attributes
+        for key in motif_info:
+            setattr(self, key, motif_info[key])
+
+        # Get duration
+        note_duration_list, median_duration_list = self.get_note_duration()
+        self.note_durations = note_duration_list
+        self.median_durations = median_duration_list
+        motif_info['note_durations'] = note_duration_list
+        motif_info['median_durations'] = median_duration_list
+
+        # Get PLW (piecewise linear warping)
+        spk_ts_warp_list = self.piecewise_linear_warping()
+        self.spk_ts_warp = spk_ts_warp_list
+        motif_info['spk_ts_warp'] = spk_ts_warp_list
 
         # Save motif_info as a numpy object
         file_name = self.path / 'MotifInfo.npy'
@@ -574,7 +575,6 @@ class MotifInfo(ClusterInfo):
         Based on each median note and gap durations
         """
         spk_ts_warped_list = []
-
         list_zip = zip(self.note_durations, self.onsets, self.offsets, self.spk_ts)
 
         for motif_ind, (durations, onset, offset, spk_ts) in enumerate(list_zip):  # per motif
@@ -586,6 +586,14 @@ class MotifInfo(ClusterInfo):
             timestamp = [[onset, offset] for onset, offset in zip(onset, offset)]
             timestamp = sum(timestamp, [])
 
+            # # # Add spikes from the pre-motor window
+            # if peth_parm['buffer']:
+            #     # timestamp = np.insert(timestamp, 0, timestamp[0] - peth_parm['buffer'])
+            #     _, spk_ts_temp = extract_ind(spk_ts, [timestamp[0] - peth_parm['buffer'], timestamp[0]])
+            #     spk_ts_new = np.append(spk_ts_new, spk_ts_temp)
+
+
+
             for i in range(0, len(self.median_durations)):
                 ratio = self.median_durations[i] / durations[i]
                 diff = timestamp[i] - timestamp[0]
@@ -594,9 +602,12 @@ class MotifInfo(ClusterInfo):
                 else:
                     origin = sum(self.median_durations[:i])
 
-                ind, spk_ts_new = extract_ind(spk_ts, [timestamp[i], timestamp[i + 1]])
-                spk_ts_new = ((ratio * ((spk_ts_new - timestamp[0]) - diff)) + origin) + timestamp[0]
-                np.put(spk_ts, ind, spk_ts_new)  # replace original spk timestamps with warped timestamps
+                # Add spikes from motif
+                spk_ts_new = np.array([])
+                ind, spk_ts_temp = extract_ind(spk_ts, [timestamp[i], timestamp[i + 1]])
+                spk_ts_temp = ((ratio * ((spk_ts_temp - timestamp[0]) - diff)) + origin) + timestamp[0]
+                # spk_ts_new = np.append(spk_ts_new, spk_ts_temp)
+                np.put(spk_ts, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
 
             spk_ts_warped_list.append(spk_ts)
         return spk_ts_warped_list
@@ -605,11 +616,11 @@ class MotifInfo(ClusterInfo):
         ##TODO: add spike jitter
         pass
 
-    def get_peth(self, warped=True):
+    def get_peth(self, time_warp=True):
         """Get peri-event time histograms & rasters during song motif"""
         peth_dict = {}
 
-        if warped:  # peth calculated from time-warped spikes by default
+        if time_warp:  # peth calculated from time-warped spikes by default
             # peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
             peth, time_bin = get_peth(self.onsets, self.spk_ts_warp)
         else:
