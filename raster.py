@@ -29,10 +29,10 @@ save_fig = False
 update_db = False  # save results to DB
 time_warp = True  # spike time warping
 
-
 # Load database
 # Select statement
-query = "SELECT * FROM cluster WHERE id = 96"
+query = "SELECT * FROM cluster WHERE id = 5"
+# query = "SELECT * FROM cluster"
 db = ProjectLoader().load_db()
 db.execute(query)
 
@@ -240,12 +240,10 @@ for row in db.cur.fetchall():
     remove_right_top(ax_raster)
 
     # Draw peri-event histogram (PETH)
-    # Get peth object
-    pi = mi.get_peth(time_warp=time_warp)  # peth info
+    pi = mi.get_peth(time_warp=time_warp)  # peth object
     # pi.get_fr(norm_method=norm_pomethod, norm_factor=row['baselineFR'])  # get firing rates
     # pi.get_fr(norm_method='sum')  # get firing rates
     pi.get_fr(norm_method=norm_method)  # get firing rates
-
 
     ax_peth = plt.subplot(gs[10:12, 0:4], sharex=ax_spect)
     for context, mean_fr in pi.mean_fr.items():
@@ -254,7 +252,7 @@ for row in db.cur.fetchall():
         elif context == 'D':
             ax_peth.plot(pi.time_bin, mean_fr, 'm', label=context)
 
-    plt.legend(loc='center left', bbox_to_anchor=(0.95, 0.5), prop={'size': 6})  # print out legend
+    plt.legend(loc='center left', bbox_to_anchor=(0.98, 0.5), prop={'size': 6})  # print out legend
 
     if norm_method:  # Normalize FR
         ax_peth.set_ylabel('Norm. FR', fontsize=font_size)
@@ -328,7 +326,7 @@ for row in db.cur.fetchall():
         elif context == 'D':
             ax_spk_count.plot(pi.time_bin, spk_count, 'o', color='m', mfc='none', linewidth=0.5, label=context, markersize=marker_size)
 
-    plt.legend(loc='center left', bbox_to_anchor=(0.95, 0.5), prop={'size': 6})  # print out legend
+    plt.legend(loc='center left', bbox_to_anchor=(0.98, 0.5), prop={'size': 6})  # print out legend
     remove_right_top(ax_spk_count)
     ymax = myround(round(ax_spk_count.get_ylim()[1],3), base=5)
     ax_spk_count.set_ylim(0, ymax)
@@ -351,7 +349,7 @@ for row in db.cur.fetchall():
         elif context == 'D':
             ax_ff.plot(pi.time_bin, fano_factor, 'o', color='m', mfc='none', linewidth=0.5, label=context, markersize=marker_size)
 
-    plt.legend(loc='center left', bbox_to_anchor=(0.95, 0.5), prop={'size': 6})  # print out legend
+    plt.legend(loc='center left', bbox_to_anchor=(0.98, 0.5), prop={'size': 6})  # print out legend
     remove_right_top(ax_ff)
     ymax = myround(round(ax_ff.get_ylim()[1],3), base=5)
     ax_ff.set_ylim(0, ymax)
