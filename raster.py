@@ -22,11 +22,13 @@ rec_height = 1  # syllable duration rect
 text_yloc = 0.5  # text height
 font_size = 10
 marker_size = 0.3  # for spike count
-update = False  # Set True for recreating a cache file
+update = True  # Set True for recreating a cache file
 norm_method=None
 fig_ext='.png'  # .png or .pdf
 save_fig = False
-save_db = True  # save results to DB
+update_db = False  # save results to DB
+time_warp = True  # spike time warping
+
 
 # Load database
 # Select statement
@@ -39,7 +41,6 @@ for row in db.cur.fetchall():
 
     # ci = ClusterInfo(row, update=True)
     mi = MotifInfo(row, update=update)
-
     # Plot spectrogram & peri-event histogram (Just the first rendition)
     # for onset, offset in zip(mi.onsets, mi.offsets):
     onset = mi.onsets[0]
@@ -60,6 +61,7 @@ for row in db.cur.fetchall():
 
     # Plot figure
     fig = plt.figure(figsize=(8, 9))
+    fig.set_tight_layout(False)
     plt.suptitle(mi.name, y=.95)
     gs = gridspec.GridSpec(18, 6)
     gs.update(wspace=0.025, hspace=0.05)
@@ -79,7 +81,6 @@ for row in db.cur.fetchall():
     ax_spect.set_ylim(freq_range[0], freq_range[1])
     ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
     plt.yticks(freq_range, [str(freq_range[0]), str(freq_range[1])])
-    # ax_spect.set_xlabel('Time (ms)', fontsize=font_size)
 
     # Plot syllable duration
     ax_syl = plt.subplot(gs[0, 0:4], sharex=ax_spect)
@@ -97,16 +98,19 @@ for row in db.cur.fetchall():
 
     # Plot raster
     line_offsets = np.arange(0.5, len(mi))
-    zipped_lists = zip(mi.contexts, mi.spk_ts_warp, mi.onsets)
+    if time_warp:
+        zipped_lists = zip(mi.contexts, mi.spk_ts_warp, mi.onsets)
+    else:
+        zipped_lists = zip(mi.contexts, mi.spk_ts, mi.onsets)
     ax_raster = plt.subplot(gs[4:6, 0:4], sharex=ax_spect)
 
     pre_context = ''  # for marking  context change
     context_change = np.array([])
 
-    for motif_ind, (context, spk_ts_warp, onset) in enumerate(zipped_lists):
+    for motif_ind, (context, spk_ts, onset) in enumerate(zipped_lists):
 
         # Plot rasters
-        spk = spk_ts_warp - float(onset[0])
+        spk = spk_ts - float(onset[0])
         # print(len(spk))
         # print("spk ={}, nb = {}".format(spk, len(spk)))
         # print('')
@@ -157,7 +161,6 @@ for row in db.cur.fetchall():
     # ax_raster.set_xlabel('Time (ms)', fontsize=font_size)
     plt.yticks([0, len(mi)], [str(0), str(len(mi))])
     remove_right_top(ax_raster)
-    ax_raster.set_xticks([])  # remove xticks
 
     # Plot sorted raster
     ax_raster = plt.subplot(gs[7:9, 0:4], sharex=ax_spect)
@@ -166,18 +169,21 @@ for row in db.cur.fetchall():
     # Sort trials based on context
     sort_ind = np.array([i[0] for i in sorted(enumerate(mi.contexts), key=lambda x: x[1], reverse=True)])
     mi.contexts_sorted = np.array(mi.contexts)[sort_ind].tolist()
-    mi.spk_ts_warp_sorted = np.array(mi.spk_ts_warp)[sort_ind].tolist()
     mi.onsets_sorted = np.array(mi.onsets)[sort_ind].tolist()
+    if time_warp:
+        mi.spk_ts_sorted = np.array(mi.spk_ts_warp)[sort_ind].tolist()
+    else:
+        mi.spk_ts_sorted = np.array(mi.spk_ts)[sort_ind].tolist()
 
-    zipped_lists = zip(mi.contexts_sorted, mi.spk_ts_warp_sorted, mi.onsets_sorted)
+    zipped_lists = zip(mi.contexts_sorted, mi.spk_ts_sorted, mi.onsets_sorted)
 
     pre_context = ''  # for marking  context change
     context_change = np.array([])
 
-    for motif_ind, (context, spk_ts_warp, onset) in enumerate(zipped_lists):
+    for motif_ind, (context, spk_ts, onset) in enumerate(zipped_lists):
 
         # Plot rasters
-        spk = spk_ts_warp - float(onset[0])
+        spk = spk_ts - float(onset[0])
         # print(len(spk))
         # print("spk ={}, nb = {}".format(spk, len(spk)))
         # print('')
@@ -234,10 +240,11 @@ for row in db.cur.fetchall():
 
     # Draw peri-event histogram (PETH)
     # Get peth object
-    pi = mi.get_peth()  # peth info
-    # pi.get_fr(norm_method=norm_method, norm_factor=row['baselineFR'])  # get firing rates
+    pi = mi.get_peth(time_warp=time_warp)  # peth info
+    # pi.get_fr(norm_method=norm_pomethod, norm_factor=row['baselineFR'])  # get firing rates
     # pi.get_fr(norm_method='sum')  # get firing rates
     pi.get_fr(norm_method=norm_method)  # get firing rates
+
 
     ax_peth = plt.subplot(gs[10:12, 0:4], sharex=ax_spect)
     for context, mean_fr in pi.mean_fr.items():
@@ -253,8 +260,7 @@ for row in db.cur.fetchall():
     else:  # Raw FR
         ax_peth.set_ylabel('FR', fontsize=font_size)
 
-    # fr_ymax = myround(ax_peth.get_ylim()[1], base=3)
-    fr_ymax = round(ax_peth.get_ylim()[1],3)
+    fr_ymax = myround(round(ax_peth.get_ylim()[1],3), base=5)
     ax_peth.set_ylim(0, fr_ymax)
     plt.yticks([0, ax_peth.get_ylim()[1]], [str(0), str(int(fr_ymax))])
 
@@ -262,7 +268,9 @@ for row in db.cur.fetchall():
     # ax_peth.axhline(y=row['baselineFR'], color='k', ls='--', lw=0.5)
 
     # Mark end of the motif
-    ax_peth.axvline(x=mi.median_durations.sum(), color='k', ls='--', lw=0.5)
+    ax_peth.axvline(x=0, color='k', ls='--', lw=0.5)
+    ax_peth.axvline(x=mi.median_durations.sum(), color='k', lw=0.1)
+
     remove_right_top(ax_peth)
 
     # Calculate pairwise cross-correlation
@@ -301,7 +309,7 @@ for row in db.cur.fetchall():
     ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
 
     # Save results to database
-    if save_db:
+    if update_db:
         db.create_col('cluster', 'pairwiseCorrUndir', 'REAL')
         db.update('cluster', 'pairwiseCorrUndir', pi.pcc['U']['mean'], row['id'])
         db.create_col('cluster', 'pairwiseCorrDir', 'REAL')
@@ -320,10 +328,11 @@ for row in db.cur.fetchall():
 
     plt.legend(loc='center left', bbox_to_anchor=(0.95, 0.5), prop={'size': 6})  # print out legend
     remove_right_top(ax_spk_count)
-    ymax = round(ax_spk_count.get_ylim()[1],3)
+    ymax = myround(round(ax_spk_count.get_ylim()[1],3), base=5)
     ax_spk_count.set_ylim(0, ymax)
     plt.yticks([0, ax_spk_count.get_ylim()[1]], [str(0), str(int(ymax))])
     ax_spk_count.set_ylabel('Spike Count', fontsize=font_size)
+    ax_spk_count.axvline(x=0, color='k', ls='--', lw=0.5)
     ax_spk_count.axvline(x=mi.median_durations.sum(), color='k', ls='--', lw=0.5)
 
     # Print out results on the figure
@@ -333,7 +342,7 @@ for row in db.cur.fetchall():
         ax_txt.text(txt_xloc, txt_yloc, f"CV of spk count ({k}) = {v}", fontsize=font_size)
 
     # Plot fano factor
-    ax_ff = plt.subplot(gs[16:-1, 0:4], sharex=ax_spect)
+    ax_ff = plt.subplot(gs[16:18, 0:4], sharex=ax_spect)
     for context, fano_factor in pi.fano_factor.items():
         if context == 'U':
             ax_ff.plot(pi.time_bin, fano_factor, 'o', color='b', mfc='none', linewidth=0.5, label=context, markersize=marker_size)
@@ -342,11 +351,16 @@ for row in db.cur.fetchall():
 
     plt.legend(loc='center left', bbox_to_anchor=(0.95, 0.5), prop={'size': 6})  # print out legend
     remove_right_top(ax_ff)
-    ymax = round(ax_ff.get_ylim()[1],3)
+    ymax = myround(round(ax_ff.get_ylim()[1],3), base=5)
     ax_ff.set_ylim(0, ymax)
     plt.yticks([0, ax_ff.get_ylim()[1]], [str(0), str(int(ymax))])
-    ax_ff.set_ylabel('Spike Count', fontsize=font_size)
+    ax_ff.set_ylabel('Fano factor', fontsize=font_size)
+    ax_ff.axvline(x=0, color='k', ls='--', lw=0.5)
     ax_ff.axvline(x=mi.median_durations.sum(), color='k', ls='--', lw=0.5)
+    ax_ff.axhline(y=1, color='k', ls='--', lw=0.5)  # baseline for fano factor
+    plt.setp(ax_spk_count.get_xticklabels(), visible=False)
+    # plt.xticks([0, pi.median_duration], [str(0), str(pi.median_duration)])
+    ax_ff.set_xlabel('Time (ms)', fontsize=font_size)
 
     # Print out results on the figure
     txt_yloc -= txt_inc
@@ -355,7 +369,7 @@ for row in db.cur.fetchall():
         ax_txt.text(txt_xloc, txt_yloc, f"Fano Factor ({k}) = {round(np.nanmean(v),3)}", fontsize=font_size)
 
     # Save results to database
-    if save_db:
+    if update_db:
         db.create_col('cluster', 'cvSpkCountUndir', 'REAL')
         if 'U' in pi.spk_count_cv.keys():
             db.update('cluster', 'cvSpkCountUndir', pi.pcc['U']['mean'], row['id'])
