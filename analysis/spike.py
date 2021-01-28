@@ -227,8 +227,9 @@ def get_pcc(fr_array):
     for ind1, fr1 in enumerate(fr_array):
         for ind2, fr2 in enumerate(fr_array):
             if ind2 > ind1:
-                if np.linalg.norm((fr2 - fr2.mean()), ord=1):
-                    pcc_arr = np.append(pcc_arr, np.corrcoef(fr1, fr2)[0, 1])  # get correlation coefficient
+                if np.linalg.norm((fr1 - fr1.mean()), ord=1) * np.linalg.norm((fr2 - fr2.mean()), ord=1):
+                    if np.isnan(np.corrcoef(fr1, fr2)[0, 1]):
+                        pcc_arr = np.append(pcc_arr, np.corrcoef(fr1, fr2)[0, 1])  # get correlation coefficient
 
     pcc_dict['array'] = pcc_arr
     pcc_dict['mean'] = round(pcc_arr.mean(), 3)
@@ -297,7 +298,11 @@ class ClusterInfo:
             sets spk_wf, spk_ts, nb_spk as attributes
         """
 
-        spk_txt_file = list(self.path.glob('*' + self.channel + '(merged).txt'))[0]
+        spk_txt_file = list(self.path.glob('*' + self.channel + '(merged).txt'))
+        if not spk_txt_file:
+            raise FileNotFoundError
+
+        spk_txt_file = spk_txt_file[0]
         spk_info = np.loadtxt(spk_txt_file, delimiter=delimiter, skiprows=1)  # skip header
         unit_nb = int(self.unit[-2:])
 
