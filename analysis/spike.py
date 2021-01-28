@@ -550,6 +550,9 @@ class MotifInfo(ClusterInfo):
     def __len__(self):
         return len(self.files)
 
+    def __repr__(self):  # print attributes
+        return str([key for key in self.__dict__.keys()])
+
     def get_note_duration(self):
         # Calculate note & gap duration per motif
         note_durations = np.empty((len(self), len(self.motif) * 2 - 1))
@@ -748,9 +751,6 @@ class PethInfo():
         self.fano_factor = fano_factor_dict
         self.spk_count_cv = spk_count_cv_dict
 
-    def __len__(self):
-        return self.peth.shape[0]
-
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
@@ -763,11 +763,9 @@ class BaselineInfo(ClusterInfo):
     def __init__(self, database, update=False):
         super().__init__(database)
 
+        # Load motif info
         file_name = self.path / 'BaselineInfo.npy'
-
-        if not update:  # file already exists or you don't want to update the file
-            baseline_info = np.load(file_name, allow_pickle=True).item()
-        else:  # create a new file
+        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
 
             # Store values in here
             file_list = []
@@ -830,6 +828,9 @@ class BaselineInfo(ClusterInfo):
             }
             # Save baseline_info as a numpy object
             np.save(file_name, baseline_info)
+
+        else:
+            baseline_info = np.load(file_name, allow_pickle=True).item()
 
         # Set the dictionary values to class attributes
         for key in baseline_info:
