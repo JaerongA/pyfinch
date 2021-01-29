@@ -78,11 +78,6 @@ def load_events(dir):
         # Load the .not.mat file
         notmat_file = file.with_suffix('.wav.not.mat')
         onsets, offsets, intervals, durations, syllables, contexts = read_not_mat(notmat_file, unit='ms')
-
-        # Todo: add a statement if the program can't find a matching .not.mat
-        # if len(set(syllables)) == 1 and '0' in set(syllables):
-        #     continue
-
         start_ind = timestamp_serialized.size  # start of the file
 
         if timestamp_serialized.size:
@@ -228,7 +223,7 @@ def get_pcc(fr_array):
         for ind2, fr2 in enumerate(fr_array):
             if ind2 > ind1:
                 if np.linalg.norm((fr1 - fr1.mean()), ord=1) * np.linalg.norm((fr2 - fr2.mean()), ord=1):
-                    if np.isnan(np.corrcoef(fr1, fr2)[0, 1]):
+                    if not np.isnan(np.corrcoef(fr1, fr2)[0, 1]):
                         pcc_arr = np.append(pcc_arr, np.corrcoef(fr1, fr2)[0, 1])  # get correlation coefficient
 
     pcc_dict['array'] = pcc_arr
@@ -470,7 +465,6 @@ class MotifInfo(ClusterInfo):
         else:
             motif_info = np.load(file_name, allow_pickle=True).item()
 
-
     def load_motif(self):
         # Store values here
         file_list = []
@@ -478,7 +472,7 @@ class MotifInfo(ClusterInfo):
         onset_list = []
         offset_list = []
         syllable_list = []
-        motif_duration_list = []
+        duration_list = []
         context_list = []
         motif_info = {}
 
@@ -507,7 +501,7 @@ class MotifInfo(ClusterInfo):
 
                 file_list.append(file)
                 spk_list.append(motif_spk)
-                motif_duration_list.append(motif_offset - motif_onset)
+                duration_list.append(motif_offset - motif_onset)
                 onset_list.append(onsets_in_motif)
                 offset_list.append(offsets_in_motif)
                 syllable_list.append(syllables[start_ind:stop_ind + 1])
@@ -519,7 +513,7 @@ class MotifInfo(ClusterInfo):
             'spk_ts': spk_list,
             'onsets': onset_list,
             'offsets': offset_list,
-            'motif_durations': motif_duration_list,
+            'durations': duration_list,  # this is motif durations
             'syllables': syllable_list,
             'contexts': context_list,
             'parameter': peth_parm
@@ -528,7 +522,6 @@ class MotifInfo(ClusterInfo):
         # Set the dictionary values to class attributes
         for key in motif_info:
             setattr(self, key, motif_info[key])
-
         # Get duration
         note_duration_list, median_duration_list = self.get_note_duration()
         self.note_durations = note_duration_list
@@ -541,6 +534,8 @@ class MotifInfo(ClusterInfo):
         self.spk_ts_warp = spk_ts_warp_list
         motif_info['spk_ts_warp'] = spk_ts_warp_list
 
+        for key in motif_info:
+            setattr(self, key, motif_info[key])
         # Save motif_info as a numpy object
         file_name = self.path / 'MotifInfo.npy'
         np.save(file_name, motif_info)
@@ -594,14 +589,6 @@ class MotifInfo(ClusterInfo):
             timestamp = [[onset, offset] for onset, offset in zip(onset, offset)]
             timestamp = sum(timestamp, [])
 
-            # # # Add spikes from the pre-motor window
-            # if peth_parm['buffer']:
-            #     # timestamp = np.insert(timestamp, 0, timestamp[0] - peth_parm['buffer'])
-            #     _, spk_ts_temp = extract_ind(spk_ts, [timestamp[0] - peth_parm['buffer'], timestamp[0]])
-            #     spk_ts_new = np.append(spk_ts_new, spk_ts_temp)
-
-
-
             for i in range(0, len(self.median_durations)):
                 ratio = self.median_durations[i] / durations[i]
                 diff = timestamp[i] - timestamp[0]
@@ -620,6 +607,19 @@ class MotifInfo(ClusterInfo):
             spk_ts_warped_list.append(spk_ts)
         return spk_ts_warped_list
 
+    @property
+    def mean_fr(self):
+        "Mean firing rates"
+
+        fr_dict = {}
+        for context in unique(self.contexts):
+            nb_spk = sum([len(spk_ts) for spk_ts, context in zip(self.spk_ts, self.contexts) if context == 'U'])
+            total_duration = sum([duration for duration, context in zip(self.durations, self.contexts) if context == 'U'])
+            breakpoint()
+            mean_fr = nb_spk / (total_duration / 1E3)
+            fr_dict[context] = mean_fr
+        return fr_dict
+
     def jitter_spk(self, jitter):
         ##TODO: add spike jitter
         pass
@@ -627,7 +627,6 @@ class MotifInfo(ClusterInfo):
     def get_peth(self, time_warp=True):
         """Get peri-event time histograms & rasters during song motif"""
         peth_dict = {}
-
         if time_warp:  # peth calculated from time-warped spikes by default
             # peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
             peth, time_bin = get_peth(self.onsets, self.spk_ts_warp)
@@ -848,6 +847,17 @@ class BaselineInfo(ClusterInfo):
             if key in ['U', 'D']:
                 correlogram += value
         return correlogram
+
+    @property
+    def mean_fr(self):
+        """Mean firing rates"""
+        nb_spk = sum([len(spk_ts) for spk_ts in self.spk_ts])
+        total_duration = sum(self.durations)
+        mean_fr = nb_spk / total_duration
+        return round(mean_fr,3)
+
+    def __repr__(self):  # print attributes
+        return str([key for key in self.__dict__.keys()])
 
     @property
     def isi(self):
