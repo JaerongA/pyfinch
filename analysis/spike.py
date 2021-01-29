@@ -465,6 +465,10 @@ class MotifInfo(ClusterInfo):
         else:
             motif_info = np.load(file_name, allow_pickle=True).item()
 
+        # Set the dictionary values to class attributes
+        for key in motif_info:
+            setattr(self, key, motif_info[key])
+
     def load_motif(self):
         # Store values here
         file_list = []
@@ -531,11 +535,9 @@ class MotifInfo(ClusterInfo):
 
         # Get PLW (piecewise linear warping)
         spk_ts_warp_list = self.piecewise_linear_warping()
-        self.spk_ts_warp = spk_ts_warp_list
+        # self.spk_ts_warp = spk_ts_warp_list
         motif_info['spk_ts_warp'] = spk_ts_warp_list
 
-        for key in motif_info:
-            setattr(self, key, motif_info[key])
         # Save motif_info as a numpy object
         file_name = self.path / 'MotifInfo.npy'
         np.save(file_name, motif_info)
@@ -578,7 +580,8 @@ class MotifInfo(ClusterInfo):
         Based on each median note and gap durations
         """
         spk_ts_warped_list = []
-        list_zip = zip(self.note_durations, self.onsets, self.offsets, self.spk_ts)
+        spk_ts_list = self.spk_ts
+        list_zip = zip(self.note_durations, self.onsets, self.offsets, spk_ts_list)
 
         for motif_ind, (durations, onset, offset, spk_ts) in enumerate(list_zip):  # per motif
 
@@ -609,20 +612,33 @@ class MotifInfo(ClusterInfo):
 
     @property
     def mean_fr(self):
-        "Mean firing rates"
-
+        "Mean motif firing rates"
         fr_dict = {}
-        for context in unique(self.contexts):
-            nb_spk = sum([len(spk_ts) for spk_ts, context in zip(self.spk_ts, self.contexts) if context == 'U'])
-            total_duration = sum([duration for duration, context in zip(self.durations, self.contexts) if context == 'U'])
-            breakpoint()
+        motif_spk_list = []
+        list_zip = zip(self.onsets, self.offsets, self.spk_ts)
+
+        # Make sure spikes from the pre-motif buffer is not included in calculation
+        for onset, offset, spks in list_zip:
+            onset = np.asarray(list(map(float, onset)))
+            offset = np.asarray(list(map(float, offset)))
+            motif_spk_list.append(spks[np.where((spks >= onset[0]) & (spks <= offset[-1]))])
+
+        for context1 in unique(self.contexts):
+            nb_spk = sum([len(spk) for spk, context2 in zip(motif_spk_list, self.contexts) if context2 == context1])
+            total_duration = sum([duration for duration, context2 in zip(self.durations, self.contexts) if context2 == context1])
             mean_fr = nb_spk / (total_duration / 1E3)
-            fr_dict[context] = mean_fr
+            fr_dict[context1] = mean_fr
         return fr_dict
 
-    def jitter_spk(self, jitter):
-        ##TODO: add spike jitter
-        pass
+    def jitter_spk_ts(self):
+        """Add a random jitter to the spike"""
+        spk_ts_jittered_list = []
+        for ind, spk_ts in enumerate(self.spk_ts):
+            np.random.seed(ind)  # make random jitter reproducible
+            nb_spk = spk_ts.shape[0]
+            jitter = np.random.uniform(-jitter_limit, jitter_limit, nb_spk)
+            spk_ts_jittered_list.append(spk_ts + jitter)
+        self.spk_ts_jittered = spk_ts_jittered_list
 
     def get_peth(self, time_warp=True):
         """Get peri-event time histograms & rasters during song motif"""

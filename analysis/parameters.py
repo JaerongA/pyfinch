@@ -45,6 +45,10 @@ spk_count_parm = {'win_size': 30  # moving window where number of spikes will be
 tick_length = 1
 tick_width = 1
 
+# Add a random spike jitter
+jitter_limit = 5  # maximum amount of jitter (in ms)
+
+
 # def get_syl_color():
 #     # color for each syllable
 #     import numpy as np
