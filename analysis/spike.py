@@ -326,18 +326,16 @@ class ClusterInfo:
 
     def analyze_waveform(self):
         # Conduct waveform analysis
-        if not hasattr(self, 'avg_wf'):
-            print("waveform not loaded - run '_load_spk()' first!")
-        else:
-            avg_wf = np.nanmean(self.spk_wf, axis=0)
-            spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
-            spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
-                    1 / sample_rate[self.format]) * 1E6  # in microseconds
 
-            self.avg_wf = avg_wf
-            self.spk_height = spk_height  # in microvolts
-            self.spk_width = spk_width  # in microseconds
-            print("avg_wf, spk_height, spk_width added")
+        avg_wf = np.nanmean(self.spk_wf, axis=0)
+        spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
+        spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
+                1 / sample_rate[self.format]) * 1E6  # in microseconds
+
+        self.avg_wf = avg_wf
+        self.spk_height = spk_height  # in microvolts
+        self.spk_width = spk_width  # in microseconds
+        print("avg_wf, spk_height (uv), spk_width (us) added")
 
     def get_conditional_spk(self):
 
@@ -929,7 +927,7 @@ class NeuralData(ClusterInfo):
     def __init__(self, database):
         super().__init__(database)
 
-    def load_neural_trace(self, channel):
+    def load_neural_trace(self, *channel):
 
         # List .rhd files
         rhd_files = list(self.path.glob('*.rhd'))
