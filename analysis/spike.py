@@ -120,7 +120,6 @@ def load_audio(dir):
     from scipy.io import wavfile
 
     file_name = dir / 'AudioData.npy'
-
     if file_name.exists():
         audio_info = np.load(file_name, allow_pickle=True).item()
     else:
@@ -140,7 +139,11 @@ def load_audio(dir):
         # Loop through audio files
         for file in files:
 
+            # Load data file
+            print('Loading... ' + file.stem)
             sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
+
+            # Add timestamp info
             length = data.shape[0] / sample_rate
             timestamp = np.round(np.linspace(0, length, data.shape[0]) * 1E3,
                                  3)  # start from t = 0 in ms, reduce floating precision
@@ -255,8 +258,8 @@ class ClusterInfo:
 
         # Get cluster name & path
         self.name, self.path = load_cluster(database)
-        print('')
-        print('Load cluster {self.name}'.format(self=self))
+        # print('')
+        # print('Load cluster {self.name}'.format(self=self))
 
         # Load events
         file_name = self.path / 'EventInfo.npy'
@@ -623,7 +626,8 @@ class MotifInfo(ClusterInfo):
 
         for context1 in unique(self.contexts):
             nb_spk = sum([len(spk) for spk, context2 in zip(motif_spk_list, self.contexts) if context2 == context1])
-            total_duration = sum([duration for duration, context2 in zip(self.durations, self.contexts) if context2 == context1])
+            total_duration = sum(
+                [duration for duration, context2 in zip(self.durations, self.contexts) if context2 == context1])
             mean_fr = nb_spk / (total_duration / 1E3)
             fr_dict[context1] = mean_fr
         return fr_dict
@@ -749,16 +753,17 @@ class PethInfo():
                     win_inc += 1
                 # Truncate values outside the range
                 ind = (((0 - peth_parm['buffer']) <= self.time_bin) & (self.time_bin <= self.median_duration))
-                spk_arr = spk_arr[:,:ind.shape[0]]
+                spk_arr = spk_arr[:, :ind.shape[0]]
 
                 spk_count = spk_arr.sum(axis=0)
-                fano_factor = spk_arr.var(axis=0) / spk_arr.mean(axis=0)  # per time window (across renditions) (renditions x time window)
-                spk_count_cv = spk_count.std(axis=0)/ spk_count.mean(axis=0)  # cv across time (single value)
+                fano_factor = spk_arr.var(axis=0) / spk_arr.mean(
+                    axis=0)  # per time window (across renditions) (renditions x time window)
+                spk_count_cv = spk_count.std(axis=0) / spk_count.mean(axis=0)  # cv across time (single value)
 
                 # store values in a dictionary
                 spk_count_dict[k] = spk_count
                 fano_factor_dict[k] = fano_factor
-                spk_count_cv_dict[k] = round(spk_count_cv,3)
+                spk_count_cv_dict[k] = round(spk_count_cv, 3)
 
         self.spk_count = spk_count_dict
         self.fano_factor = fano_factor_dict
@@ -766,6 +771,7 @@ class PethInfo():
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
+
 
 class BoutInfo(ClusterInfo):
     pass
@@ -868,7 +874,7 @@ class BaselineInfo(ClusterInfo):
         nb_spk = sum([len(spk_ts) for spk_ts in self.spk_ts])
         total_duration = sum(self.durations)
         mean_fr = nb_spk / total_duration
-        return round(mean_fr,3)
+        return round(mean_fr, 3)
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
@@ -923,32 +929,82 @@ class AudioData():
         pass
 
 
-class NeuralData(ClusterInfo):
-    def __init__(self, database):
-        super().__init__(database)
+class NeuralData:
+    def __init__(self, database, update=False):
 
-    def load_neural_trace(self, *channel):
+        import re
+
+        ci = ClusterInfo(database)
+        self.path = ci.path
+        self.channel = ci.channel
+        self.format = ci.format  # format of the file (e.g., rhd), this info should be in the database
+
+        channel_nb = int(re.findall(r'\d+', self.channel)[0])  # channel number in db
+        file_name = self.path / "NeuralData_{}.npy".format(self.channel)
+        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+            data_info = self.load_neural_data()
+            # Save event_info as a numpy object
+        else:
+            data_info = np.load(file_name, allow_pickle=True).item()
+
+        # Set the dictionary values to class attributes
+        for key in data_info:
+            setattr(self, key, data_info[key])
+
+    def load_neural_data(self):
+        """
+        Load and concatenate all neural data files (e.g., .rhd) in the input dir (path)
+        """
+
+        import re
+
+        channel_nb = int(re.findall(r'\d+', self.channel)[0])  # channel number in db
 
         # List .rhd files
         rhd_files = list(self.path.glob('*.rhd'))
 
         # Initialize
-        amplifier_data_serialized = np.array([], dtype=np.float64)
+        timestamp_concat = np.array([], dtype=np.float64)
+        amplifier_data_concat = np.array([], dtype=np.float64)
+
+        # Store values in these lists
+        file_list = []
 
         # Loop through Intan .rhd files
         for file in rhd_files:
 
-            # Load the .rhd file
+            # Load data file
+            print('Loading... ' + file.stem)
             intan = read_rhd(file)  # note that the timestamp is in second
-
-            # Serialize time stamps
+            # Concatenate timestamps
             intan['t_amplifier'] -= intan['t_amplifier'][0]  # start from t = 0
-
-            if amplifier_data_serialized.size == 0:
-                amplifier_data_serialized = np.append(amplifier_data_serialized, intan['t_amplifier'])
+            if timestamp_concat.size == 0:
+                timestamp_concat = np.append(timestamp_concat, intan['t_amplifier'])
             else:
-                intan['t_amplifier'] += (amplifier_data_serialized[-1] + (1 / sample_rate[self.format]))
-                amplifier_data_serialized = np.append(amplifier_data_serialized, intan['t_amplifier'])
+                intan['t_amplifier'] += (timestamp_concat[-1] + (1 / sample_rate[self.format]))
+                timestamp_concat = np.append(timestamp_concat, intan['t_amplifier'])
+
+            # Concatenate neural data
+            for ind, ch in enumerate(intan['amplifier_channels']):
+                if channel_nb == int(ch['native_channel_name'][-2:]):
+                    amplifier_data_concat = np.append(amplifier_data_concat, intan['amplifier_data'][ind, :])
+
+        # Organize data into a dictionary
+        data_info = {
+            'files': file_list,
+            'timestamp': timestamp_concat,
+            'data': amplifier_data_concat,
+            'sample_rate': sample_rate[self.format]
+        }
+
+        file_name = self.path / "NeuralData_{}.npy".format(self.channel)
+        np.save(file_name, data_info)
+
+        return data_info
 
     def load_timestamp(self):
+        """Time stamp info for event (concatenated) """
         pass
+
+    def __repr__(self):  # print attributes
+        return str([key for key in self.__dict__.keys()])
