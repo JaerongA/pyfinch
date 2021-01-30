@@ -328,17 +328,20 @@ class ClusterInfo:
         # print("spk_ts, spk_wf, nb_spk attributes added")
 
     def analyze_waveform(self):
-        # Conduct waveform analysis
+        """
+        Perform waveform analysis
+        """
 
         avg_wf = np.nanmean(self.spk_wf, axis=0)
         spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
-        spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
-                1 / sample_rate[self.format]) * 1E6  # in microseconds
-
-        self.avg_wf = avg_wf
+        spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (1 / sample_rate[self.format]) * 1E6  # in microseconds
+        wf_ts = np.arange(0, avg_wf.shape[0]) / sample_rate[self.format] * 1E3  # x-axis in ms
+        self.avg_wf = avg_wf  # averaged waveform
         self.spk_height = spk_height  # in microvolts
         self.spk_width = spk_width  # in microseconds
-        print("avg_wf, spk_height (uv), spk_width (us) added")
+        self.wf_ts = wf_ts  # waveform timestamp in ms
+
+        print("avg_wf, spk_height (uv), spk_width (us), wf_ts (ms) added")
 
     def get_conditional_spk(self):
 
