@@ -34,7 +34,8 @@ def read_not_mat(notmat, unit='ms'):
     intervals = onsets[1:] - offsets[:-1]  # syllable gap durations (interval)
     durations = offsets - onsets  # duration of each syllable
     syllables = scipy.io.loadmat(notmat)['syllables'][0]  # Load the syllable info
-    contexts = notmat.name.split('.')[0].split('_')[-1][0].upper()  # extract 'U' (undirected) or 'D' (directed) from the file name
+    contexts = notmat.name.split('.')[0].split('_')[-1][
+        0].upper()  # extract 'U' (undirected) or 'D' (directed) from the file name
     if contexts not in ['U', 'D']:  # if the file was not tagged with Undir or Dir
         contexts = None
 
@@ -148,3 +149,24 @@ def get_dur():
 
     """
     pass
+
+
+def get_snr(avg_wf, raw_neural_trace):
+    """
+    Calculate signal-to-noise ratio of the spike
+    Parameters
+    ----------
+    avg_wf : array
+        averaged spike waveform of a neuron
+    raw_neural_trace : array
+        raw neural signal
+    Returns
+    -------
+    snr : float
+        signal-to-noise ratio
+    """
+
+    import numpy as np
+
+    snr = 10 * np.log10(np.var(avg_wf) / np.var(raw_neural_trace))  # in dB
+    return snr
