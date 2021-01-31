@@ -31,6 +31,8 @@ class ProjectLoader:
 class DBLoader:
     def __init__(self, db_path):
 
+        self.path = db_path
+        self.dir = self.path.parent
         self.conn = sqlite3.connect(db_path)
         self.conn.row_factory = sqlite3.Row
         self.cur = self.conn.cursor()
@@ -54,10 +56,37 @@ class DBLoader:
                 data type for the column (e.g, TEXT, INT)
 
         """
+        self.cur.execute("ALTER TABLE {} ADD COLUMN {} {}".format(table, col_name, type))
+
+    def update(self, table, col_name, type, id, value=None):
+
         if col_name not in self.col_names:
-            self.cur.execute("ALTER TABLE {} ADD COLUMN {} {}".format(table, col_name, type))
+            self.create_col(table, col_name, type)
+        if value:
+            self.cur.execute("UPDATE {} SET {} = ? WHERE id = ?".format(table, col_name), (value, id))
+            self.conn.commit()
 
-    def update(self, table, col_name, value, id):
+    def to_csv(self, table, add_date=True, open_folder=True):
+        """
+        Convert database to csv
+        Parameters
+        ----------
+        table : str
+            Name of the table
+        open_folder : bool
+            Open the output directory
+        """
+        from datetime import datetime
+        import pandas as pd
 
-        self.cur.execute("UPDATE {} SET {} = ? WHERE id = ?".format(table, col_name), (value, id))
-        self.conn.commit()
+        csv_name = Path(f"{table}.csv")
+        if add_date:  # append time&time info to csv
+            csv_name = csv_name.stem + '_' + datetime.now().strftime("%Y%m%d%H%M%S") + csv_name.suffix
+
+        df = pd.read_sql("SELECT * from {}".format(table), self.conn)
+        df.to_csv(self.dir / csv_name, index=False, header=True)
+
+        if open_folder:
+            """Open the directory in win explorer"""
+            import webbrowser
+            webbrowser.open(self.dir)
