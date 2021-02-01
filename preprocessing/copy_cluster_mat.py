@@ -22,7 +22,6 @@ if not os.path.exists(save_path):
 
 
 def copy_cluster_mat(summary_df):
-
     import shutil
 
     for cluster_run in range(0, nb_cluster):
@@ -42,7 +41,6 @@ def copy_cluster_mat(summary_df):
             print(new_save_path)
             if not os.path.exists(new_save_path):
                 os.mkdir(new_save_path)
-
             shutil.copy(mat_file, new_save_path)
 
 
