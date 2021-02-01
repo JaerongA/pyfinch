@@ -3,10 +3,7 @@ By Jaerong
 Calculates a analysis signal-to-noise ratio (SNR) relative to the background (raw neural trace)
 """
 
-from database.load import ProjectLoader
 from analysis.spike import *
-from analysis.parameters import *
-import matplotlib.pyplot as plt
 from util import save
 from util.draw import *
 
@@ -41,20 +38,19 @@ def plot_waveform(axis, wf_ts, spk_wf,
 
 
 # Parameters
-spk_proportion = 0.1  # proportion of waveforms to plot
+spk_proportion = 0.2  # proportion of waveforms to plot
 save_fig = True
-update_db = False
+update_db = True
 dir_name = 'WaveformAnalysis'
-fig_ext='.png'  # .png or .pdf
+fig_ext = '.png'  # .png or .pdf
 
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 96"
-db = ProjectLoader().load_db()
+query = "SELECT * FROM cluster WHERE id = 1"
 db.execute(query)
 
-# Loop through neurons
+# Loop through db
 for row in db.cur.fetchall():
 
     ci = ClusterInfo(row)  # cluster object
@@ -83,13 +79,13 @@ for row in db.cur.fetchall():
     # Save results to database
     if update_db:
         db.create_col('cluster', 'SNR', 'REAL')
-        db.update('cluster', 'SNR', snr, row['id'])
+        db.update('cluster', 'SNR', row['id'], snr)
         db.create_col('cluster', 'spkHeight', 'REAL')
-        db.update('cluster', 'spkHeight', ci.spk_height, row['id'])
+        db.update('cluster', 'spkHeight', row['id'], ci.spk_height)
         db.create_col('cluster', 'spkWidth', 'REAL')
-        db.update('cluster', 'spkWidth', ci.spk_width, row['id'])
+        db.update('cluster', 'spkWidth', row['id'], ci.spk_width)
         db.create_col('cluster', 'nbSpk', 'INT')
-        db.update('cluster', 'nbSpk', ci.nb_spk, row['id'])
+        db.update('cluster', 'nbSpk', row['id'], ci.nb_spk)
 
     # Save results
     if save_fig:
@@ -98,4 +94,7 @@ for row in db.cur.fetchall():
     else:
         plt.show()
 
+# Convert db to csv
+if update_db:
+    db.to_csv('cluster')
 print('Done!')
