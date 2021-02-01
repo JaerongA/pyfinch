@@ -490,7 +490,7 @@ class MotifInfo(ClusterInfo):
         list_zip = zip(self.files, self.spk_ts, self.onsets, self.offsets, self.syllables, self.contexts)
 
         for file, spks, onsets, offsets, syllables, context in list_zip:
-            print(file)
+            print('Loading... ' + file)
             onsets = onsets.tolist()
             offsets = offsets.tolist()
 

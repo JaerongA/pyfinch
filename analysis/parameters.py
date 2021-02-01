@@ -42,7 +42,7 @@ spk_count_parm = {'win_size': 30  # moving window where number of spikes will be
                   }
 
 # Raster
-tick_length = 1
+tick_length = 0.8
 tick_width = 1
 
 # Add a random spike jitter
