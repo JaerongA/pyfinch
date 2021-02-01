@@ -6,6 +6,7 @@ plot raster & peth
 from database.load import ProjectLoader
 from analysis.spike import *
 from analysis.parameters import *
+from contextlib import suppress
 from pathlib import Path
 from analysis.load import read_rhd
 import matplotlib.pyplot as plt
@@ -21,7 +22,8 @@ rec_yloc = 0.05
 rec_height = 1  # syllable duration rect
 text_yloc = 0.5  # text height
 font_size = 10
-marker_size = 0.3  # for spike count
+marker_size = 0.4  # for spike count
+nb_note_crit = 10  # minimum number of notes for analysis
 update = True  # Set True for recreating a cache file
 norm_method=None
 fig_ext='.png'  # .png or .pdf
@@ -29,18 +31,28 @@ save_fig = False
 update_db = False  # save results to DB
 time_warp = True  # spike time warping
 
+
 # Load database
-# Select statement
-query = "SELECT * FROM cluster WHERE id = 5"
-# query = "SELECT * FROM cluster"
 db = ProjectLoader().load_db()
+# SQL statement
+query = "SELECT * FROM cluster WHERE id = 3"
 db.execute(query)
 
-# Loop through neurons
+# Loop through db
 for row in db.cur.fetchall():
 
     # ci = ClusterInfo(row, update=True)
     mi = MotifInfo(row, update=update)
+
+    # Get number of motifs
+    nb_motifs = mi.nb_motifs
+    nb_motifs.pop('All', None)
+
+    # Skip if there are not enough motifs per condition
+    # if nb_motifs['U'] < nb_note_crit and nb_motifs['D'] < nb_note_crit:
+    #     print("Not enough motifs")
+    #     continue
+
     # Plot spectrogram & peri-event histogram (Just the first rendition)
     # for onset, offset in zip(mi.onsets, mi.offsets):
     onset = mi.onsets[0]
@@ -241,7 +253,6 @@ for row in db.cur.fetchall():
 
     # Draw peri-event histogram (PETH)
     pi = mi.get_peth(time_warp=time_warp)  # peth object
-    # pi.get_fr(norm_method=norm_pomethod, norm_factor=row['baselineFR'])  # get firing rates
     # pi.get_fr(norm_method='sum')  # get firing rates
     pi.get_fr(norm_method=norm_method)  # get firing rates
 
@@ -286,8 +297,6 @@ for row in db.cur.fetchall():
     ax_txt.set_axis_off()  # remove all axes
 
     # # of motifs
-    nb_motifs = mi.nb_motifs
-    nb_motifs.pop('All', None)
     for i, (k, v) in enumerate(nb_motifs.items()):
         txt_yloc -= txt_inc
         ax_txt.text(txt_xloc, txt_yloc, f"# of motifs ({k}) = {v}", fontsize=font_size)
@@ -310,12 +319,13 @@ for row in db.cur.fetchall():
 
     # Save results to database
     if update_db:
-        db.create_col('cluster', 'pairwiseCorrUndir', 'REAL')
-        db.update('cluster', 'pairwiseCorrUndir', pi.pcc['U']['mean'], row['id'])
-        db.create_col('cluster', 'pairwiseCorrDir', 'REAL')
-        db.update('cluster', 'pairwiseCorrDir', pi.pcc['D']['mean'], row['id'])
-        db.create_col('cluster', 'corrRContext', 'REAL')
-        db.update('cluster', 'corrRContext', corr_context, row['id'])
+        with suppress(KeyError):
+            db.create_col('cluster', 'pairwiseCorrUndir', 'REAL')
+            db.update('cluster', 'pairwiseCorrUndir', row['id'], pi.pcc['U']['mean'])
+            db.create_col('cluster', 'pairwiseCorrDir', 'REAL')
+            db.update('cluster', 'pairwiseCorrDir', row['id'], pi.pcc['D']['mean'])
+            db.create_col('cluster', 'corrRContext', 'REAL')
+            db.update('cluster', 'corrRContext', row['id'], corr_context)
 
     # Plot spike counts
     pi.get_spk_count()  # spike count per time window
@@ -334,6 +344,7 @@ for row in db.cur.fetchall():
     ax_spk_count.set_ylabel('Spike Count', fontsize=font_size)
     ax_spk_count.axvline(x=0, color='k', ls='--', lw=0.5)
     ax_spk_count.axvline(x=mi.median_durations.sum(), color='k', ls='--', lw=0.5)
+    plt.setp(ax_spk_count.get_xticklabels(), visible=False)
 
     # Print out results on the figure
     txt_yloc -= txt_inc
@@ -345,20 +356,19 @@ for row in db.cur.fetchall():
     ax_ff = plt.subplot(gs[16:18, 0:4], sharex=ax_spect)
     for context, fano_factor in pi.fano_factor.items():
         if context == 'U':
-            ax_ff.plot(pi.time_bin, fano_factor, 'o', color='b', mfc='none', linewidth=0.5, label=context, markersize=marker_size)
+            ax_ff.plot(pi.time_bin, fano_factor, color='b', mfc='none', linewidth=0.5, label=context)
         elif context == 'D':
-            ax_ff.plot(pi.time_bin, fano_factor, 'o', color='m', mfc='none', linewidth=0.5, label=context, markersize=marker_size)
+            ax_ff.plot(pi.time_bin, fano_factor, color='m', mfc='none', linewidth=0.5, label=context)
 
     plt.legend(loc='center left', bbox_to_anchor=(0.98, 0.5), prop={'size': 6})  # print out legend
     remove_right_top(ax_ff)
-    ymax = myround(round(ax_ff.get_ylim()[1],3), base=5)
+    ymax = round(ax_ff.get_ylim()[1],2)
     ax_ff.set_ylim(0, ymax)
     plt.yticks([0, ax_ff.get_ylim()[1]], [str(0), str(int(ymax))])
     ax_ff.set_ylabel('Fano factor', fontsize=font_size)
     ax_ff.axvline(x=0, color='k', ls='--', lw=0.5)
     ax_ff.axvline(x=mi.median_durations.sum(), color='k', ls='--', lw=0.5)
     ax_ff.axhline(y=1, color='k', ls='--', lw=0.5)  # baseline for fano factor
-    plt.setp(ax_spk_count.get_xticklabels(), visible=False)
     ax_ff.set_xlabel('Time (ms)', fontsize=font_size)
 
     # Print out results on the figure
@@ -369,22 +379,24 @@ for row in db.cur.fetchall():
 
     # Save results to database
     if update_db:
-        db.create_col('cluster', 'cvSpkCountUndir', 'REAL')
-        if 'U' in pi.spk_count_cv.keys():
-            db.update('cluster', 'cvSpkCountUndir', pi.pcc['U']['mean'], row['id'])
-        db.create_col('cluster', 'cvSpkCountDir', 'REAL')
-        if 'D' in pi.spk_count_cv.keys():
-            db.update('cluster', 'cvSpkCountDir', pi.pcc['D']['mean'], row['id'])
-        db.create_col('cluster', 'fanoSpkCountUndir', 'REAL')
-        if 'U' in pi.fano_factor.keys():
-            db.update('cluster', 'fanoSpkCountUndir', pi.fano_factor['U']['mean'], row['id'])
-        db.create_col('cluster', 'fanoSpkCountDir', 'REAL')
-        if 'D' in pi.fano_factor.keys():
-            db.update('cluster', 'fanoSpkCountDir', pi.fano_factor['D']['mean'], row['id'])
+        with suppress(KeyError):
+            db.create_col('cluster', 'cvSpkCountUndir', 'REAL')
+            db.update('cluster', 'cvSpkCountUndir', row['id'], pi.pcc['U']['mean'])
+            db.create_col('cluster', 'cvSpkCountDir', 'REAL')
+            db.update('cluster', 'cvSpkCountDir', row['id'], pi.pcc['D']['mean'])
+            db.create_col('cluster', 'fanoSpkCountUndir', 'REAL')
+            db.update('cluster', 'fanoSpkCountUndir', row['id'], pi.fano_factor['U']['mean'])
+            db.create_col('cluster', 'fanoSpkCountDir', 'REAL')
+            db.update('cluster', 'fanoSpkCountDir', row['id'], pi.fano_factor['D']['mean'])
 
     # Save results
     if save_fig:
         save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Spk')
-        save.save_fig(fig, save_path, mi.name, fig_ext='.png')
+        save.save_fig(fig, save_path, mi.name, fig_ext=fig_ext)
 
     plt.show()
+
+# Convert db to csv
+if update_db:
+    db.to_csv('cluster')
+print('Done!')
