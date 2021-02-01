@@ -29,13 +29,12 @@ for row in db.cur.fetchall():
 
     # Calculate firing rates
     mi.get_mean_fr()
-
-    with suppress(KeyError):
-        print(bi.mean_fr)
-    with suppress(KeyError):
-        print(mi.mean_fr['U'])
-    with suppress(KeyError):
-        print(mi.mean_fr['D'])
+    # with suppress(KeyError):
+    #     print(bi.mean_fr)
+    # with suppress(KeyError):
+    #     print(mi.mean_fr['U'])
+    # with suppress(KeyError):
+    #     print(mi.mean_fr['D'])
 
     # Save results to database
     if update_db:
