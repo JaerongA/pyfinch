@@ -42,8 +42,7 @@ for row in db.cur.fetchall():
             db.create_col('cluster', 'baselineFR', 'REAL')
             db.update('cluster', 'baselineFR', row['id'], round(bi.mean_fr, 3))  # baseline firing rates
             db.create_col('cluster', 'motifFRUndir', 'REAL')
-            db.update('cluster', 'motifFRUndir', row['id'],
-                      round(mi.mean_fr['U'], 3))  # motif firing rates during Undir
+            db.update('cluster', 'motifFRUndir', row['id'], round(mi.mean_fr['U'], 3))  # motif firing rates during Undir
             db.create_col('cluster', 'motifFRDir', 'REAL')
             db.update('cluster', 'motifFRDir', row['id'], round(mi.mean_fr['D'], 3))  # motif firing rates during Dir
 
