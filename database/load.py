@@ -2,8 +2,8 @@
 By Jaerong
 Load project information and read from the project database
 """
-from configparser import ConfigParser
 import sqlite3
+from configparser import ConfigParser
 from pathlib import Path
 
 
@@ -56,13 +56,12 @@ class DBLoader:
                 data type for the column (e.g, TEXT, INT)
 
         """
-        self.cur.execute("ALTER TABLE {} ADD COLUMN {} {}".format(table, col_name, type))
-
-    def update(self, table, col_name, type, id, value=None):
-
         if col_name not in self.col_names:
-            self.create_col(table, col_name, type)
-        if value:
+            self.cur.execute("ALTER TABLE {} ADD COLUMN {} {}".format(table, col_name, type))
+
+    def update(self, table, col_name, id, value=None):
+
+        if value is not None:
             self.cur.execute("UPDATE {} SET {} = ? WHERE id = ?".format(table, col_name), (value, id))
             self.conn.commit()
 
@@ -87,6 +86,6 @@ class DBLoader:
         df.to_csv(self.dir / csv_name, index=False, header=True)
 
         if open_folder:
-            """Open the directory in win explorer"""
+            # Open the directory in win explorer
             import webbrowser
             webbrowser.open(self.dir)
