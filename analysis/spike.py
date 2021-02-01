@@ -3,11 +3,12 @@ By Jaerong
 main package for neural analysis
 """
 
-from analysis.functions import *
-from analysis.parameters import *
-from analysis.load import *
-from database.load import ProjectLoader
 from pathlib import Path
+
+from analysis.functions import *
+from analysis.load import *
+from analysis.parameters import *
+from database.load import ProjectLoader
 from util.functions import *
 from util.spect import *
 
@@ -334,11 +335,13 @@ class ClusterInfo:
 
         avg_wf = np.nanmean(self.spk_wf, axis=0)
         spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
-        spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (1 / sample_rate[self.format]) * 1E6  # in microseconds
+        spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
+                1 / sample_rate[self.format]) * 1E6  # in microseconds
         wf_ts = np.arange(0, avg_wf.shape[0]) / sample_rate[self.format] * 1E3  # x-axis in ms
+
         self.avg_wf = avg_wf  # averaged waveform
-        self.spk_height = spk_height  # in microvolts
-        self.spk_width = spk_width  # in microseconds
+        self.spk_height = round(spk_height, 3)  # in microvolts
+        self.spk_width = round(spk_width, 3)  # in microseconds
         self.wf_ts = wf_ts  # waveform timestamp in ms
 
         print("avg_wf, spk_height (uv), spk_width (us), wf_ts (ms) added")
@@ -614,8 +617,7 @@ class MotifInfo(ClusterInfo):
             spk_ts_warped_list.append(spk_ts)
         return spk_ts_warped_list
 
-    @property
-    def mean_fr(self):
+    def get_mean_fr(self):
         "Mean motif firing rates"
         fr_dict = {}
         motif_spk_list = []
@@ -633,7 +635,8 @@ class MotifInfo(ClusterInfo):
                 [duration for duration, context2 in zip(self.durations, self.contexts) if context2 == context1])
             mean_fr = nb_spk / (total_duration / 1E3)
             fr_dict[context1] = mean_fr
-        return fr_dict
+        print("mean_fr added")
+        self.mean_fr = fr_dict
 
     def jitter_spk_ts(self):
         """Add a random jitter to the spike"""
@@ -877,7 +880,7 @@ class BaselineInfo(ClusterInfo):
         nb_spk = sum([len(spk_ts) for spk_ts in self.spk_ts])
         total_duration = sum(self.durations)
         mean_fr = nb_spk / total_duration
-        return round(mean_fr, 3)
+        return mean_fr
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])

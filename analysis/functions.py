@@ -169,4 +169,5 @@ def get_snr(avg_wf, raw_neural_trace):
     import numpy as np
 
     snr = 10 * np.log10(np.var(avg_wf) / np.var(raw_neural_trace))  # in dB
+    snr = round(snr, 3)
     return snr
