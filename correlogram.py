@@ -43,6 +43,7 @@ def plot_correlogram(ax, time_bin, correlogram, title, font_size=10, normalize=F
 # Parameter
 font_size=10
 normalize=False
+update = False
 
 # Load database
 db = ProjectLoader().load_db()
@@ -53,47 +54,51 @@ db.execute(query)
 # Loop through db
 for row in db.cur.fetchall():
 
-    ci = ClusterInfo(row)  # cluster object
-    bi = BaselineInfo(row)  # baseline object
+    # ci = ClusterInfo(row, update=update)  # cluster object
+    # correlogram = ci.get_correlogram(ci.spk_ts, ci.spk_ts)
 
-    correlogram = ci.get_correlogram(ci.spk_ts, ci.spk_ts)
+    mi = MotifInfo(row, update=update)  # motif object
+    correlogram = mi.get_correlogram(mi.spk_ts, mi.spk_ts)
+
+    bi = BaselineInfo(row, update=update)  # baseline object
     correlogram['B'] = bi.get_correlogram(bi.spk_ts, bi.spk_ts)
 
     # Analysis on the correlogram
     # Todo : peak latency, burst fraction, category, burst inex, burst mean spk, burst duration, burst freq
 
+    # correlogram = correlogram['U']
+    # corr_center = round(correlogram.shape[0] / 2) + 1
+    # corr_peak = np.argmax(correlogram)
+    # peak_latency = np.min(np.abs(np.argwhere(correlogram == np.amax(correlogram)) - corr_center))  # in ms
+    # (corr_center - (1000 / burst_crit)), (corr_center + (1000 / burst_crit))
 
-
-
-
-
-
-
-
+    # correlogram = correlogram['B']
+    corr_b = Correlogram(correlogram['B'])  # Load correlogram object
 
 
     # Plot the results
     fig = plt.figure(figsize=(12, 4))
-    plt.text(0.5, 1.08, ci.name,
+    fig.set_dpi(500)
+    plt.text(0.5, 1.08, mi.name,
              horizontalalignment='center',
              fontsize=20)
 
     with suppress(KeyError):
         ax = plt.subplot(131)
-        plot_correlogram(ax, spk_corr_parm['time_bin'], correlogram['B'], 'Baseline', normalize=normalize)
+        corr_b.plot_corr(ax, corr_b.time_bin, corr_b.data, 'Baseline', normalize=normalize)
 
-        ax = plt.subplot(132)
-        plot_correlogram(ax, spk_corr_parm['time_bin'], correlogram['U'], 'Undir', normalize=normalize)
-        ax.set_ylabel('')
-
-        ax = plt.subplot(133)
-        plot_correlogram(ax, spk_corr_parm['time_bin'], correlogram['D'], 'Dir', normalize=normalize)
-        ax.set_ylabel('')
-
-
+    #     ax = plt.subplot(132)
+    #     plot_correlogram(ax, spk_corr_parm['time_bin'], correlogram['U'], 'Undir', normalize=normalize)
+    #     ax.set_ylabel('')
+    #
+    #     ax = plt.subplot(133)
+    #     plot_correlogram(ax, spk_corr_parm['time_bin'], correlogram['D'], 'Dir', normalize=normalize)
+    #     ax.set_ylabel('')
 
 
 
+    #
+    #
     plt.show()
 
     # save_path = save.make_dir('SpkCorr')
