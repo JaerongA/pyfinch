@@ -48,6 +48,10 @@ tick_width = 1
 # Add a random spike jitter
 jitter_limit = 5  # maximum amount of jitter (in ms)
 
+# Bursting criteria
+burst_hz = 200  # instantaneous firing rates >= 200 Hz to be considered bursting
+corr_burst_crit = 5 # bursting criteria (in ms) in a correlogram, peak latency of a correlogram should be <= than the criteria
+
 
 # def get_syl_color():
 #     # color for each syllable

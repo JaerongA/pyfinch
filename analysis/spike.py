@@ -586,14 +586,17 @@ class MotifInfo(ClusterInfo):
         Performs piecewise linear warping on raw analysis timestamps
         Based on each median note and gap durations
         """
+        import copy
+
         spk_ts_warped_list = []
-        spk_ts_list = self.spk_ts
-        list_zip = zip(self.note_durations, self.onsets, self.offsets, spk_ts_list)
+        list_zip = zip(self.note_durations, self.onsets, self.offsets, self.spk_ts)
 
         for motif_ind, (durations, onset, offset, spk_ts) in enumerate(list_zip):  # per motif
 
             onset = np.asarray(list(map(float, onset)))
             offset = np.asarray(list(map(float, offset)))
+            # Make a deep copy of spk_ts so as to make it modification won't affect the original
+            spk_new = copy.deepcopy(spk_ts)
 
             # Calculate note & interval duration
             timestamp = [[onset, offset] for onset, offset in zip(onset, offset)]
@@ -608,13 +611,12 @@ class MotifInfo(ClusterInfo):
                     origin = sum(self.median_durations[:i])
 
                 # Add spikes from motif
-                spk_ts_new = np.array([])
-                ind, spk_ts_temp = extract_ind(spk_ts, [timestamp[i], timestamp[i + 1]])
+                ind, spk_ts_temp = extract_ind(spk_new, [timestamp[i], timestamp[i + 1]])
                 spk_ts_temp = ((ratio * ((spk_ts_temp - timestamp[0]) - diff)) + origin) + timestamp[0]
                 # spk_ts_new = np.append(spk_ts_new, spk_ts_temp)
-                np.put(spk_ts, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
+                np.put(spk_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
 
-            spk_ts_warped_list.append(spk_ts)
+            spk_ts_warped_list.append(spk_new)
         return spk_ts_warped_list
 
     def get_mean_fr(self):
@@ -670,7 +672,7 @@ class PethInfo():
         """
         Args:
             peth_dict : dict
-                "peth" : array  (nb of trials (motifs) x time bins)
+                    "peth" : array  (nb of trials (motifs) x time bins)
                     numbers indicate analysis counts in that bin
                 "contexts" : list of strings
                     social contexts
@@ -872,7 +874,9 @@ class BaselineInfo(ClusterInfo):
         for key, value in correlogram_all.items():
             if key in ['U', 'D']:
                 correlogram += value
-        return correlogram
+
+        return correlogram  # return class object for further analysis
+
 
     @property
     def mean_fr(self):
@@ -1014,3 +1018,68 @@ class NeuralData:
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
+
+
+class Correlogram():
+    """
+    Class for correlogram analysis
+    """
+    def __init__(self, correlogram):
+
+        corr_center = round(correlogram.shape[0] / 2) + 1  # center of the correlogram
+        self.data = correlogram
+        self.time_bin = np.arange(-spk_corr_parm['lag'],
+                                  spk_corr_parm['lag'] + spk_corr_parm['bin_size'],
+                                  spk_corr_parm['bin_size'])
+        self.peak_ind = np.argmax(correlogram)  # index of the peak
+        self.peak_latency = \
+            np.min(np.abs(np.argwhere(correlogram == np.amax(correlogram)) - corr_center))  # peak from the center (in ms)
+        burst_range = np.arange(corr_center - (1000 / burst_hz) - 1, corr_center + (1000 / burst_hz), dtype='int')  # burst range in the correlogram
+        self.burst_index = round(self.data[burst_range].sum() / self.data.sum(), 3)
+
+    def __repr__(self):  # print attributes
+        return str([key for key in self.__dict__.keys()])
+
+    def get_category(self, correlogram_jitter):
+        if self.peak_latency <= corr_burst_crit:
+            self.cateogory = 'Bursting'
+        else:
+            self.category = 'Nonbursting'
+
+    def plot_corr(self, ax, time_bin, correlogram,
+                  title,
+                  font_size=10,
+                  peak_line_width=0.8,
+                  normalize=False,
+                  peak_line=True):
+        """
+        Plot correlogram
+        Parameters
+        ----------
+        ax : axis to plot the figure
+        time_bin : array
+        correlogram : array
+        title : str
+        font_size : title font size
+        normalize : normalize the correlogram
+        """
+        import matplotlib.pyplot as plt
+        from util.draw import remove_right_top
+
+        ax.bar(time_bin, correlogram, color='k')
+        ymax = myround(ax.get_ylim()[1], base=5)
+        ax.set_ylim(0, ymax)
+        plt.yticks([0, ax.get_ylim()[1]], [str(0), str(int(ymax))])
+        ax.set_title(title, size=font_size)
+        ax.set_xlabel('Time (ms)')
+        if normalize:
+            ax.set_ylabel('Prob')
+        else:
+            ax.set_ylabel('Count')
+        remove_right_top(ax)
+
+        if peak_line:
+            # peak_time_ind = np.where(self.time_bin == self.peak_latency)
+            ax.axvline(x=self.time_bin[self.peak_ind], color='r', linewidth=peak_line_width, ls='--')
+
+
