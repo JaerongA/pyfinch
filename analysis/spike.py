@@ -640,11 +640,23 @@ class MotifInfo(ClusterInfo):
         print("mean_fr added")
         self.mean_fr = fr_dict
 
-    def jitter_spk_ts(self):
+    def jitter_spk_ts(self, seed_random=False):
+        """
+
+        Parameters
+        ----------
+        seed_random : bool
+            randomization seed equals the spk_ts index
+
+        """
         """Add a random jitter to the spike"""
         spk_ts_jittered_list = []
         for ind, spk_ts in enumerate(self.spk_ts):
-            np.random.seed(ind)  # make random jitter reproducible
+            if seed_random:  # randomization seed
+                seed = np.random.randint(len(self.spk_ts), size=1)
+            else:
+                seed = ind
+            np.random.seed(seed)  # make random jitter reproducible
             nb_spk = spk_ts.shape[0]
             jitter = np.random.uniform(-jitter_limit, jitter_limit, nb_spk)
             spk_ts_jittered_list.append(spk_ts + jitter)
