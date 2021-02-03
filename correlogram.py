@@ -99,9 +99,85 @@ for row in db.cur.fetchall():
 
     #
     #
-    plt.show()
+    # plt.show()
 
     # save_path = save.make_dir('SpkCorr')
     # save.save_fig(fig, save_path, ci.name)
 
 
+
+    # Bursting analysis
+    burst_spk_list = []
+    burst_duration_list = []
+
+    nb_bursts = np.array([], dtype=np.int)
+    nb_burst_spk_list = []
+
+    for ind, spks in enumerate(bi.spk_ts):
+
+        # spk = bi.spk_ts[8]
+        isi = np.diff(spks)  # inter-spike interval
+        inst_fr = 1E3 /np.diff(spks)  #  instantaneous firing rates (Hz)
+        bursts = np.where(inst_fr >= burst_hz)[0]  # burst index
+
+        # Skip if no bursting detected
+        if not bursts.size:
+            continue
+
+        # Get the number of bursts
+        temp = np.diff(bursts)[np.where(np.diff(bursts) == 1)].size  #  check if the spikes occur in bursting
+        nb_bursts = np.append(nb_bursts, bursts.size - temp)
+
+        # Get burst onset
+        temp = np.where(np.diff(bursts) == 1)[0]
+        spk_ind = temp + 1
+        # Remove consecutive spikes in a burst and just get burst onset
+
+        burst_onset_ind = bursts
+
+        for i, ind in enumerate(temp):
+            burst_spk_ind = spk_ind[spk_ind.size -1 - i]
+            burst_onset_ind = np.delete(burst_onset_ind, burst_spk_ind)
+
+
+        # Get burst offset index
+        burst_offset_ind = np.array([], dtype=np.int)
+
+        for i in range(bursts.size-1):
+            if bursts[i+1] - bursts[i] > 1:  # if not successive spikes
+                burst_offset_ind = np.append(burst_offset_ind, bursts[i] + 1)
+
+        # Need to add the subsequent spike time stamp since it is not included (burst is the difference between successive spike time stamps)
+        burst_offset_ind = np.append(burst_offset_ind, bursts[bursts.size - 1] + 1)
+
+        burst_onset = spks[burst_onset_ind]
+        burst_offset = spks[burst_offset_ind]
+
+        burst_spk_list.append(spks[burst_onset_ind[0] : burst_offset_ind[0] + 1])
+        burst_duration_list.append(burst_offset - burst_onset)
+
+        # burst_spk = np.append(burst_spk, [spks[burst_onset_ind[0]:burst_offset_ind[0]]])
+        # burst_duration = np.append(burst_duration, [burst_offset - burst_onset])
+
+
+        # Get the number of burst spikes
+        nb_burst_spks = 1  # note that it should always be greater than 1
+
+        if nb_bursts.size:
+            if bursts.size == 1:
+                nb_burst_spks = 2
+                nb_burst_spk_list.append(nb_burst_spks)
+
+            elif  bursts.size > 1:
+                for ind in range(bursts.size-1):
+                    if bursts[ind+1] - bursts[ind] == 1:
+                        nb_burst_spks += 1
+                    else:
+                        nb_burst_spks += 1
+                        nb_burst_spk_list.append(nb_burst_spks)
+                        nb_burst_spks = 1
+
+                    if ind == bursts.size - 2:
+                        nb_burst_spks += 1
+                        nb_burst_spk_list.append(nb_burst_spks)
+        print(nb_burst_spk_list)
