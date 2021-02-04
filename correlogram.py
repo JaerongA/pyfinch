@@ -9,6 +9,7 @@ from analysis.load import read_rhd
 from contextlib import suppress
 from database.load import ProjectLoader
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 from pathlib import Path
 from util import save
 
@@ -64,7 +65,6 @@ for row in db.cur.fetchall():
     correlogram['B'] = bi.get_correlogram(bi.spk_ts, bi.spk_ts)
 
     # Analysis on the correlogram
-    # Todo : peak latency, burst fraction, category, burst inex, burst mean spk, burst duration, burst freq
 
     # correlogram = correlogram['U']
     # corr_center = round(correlogram.shape[0] / 2) + 1
@@ -74,37 +74,6 @@ for row in db.cur.fetchall():
 
     # correlogram = correlogram['B']
     corr_b = Correlogram(correlogram['B'])  # Load correlogram object
-
-
-    # Plot the results
-    fig = plt.figure(figsize=(12, 4))
-    fig.set_dpi(500)
-    plt.text(0.5, 1.08, mi.name,
-             horizontalalignment='center',
-             fontsize=20)
-
-    with suppress(KeyError):
-        ax = plt.subplot(131)
-        corr_b.plot_corr(ax, corr_b.time_bin, corr_b.data, 'Baseline', normalize=normalize)
-
-    #     ax = plt.subplot(132)
-    #     plot_correlogram(ax, spk_corr_parm['time_bin'], correlogram['U'], 'Undir', normalize=normalize)
-    #     ax.set_ylabel('')
-    #
-    #     ax = plt.subplot(133)
-    #     plot_correlogram(ax, spk_corr_parm['time_bin'], correlogram['D'], 'Dir', normalize=normalize)
-    #     ax.set_ylabel('')
-
-
-
-    #
-    #
-    # plt.show()
-
-    # save_path = save.make_dir('SpkCorr')
-    # save.save_fig(fig, save_path, ci.name)
-
-
 
     # Bursting analysis
     burst_spk_list = []
@@ -181,3 +150,53 @@ for row in db.cur.fetchall():
                         nb_burst_spks += 1
                         nb_burst_spk_list.append(nb_burst_spks)
         print(nb_burst_spk_list)
+
+    # Calculate burst fraction
+    burst_fraction = sum(nb_burst_spk_list) / sum([len(spks) for spks in bi.spk_ts])
+    print(burst_fraction)
+    burst_duration = sum(burst_duration_list)[0]
+
+    # Burst Frequency (number of burst / total sum of baseline period in Hz)
+    burst_freq = nb_bursts.sum() / sum(bi.durations)
+
+    # Mean number of spikes per burst
+    burst_mean_spk = np.array(nb_burst_spk_list).mean()
+
+    # Burst mean duration
+    burst_mean_duration = np.array(burst_duration_list).mean()
+
+
+
+    # Plot the results
+    fig = plt.figure(figsize=(10, 4))
+    fig.set_dpi(500)
+    plt.suptitle(mi.name, y=.95)
+    gs = gridspec.GridSpec(5, 8)
+    # gs.update(wspace=0.025, hspace=0.05)
+    plt.text(0.5, 1.08, mi.name,
+             horizontalalignment='center',
+             fontsize=20)
+
+    with suppress(KeyError):
+        # ax = plt.subplot(131)
+        ax = plt.subplot(gs[1:3, 1:2])
+        corr_b.plot_corr(ax, corr_b.time_bin, corr_b.data, 'Baseline', normalize=normalize)
+
+        # ax = plt.subplot(132)
+        ax = plt.subplot(gs[1:3, 3:4])
+        plot_correlogram(ax, spk_corr_parm['time_bin'], correlogram['U'], 'Undir', normalize=normalize)
+        ax.set_ylabel('')
+
+        # ax = plt.subplot(133)
+        ax = plt.subplot(gs[1:3, 5:6])
+        plot_correlogram(ax, spk_corr_parm['time_bin'], correlogram['D'], 'Dir', normalize=normalize)
+        ax.set_ylabel('')
+
+
+
+
+
+    plt.show()
+
+    # save_path = save.make_dir('SpkCorr')
+    # save.save_fig(fig, save_path, ci.name)

@@ -58,7 +58,7 @@ for row in db.cur.fetchall():
     nd = NeuralData(row, update=False)  # raw neural data
 
     # Calculate the SNR (signal-to-noise ratio in dB)
-    # variance of the signal (waveform) divided by the total neural trace
+    # variance of the signal (waveform) divided by the variance of the total neural trace
     snr = get_snr(ci.avg_wf, nd.data)
 
     # Plot the individual waveforms
