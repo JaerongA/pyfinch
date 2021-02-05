@@ -167,15 +167,37 @@ for row in db.cur.fetchall():
 
 
 
+    # # Plot the results
+    # fig = plt.figure(figsize=(10, 4))
+    # fig.set_dpi(500)
+    # plt.suptitle(mi.name, y=.95)
+    # gs = gridspec.GridSpec(5, 8)
+    # # gs.update(wspace=0.025, hspace=0.05)
+    # plt.text(0.5, 1.08, mi.name,
+    #          horizontalalignment='center',
+    #          fontsize=20)
+    #
+    # with suppress(KeyError):
+    #     # ax = plt.subplot(131)
+    #     ax = plt.subplot(gs[1:3, 1:2])
+    #     corr_b.plot_corr(ax, corr_b.time_bin, corr_b.data, 'Baseline', normalize=normalize)
+    #
+    #     # ax = plt.subplot(132)
+    #     ax = plt.subplot(gs[1:3, 3:4])
+    #     plot_correlogram(ax, spk_corr_parm['time_bin'], correlogram['U'], 'Undir', normalize=normalize)
+    #     ax.set_ylabel('')
+    #
+    #     # ax = plt.subplot(133)
+    #     ax = plt.subplot(gs[1:3, 5:6])
+    #     plot_correlogram(ax, spk_corr_parm['time_bin'], correlogram['D'], 'Dir', normalize=normalize)
+    #     ax.set_ylabel('')
+
+
     # Plot the results
     fig = plt.figure(figsize=(10, 4))
     fig.set_dpi(500)
     plt.suptitle(mi.name, y=.95)
-    gs = gridspec.GridSpec(5, 8)
-    # gs.update(wspace=0.025, hspace=0.05)
-    plt.text(0.5, 1.08, mi.name,
-             horizontalalignment='center',
-             fontsize=20)
+    ax = plt.subplot2grid((3,3), (0,0), rowspan=3, colspan=2)
 
     with suppress(KeyError):
         # ax = plt.subplot(131)
@@ -191,7 +213,6 @@ for row in db.cur.fetchall():
         ax = plt.subplot(gs[1:3, 5:6])
         plot_correlogram(ax, spk_corr_parm['time_bin'], correlogram['D'], 'Dir', normalize=normalize)
         ax.set_ylabel('')
-
 
 
 
