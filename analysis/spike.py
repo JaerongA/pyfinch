@@ -1043,20 +1043,20 @@ class Correlogram():
         self.time_bin = np.arange(-spk_corr_parm['lag'],
                                   spk_corr_parm['lag'] + spk_corr_parm['bin_size'],
                                   spk_corr_parm['bin_size'])
-        self.peak_ind = np.argmax(correlogram)  # index of the peak
-        self.peak_latency = \
-            np.min(np.abs(np.argwhere(correlogram == np.amax(correlogram)) - corr_center))  # peak from the center (in ms)
+        self.peak_ind = np.min(np.abs(np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center # index of the peak
+        self.peak_latency = self.time_bin[self.peak_ind]
         burst_range = np.arange(corr_center - (1000 / burst_hz) - 1, corr_center + (1000 / burst_hz), dtype='int')  # burst range in the correlogram
         self.burst_index = round(self.data[burst_range].sum() / self.data.sum(), 3)
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
-    def get_category(self, correlogram_jitter):
+    @property
+    def category(self, *correlogram_jitter):
         if self.peak_latency <= corr_burst_crit:
-            self.cateogory = 'Bursting'
+            return 'Bursting'
         else:
-            self.category = 'Nonbursting'
+            return 'Nonbursting'
 
     def plot_corr(self, ax, time_bin, correlogram,
                   title,
