@@ -640,27 +640,27 @@ class MotifInfo(ClusterInfo):
         print("mean_fr added")
         self.mean_fr = fr_dict
 
-    def jitter_spk_ts(self, seed_random=False):
+    def jitter_spk_ts(self, reproducible=False):
         """
-
+        Add a random temporal jitter to the spike
         Parameters
         ----------
-        seed_random : bool
-            randomization seed equals the spk_ts index
-
+        reproducible : bool
+            make the results reproducible by setting the seed as equal to index
         """
-        """Add a random jitter to the spike"""
         spk_ts_jittered_list = []
         for ind, spk_ts in enumerate(self.spk_ts):
-            if seed_random:  # randomization seed
-                seed = np.random.randint(len(self.spk_ts), size=1)
-            else:
+            np.random.seed()
+            if reproducible:  # randomization seed
                 seed = ind
-            np.random.seed(seed)  # make random jitter reproducible
+                np.random.seed(seed)  # make random jitter reproducible
+            else:
+                seed = np.random.randint(len(self.spk_ts), size=1)
+                np.random.seed(seed)  # make random jitter reproducible
             nb_spk = spk_ts.shape[0]
             jitter = np.random.uniform(-jitter_limit, jitter_limit, nb_spk)
             spk_ts_jittered_list.append(spk_ts + jitter)
-        self.spk_ts_jittered = spk_ts_jittered_list
+        self.spk_ts_jittered =  spk_ts_jittered_list
 
     def get_peth(self, time_warp=True):
         """Get peri-event time histograms & rasters during song motif"""
