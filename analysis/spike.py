@@ -397,6 +397,50 @@ class ClusterInfo:
 
         return correlogram
 
+    def jitter_spk_ts(self, reproducible=False):
+        """
+        Add a random temporal jitter to the spike
+        Parameters
+        ----------
+        reproducible : bool
+            make the results reproducible by setting the seed as equal to index
+        """
+        spk_ts_jittered_list = []
+        for ind, spk_ts in enumerate(self.spk_ts):
+            np.random.seed()
+            if reproducible:  # randomization seed
+                seed = ind
+                np.random.seed(seed)  # make random jitter reproducible
+            else:
+                seed = np.random.randint(len(self.spk_ts), size=1)
+                np.random.seed(seed)  # make random jitter reproducible
+            nb_spk = spk_ts.shape[0]
+            jitter = np.random.uniform(-jitter_limit, jitter_limit, nb_spk)
+            spk_ts_jittered_list.append(spk_ts + jitter)
+        self.spk_ts_jittered =  spk_ts_jittered_list
+
+    def get_jittered_corr(self):
+
+        from collections import defaultdict
+
+        correlogram_jitter = defaultdict(list)
+
+        for iter in range(shuffling_iter):
+            self.jitter_spk_ts()
+            corr_temp = self.get_correlogram(self.spk_ts_jittered, self.spk_ts_jittered)
+
+            # Combine correlogram from two contexts
+            for key, value in corr_temp.items():
+                if key != 'parameter':
+                    try:
+                        correlogram_jitter[key].append(value)
+                    except:
+                        correlogram_jitter[key] = value
+
+        correlogram_jitter = np.array(correlogram_jitter)  # convert to an array
+
+        return correlogram_jitter
+
     def get_isi(self):
 
         isi = {}
@@ -408,9 +452,6 @@ class ClusterInfo:
 
     @classmethod
     def plot_isi(isi):
-        pass
-
-    def bursting_analysis(self):
         pass
 
     @property
@@ -639,28 +680,6 @@ class MotifInfo(ClusterInfo):
             fr_dict[context1] = mean_fr
         print("mean_fr added")
         self.mean_fr = fr_dict
-
-    def jitter_spk_ts(self, reproducible=False):
-        """
-        Add a random temporal jitter to the spike
-        Parameters
-        ----------
-        reproducible : bool
-            make the results reproducible by setting the seed as equal to index
-        """
-        spk_ts_jittered_list = []
-        for ind, spk_ts in enumerate(self.spk_ts):
-            np.random.seed()
-            if reproducible:  # randomization seed
-                seed = ind
-                np.random.seed(seed)  # make random jitter reproducible
-            else:
-                seed = np.random.randint(len(self.spk_ts), size=1)
-                np.random.seed(seed)  # make random jitter reproducible
-            nb_spk = spk_ts.shape[0]
-            jitter = np.random.uniform(-jitter_limit, jitter_limit, nb_spk)
-            spk_ts_jittered_list.append(spk_ts + jitter)
-        self.spk_ts_jittered =  spk_ts_jittered_list
 
     def get_peth(self, time_warp=True):
         """Get peri-event time histograms & rasters during song motif"""
@@ -1045,25 +1064,46 @@ class Correlogram():
                                   spk_corr_parm['bin_size'])
         self.peak_ind = np.min(np.abs(np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center # index of the peak
         self.peak_latency = self.time_bin[self.peak_ind]
+        self.peak_value = self.data[self.peak_ind]
         burst_range = np.arange(corr_center - (1000 / burst_hz) - 1, corr_center + (1000 / burst_hz), dtype='int')  # burst range in the correlogram
         self.burst_index = round(self.data[burst_range].sum() / self.data.sum(), 3)
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
-    @property
-    def category(self, *correlogram_jitter):
-        if self.peak_latency <= corr_burst_crit:
-            return 'Bursting'
+    def category(self, correlogram_jitter):
+        """
+        Get bursting category of a neuron based on autocorrelogram
+        Parameters
+        ----------
+        correlogram_jitter : array
+            Random time-jittered correlogram for baseline setting
+        Returns
+            Category of a neuron ('Bursting' or 'Nonbursting')
+        -------
+        """
+        corr_mean = correlogram_jitter.mean(axis=0)
+        corr_std = correlogram_jitter.std(axis=0)
+        upper_lim = corr_mean + (corr_std * 2)
+        lower_lim = corr_mean - (corr_std * 2)
+
+        self.corr_baseline = upper_lim
+
+        # Check peak significance
+        if self.peak_value > upper_lim[self.peak_ind]:
+            self.category = 'Bursting'
         else:
-            return 'Nonbursting'
+            self.category = 'NonBursting'
+        return self.category
+
 
     def plot_corr(self, ax, time_bin, correlogram,
                   title,
                   font_size=10,
                   peak_line_width=0.8,
                   normalize=False,
-                  peak_line=True):
+                  peak_line=True,
+                  baseline=True):
         """
         Plot correlogram
         Parameters
@@ -1093,5 +1133,3 @@ class Correlogram():
         if peak_line:
             # peak_time_ind = np.where(self.time_bin == self.peak_latency)
             ax.axvline(x=self.time_bin[self.peak_ind], color='r', linewidth=peak_line_width, ls='--')
-
-
