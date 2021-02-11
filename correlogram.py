@@ -66,6 +66,7 @@ for row in db.cur.fetchall():
     mi = MotifInfo(row, update=update)  # motif object
     # Calculate firing rates
     mi.get_mean_fr()
+
     # Get correlogram
     correlogram = mi.get_correlogram(mi.spk_ts, mi.spk_ts)
 
@@ -73,9 +74,11 @@ for row in db.cur.fetchall():
     correlogram['B'] = bi.get_correlogram(bi.spk_ts, bi.spk_ts)
 
     # Get correlogram per condition
-    corr_b = Correlogram(correlogram['B'])  # Load correlogram object
-    corr_u = Correlogram(correlogram['U'])
-    corr_d = Correlogram(correlogram['D'])
+    with suppress(KeyError):
+
+        corr_b = Correlogram(correlogram['B'])  # Load correlogram object
+        corr_u = Correlogram(correlogram['U'])
+        corr_d = Correlogram(correlogram['D'])
 
     # Bursting analysis
     burst_spk_list = []
