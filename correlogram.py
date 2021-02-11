@@ -17,10 +17,10 @@ from util import save
 def print_out_text(ax, peak_latency,
                    firing_rates,
                    burst_mean_duration, burst_freq, burst_mean_spk, burst_fraction,
-                   *category
+                   category,
+                   burst_index
                    ):
-
-    font_size = 13
+    font_size = 12
     txt_xloc = 0
     txt_yloc = 1
     txt_inc = 0.15
@@ -30,16 +30,20 @@ def print_out_text(ax, peak_latency,
     txt_yloc -= txt_inc
     ax.text(txt_xloc, txt_yloc, f"Firing Rates = {round(firing_rates, 3)} Hz", fontsize=font_size)
     txt_yloc -= txt_inc
-    ax.text(txt_xloc, txt_yloc, f'Bursting Duration = {round(burst_mean_duration, 3)}', fontsize=font_size)
+    ax.text(txt_xloc, txt_yloc, f'Burst Duration = {round(burst_mean_duration, 3)}', fontsize=font_size)
     txt_yloc -= txt_inc
-    ax.text(txt_xloc, txt_yloc, f'Bursting Freq = {round(burst_freq, 3)}', fontsize=font_size)
+    ax.text(txt_xloc, txt_yloc, f'Burst Freq = {round(burst_freq, 3)}', fontsize=font_size)
     txt_yloc -= txt_inc
-    ax.text(txt_xloc, txt_yloc, f'Bursting MeanSpk = {round(burst_mean_spk, 3)}', fontsize=font_size)
+    ax.text(txt_xloc, txt_yloc, f'Burst MeanSpk = {round(burst_mean_spk, 3)}', fontsize=font_size)
     txt_yloc -= txt_inc
-    ax.text(txt_xloc, txt_yloc, f'Bursting Fraction = {round(burst_fraction, 3)} (%)', fontsize=font_size)
+    ax.text(txt_xloc, txt_yloc, f'Burst Fraction = {round(burst_fraction, 3)} (%)', fontsize=font_size)
     txt_yloc -= txt_inc
     ax.text(txt_xloc, txt_yloc, 'Category = {}'.format(category[0]), fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f'Burst Index = {round(burst_index, 3)}', fontsize=font_size)
+
     ax.axis('off')
+
 
 def update_db():
     pass
@@ -50,6 +54,10 @@ normalize = False
 update = False
 nb_row = 7
 nb_col = 3
+fig_ext='.png'  # .png or .pdf
+save_fig = False
+update_db = False  # save results to DB
+
 
 # Load database
 db = ProjectLoader().load_db()
@@ -75,10 +83,9 @@ for row in db.cur.fetchall():
 
     # Get correlogram per condition
     with suppress(KeyError):
-
-        corr_b = Correlogram(correlogram['B'])  # Load correlogram object
-        corr_u = Correlogram(correlogram['U'])
-        corr_d = Correlogram(correlogram['D'])
+        corr_b = Correlogram(correlogram['B'])  # Baseline
+        corr_u = Correlogram(correlogram['U'])  # Undirected
+        corr_d = Correlogram(correlogram['D'])  # Directed
 
     # Bursting analysis
     burst_spk_list = []
@@ -152,7 +159,7 @@ for row in db.cur.fetchall():
                     if ind == bursts.size - 2:
                         nb_burst_spks += 1
                         nb_burst_spk_list.append(nb_burst_spks)
-        print(nb_burst_spk_list)
+        # print(nb_burst_spk_list)
 
     # Calculate burst fraction
     burst_fraction = sum(nb_burst_spk_list) / sum([len(spks) for spks in bi.spk_ts])
@@ -168,9 +175,22 @@ for row in db.cur.fetchall():
     # Burst mean duration
     burst_mean_duration = np.array(burst_duration_list).mean()
 
+    # Get jittered correlogram for getting the baseline
+    correlogram_jitter = mi.get_jittered_corr()
+    a = bi.get_jittered_corr()
+    correlogram_jitter['B'] = bi.get_jittered_corr()
+
+    for key, value in correlogram_jitter.items():
+        if key == 'U':
+            corr_u.category(value)
+        elif key == 'D':
+            corr_d.category(value)
+        elif key == 'B':
+            corr_b.category(value)
+
     # Plot the results
-    fig = plt.figure(figsize=(11, 6))
-    fig.set_dpi(600)
+    fig = plt.figure(figsize=(12, 7))
+    fig.set_dpi(500)
     plt.suptitle(mi.name, y=.95)
     ax1 = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=3, colspan=1)
     ax2 = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=3, colspan=1)
@@ -184,15 +204,42 @@ for row in db.cur.fetchall():
     with suppress(KeyError):
 
         corr_b.plot_corr(ax1, spk_corr_parm['time_bin'], correlogram['B'], 'Baseline', normalize=normalize)
-        print_out_text(ax_txt1, corr_b.peak_latency, bi.mean_fr, burst_mean_duration, burst_freq, burst_mean_spk, burst_fraction, corr_b.category)
+        print_out_text(ax_txt1, corr_b.peak_latency, bi.mean_fr, burst_mean_duration, burst_freq, burst_mean_spk,
+                       burst_fraction, corr_b.category, corr_b.burst_index)
 
         corr_u.plot_corr(ax2, spk_corr_parm['time_bin'], correlogram['U'], 'Undir', normalize=normalize)
-        print_out_text(ax_txt2, corr_u.peak_latency, mi.mean_fr['U'], burst_mean_duration, burst_freq, burst_mean_spk, burst_fraction, corr_u.category)
+        print_out_text(ax_txt2, corr_u.peak_latency, mi.mean_fr['U'], burst_mean_duration, burst_freq, burst_mean_spk,
+                       burst_fraction, corr_u.category, corr_u.burst_index)
 
         corr_d.plot_corr(ax3, spk_corr_parm['time_bin'], correlogram['D'], 'Dir', normalize=normalize)
-        print_out_text(ax_txt3, corr_d.peak_latency, mi.mean_fr['D'], burst_mean_duration, burst_freq, burst_mean_spk, burst_fraction, corr_d.category)
+        print_out_text(ax_txt3, corr_d.peak_latency, mi.mean_fr['D'], burst_mean_duration, burst_freq, burst_mean_spk,
+                       burst_fraction, corr_d.category, corr_d.burst_index)
 
     plt.show()
 
     # save_path = save.make_dir('SpkCorr')
     # save.save_fig(fig, save_path, ci.name)
+
+    # Save results to database
+    # if update_db:
+    #     with suppress(KeyError):
+    #         db.create_col('cluster', 'baselineFR', 'REAL')
+    #         db.update('cluster', 'baselineFR', row['id'], round(bi.mean_fr, 3))  # baseline firing rates
+    #         db.create_col('cluster', 'motifFRUndir', 'REAL')
+    #         db.update('cluster', 'motifFRUndir', row['id'],
+    #                   round(mi.mean_fr['U'], 3))  # motif firing rates during Undir
+    #         db.create_col('cluster', 'motifFRDir', 'REAL')
+    #         db.update('cluster', 'motifFRDir', row['id'], round(mi.mean_fr['D'], 3))  # motif firing rates during Dir
+#
+# # Convert db to csv
+# if update_db:
+#     db.to_csv('cluster')
+# print('Done!')
+
+    # Save results
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'UnitProfiling')
+        save.save_fig(fig, save_path, mi.name, fig_ext=fig_ext)
+
+
+# TODO: burst index, add database, save figure, isi plot

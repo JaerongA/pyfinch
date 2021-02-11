@@ -679,7 +679,7 @@ class MotifInfo(ClusterInfo):
                 [duration for duration, context2 in zip(self.durations, self.contexts) if context2 == context1])
             mean_fr = nb_spk / (total_duration / 1E3)
             fr_dict[context1] = mean_fr
-        print("mean_fr added")
+        # print("mean_fr added")
         self.mean_fr = fr_dict
 
     def get_peth(self, time_warp=True):
@@ -1130,7 +1130,7 @@ class Correlogram():
         from util.draw import remove_right_top
 
         ax.bar(time_bin, correlogram, color='k')
-        ymax = myround(ax.get_ylim()[1], base=5)
+        ymax = myround(ax.get_ylim()[1], base=10)
         ax.set_ylim(0, ymax)
         plt.yticks([0, ax.get_ylim()[1]], [str(0), str(int(ymax))])
         ax.set_title(title, size=font_size)
@@ -1146,4 +1146,4 @@ class Correlogram():
             ax.axvline(x=self.time_bin[self.peak_ind], color='r', linewidth=peak_line_width, ls='--')
 
         if baseline:
-            ax.plot(self.time_bin, self.baseline, 'g', lw=0.5)
+            ax.plot(self.time_bin, self.baseline, 'm', lw=0.5, ls='--')
