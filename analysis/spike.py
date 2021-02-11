@@ -1101,7 +1101,7 @@ class Correlogram():
         self.baseline = upper_lim
 
         # Check peak significance
-        if self.peak_value > upper_lim[self.peak_ind]:
+        if self.peak_value > upper_lim[self.peak_ind] and self.peak_latency <= corr_burst_crit:
             self.category = 'Bursting'
         else:
             self.category = 'NonBursting'
