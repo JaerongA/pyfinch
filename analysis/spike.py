@@ -344,7 +344,7 @@ class ClusterInfo:
         self.spk_width = round(spk_width, 3)  # in microseconds
         self.wf_ts = wf_ts  # waveform timestamp in ms
 
-        print("avg_wf, spk_height (uv), spk_width (us), wf_ts (ms) added")
+        # print("avg_wf, spk_height (uv), spk_width (us), wf_ts (ms) added")
 
     def get_conditional_spk(self):
 
@@ -428,7 +428,6 @@ class ClusterInfo:
         for iter in range(shuffling_iter):
             self.jitter_spk_ts()
             corr_temp = self.get_correlogram(self.spk_ts_jittered, self.spk_ts_jittered)
-
             # Combine correlogram from two contexts
             for key, value in corr_temp.items():
                 if key != 'parameter':
@@ -437,7 +436,9 @@ class ClusterInfo:
                     except:
                         correlogram_jitter[key] = value
 
-        correlogram_jitter = np.array(correlogram_jitter)  # convert to an array
+        # Convert to array
+        for key, value in correlogram_jitter.items():
+                correlogram_jitter[key] = (np.array(value))
 
         return correlogram_jitter
 
@@ -908,6 +909,16 @@ class BaselineInfo(ClusterInfo):
 
         return correlogram  # return class object for further analysis
 
+    def get_jittered_corr(self):
+
+        correlogram_jitter = []
+
+        for iter in range(shuffling_iter):
+            self.jitter_spk_ts()
+            corr_temp = self.get_correlogram(self.spk_ts_jittered, self.spk_ts_jittered)
+            correlogram_jitter.append(corr_temp)
+
+        return np.array(correlogram_jitter)
 
     @property
     def mean_fr(self):
@@ -1087,7 +1098,7 @@ class Correlogram():
         upper_lim = corr_mean + (corr_std * 2)
         lower_lim = corr_mean - (corr_std * 2)
 
-        self.corr_baseline = upper_lim
+        self.baseline = upper_lim
 
         # Check peak significance
         if self.peak_value > upper_lim[self.peak_ind]:
@@ -1133,3 +1144,6 @@ class Correlogram():
         if peak_line:
             # peak_time_ind = np.where(self.time_bin == self.peak_latency)
             ax.axvline(x=self.time_bin[self.peak_ind], color='r', linewidth=peak_line_width, ls='--')
+
+        if baseline:
+            ax.plot(self.time_bin, self.baseline, 'g', lw=0.5)
