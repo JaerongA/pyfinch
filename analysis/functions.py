@@ -171,3 +171,44 @@ def get_snr(avg_wf, raw_neural_trace):
     snr = 10 * np.log10(np.var(avg_wf) / np.var(raw_neural_trace))  # in dB
     snr = round(snr, 3)
     return snr
+
+def get_half_width(wf_ts, avg_wf):
+
+    import numpy as np
+
+
+    diff_ind = []
+    for ind in np.where(np.diff(avg_wf < 0))[0]:
+        diff_ind.append(ind)
+
+    # Get the deflection range where the peak is detected
+    max_amp_arr = []
+    for ind, _ in enumerate(diff_ind):
+        if ind < len(diff_ind) - 1:
+            max_amp = np.max(np.abs(avg_wf[diff_ind[ind]: diff_ind[ind + 1]]))
+            max_amp_arr = np.append(max_amp_arr, max_amp)
+
+    # Get the absolute amp value of the peak and trough
+    peak_trough_amp = np.sort(max_amp_arr)[::-1][0:2]
+
+    # Decide which one is the peak
+    peak_trough_ind = np.array([], dtype=np.int)
+
+    for amp in peak_trough_amp:
+        peak_trough_ind = np.append(peak_trough_ind, np.where(np.abs(avg_wf) == amp)[0])
+
+    peak_ind = peak_trough_ind.min()  # note that the waveforms are inverted in extracelluar recording so peak comes first
+    trough_ind = peak_trough_ind.max()
+
+    deflection_range = []
+
+    for ind, _ in enumerate(diff_ind):
+        if ind < len(diff_ind) - 1:
+            range = diff_ind[ind: ind + 2]
+            if range[0] < peak_ind < range[1]:
+                deflection_range = range
+                break
+
+    half_width = (wf_ts[deflection_range[1]] - wf_ts[deflection_range[0]]) / 2
+    half_width *= 1E3  # convert to microsecond
+    return round(half_width, 3)

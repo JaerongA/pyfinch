@@ -335,14 +335,16 @@ class ClusterInfo:
 
         avg_wf = np.nanmean(self.spk_wf, axis=0)
         spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
+        # spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
+        #         1 / sample_rate[self.format]) * 1E6  # in microseconds
         spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
                 1 / sample_rate[self.format]) * 1E6  # in microseconds
         wf_ts = np.arange(0, avg_wf.shape[0]) / sample_rate[self.format] * 1E3  # x-axis in ms
-        breakpoint()
         self.avg_wf = avg_wf  # averaged waveform
         self.spk_height = round(spk_height, 3)  # in microvolts
         self.spk_width = round(spk_width, 3)  # in microseconds
         self.wf_ts = wf_ts  # waveform timestamp in ms
+        self.half_width = get_half_width(self.wf_ts, self.avg_wf)  # get the half width from the peak deflection
 
         # print("avg_wf, spk_height (uv), spk_width (us), wf_ts (ms) added")
 
