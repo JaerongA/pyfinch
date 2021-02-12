@@ -38,7 +38,6 @@ def plot_waveform(axis, wf_ts, spk_wf,
 
 
 # Parameters
-spk_proportion = 0.2  # proportion of waveforms to plot
 save_fig = True
 update_db = True
 dir_name = 'WaveformAnalysis'
@@ -47,7 +46,8 @@ fig_ext = '.png'  # .png or .pdf
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 1"
+# query = "SELECT * FROM cluster"
+query = "SELECT * FROM cluster WHERE id =5"
 db.execute(query)
 
 # Loop through db
@@ -62,7 +62,7 @@ for row in db.cur.fetchall():
     snr = get_snr(ci.avg_wf, nd.data)
 
     # Plot the individual waveforms
-    fig = plt.figure()
+    fig = plt.figure(figsize=(7, 5))
     fig.suptitle(ci.name)
     ax = plt.subplot(121)
     plot_waveform(ax, ci.wf_ts, ci.spk_wf, spk_proportion)
@@ -70,10 +70,11 @@ for row in db.cur.fetchall():
     # Print out text
     plt.subplot(122)
     plt.axis('off')
-    plt.text(0.1, 0.1, 'SNR = {} dB'.format(snr), fontsize=12)
-    plt.text(0.1, 0.3, 'Spk Height = {:.2f} µV'.format(ci.spk_height), fontsize=12)
-    plt.text(0.1, 0.5, 'Spk Width = {:.2f} µs'.format(ci.spk_width), fontsize=12)
-    plt.text(0.1, 0.7, '# of Spk = {}'.format(ci.nb_spk), fontsize=12)
+    plt.text(0.1, 0.8, 'SNR = {} dB'.format(snr), fontsize=12)
+    plt.text(0.1, 0.6, 'Spk Height = {:.2f} µV'.format(ci.spk_height), fontsize=12)
+    plt.text(0.1, 0.4, 'Spk Width = {:.2f} µs'.format(ci.spk_width), fontsize=12)
+    plt.text(0.1, 0.2, 'Half width = {:.2f} µs'.format(ci.half_width), fontsize=12)  # measured from the peak deflection
+    plt.text(0.1, 0.0, '# of Spk = {}'.format(ci.nb_spk), fontsize=12)
     set_fig_size(4.2, 2.5)  # set the physical size of the save_fig in inches (width, height)
 
     # Save results to database
@@ -84,6 +85,8 @@ for row in db.cur.fetchall():
         db.update('cluster', 'spkHeight', row['id'], ci.spk_height)
         db.create_col('cluster', 'spkWidth', 'REAL')
         db.update('cluster', 'spkWidth', row['id'], ci.spk_width)
+        db.create_col('cluster', 'spkHalfWidth', 'REAL')
+        db.update('cluster', 'spkHalfWidth', row['id'], ci.half_width)
         db.create_col('cluster', 'nbSpk', 'INT')
         db.update('cluster', 'nbSpk', row['id'], ci.nb_spk)
 
