@@ -53,7 +53,7 @@ burst_hz = 200  # instantaneous firing rates >= 200 Hz to be considered bursting
 corr_burst_crit = 5  # bursting criteria (in ms) in a correlogram, peak latency of a correlogram should be <= than the criteria
 
 # Correlogram
-shuffling_iter = 5  # shuffling iteration for obtaining baseline
+shuffling_iter = 50  # shuffling iteration for obtaining baseline
 
 # Waveform analysis
 spk_proportion = 0.2  # proportion of waveforms to plot

@@ -338,7 +338,7 @@ class ClusterInfo:
         spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
                 1 / sample_rate[self.format]) * 1E6  # in microseconds
         wf_ts = np.arange(0, avg_wf.shape[0]) / sample_rate[self.format] * 1E3  # x-axis in ms
-
+        breakpoint()
         self.avg_wf = avg_wf  # averaged waveform
         self.spk_height = round(spk_height, 3)  # in microvolts
         self.spk_width = round(spk_width, 3)  # in microseconds
@@ -510,6 +510,7 @@ class MotifInfo(ClusterInfo):
         # Load motif info
         file_name = self.path / 'MotifInfo.npy'
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+            ClusterInfo(database, update=True)
             motif_info = self.load_motif()
         else:
             motif_info = np.load(file_name, allow_pickle=True).item()
