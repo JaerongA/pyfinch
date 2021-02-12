@@ -122,3 +122,8 @@ def normalize(array):
     import numpy as np
 
     return (np.array(array) - np.average(array)) / np.std(array)
+
+def exists(var):
+    """"Check if a variable exists"""
+
+    return var in globals()

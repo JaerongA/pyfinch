@@ -24,10 +24,10 @@ text_yloc = 0.5  # text height
 font_size = 10
 marker_size = 0.4  # for spike count
 nb_note_crit = 10  # minimum number of notes for analysis
-update = True  # Set True for recreating a cache file
 norm_method=None
 fig_ext='.png'  # .png or .pdf
 save_fig = False
+update = True  # Set True for recreating a cache file
 update_db = False  # save results to DB
 time_warp = True  # spike time warping
 

@@ -16,25 +16,19 @@ update_db = True
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 1"
-# query = "SELECT * FROM cluster"
+# query = "SELECT * FROM cluster WHERE id = 1"
+query = "SELECT * FROM cluster"
 db.execute(query)
 
 # Loop through db
 for row in db.cur.fetchall():
 
-    # ci = ClusterInfo(row, update=update)
+    # Load class object
     bi = BaselineInfo(row, update=update)
     mi = MotifInfo(row, update=update)
 
     # Calculate firing rates
     mi.get_mean_fr()
-    # with suppress(KeyError):
-    #     print(bi.mean_fr)
-    # with suppress(KeyError):
-    #     print(mi.mean_fr['U'])
-    # with suppress(KeyError):
-    #     print(mi.mean_fr['D'])
 
     # Save results to database
     if update_db:

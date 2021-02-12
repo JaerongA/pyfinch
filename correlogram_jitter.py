@@ -125,3 +125,7 @@ for row in db.cur.fetchall():
     # # corr_b.plot_corr(ax, spk_corr_parm['time_bin'], correlogram['B'], corr_mean, 'Baseline', normalize=normalize)
     # ax.bar(spk_corr_parm['time_bin'], correlogram['B'], color='k')
     # plt.show()
+
+    print(corr_u.category)
+    print(corr_d.category)
+    print(corr_b.category)

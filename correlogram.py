@@ -38,7 +38,7 @@ def print_out_text(ax, peak_latency,
     txt_yloc -= txt_inc
     ax.text(txt_xloc, txt_yloc, f'Burst Fraction = {round(burst_fraction, 3)} (%)', fontsize=font_size)
     txt_yloc -= txt_inc
-    ax.text(txt_xloc, txt_yloc, 'Category = {}'.format(category[0]), fontsize=font_size)
+    ax.text(txt_xloc, txt_yloc, 'Category = {}'.format(category), fontsize=font_size)
     txt_yloc -= txt_inc
     ax.text(txt_xloc, txt_yloc, f'Burst Index = {round(burst_index, 3)}', fontsize=font_size)
 
@@ -62,7 +62,7 @@ update_db = False  # save results to DB
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 96"
+query = "SELECT * FROM cluster WHERE id = 15"
 db.execute(query)
 
 # Loop through db
@@ -89,9 +89,10 @@ for row in db.cur.fetchall():
 
     # Bursting analysis
     burst_spk_list = []
-    burst_duration_list = []
+    burst_duration_arr = []
 
-    nb_bursts = np.array([], dtype=np.int)
+    # nb_bursts = np.array([], dtype=np.int)
+    nb_bursts = []
     nb_burst_spk_list = []
 
     for ind, spks in enumerate(bi.spk_ts):
@@ -133,11 +134,11 @@ for row in db.cur.fetchall():
         burst_onset = spks[burst_onset_ind]
         burst_offset = spks[burst_offset_ind]
 
-        burst_spk_list.append(spks[burst_onset_ind[0]: burst_offset_ind[0] + 1])
-        burst_duration_list.append(burst_offset - burst_onset)
+        # burst_spk_list.append(spks[burst_onset_ind[0]: burst_offset_ind[0] + 1])
+        # burst_duration_list.append(burst_offset - burst_onset)
 
-        # burst_spk = np.append(burst_spk, [spks[burst_onset_ind[0]:burst_offset_ind[0]]])
-        # burst_duration = np.append(burst_duration, [burst_offset - burst_onset])
+        # burst_spk_arr = np.append(burst_spk, [spks[burst_onset_ind[0]:burst_offset_ind[0]]])
+        burst_duration_arr = np.append(burst_duration_arr, [burst_offset - burst_onset])
 
         # Get the number of burst spikes
         nb_burst_spks = 1  # note that it should always be greater than 1
@@ -164,7 +165,7 @@ for row in db.cur.fetchall():
     # Calculate burst fraction
     burst_fraction = sum(nb_burst_spk_list) / sum([len(spks) for spks in bi.spk_ts])
     # print(burst_fraction)
-    burst_duration = sum(burst_duration_list)[0]
+    burst_duration = (burst_duration_arr).sum()
 
     # Burst Frequency (number of burst / total sum of baseline period in Hz)
     burst_freq = nb_bursts.sum() / sum(bi.durations)
@@ -173,11 +174,10 @@ for row in db.cur.fetchall():
     burst_mean_spk = np.array(nb_burst_spk_list).mean()
 
     # Burst mean duration
-    burst_mean_duration = np.array(burst_duration_list).mean()
+    burst_mean_duration = burst_duration_arr.mean()
 
     # Get jittered correlogram for getting the baseline
     correlogram_jitter = mi.get_jittered_corr()
-    a = bi.get_jittered_corr()
     correlogram_jitter['B'] = bi.get_jittered_corr()
 
     for key, value in correlogram_jitter.items():
@@ -192,16 +192,22 @@ for row in db.cur.fetchall():
     fig = plt.figure(figsize=(12, 7))
     fig.set_dpi(500)
     plt.suptitle(mi.name, y=.95)
+
+    # The code will skip if a condition doesn't exist
     ax1 = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=3, colspan=1)
-    ax2 = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=3, colspan=1)
-    ax3 = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=3, colspan=1)
+    if exists('corr_u'):
+        ax2 = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=3, colspan=1)
+    if exists('corr_d'):
+        ax3 = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=3, colspan=1)
 
     # For text output
     ax_txt1 = plt.subplot2grid((nb_row, nb_col), (4, 0), rowspan=3, colspan=1)
-    ax_txt2 = plt.subplot2grid((nb_row, nb_col), (4, 1), rowspan=3, colspan=1)
-    ax_txt3 = plt.subplot2grid((nb_row, nb_col), (4, 2), rowspan=3, colspan=1)
+    if exists('corr_u'):
+        ax_txt2 = plt.subplot2grid((nb_row, nb_col), (4, 1), rowspan=3, colspan=1)
+    if exists('corr_u'):
+        ax_txt3 = plt.subplot2grid((nb_row, nb_col), (4, 2), rowspan=3, colspan=1)
 
-    with suppress(KeyError):
+    with suppress(NameError):
 
         corr_b.plot_corr(ax1, spk_corr_parm['time_bin'], correlogram['B'], 'Baseline', normalize=normalize)
         print_out_text(ax_txt1, corr_b.peak_latency, bi.mean_fr, burst_mean_duration, burst_freq, burst_mean_spk,

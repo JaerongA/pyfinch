@@ -3,9 +3,9 @@ By Jaerong
 Utility functions to make output directories & save output files
 """
 
-from pathlib import Path
 from datetime import date
 from database import load
+from pathlib import Path
 
 
 def make_dir(parent_path, dir_name, add_date=True):
@@ -50,8 +50,8 @@ def save_fig(fig, save_path, title, fig_ext='.png', open_folder=False):
     plt.savefig(fig_name, transparent=True)
     plt.close(fig)
 
-    # if open_folder:  # open folder after saving figures
-    #     open_folder(save_path)
+    if open_folder:  # open folder after saving figures
+        open_folder(save_path)
 
 
 def save2json(filename, data):
