@@ -176,9 +176,9 @@ def get_half_width(wf_ts, avg_wf):
 
     import numpy as np
 
-
+    # Find the negative deflection
     diff_ind = []
-    for ind in np.where(np.diff(avg_wf < 0))[0]:
+    for ind in np.where(np.diff(avg_wf < avg_wf.mean()))[0]:  # below mean amp
         diff_ind.append(ind)
 
     # Get the deflection range where the peak is detected
