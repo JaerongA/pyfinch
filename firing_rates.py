@@ -16,8 +16,8 @@ update_db = True
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-# query = "SELECT * FROM cluster WHERE id = 1"
-query = "SELECT * FROM cluster"
+query = "SELECT * FROM cluster WHERE id = 2"
+# query = "SELECT * FROM cluster"
 db.execute(query)
 
 # Loop through db
@@ -32,13 +32,21 @@ for row in db.cur.fetchall():
 
     # Save results to database
     if update_db:
-        with suppress(KeyError):
-            db.create_col('cluster', 'baselineFR', 'REAL')
+        db.create_col('cluster', 'baselineFR', 'REAL')
+        try:
             db.update('cluster', 'baselineFR', row['id'], round(bi.mean_fr, 3))  # baseline firing rates
-            db.create_col('cluster', 'motifFRUndir', 'REAL')
+        except:
+            pass
+        db.create_col('cluster', 'motifFRUndir', 'REAL')
+        try:
             db.update('cluster', 'motifFRUndir', row['id'], round(mi.mean_fr['U'], 3))  # motif firing rates during Undir
-            db.create_col('cluster', 'motifFRDir', 'REAL')
+        except:
+            pass
+        db.create_col('cluster', 'motifFRDir', 'REAL')
+        try:
             db.update('cluster', 'motifFRDir', row['id'], round(mi.mean_fr['D'], 3))  # motif firing rates during Dir
+        except:
+            pass
 
 # Convert db to csv
 if update_db:
