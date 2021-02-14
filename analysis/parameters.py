@@ -56,7 +56,9 @@ corr_burst_crit = 5  # bursting criteria (in ms) in a correlogram, peak latency 
 shuffling_iter = 50  # shuffling iteration for obtaining baseline
 
 # Waveform analysis
+interp_factor = 100  # factor by which to increase the sampling frequency
 spk_proportion = 0.2  # proportion of waveforms to plot
+
 
 # def get_syl_color():
 #     # color for each syllable

@@ -328,23 +328,42 @@ class ClusterInfo:
         self.spk_ts = spk_list  # analysis timestamps in ms
         # print("spk_ts, spk_wf, nb_spk attributes added")
 
-    def analyze_waveform(self):
+    def analyze_waveform(self, interpolate=True):
         """
         Perform waveform analysis
         """
 
         avg_wf = np.nanmean(self.spk_wf, axis=0)
-        spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
+        wf_ts = np.arange(0, avg_wf.shape[0]) / sample_rate[self.format] * 1E3  # x-axis in ms
+
+        def _get_spk_profile(wf_ts, avg_wf):
+            spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
+            spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
+                    1 / sample_rate[self.format]) * 1E6  # in microseconds
+            deflection_range, half_width = get_half_width(wf_ts, avg_wf)  # get the half width from the peak deflection
+            return spk_height, spk_width, half_width
+
+        spk_height, spk_width, half_width = _get_spk_profile(wf_ts, avg_wf)
+
+        if interpolate:  # interpolate the waveform to increase sampling frequency
+            from scipy import interpolate
+
+            f = interpolate.interp1d(wf_ts, avg_wf)
+            wf_ts_interp = np.arange(0, wf_ts[-1], ((wf_ts[1] - wf_ts[0]) * (1 / interp_factor)))
+            assert (np.diff(wf_ts_interp)[0] * interp_factor) == np.diff(wf_ts)[0]
+            avg_wf_interp = f(wf_ts_interp)  # use interpolation function returned by `interp1d`
+            spk_height, spk_width, half_width = _get_spk_profile(wf_ts_interp, avg_wf_interp)
+
+        # spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
         # spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
         #         1 / sample_rate[self.format]) * 1E6  # in microseconds
-        spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
-                1 / sample_rate[self.format]) * 1E6  # in microseconds
-        wf_ts = np.arange(0, avg_wf.shape[0]) / sample_rate[self.format] * 1E3  # x-axis in ms
+        # half_width = get_half_width(self.wf_ts, self.avg_wf)  # get the half width from the peak deflection
+
         self.avg_wf = avg_wf  # averaged waveform
+        self.wf_ts = wf_ts  # waveform timestamp in ms
         self.spk_height = round(spk_height, 3)  # in microvolts
         self.spk_width = round(spk_width, 3)  # in microseconds
-        self.wf_ts = wf_ts  # waveform timestamp in ms
-        self.half_width = get_half_width(self.wf_ts, self.avg_wf)  # get the half width from the peak deflection
+        self.half_width = half_width
 
         # print("avg_wf, spk_height (uv), spk_width (us), wf_ts (ms) added")
 

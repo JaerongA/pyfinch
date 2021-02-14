@@ -211,4 +211,4 @@ def get_half_width(wf_ts, avg_wf):
 
     half_width = (wf_ts[deflection_range[1]] - wf_ts[deflection_range[0]]) / 2
     half_width *= 1E3  # convert to microsecond
-    return round(half_width, 3)
+    return deflection_range, round(half_width, 3)
