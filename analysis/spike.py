@@ -336,14 +336,14 @@ class ClusterInfo:
         avg_wf = np.nanmean(self.spk_wf, axis=0)
         wf_ts = np.arange(0, avg_wf.shape[0]) / sample_rate[self.format] * 1E3  # x-axis in ms
 
-        def _get_spk_profile(wf_ts, avg_wf):
+        def _get_spk_profile(wf_ts, avg_wf, interpolate=True):
             spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
-            spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
-                    1 / sample_rate[self.format]) * 1E6  # in microseconds
+            if interpolate:
+                spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * ((1 / sample_rate[self.format]) / interp_factor) * 1E6  # in microseconds
+            else:
+                spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (1 / sample_rate[self.format]) * 1E6  # in microseconds
             deflection_range, half_width = get_half_width(wf_ts, avg_wf)  # get the half width from the peak deflection
             return spk_height, spk_width, half_width
-
-        spk_height, spk_width, half_width = _get_spk_profile(wf_ts, avg_wf)
 
         if interpolate:  # interpolate the waveform to increase sampling frequency
             from scipy import interpolate
@@ -353,11 +353,8 @@ class ClusterInfo:
             assert (np.diff(wf_ts_interp)[0] * interp_factor) == np.diff(wf_ts)[0]
             avg_wf_interp = f(wf_ts_interp)  # use interpolation function returned by `interp1d`
             spk_height, spk_width, half_width = _get_spk_profile(wf_ts_interp, avg_wf_interp)
-
-        # spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
-        # spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
-        #         1 / sample_rate[self.format]) * 1E6  # in microseconds
-        # half_width = get_half_width(self.wf_ts, self.avg_wf)  # get the half width from the peak deflection
+        else:
+            spk_height, spk_width, half_width = _get_spk_profile(wf_ts, avg_wf)
 
         self.avg_wf = avg_wf  # averaged waveform
         self.wf_ts = wf_ts  # waveform timestamp in ms
@@ -438,7 +435,7 @@ class ClusterInfo:
             nb_spk = spk_ts.shape[0]
             jitter = np.random.uniform(-jitter_limit, jitter_limit, nb_spk)
             spk_ts_jittered_list.append(spk_ts + jitter)
-        self.spk_ts_jittered =  spk_ts_jittered_list
+        self.spk_ts_jittered = spk_ts_jittered_list
 
     def get_jittered_corr(self):
 
@@ -459,7 +456,7 @@ class ClusterInfo:
 
         # Convert to array
         for key, value in correlogram_jitter.items():
-                correlogram_jitter[key] = (np.array(value))
+            correlogram_jitter[key] = (np.array(value))
 
         return correlogram_jitter
 
@@ -1088,6 +1085,7 @@ class Correlogram():
     """
     Class for correlogram analysis
     """
+
     def __init__(self, correlogram):
 
         corr_center = round(correlogram.shape[0] / 2) + 1  # center of the correlogram
@@ -1095,10 +1093,12 @@ class Correlogram():
         self.time_bin = np.arange(-spk_corr_parm['lag'],
                                   spk_corr_parm['lag'] + spk_corr_parm['bin_size'],
                                   spk_corr_parm['bin_size'])
-        self.peak_ind = np.min(np.abs(np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center # index of the peak
+        self.peak_ind = np.min(
+            np.abs(np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center  # index of the peak
         self.peak_latency = self.time_bin[self.peak_ind]
         self.peak_value = self.data[self.peak_ind]
-        burst_range = np.arange(corr_center - (1000 / burst_hz) - 1, corr_center + (1000 / burst_hz), dtype='int')  # burst range in the correlogram
+        burst_range = np.arange(corr_center - (1000 / burst_hz) - 1, corr_center + (1000 / burst_hz),
+                                dtype='int')  # burst range in the correlogram
         self.burst_index = round(self.data[burst_range].sum() / self.data.sum(), 3)
 
     def __repr__(self):  # print attributes
@@ -1128,7 +1128,6 @@ class Correlogram():
         else:
             self.category = 'NonBursting'
         return self.category
-
 
     def plot_corr(self, ax, time_bin, correlogram,
                   title,
