@@ -697,7 +697,7 @@ class MotifInfo(ClusterInfo):
             total_duration = sum(
                 [duration for duration, context2 in zip(self.durations, self.contexts) if context2 == context1])
             mean_fr = nb_spk / (total_duration / 1E3)
-            fr_dict[context1] = mean_fr
+            fr_dict[context1] = round(mean_fr, 3)
         # print("mean_fr added")
         self.mean_fr = fr_dict
 
