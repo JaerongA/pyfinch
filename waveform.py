@@ -5,11 +5,11 @@ Calculates a analysis signal-to-noise ratio (SNR) relative to the background (ra
 
 from analysis.spike import *
 from util import save
-from util.draw import *
-
-
 def plot_waveform(axis, wf_ts, spk_wf,
+                  wf_ts_interp=None,
+                  avg_wf_interp=None,
                   spk_proportion=0.1,
+                  deflection_range=None,
                   avg_wf=True,
                   scale_bar=True
                   ):
@@ -22,11 +22,20 @@ def plot_waveform(axis, wf_ts, spk_wf,
         axis.plot(wf_ts, wf, color='k', lw=0.2)
 
     remove_right_top(axis)
+
     if avg_wf:
-        axis.plot(wf_ts, np.nanmean(spk_wf, axis=0), color='r', lw=2)  # indicate the avg waveform
+        if wf_ts_interp.any() and avg_wf_interp.any():
+            axis.plot(wf_ts_interp, avg_wf_interp, color='r', lw=2)  # indicate the avg waveform
+        else:
+            axis.plot(wf_ts, np.nanmean(spk_wf, axis=0), color='r', lw=2)  # indicate the avg waveform
+
     axis.set_xlabel('Time (ms)')
     axis.set_ylabel('Amplitude (µV)')
     plt.xlim([-0.2, 1])
+
+    if bool(deflection_range):
+        for ind in deflection_range:
+            axis.axvline(x=wf_ts_interp[ind], color='r', linewidth=1, ls='--')
 
     if scale_bar:
         # Plot a scale bar
@@ -37,17 +46,21 @@ def plot_waveform(axis, wf_ts, spk_wf,
         plt.axis('off')
 
 
+from util.draw import *
+
+
 # Parameters
-save_fig = True
-update_db = True
+save_fig = False
+update_db = False
 dir_name = 'WaveformAnalysis'
 fig_ext = '.png'  # .png or .pdf
 
 # Load database
 db = ProjectLoader().load_db()
+
 # SQL statement
 # query = "SELECT * FROM cluster"
-query = "SELECT * FROM cluster WHERE id =5"
+query = "SELECT * FROM cluster WHERE id =2"
 db.execute(query)
 
 # Loop through db
@@ -65,7 +78,11 @@ for row in db.cur.fetchall():
     fig = plt.figure(figsize=(7, 5))
     fig.suptitle(ci.name)
     ax = plt.subplot(121)
-    plot_waveform(ax, ci.wf_ts, ci.spk_wf, spk_proportion)
+    plot_waveform(ax, ci.wf_ts, ci.spk_wf,
+                  ci.wf_ts_interp, ci.avg_wf_interp,
+                  spk_proportion
+                  # ci.deflection_range  # demarcate the deflection point
+                  )
 
     # Print out text
     plt.subplot(122)
