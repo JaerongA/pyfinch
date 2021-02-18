@@ -59,10 +59,11 @@ class DBLoader:
         if col_name not in self.col_names:
             self.cur.execute("ALTER TABLE {} ADD COLUMN {} {}".format(table, col_name, type))
 
-    def update(self, table, col_name, id, value):
+    def update(self, table, col_name, id, value=None):
 
-        self.cur.execute("UPDATE {} SET {} = ? WHERE id = ?".format(table, col_name), (value, id))
-        self.conn.commit()
+        if value:
+            self.cur.execute("UPDATE {} SET {} = ? WHERE id = ?".format(table, col_name), (value, id))
+            self.conn.commit()
 
     def to_csv(self, table, add_date=True, open_folder=True):
         """

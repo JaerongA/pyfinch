@@ -1,6 +1,6 @@
 venv
 load_intan_rhd_format
-practice.py
+test/test_waveform.py
 practice2.p
 database/deafening.db
 test

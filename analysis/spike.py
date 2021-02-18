@@ -353,7 +353,7 @@ class ClusterInfo:
             assert (np.diff(wf_ts_interp)[0] * interp_factor) == np.diff(self.wf_ts)[0]
             avg_wf_interp = f(wf_ts_interp)  # use interpolation function returned by `interp1d`
 
-            # Replace the origianl value with interpolated ones
+            # Replace the original value with interpolated ones
             self.wf_ts_interp = wf_ts_interp
             self.avg_wf_interp = avg_wf_interp
 
@@ -1097,13 +1097,16 @@ class Correlogram():
         self.time_bin = np.arange(-spk_corr_parm['lag'],
                                   spk_corr_parm['lag'] + spk_corr_parm['bin_size'],
                                   spk_corr_parm['bin_size'])
-        self.peak_ind = np.min(
-            np.abs(np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center  # index of the peak
-        self.peak_latency = self.time_bin[self.peak_ind]
-        self.peak_value = self.data[self.peak_ind]
-        burst_range = np.arange(corr_center - (1000 / burst_hz) - 1, corr_center + (1000 / burst_hz),
-                                dtype='int')  # burst range in the correlogram
-        self.burst_index = round(self.data[burst_range].sum() / self.data.sum(), 3)
+        if self.data.sum():
+            self.peak_ind = np.min(
+                np.abs(np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center  # index of the peak
+            self.peak_latency = self.time_bin[self.peak_ind]
+            self.peak_value = self.data[self.peak_ind]
+            burst_range = np.arange(corr_center - (1000 / burst_hz) - 1, corr_center + (1000 / burst_hz),
+                                    dtype='int')  # burst range in the correlogram
+            self.burst_index = round(self.data[burst_range].sum() / self.data.sum(), 3)
+        else:
+            self.peak_ind = self.peak_latency = self.peak_value = self.burst_index = np.nan
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
@@ -1120,17 +1123,23 @@ class Correlogram():
         -------
         """
         corr_mean = correlogram_jitter.mean(axis=0)
-        corr_std = correlogram_jitter.std(axis=0)
-        upper_lim = corr_mean + (corr_std * 2)
-        lower_lim = corr_mean - (corr_std * 2)
 
-        self.baseline = upper_lim
+        if corr_mean.sum():
 
-        # Check peak significance
-        if self.peak_value > upper_lim[self.peak_ind] and self.peak_latency <= corr_burst_crit:
-            self.category = 'Bursting'
+            corr_std = correlogram_jitter.std(axis=0)
+            upper_lim = corr_mean + (corr_std * 2)
+            lower_lim = corr_mean - (corr_std * 2)
+
+            self.baseline = upper_lim
+
+            # Check peak significance
+            if self.peak_value > upper_lim[self.peak_ind] and self.peak_latency <= corr_burst_crit:
+                self.category = 'Bursting'
+            else:
+                self.category = 'NonBursting'
+
         else:
-            self.category = 'NonBursting'
+            self.baseline = self.category = np.array(np.nan)
         return self.category
 
     def plot_corr(self, ax, time_bin, correlogram,
@@ -1153,22 +1162,25 @@ class Correlogram():
         """
         import matplotlib.pyplot as plt
         from util.draw import remove_right_top
+        if correlogram.sum():
+            ax.bar(time_bin, correlogram, color='k')
+            ymax = myround(ax.get_ylim()[1], base=10)
+            ax.set_ylim(0, ymax)
+            plt.yticks([0, ax.get_ylim()[1]], [str(0), str(int(ymax))])
+            ax.set_title(title, size=font_size)
+            ax.set_xlabel('Time (ms)')
+            if normalize:
+                ax.set_ylabel('Prob')
+            else:
+                ax.set_ylabel('Count')
+            remove_right_top(ax)
 
-        ax.bar(time_bin, correlogram, color='k')
-        ymax = myround(ax.get_ylim()[1], base=10)
-        ax.set_ylim(0, ymax)
-        plt.yticks([0, ax.get_ylim()[1]], [str(0), str(int(ymax))])
-        ax.set_title(title, size=font_size)
-        ax.set_xlabel('Time (ms)')
-        if normalize:
-            ax.set_ylabel('Prob')
+            if peak_line and not np.isnan(self.peak_ind):
+                # peak_time_ind = np.where(self.time_bin == self.peak_latency)
+                ax.axvline(x=self.time_bin[self.peak_ind], color='r', linewidth=peak_line_width, ls='--')
+
+            if baseline and not np.isnan(self.baseline.mean()):
+                ax.plot(self.time_bin, self.baseline, 'm', lw=0.5, ls='--')
         else:
-            ax.set_ylabel('Count')
-        remove_right_top(ax)
-
-        if peak_line:
-            # peak_time_ind = np.where(self.time_bin == self.peak_latency)
-            ax.axvline(x=self.time_bin[self.peak_ind], color='r', linewidth=peak_line_width, ls='--')
-
-        if baseline:
-            ax.plot(self.time_bin, self.baseline, 'm', lw=0.5, ls='--')
+            ax.axis('off')
+            ax.set_title(title, size=font_size)

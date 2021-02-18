@@ -3,14 +3,11 @@ By Jaerong
 Plot spike correlograms
 """
 
-from analysis.spike import *
-from analysis.parameters import *
-from analysis.load import read_rhd
-from contextlib import suppress
-from database.load import ProjectLoader
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-from pathlib import Path
+
+from analysis.parameters import *
+from analysis.spike import *
+from database.load import ProjectLoader
 from util import save
 
 
@@ -26,13 +23,13 @@ def print_out_text(ax, peak_latency,
     txt_inc = 0.15
     ax.set_ylim([0, 1])
     txt_yloc -= txt_inc
-    ax.text(txt_xloc, txt_yloc, f"Peak Latency = {round(peak_latency, 3)} ms", fontsize=font_size)
+    ax.text(txt_xloc, txt_yloc, f"Peak Latency = {round(peak_latency, 3)} (ms)", fontsize=font_size)
     txt_yloc -= txt_inc
     ax.text(txt_xloc, txt_yloc, f"Firing Rates = {round(firing_rates, 3)} Hz", fontsize=font_size)
     txt_yloc -= txt_inc
     ax.text(txt_xloc, txt_yloc, f'Burst Duration = {round(burst_mean_duration, 3)}', fontsize=font_size)
     txt_yloc -= txt_inc
-    ax.text(txt_xloc, txt_yloc, f'Burst Freq = {round(burst_freq, 3)}', fontsize=font_size)
+    ax.text(txt_xloc, txt_yloc, f'Burst Freq = {round(burst_freq, 3)} Hz', fontsize=font_size)
     txt_yloc -= txt_inc
     ax.text(txt_xloc, txt_yloc, f'Burst MeanSpk = {round(burst_mean_spk, 3)}', fontsize=font_size)
     txt_yloc -= txt_inc
@@ -55,8 +52,10 @@ class BurstingInfo:
 
         # ClassInfo can be BaselineInfo, MotifInfo etc
         if input_context:  # select data based on social context
-            spk_list = [spk_ts for spk_ts, context in zip(ClassInfo.spk_ts, ClassInfo.contexts) if context == input_context[0]]
-            duration_list = [duration for duration, context in zip(ClassInfo.durations, ClassInfo.contexts) if context == input_context[0]]
+            spk_list = [spk_ts for spk_ts, context in zip(ClassInfo.spk_ts, ClassInfo.contexts) if
+                        context == input_context[0]]
+            duration_list = [duration for duration, context in zip(ClassInfo.durations, ClassInfo.contexts) if
+                             context == input_context[0]]
             self.context = input_context
         else:
             spk_list = ClassInfo.spk_ts
@@ -151,6 +150,7 @@ class BurstingInfo:
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
+
 # Parameter
 normalize = False
 update = False
@@ -194,12 +194,12 @@ for row in db.cur.fetchall():
     correlogram_jitter['B'] = bi.get_jittered_corr()
 
     for key, value in correlogram_jitter.items():
-        if key == 'U':
+        if key == 'B':
+            corr_b.category(value)
+        elif key == 'U':
             corr_u.category(value)
         elif key == 'D':
             corr_d.category(value)
-        elif key == 'B':
-            corr_b.category(value)
 
     # Define burst info object
     burst_info_b = burst_info_u = burst_info_d = None
@@ -208,93 +208,97 @@ for row in db.cur.fetchall():
     burst_info_u = BurstingInfo(mi, 'U')
     burst_info_d = BurstingInfo(mi, 'D')
 
-
     # Plot the results
     fig = plt.figure(figsize=(12, 7))
     fig.set_dpi(500)
     plt.suptitle(mi.name, y=.95)
 
-    # The code will skip if a condition doesn't exist
-    ax1 = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=3, colspan=1)
-    if 'corr_u' in globals():
+    if corr_b:
+        ax1 = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=3, colspan=1)
+        corr_b.plot_corr(ax1, spk_corr_parm['time_bin'], correlogram['B'], 'Baseline', normalize=normalize)
+        ax_txt1 = plt.subplot2grid((nb_row, nb_col), (4, 0), rowspan=3, colspan=1)
+        print_out_text(ax_txt1, corr_b.peak_latency, bi.mean_fr,
+                       burst_info_b.mean_duration, burst_info_b.freq, burst_info_b.mean_nb_spk,
+                       burst_info_b.fraction, corr_b.category, corr_b.burst_index)
+
+    if corr_u:
         ax2 = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=3, colspan=1)
-    if 'corr_d' in globals():
-        ax3 = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=3, colspan=1)
-
-    # For text output
-    ax_txt1 = plt.subplot2grid((nb_row, nb_col), (4, 0), rowspan=3, colspan=1)
-    if 'corr_u' in globals():
-        ax_txt2 = plt.subplot2grid((nb_row, nb_col), (4, 1), rowspan=3, colspan=1)
-    if 'corr_d' in globals():
-        ax_txt3 = plt.subplot2grid((nb_row, nb_col), (4, 2), rowspan=3, colspan=1)
-
-
-    corr_b.plot_corr(ax1, spk_corr_parm['time_bin'], correlogram['B'], 'Baseline', normalize=normalize)
-    print_out_text(ax_txt1, corr_b.peak_latency, bi.mean_fr,
-                   burst_info_b.mean_duration, burst_info_b.freq, burst_info_b.mean_nb_spk,
-                   burst_info_b.fraction, corr_b.category, corr_b.burst_index)
-
-    if 'corr_u' in globals():
         corr_u.plot_corr(ax2, spk_corr_parm['time_bin'], correlogram['U'], 'Undir', normalize=normalize)
+        ax_txt2 = plt.subplot2grid((nb_row, nb_col), (4, 1), rowspan=3, colspan=1)
         print_out_text(ax_txt2, corr_u.peak_latency, mi.mean_fr['U'],
                        burst_info_u.mean_duration, burst_info_u.freq, burst_info_u.mean_nb_spk,
                        burst_info_u.fraction, corr_u.category, corr_u.burst_index)
 
-    if 'corr_d' in globals():
+    if corr_d:
+        ax3 = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=3, colspan=1)
         corr_d.plot_corr(ax3, spk_corr_parm['time_bin'], correlogram['D'], 'Dir', normalize=normalize)
+        ax_txt3 = plt.subplot2grid((nb_row, nb_col), (4, 2), rowspan=3, colspan=1)
         print_out_text(ax_txt3, corr_d.peak_latency, mi.mean_fr['D'],
                        burst_info_d.mean_duration, burst_info_d.freq, burst_info_d.mean_nb_spk,
                        burst_info_d.fraction, corr_d.category, corr_d.burst_index)
-
 
     # Save results to database
     if update_db:
         db.create_col('cluster', 'burstDurationBaseline', 'REAL')
         db.update('cluster', 'burstDurationBaseline', row['id'], burst_info_b.mean_duration)
+
         db.create_col('cluster', 'burstDurationUndir', 'REAL')
         db.update('cluster', 'burstDurationUndir', row['id'], burst_info_u.mean_duration)
+
         db.create_col('cluster', 'burstDurationDir', 'REAL')
         db.update('cluster', 'burstDurationDir', row['id'], burst_info_d.mean_duration)
 
         db.create_col('cluster', 'burstFreqBaseline', 'REAL')
         db.update('cluster', 'burstFreqBaseline', row['id'], burst_info_b.freq)
+
         db.create_col('cluster', 'burstFreqUndir', 'REAL')
         db.update('cluster', 'burstFreqBaseUndir', row['id'], burst_info_u.freq)
+
         db.create_col('cluster', 'burstFreqDir', 'REAL')
         db.update('cluster', 'burstFreqBaseDir', row['id'], burst_info_d.freq)
 
         db.create_col('cluster', 'burstMeanNbSpkBaseline', 'REAL')
         db.update('cluster', 'burstMeanNbSpkBaseline', row['id'], burst_info_b.mean_nb_spk)
+
         db.create_col('cluster', 'burstMeanNbSpkUndir', 'REAL')
         db.update('cluster', 'burstMeanNbSpkUndir', row['id'], burst_info_u.mean_nb_spk)
+
         db.create_col('cluster', 'burstMeanNbSpkDir', 'REAL')
         db.update('cluster', 'burstMeanNbSpkDir', row['id'], burst_info_d.mean_nb_spk)
 
         db.create_col('cluster', 'burstFractionBaseline', 'REAL')
         db.update('cluster', 'burstFractionBaseline', row['id'], burst_info_b.fraction)
+
         db.create_col('cluster', 'burstFractionUndir', 'REAL')
         db.update('cluster', 'burstFractionUndir', row['id'], burst_info_u.fraction)
+
         db.create_col('cluster', 'burstFractionDir', 'REAL')
         db.update('cluster', 'burstFractionDir', row['id'], burst_info_d.fraction)
 
         db.create_col('cluster', 'burstFractionBaseline', 'REAL')
         db.update('cluster', 'burstFractionBaseline', row['id'], burst_info_b.fraction)
+
         db.create_col('cluster', 'burstFractionUndir', 'REAL')
         db.update('cluster', 'burstFractionUndir', row['id'], burst_info_u.fraction)
+
         db.create_col('cluster', 'burstFractionDir', 'REAL')
         db.update('cluster', 'burstFractionDir', row['id'], burst_info_d.fraction)
 
         db.create_col('cluster', 'unitCategoryBaseline', 'STRING')
         db.update('cluster', 'unitCategoryBaseline', row['id'], corr_b.category)
+
         db.create_col('cluster', 'unitCategoryUndir', 'STRING')
         db.update('cluster', 'unitCategoryUndir', row['id'], corr_u.category)
+
         db.create_col('cluster', 'unitCategoryDir', 'STRING')
         db.update('cluster', 'unitCategoryDir', row['id'], corr_d.category)
 
         db.create_col('cluster', 'burstIndexBaseline', 'REAL')
         db.update('cluster', 'burstIndexBaseline', row['id'], corr_b.burst_index)
+
         db.create_col('cluster', 'burstIndexUndir', 'REAL')
         db.update('cluster', 'burstIndexUndir', row['id'], corr_u.burst_index)
+
         db.create_col('cluster', 'burstIndexDir', 'REAL')
         db.update('cluster', 'burstIndexDir', row['id'], corr_d.burst_index)
 
@@ -309,4 +313,3 @@ for row in db.cur.fetchall():
         save.save_fig(fig, save_path, mi.name, fig_ext=fig_ext)
     else:
         plt.show()
-

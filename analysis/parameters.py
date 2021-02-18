@@ -46,7 +46,7 @@ tick_length = 0.8
 tick_width = 1
 
 # Add a random spike jitter
-jitter_limit = 5  # maximum amount of jitter (in ms)
+jitter_limit = 3  # maximum amount of jitter (in ms)
 
 # Bursting criteria
 burst_hz = 200  # instantaneous firing rates >= 200 Hz to be considered bursting
