@@ -259,8 +259,6 @@ class ClusterInfo:
 
         # Get cluster name & path
         self.name, self.path = load_cluster(database)
-        # print('')
-        # print('Load cluster {self.name}'.format(self=self))
 
         # Load events
         file_name = self.path / 'EventInfo.npy'
@@ -278,6 +276,13 @@ class ClusterInfo:
 
         # Load spike
         self._load_spk(unit=unit)
+
+        # Print out name
+        self.print_name()
+
+    def print_name(self):
+        print('')
+        print('Load cluster {self.name}'.format(self=self))
 
     def __repr__(self):
         '''Print out the name'''
@@ -541,6 +546,9 @@ class MotifInfo(ClusterInfo):
         for key in motif_info:
             setattr(self, key, motif_info[key])
 
+        # Print out name
+        self.print_name()
+
     def load_motif(self):
         # Store values here
         file_list = []
@@ -615,6 +623,10 @@ class MotifInfo(ClusterInfo):
         np.save(file_name, motif_info)
 
         return motif_info
+
+    def print_name(self):
+        print('')
+        print('Load motif {self.name}'.format(self=self))
 
     def __len__(self):
         return len(self.files)
