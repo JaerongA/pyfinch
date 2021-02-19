@@ -3,19 +3,14 @@ By Jaerong
 plot raster & peth
 """
 
-from database.load import ProjectLoader
-from analysis.spike import *
-from analysis.parameters import *
-from contextlib import suppress
-from pathlib import Path
-from analysis.load import read_rhd
-import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
+
+from analysis.parameters import *
+from analysis.spike import *
 from util import save
-from util.spect import *
 from util.draw import *
-from scipy.ndimage import gaussian_filter1d
+from util.spect import *
 
 # parameters
 rec_yloc = 0.05
@@ -24,18 +19,19 @@ text_yloc = 0.5  # text height
 font_size = 10
 marker_size = 0.4  # for spike count
 nb_note_crit = 10  # minimum number of notes for analysis
-norm_method=None
-fig_ext='.png'  # .png or .pdf
-save_fig = False
-update = True  # Set True for recreating a cache file
-update_db = False  # save results to DB
-time_warp = True  # spike time warping
 
+norm_method = None
+fig_ext = '.png'  # .png or .pdf
+update = False  # Set True for recreating a cache file
+save_fig = True
+update_db = True  # save results to DB
+time_warp = True  # spike time warping
 
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 3"
+# query = "SELECT * FROM cluster WHERE id = 1"
+query = "SELECT * FROM cluster"
 db.execute(query)
 
 # Loop through db
@@ -72,9 +68,14 @@ for row in db.cur.fetchall():
     audio.spectrogram(freq_range=freq_range)
 
     # Plot figure
-    fig = plt.figure(figsize=(8, 9))
+    fig = plt.figure(figsize=(8, 9), dpi=800)
+
     fig.set_tight_layout(False)
-    plt.suptitle(mi.name, y=.95)
+    if time_warp:
+        fig_name = mi.name + '  (time-warped)'
+    else:
+        fig_name = mi.name + '  (non-warped)'
+    plt.suptitle(fig_name, y=.95)
     gs = gridspec.GridSpec(18, 6)
     gs.update(wspace=0.025, hspace=0.05)
 
@@ -131,8 +132,13 @@ for row in db.cur.fetchall():
                             linelengths=tick_length, linewidths=tick_width, orientation='horizontal')
 
         # Demarcate the note
+        if time_warp:
+            note_duration = mi.median_durations
+        else:  # plot (unwarped) raw data
+            note_duration = mi.note_durations[motif_ind]
+
         k = 1  # index for setting the motif color
-        for i, dur in enumerate(mi.median_durations):
+        for i, dur in enumerate(note_duration):
 
             if i == 0:
                 # print("i is {}, color is {}".format(i, i-k))
@@ -143,7 +149,7 @@ for row in db.cur.fetchall():
                                           facecolor=note_color['Motif'][i])
             elif not i % 2:
                 # print("i is {}, color is {}".format(i, i-k))
-                rectangle = plt.Rectangle((sum(mi.median_durations[:i]), motif_ind), mi.median_durations[i], rec_height,
+                rectangle = plt.Rectangle((sum(note_duration[:i]), motif_ind), note_duration[i], rec_height,
                                           fill=True,
                                           linewidth=1,
                                           alpha=0.15,
@@ -153,7 +159,6 @@ for row in db.cur.fetchall():
 
         # Demarcate song block (undir vs dir) with a horizontal line
         if pre_context != context:
-
             ax_raster.axhline(y=motif_ind, color='k', ls='-', lw=0.3)
             context_change = np.append(context_change, (motif_ind))
             if pre_context:
@@ -163,6 +168,7 @@ for row in db.cur.fetchall():
                                size=6)
 
         pre_context = context
+
     # Demarcate the last block
     ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
                    ((ax_raster.get_ylim()[1] - context_change[-1]) / 3) + context_change[-1],
@@ -204,8 +210,13 @@ for row in db.cur.fetchall():
                             linelengths=tick_length, linewidths=tick_width, orientation='horizontal')
 
         # Demarcate the note
+        if time_warp:
+            note_duration = mi.median_durations
+        else:  # plot (unwarped) raw data
+            note_duration = mi.note_durations[motif_ind]
+
         k = 1  # index for setting the motif color
-        for i, dur in enumerate(mi.median_durations):
+        for i, dur in enumerate(note_duration):
 
             if i == 0:
                 # print("i is {}, color is {}".format(i, i-k))
@@ -216,7 +227,7 @@ for row in db.cur.fetchall():
                                           facecolor=note_color['Motif'][i])
             elif not i % 2:
                 # print("i is {}, color is {}".format(i, i-k))
-                rectangle = plt.Rectangle((sum(mi.median_durations[:i]), motif_ind), mi.median_durations[i], rec_height,
+                rectangle = plt.Rectangle((sum(note_duration[:i]), motif_ind), note_duration[i], rec_height,
                                           fill=True,
                                           linewidth=1,
                                           alpha=0.15,
@@ -270,7 +281,7 @@ for row in db.cur.fetchall():
     else:  # Raw FR
         ax_peth.set_ylabel('FR', fontsize=font_size)
 
-    fr_ymax = myround(round(ax_peth.get_ylim()[1],3), base=5)
+    fr_ymax = myround(round(ax_peth.get_ylim()[1], 3), base=5)
     ax_peth.set_ylim(0, fr_ymax)
     plt.yticks([0, ax_peth.get_ylim()[1]], [str(0), str(int(fr_ymax))])
 
@@ -317,28 +328,20 @@ for row in db.cur.fetchall():
         corr_context = round(np.corrcoef(pi.mean_fr['U'], pi.mean_fr['D'])[0, 1], 3)
     ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
 
-    # Save results to database
-    if update_db:
-        with suppress(KeyError):
-            db.create_col('cluster', 'pairwiseCorrUndir', 'REAL')
-            db.update('cluster', 'pairwiseCorrUndir', row['id'], pi.pcc['U']['mean'])
-            db.create_col('cluster', 'pairwiseCorrDir', 'REAL')
-            db.update('cluster', 'pairwiseCorrDir', row['id'], pi.pcc['D']['mean'])
-            db.create_col('cluster', 'corrRContext', 'REAL')
-            db.update('cluster', 'corrRContext', row['id'], corr_context)
-
     # Plot spike counts
     pi.get_spk_count()  # spike count per time window
     ax_spk_count = plt.subplot(gs[13:15, 0:4], sharex=ax_spect)
     for context, spk_count in pi.spk_count.items():
         if context == 'U':
-            ax_spk_count.plot(pi.time_bin, spk_count, 'o', color='b', mfc='none', linewidth=0.5, label=context, markersize=marker_size)
+            ax_spk_count.plot(pi.time_bin, spk_count, 'o', color='b', mfc='none', linewidth=0.5, label=context,
+                              markersize=marker_size)
         elif context == 'D':
-            ax_spk_count.plot(pi.time_bin, spk_count, 'o', color='m', mfc='none', linewidth=0.5, label=context, markersize=marker_size)
+            ax_spk_count.plot(pi.time_bin, spk_count, 'o', color='m', mfc='none', linewidth=0.5, label=context,
+                              markersize=marker_size)
 
     plt.legend(loc='center left', bbox_to_anchor=(0.98, 0.5), prop={'size': 6})  # print out legend
     remove_right_top(ax_spk_count)
-    ymax = myround(round(ax_spk_count.get_ylim()[1],3), base=5)
+    ymax = myround(round(ax_spk_count.get_ylim()[1], 3), base=5)
     ax_spk_count.set_ylim(0, ymax)
     plt.yticks([0, ax_spk_count.get_ylim()[1]], [str(0), str(int(ymax))])
     ax_spk_count.set_ylabel('Spike Count', fontsize=font_size)
@@ -362,7 +365,7 @@ for row in db.cur.fetchall():
 
     plt.legend(loc='center left', bbox_to_anchor=(0.98, 0.5), prop={'size': 6})  # print out legend
     remove_right_top(ax_ff)
-    ymax = round(ax_ff.get_ylim()[1],2)
+    ymax = round(ax_ff.get_ylim()[1], 2)
     ax_ff.set_ylim(0, ymax)
     plt.yticks([0, ax_ff.get_ylim()[1]], [str(0), str(int(ymax))])
     ax_ff.set_ylabel('Fano factor', fontsize=font_size)
@@ -375,26 +378,39 @@ for row in db.cur.fetchall():
     txt_yloc -= txt_inc
     for i, (k, v) in enumerate(pi.fano_factor.items()):
         txt_yloc -= txt_inc
-        ax_txt.text(txt_xloc, txt_yloc, f"Fano Factor ({k}) = {round(np.nanmean(v),3)}", fontsize=font_size)
+        ax_txt.text(txt_xloc, txt_yloc, f"Fano Factor ({k}) = {round(np.nanmean(v), 3)}", fontsize=font_size)
 
     # Save results to database
-    if update_db:
-        with suppress(KeyError):
-            db.create_col('cluster', 'cvSpkCountUndir', 'REAL')
-            db.update('cluster', 'cvSpkCountUndir', row['id'], pi.pcc['U']['mean'])
-            db.create_col('cluster', 'cvSpkCountDir', 'REAL')
-            db.update('cluster', 'cvSpkCountDir', row['id'], pi.pcc['D']['mean'])
-            db.create_col('cluster', 'fanoSpkCountUndir', 'REAL')
-            db.update('cluster', 'fanoSpkCountUndir', row['id'], pi.fano_factor['U']['mean'])
-            db.create_col('cluster', 'fanoSpkCountDir', 'REAL')
-            db.update('cluster', 'fanoSpkCountDir', row['id'], pi.fano_factor['D']['mean'])
+    if update_db and time_warp:  # only use values from time-warped data
+        db.create_col('cluster', 'pairwiseCorrUndir', 'REAL')
+        if 'U' in pi.pcc:
+            db.update('cluster', 'pairwiseCorrUndir', row['id'], pi.pcc['U']['mean'])
+        db.create_col('cluster', 'pairwiseCorrDir', 'REAL')
+        if 'D' in pi.pcc:
+            db.update('cluster', 'pairwiseCorrDir', row['id'], pi.pcc['D']['mean'])
+        db.create_col('cluster', 'corrRContext', 'REAL')
+        if 'U' in pi.pcc and 'D' in pi.pcc:
+            db.update('cluster', 'corrRContext', row['id'], corr_context)
+
+        db.create_col('cluster', 'cvSpkCountUndir', 'REAL')
+        if 'U' in pi.spk_count_cv:
+            db.update('cluster', 'cvSpkCountUndir', row['id'], pi.spk_count_cv['U'])
+        db.create_col('cluster', 'cvSpkCountDir', 'REAL')
+        if 'D' in pi.spk_count_cv:
+            db.update('cluster', 'cvSpkCountDir', row['id'], pi.spk_count_cv['D'])
+        db.create_col('cluster', 'fanoSpkCountUndir', 'REAL')
+        if 'U' in pi.fano_factor:
+            db.update('cluster', 'fanoSpkCountUndir', row['id'], round(np.nanmean(pi.fano_factor['U']), 3))
+        db.create_col('cluster', 'fanoSpkCountDir', 'REAL')
+        if 'D' in pi.fano_factor:
+            db.update('cluster', 'fanoSpkCountDir', row['id'], round(np.nanmean(pi.fano_factor['D']), 3))
 
     # Save results
     if save_fig:
         save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Spk')
-        save.save_fig(fig, save_path, mi.name, fig_ext=fig_ext)
-
-    plt.show()
+        save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext)
+    else:
+        plt.show()
 
 # Convert db to csv
 if update_db:
