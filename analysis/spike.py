@@ -1164,7 +1164,8 @@ class Correlogram():
         from util.draw import remove_right_top
         if correlogram.sum():
             ax.bar(time_bin, correlogram, color='k')
-            ymax = myround(ax.get_ylim()[1], base=10)
+            ymax = max([self.baseline.max(), correlogram.max()])
+            ymax = myround(ymax, base=10)
             ax.set_ylim(0, ymax)
             plt.yticks([0, ax.get_ylim()[1]], [str(0), str(int(ymax))])
             ax.set_title(title, size=font_size)
