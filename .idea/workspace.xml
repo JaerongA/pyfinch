@@ -4,14 +4,11 @@
     <option name="GROUP_BY_SEVERITY" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/plot_bout.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/parameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/spike.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/spike.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/correlogram_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/correlogram_v2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/load.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/raster.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,13 +126,6 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="H:\Box\PythonToolbox\Deafening\test" />
-      <recent name="H:\Box\PythonToolbox\Deafening\preprocessing" />
-      <recent name="H:\Box\PythonToolbox\Deafening\auto_labeling" />
-      <recent name="H:\Box\PythonToolbox\Deafening\note_similarity" />
-      <recent name="H:\Box\PythonToolbox\Deafening" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="H:\Box\PythonToolbox\Deafening" />
       <recent name="H:\Box\PythonToolbox\Deafening\note_similarity_" />
@@ -143,8 +133,15 @@
       <recent name="H:\Box\PythonToolbox\Deafening\test" />
       <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="H:\Box\PythonToolbox\Deafening\test" />
+      <recent name="H:\Box\PythonToolbox\Deafening\preprocessing" />
+      <recent name="H:\Box\PythonToolbox\Deafening\auto_labeling" />
+      <recent name="H:\Box\PythonToolbox\Deafening\note_similarity" />
+      <recent name="H:\Box\PythonToolbox\Deafening" />
+    </key>
   </component>
-  <component name="RunManager" selected="Python.correlogram_v2">
+  <component name="RunManager" selected="Python.raster_unwarped">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -193,6 +190,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -208,20 +208,36 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="firing_rates" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="raster" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/firing_rates.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/raster.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="raster" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="SongAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="H:\Box\PythonToolbox\Deafening\raster.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -252,32 +268,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="test_waveform" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="waveform" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="H:\Box\PythonToolbox\Deafening\test\test_waveform.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="waveform" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="SongAnalysis" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -296,18 +293,18 @@
     <list>
       <item itemvalue="Python.SongAnalysis" />
       <item itemvalue="Python.waveform" />
-      <item itemvalue="Python.firing_rates" />
-      <item itemvalue="Python.test_waveform" />
       <item itemvalue="Python.test_waveform (1)" />
       <item itemvalue="Python.correlogram_v2" />
+      <item itemvalue="Python.raster" />
+      <item itemvalue="Python.raster_unwarped" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.raster_unwarped" />
+        <item itemvalue="Python.raster" />
         <item itemvalue="Python.correlogram_v2" />
         <item itemvalue="Python.waveform" />
         <item itemvalue="Python.test_waveform (1)" />
-        <item itemvalue="Python.firing_rates" />
-        <item itemvalue="Python.test_waveform" />
       </list>
     </recent_temporary>
   </component>
@@ -556,28 +553,8 @@
       <workItem from="1613058850254" duration="22861000" />
       <workItem from="1613150495809" duration="7866000" />
       <workItem from="1613229813259" duration="40282000" />
-      <workItem from="1613502280827" duration="37234000" />
-    </task>
-    <task id="LOCAL-00184" summary="update">
-      <created>1611810813301</created>
-      <option name="number" value="00184" />
-      <option name="presentableId" value="LOCAL-00184" />
-      <option name="project" value="LOCAL" />
-      <updated>1611810813301</updated>
-    </task>
-    <task id="LOCAL-00185" summary="added mean firing rates for motifs and baseline&#10;&#10;fixed pcc nan error">
-      <created>1611891847282</created>
-      <option name="number" value="00185" />
-      <option name="presentableId" value="LOCAL-00185" />
-      <option name="project" value="LOCAL" />
-      <updated>1611891847282</updated>
-    </task>
-    <task id="LOCAL-00186" summary="get firing rates">
-      <created>1611952346775</created>
-      <option name="number" value="00186" />
-      <option name="presentableId" value="LOCAL-00186" />
-      <option name="project" value="LOCAL" />
-      <updated>1611952346776</updated>
+      <workItem from="1613502280827" duration="44672000" />
+      <workItem from="1613678770828" duration="15721000" />
     </task>
     <task id="LOCAL-00187" summary="added spike jitter">
       <created>1611952549378</created>
@@ -901,7 +878,28 @@
       <option name="project" value="LOCAL" />
       <updated>1613598280631</updated>
     </task>
-    <option name="localTasksCounter" value="233" />
+    <task id="LOCAL-00233" summary="update">
+      <created>1613624318179</created>
+      <option name="number" value="00233" />
+      <option name="presentableId" value="LOCAL-00233" />
+      <option name="project" value="LOCAL" />
+      <updated>1613624318179</updated>
+    </task>
+    <task id="LOCAL-00234" summary="update">
+      <created>1613705638520</created>
+      <option name="number" value="00234" />
+      <option name="presentableId" value="LOCAL-00234" />
+      <option name="project" value="LOCAL" />
+      <updated>1613705638520</updated>
+    </task>
+    <task id="LOCAL-00235" summary="added time_warp option">
+      <created>1613705724757</created>
+      <option name="number" value="00235" />
+      <option name="presentableId" value="LOCAL-00235" />
+      <option name="project" value="LOCAL" />
+      <updated>1613705724757</updated>
+    </task>
+    <option name="localTasksCounter" value="236" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -935,7 +933,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Updated NeuralData&#10;&#10;Concatenate all .rhd and put the data into a .npy file" />
     <MESSAGE value="added a function that calculates SNR" />
     <MESSAGE value="added waveform timestamp" />
     <MESSAGE value="waveform analysis" />
@@ -960,7 +957,8 @@
     <MESSAGE value="firing rates round up to 3 floating points" />
     <MESSAGE value="update half-width calculation" />
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="added time_warp option" />
+    <option name="LAST_COMMIT_MESSAGE" value="added time_warp option" />
   </component>
   <component name="WindowStateProjectService">
     <state x="773" y="276" key="#Inspections" timestamp="1608191135770">
@@ -975,10 +973,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="773" y="276" key="#Plugins/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607743086599" />
-    <state x="-3260" y="583" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1612126806542">
+    <state x="-3260" y="583" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1613627502568">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3260" y="583" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1612126806542" />
+    <state x="-3260" y="583" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613627502568" />
     <state x="988" y="486" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1609624711268">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -996,10 +994,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="981" y="535" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607450511787" />
-    <state x="337" y="177" width="2099" height="1163" key="CommitChangelistDialog2" timestamp="1613598279954">
+    <state x="337" y="177" width="2099" height="1163" key="CommitChangelistDialog2" timestamp="1613705724084">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="337" y="177" width="2099" height="1163" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613598279954" />
+    <state x="337" y="177" width="2099" height="1163" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613705724084" />
     <state x="485" y="124" width="1925" height="1145" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613530123325" />
     <state width="1466" height="582" key="DebuggerActiveHint" timestamp="1607412284622">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -1014,45 +1012,45 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="346" y="615" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607822217424" />
-    <state width="2505" height="437" key="GridCell.Tab.0.bottom" timestamp="1613621746693">
+    <state width="2505" height="437" key="GridCell.Tab.0.bottom" timestamp="1613694200527">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="437" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613621746693" />
+    <state width="2505" height="437" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613694200527" />
     <state width="2505" height="541" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613073435241" />
-    <state width="2505" height="437" key="GridCell.Tab.0.center" timestamp="1613621746693">
+    <state width="2505" height="437" key="GridCell.Tab.0.center" timestamp="1613694200527">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="437" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613621746693" />
+    <state width="2505" height="437" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613694200527" />
     <state width="2505" height="541" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613073435240" />
-    <state width="2505" height="437" key="GridCell.Tab.0.left" timestamp="1613621746693">
+    <state width="2505" height="437" key="GridCell.Tab.0.left" timestamp="1613694200527">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="437" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613621746693" />
+    <state width="2505" height="437" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613694200527" />
     <state width="2505" height="541" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613073435239" />
-    <state width="2505" height="437" key="GridCell.Tab.0.right" timestamp="1613621746693">
+    <state width="2505" height="437" key="GridCell.Tab.0.right" timestamp="1613694200527">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="437" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613621746693" />
+    <state width="2505" height="437" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613694200527" />
     <state width="2505" height="541" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613073435241" />
-    <state width="2505" height="437" key="GridCell.Tab.1.bottom" timestamp="1613621746693">
+    <state width="2505" height="437" key="GridCell.Tab.1.bottom" timestamp="1613694200527">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="437" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613621746693" />
+    <state width="2505" height="437" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613694200527" />
     <state width="2505" height="541" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613073432086" />
-    <state width="2505" height="437" key="GridCell.Tab.1.center" timestamp="1613621746693">
+    <state width="2505" height="437" key="GridCell.Tab.1.center" timestamp="1613694200527">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="437" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613621746693" />
+    <state width="2505" height="437" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613694200527" />
     <state width="2505" height="541" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613073432086" />
-    <state width="2505" height="437" key="GridCell.Tab.1.left" timestamp="1613621746693">
+    <state width="2505" height="437" key="GridCell.Tab.1.left" timestamp="1613694200527">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="437" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613621746693" />
+    <state width="2505" height="437" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613694200527" />
     <state width="2505" height="541" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613073432086" />
-    <state width="2505" height="437" key="GridCell.Tab.1.right" timestamp="1613621746693">
+    <state width="2505" height="437" key="GridCell.Tab.1.right" timestamp="1613694200527">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="437" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613621746693" />
+    <state width="2505" height="437" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613694200527" />
     <state width="2505" height="541" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613073432086" />
     <state x="-2756" y="607" key="RollbackChangesDialog" timestamp="1612131537942">
       <screen x="-3840" y="262" width="2560" height="1400" />
@@ -1074,33 +1072,37 @@
     </state>
     <state width="629" height="498" key="SwitcherDM/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1608237331452" />
     <state width="629" height="498" key="SwitcherDM/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1610178964206" />
-    <state x="-3067" y="631" key="Vcs.Push.Dialog.v2" timestamp="1613598282304">
+    <state x="-3067" y="631" key="Vcs.Push.Dialog.v2" timestamp="1613705726609">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3067" y="631" key="Vcs.Push.Dialog.v2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613598282304" />
+    <state x="-3067" y="631" key="Vcs.Push.Dialog.v2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613705726609" />
     <state x="773" y="369" key="Vcs.Push.Dialog.v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613530126341" />
     <state width="1287" height="707" key="XDebugger.FullValuePopup" timestamp="1610394086522">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state width="1287" height="707" key="XDebugger.FullValuePopup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1610394086522" />
     <state width="1287" height="707" key="XDebugger.FullValuePopup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1608516542881" />
-    <state x="1154" y="550" width="380" height="315" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1" timestamp="1612137660601">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state x="-2686" y="812" width="380" height="315" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1" timestamp="1613627425566">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2686" y="812" width="380" height="315" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1612125412786" />
+    <state x="-2686" y="812" width="380" height="315" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613627425566" />
     <state x="1154" y="550" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1612137660601" />
     <state x="-3079" y="536" key="com.intellij.database.dbimport.ImportDialog" timestamp="1612148381174">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3079" y="536" key="com.intellij.database.dbimport.ImportDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1612148381174" />
+    <state x="-2891" y="723" key="com.intellij.database.dbimport.ImportUtil.MyDialog" timestamp="1613627462627">
+      <screen x="-3840" y="262" width="2560" height="1400" />
+    </state>
+    <state x="-2891" y="723" key="com.intellij.database.dbimport.ImportUtil.MyDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613627462627" />
     <state x="-2861" y="660" key="com.intellij.database.run.ParametersPanel.Standalone" timestamp="1612126865794">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2861" y="660" key="com.intellij.database.run.ParametersPanel.Standalone/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1612126865794" />
-    <state x="-2908" y="623" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog" timestamp="1613593631350">
+    <state x="-2908" y="623" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog" timestamp="1613627491991">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2908" y="623" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613593631350" />
+    <state x="-2908" y="623" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613627491991" />
     <state x="533" y="507" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1612137712025" />
     <state x="-3260" y="598" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1" timestamp="1613621597100">
       <screen x="-3840" y="262" width="2560" height="1400" />
@@ -1111,11 +1113,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-296" y="131" width="2375" height="1215" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1605454298573" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1613502281168">
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1613678771356">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="336" y="617" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613502281168" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613158485561" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613678771356" />
     <state x="-2783" y="860" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1613449990312">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -1126,11 +1128,11 @@
     </state>
     <state x="-3118" y="638" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1610226798877" />
     <state x="722" y="376" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1606093739601" />
-    <state x="0" y="0" width="2104" height="1379" key="dock-window-1" timestamp="1613502405716">
+    <state x="-99" y="-7" width="2575" height="1415" maximized="true" key="dock-window-1" timestamp="1613692992764">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="0" y="0" width="2104" height="1379" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613502405716" />
-    <state x="-3847" y="255" width="1295" height="1415" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613358843885" />
+    <state x="-99" y="-7" width="2575" height="1415" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613692992764" />
+    <state x="-133" y="531" width="2575" height="1415" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613678774997" />
     <state x="859" y="225" width="895" height="1407" key="dock-window-10" timestamp="1611784766552">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -1177,10 +1179,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="0" y="418" width="2074" height="780" key="dock-window-9/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1611773900630" />
-    <state x="-2787" y="586" width="1167" height="1011" key="find.popup" timestamp="1613621706340">
+    <state x="-2787" y="586" width="1167" height="1011" key="find.popup" timestamp="1613704635399">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2787" y="586" width="1167" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613621706340" />
+    <state x="-2787" y="586" width="1167" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613704635399" />
     <state x="-2798" y="564" width="778" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1611803501758" />
     <state x="835" y="361" width="875" height="663" key="recent.locations.popup" timestamp="1608237326059">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -1191,10 +1193,10 @@
     </state>
     <state x="-2877" y="539" key="refactoring.ChangeSignatureDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1611301685470" />
     <state x="963" y="277" key="refactoring.ChangeSignatureDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1609619214557" />
-    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup" timestamp="1613504922920">
+    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup" timestamp="1613702432090">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613504922920" />
+    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613702432090" />
     <state x="-2981" y="570" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613331627024" />
   </component>
   <component name="XDebuggerManager">
@@ -1260,7 +1262,7 @@
     <SUITE FILE_PATH="coverage/Deafening$save.coverage" NAME="save Coverage Results" MODIFIED="1593666809014" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/summary" />
     <SUITE FILE_PATH="coverage/Deafening$Unittests_in_test_MotifInfo_py.coverage" NAME="Unittests in test_MotifInfo.py Coverage Results" MODIFIED="1608949250594" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
     <SUITE FILE_PATH="coverage/Deafening$note_similarity.coverage" NAME="note_similarity Coverage Results" MODIFIED="1611520253809" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/note_similarity" />
-    <SUITE FILE_PATH="coverage/Deafening$correlogram_v2.coverage" NAME="correlogram_v2 Coverage Results" MODIFIED="1613621586956" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$correlogram_v2.coverage" NAME="correlogram_v2 Coverage Results" MODIFIED="1613632566020" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$get_notestat__1_.coverage" NAME="get_notestat (1) Coverage Results" MODIFIED="1606870542860" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preprocessing" />
     <SUITE FILE_PATH="coverage/Deafening$copy_cluster_mat.coverage" NAME="copy_cluster_mat Coverage Results" MODIFIED="1594580187905" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$peth.coverage" NAME="peth Coverage Results" MODIFIED="1610257983795" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -1268,6 +1270,7 @@
     <SUITE FILE_PATH="coverage/Deafening$correlogram_jitter.coverage" NAME="correlogram_jitter Coverage Results" MODIFIED="1613073666971" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$SAP_features.coverage" NAME="SAP_features Coverage Results" MODIFIED="1593832745438" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$intan_to_wav_converter.coverage" NAME="intan_to_wav_converter Coverage Results" MODIFIED="1595209092331" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$raster_unwarped.coverage" NAME="raster_unwarped Coverage Results" MODIFIED="1613687731537" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$firing_rates__1_.coverage" NAME="firing_rates (1) Coverage Results" MODIFIED="1612131998130" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$get_song_bout_v3.coverage" NAME="get_song_bout_v3 Coverage Results" MODIFIED="1597374319283" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$linear_warp_v2.coverage" NAME="linear_warp_v2 Coverage Results" MODIFIED="1608097337499" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

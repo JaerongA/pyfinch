@@ -42,10 +42,6 @@ def print_out_text(ax, peak_latency,
     ax.axis('off')
 
 
-def update_db():
-    pass
-
-
 class BurstingInfo:
 
     def __init__(self, ClassInfo, *input_context):
@@ -133,11 +129,11 @@ class BurstingInfo:
         if sum(nb_burst_spk_list):
             self.spk_list = burst_spk_list
             self.nb_burst_spk = sum(nb_burst_spk_list)
-            self.fraction = sum(nb_burst_spk_list) / sum([len(spks) for spks in spk_list])
-            self.duration = (burst_duration_arr).sum()  # total duration
-            self.freq = nb_bursts.sum() / sum(duration_list)
-            self.mean_nb_spk = np.array(nb_burst_spk_list).mean()
-            self.mean_duration = burst_duration_arr.mean()  # mean duration
+            self.fraction = round(sum(nb_burst_spk_list) / sum([len(spks) for spks in spk_list]), 3)
+            self.duration = round((burst_duration_arr).sum(), 3)  # total duration
+            self.freq = round(nb_bursts.sum() / sum(duration_list), 3)
+            self.mean_nb_spk = round(np.array(nb_burst_spk_list).mean(), 3)
+            self.mean_duration = round(burst_duration_arr.mean(), 3)  # mean duration
         else:  # no burst spike detected
             self.spk_list = np.nan
             self.nb_burst_spk = np.nan
@@ -157,13 +153,14 @@ update = False
 nb_row = 7
 nb_col = 3
 fig_ext = '.png'  # .png or .pdf
-save_fig = False
-update_db = False  # save results to DB
+save_fig = True
+update_db = True  # save results to DB
 
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 1"
+# query = "SELECT * FROM cluster WHERE id = 3"
+query = "SELECT * FROM cluster"
 db.execute(query)
 
 # Loop through db
@@ -214,7 +211,7 @@ for row in db.cur.fetchall():
     plt.suptitle(mi.name, y=.95)
 
     if corr_b:
-        ax1 = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=3, colspan=1)
+        ax1 = plt.subplot2grid((nb_row, nb_col), (0, 0), rowspan=3, colspan=1)
         corr_b.plot_corr(ax1, spk_corr_parm['time_bin'], correlogram['B'], 'Baseline', normalize=normalize)
         ax_txt1 = plt.subplot2grid((nb_row, nb_col), (4, 0), rowspan=3, colspan=1)
         print_out_text(ax_txt1, corr_b.peak_latency, bi.mean_fr,
@@ -222,7 +219,7 @@ for row in db.cur.fetchall():
                        burst_info_b.fraction, corr_b.category, corr_b.burst_index)
 
     if corr_u:
-        ax2 = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=3, colspan=1)
+        ax2 = plt.subplot2grid((nb_row, nb_col), (0, 1), rowspan=3, colspan=1)
         corr_u.plot_corr(ax2, spk_corr_parm['time_bin'], correlogram['U'], 'Undir', normalize=normalize)
         ax_txt2 = plt.subplot2grid((nb_row, nb_col), (4, 1), rowspan=3, colspan=1)
         print_out_text(ax_txt2, corr_u.peak_latency, mi.mean_fr['U'],
@@ -230,7 +227,7 @@ for row in db.cur.fetchall():
                        burst_info_u.fraction, corr_u.category, corr_u.burst_index)
 
     if corr_d:
-        ax3 = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=3, colspan=1)
+        ax3 = plt.subplot2grid((nb_row, nb_col), (0, 2), rowspan=3, colspan=1)
         corr_d.plot_corr(ax3, spk_corr_parm['time_bin'], correlogram['D'], 'Dir', normalize=normalize)
         ax_txt3 = plt.subplot2grid((nb_row, nb_col), (4, 2), rowspan=3, colspan=1)
         print_out_text(ax_txt3, corr_d.peak_latency, mi.mean_fr['D'],
@@ -239,73 +236,51 @@ for row in db.cur.fetchall():
 
     # Save results to database
     if update_db:
+        # Baseline
         db.create_col('cluster', 'burstDurationBaseline', 'REAL')
         db.update('cluster', 'burstDurationBaseline', row['id'], burst_info_b.mean_duration)
-
-        db.create_col('cluster', 'burstDurationUndir', 'REAL')
-        db.update('cluster', 'burstDurationUndir', row['id'], burst_info_u.mean_duration)
-
-        db.create_col('cluster', 'burstDurationDir', 'REAL')
-        db.update('cluster', 'burstDurationDir', row['id'], burst_info_d.mean_duration)
-
         db.create_col('cluster', 'burstFreqBaseline', 'REAL')
         db.update('cluster', 'burstFreqBaseline', row['id'], burst_info_b.freq)
-
-        db.create_col('cluster', 'burstFreqUndir', 'REAL')
-        db.update('cluster', 'burstFreqBaseUndir', row['id'], burst_info_u.freq)
-
-        db.create_col('cluster', 'burstFreqDir', 'REAL')
-        db.update('cluster', 'burstFreqBaseDir', row['id'], burst_info_d.freq)
-
         db.create_col('cluster', 'burstMeanNbSpkBaseline', 'REAL')
         db.update('cluster', 'burstMeanNbSpkBaseline', row['id'], burst_info_b.mean_nb_spk)
-
+        db.create_col('cluster', 'burstFractionBaseline', 'REAL')
+        db.update('cluster', 'burstFractionBaseline', row['id'], burst_info_b.fraction)
+        db.create_col('cluster', 'unitCategoryBaseline', 'STRING')
+        if corr_b:
+            db.update('cluster', 'unitCategoryBaseline', row['id'], str(corr_b.category))
+        db.create_col('cluster', 'burstIndexBaseline', 'REAL')
+        if corr_b:
+            db.update('cluster', 'burstIndexBaseline', row['id'], corr_b.burst_index)
+        # Undir
+        db.create_col('cluster', 'burstDurationUndir', 'REAL')
+        db.update('cluster', 'burstDurationUndir', row['id'], burst_info_u.mean_duration)
+        db.create_col('cluster', 'burstFreqUndir', 'REAL')
+        db.update('cluster', 'burstFreqUndir', row['id'], burst_info_u.freq)
         db.create_col('cluster', 'burstMeanNbSpkUndir', 'REAL')
         db.update('cluster', 'burstMeanNbSpkUndir', row['id'], burst_info_u.mean_nb_spk)
-
+        db.create_col('cluster', 'burstFractionUndir', 'REAL')
+        db.update('cluster', 'burstFractionUndir', row['id'], burst_info_u.fraction)
+        db.create_col('cluster', 'unitCategoryUndir', 'STRING')
+        if corr_u:
+            db.update('cluster', 'unitCategoryUndir', row['id'], str(corr_u.category))
+        db.create_col('cluster', 'burstIndexUndir', 'REAL')
+        if corr_u:
+            db.update('cluster', 'burstIndexUndir', row['id'], corr_u.burst_index)
+        # Dir
+        db.create_col('cluster', 'burstDurationDir', 'REAL')
+        db.update('cluster', 'burstDurationDir', row['id'], burst_info_d.mean_duration)
+        db.create_col('cluster', 'burstFreqDir', 'REAL')
+        db.update('cluster', 'burstFreqDir', row['id'], burst_info_d.freq)
         db.create_col('cluster', 'burstMeanNbSpkDir', 'REAL')
         db.update('cluster', 'burstMeanNbSpkDir', row['id'], burst_info_d.mean_nb_spk)
-
-        db.create_col('cluster', 'burstFractionBaseline', 'REAL')
-        db.update('cluster', 'burstFractionBaseline', row['id'], burst_info_b.fraction)
-
-        db.create_col('cluster', 'burstFractionUndir', 'REAL')
-        db.update('cluster', 'burstFractionUndir', row['id'], burst_info_u.fraction)
-
         db.create_col('cluster', 'burstFractionDir', 'REAL')
         db.update('cluster', 'burstFractionDir', row['id'], burst_info_d.fraction)
-
-        db.create_col('cluster', 'burstFractionBaseline', 'REAL')
-        db.update('cluster', 'burstFractionBaseline', row['id'], burst_info_b.fraction)
-
-        db.create_col('cluster', 'burstFractionUndir', 'REAL')
-        db.update('cluster', 'burstFractionUndir', row['id'], burst_info_u.fraction)
-
-        db.create_col('cluster', 'burstFractionDir', 'REAL')
-        db.update('cluster', 'burstFractionDir', row['id'], burst_info_d.fraction)
-
-        db.create_col('cluster', 'unitCategoryBaseline', 'STRING')
-        db.update('cluster', 'unitCategoryBaseline', row['id'], corr_b.category)
-
-        db.create_col('cluster', 'unitCategoryUndir', 'STRING')
-        db.update('cluster', 'unitCategoryUndir', row['id'], corr_u.category)
-
         db.create_col('cluster', 'unitCategoryDir', 'STRING')
-        db.update('cluster', 'unitCategoryDir', row['id'], corr_d.category)
-
-        db.create_col('cluster', 'burstIndexBaseline', 'REAL')
-        db.update('cluster', 'burstIndexBaseline', row['id'], corr_b.burst_index)
-
-        db.create_col('cluster', 'burstIndexUndir', 'REAL')
-        db.update('cluster', 'burstIndexUndir', row['id'], corr_u.burst_index)
-
+        if corr_d:
+            db.update('cluster', 'unitCategoryDir', row['id'], str(corr_d.category))
         db.create_col('cluster', 'burstIndexDir', 'REAL')
-        db.update('cluster', 'burstIndexDir', row['id'], corr_d.burst_index)
-
-    # Convert db to csv
-    if update_db:
-        db.to_csv('cluster')
-    print('Done!')
+        if corr_d:
+            db.update('cluster', 'burstIndexDir', row['id'], corr_d.burst_index)
 
     # Save results
     if save_fig:
@@ -313,3 +288,8 @@ for row in db.cur.fetchall():
         save.save_fig(fig, save_path, mi.name, fig_ext=fig_ext)
     else:
         plt.show()
+
+# Convert db to csv
+if update_db:
+    db.to_csv('cluster')
+    print('Done!')
