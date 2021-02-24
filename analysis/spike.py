@@ -13,37 +13,6 @@ from util.functions import *
 from util.spect import *
 
 
-def load_cluster(database):
-    """
-    Return the list of files in the current directory
-        Input: SQL object (database row)
-        Output: name of the cluster
-    """
-    cluster_id = ''
-    if len(str(database['id'])) == 1:
-        cluster_id = '00' + str(database['id'])
-    elif len(str(database['id'])) == 2:
-        cluster_id = '0' + str(database['id'])
-    cluster_taskSession = ''
-    if len(str(database['taskSession'])) == 1:
-        cluster_taskSession = 'D0' + str(database['taskSession'])
-    elif len(str(database['taskSession'])) == 2:
-        cluster_taskSession = 'D' + str(database['taskSession'])
-    cluster_taskSession += '(' + str(database['sessionDate']) + ')'
-
-    cluster_name = [cluster_id, database['birdID'], database['taskName'], cluster_taskSession,
-                    database['site'], database['channel'], database['unit']]
-    cluster_name = '-'.join(map(str, cluster_name))
-
-    # Get cluster path
-    project_path = ProjectLoader().path
-    cluster_path = project_path / database['birdID'] / database['taskName'] / cluster_taskSession / database['site'][
-                                                                                                    -2:] / 'Songs'
-    cluster_path = Path(cluster_path)
-
-    return cluster_name, cluster_path
-
-
 def load_events(dir):
     """
     Obtain event info & serialized timestamps for song & neural analysis
@@ -114,7 +83,7 @@ def load_events(dir):
     return event_info
 
 
-def load_audio(dir):
+def load_audio(dir, format='wav'):
     """
     Load and concatenate all audio files (e.g., .wav) in the input dir (path)
     """
@@ -126,7 +95,7 @@ def load_audio(dir):
     else:
 
         # List all audio files in the dir
-        files = list_files(dir, '.wav')
+        files = list_files(dir, format)
 
         # Initialize
         timestamp_concat = np.array([], dtype=np.float64)
@@ -235,30 +204,24 @@ def get_pcc(fr_array):
     return pcc_dict
 
 
-class DBLoader:
-    def __init__(self, database):
-        # Set all database fields as attributes
-        for col in database.keys():
-            # dic[col] = database[col]
-            setattr(self, col, database[col])
-
-        # Get cluster name & path
-        self.name, self.path = load_cluster(database)
-        print('')
-        print('Load cluster {self.name}'.format(self=self))
-
-
 class ClusterInfo:
 
-    def __init__(self, database, update=False, unit='ms'):
+    def __init__(self, path, channel_nb, unit_nb, format='rhd', *name, update=False, time_unit='ms'):
 
-        # Set all database fields as attributes
-        for col in database.keys():
-            # dic[col] = database[col]
-            setattr(self, col, database[col])
+        self.path = path
+        if len(str(channel_nb)) == 1:
+            self.channel_nb = 'Ch' + str(channel_nb)
+        elif len(str(channel_nb)) == 2:
+            self.channel_nb = 'Ch' + str(channel_nb)
 
-        # Get cluster name & path
-        self.name, self.path = load_cluster(database)
+        self.unit_nb = unit_nb
+
+        if name:
+            self.name = name[0]
+        else:
+            self.name = self.path
+
+        self.print_name()
 
         # Load events
         file_name = self.path / 'EventInfo.npy'
@@ -272,47 +235,41 @@ class ClusterInfo:
         # Set the dictionary values to class attributes
         for key in event_info:
             setattr(self, key, event_info[key])
-        #     print("files, file_start, file_end, onsets, offsets, durations, syllables, contexts attributes added")
 
         # Load spike
-        self._load_spk(unit=unit)
+        self._load_spk(time_unit)
 
-        # Print out name
-        self.print_name()
+    def __repr__(self):  # print attributes
+        return str([key for key in self.__dict__.keys()])
 
     def print_name(self):
         print('')
         print('Load cluster {self.name}'.format(self=self))
 
-    def __repr__(self):
-        '''Print out the name'''
-        return '{self.name}'.format(self=self)
-
     def list_files(self, ext: str):
         return list_files(self.path, ext)
 
-    def _load_spk(self, unit, delimiter='\t'):
+    def _load_spk(self, time_unit, delimiter='\t'):
         """
         Load spike information
         Args:
-            unit: unit # (in the cluster file)
+            time_unit: unit # (in the cluster file)
             delimiter: delimiter of the cluster file (tab (\t) by default)
 
         Returns:
             sets spk_wf, spk_ts, nb_spk as attributes
         """
 
-        spk_txt_file = list(self.path.glob('*' + self.channel + '(merged).txt'))
+        spk_txt_file = list(self.path.glob('*' + self.channel_nb + '(merged).txt'))
         if not spk_txt_file:
             raise FileNotFoundError
 
         spk_txt_file = spk_txt_file[0]
         spk_info = np.loadtxt(spk_txt_file, delimiter=delimiter, skiprows=1)  # skip header
-        unit_nb = int(self.unit[-2:])
 
         # Select only the unit (there could be multiple isolated units in the same file)
-        if unit_nb:  # if the unit number is specified
-            spk_info = spk_info[spk_info[:, 1] == unit_nb, :]
+        if self.unit_nb:  # if the unit number is specified
+            spk_info = spk_info[spk_info[:, 1] == self.unit_nb, :]
 
         spk_ts = spk_info[:, 2]  # analysis time stamps
         spk_wf = spk_info[:, 3:]  # analysis waveform
@@ -322,7 +279,7 @@ class ClusterInfo:
         self.nb_spk = nb_spk  # the number of spikes
 
         # Units are in second by default, but convert to  millisecond with the argument
-        if unit is 'ms':
+        if time_unit is 'ms':
             spk_ts *= 1E3
 
         # Output analysis timestamps per file in a list
@@ -492,32 +449,30 @@ class ClusterInfo:
 
         return nb_files
 
-    @property
-    def nb_bouts(self):
+    def nb_bouts(self, song_note):
 
         nb_bouts = {}
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
         syllables = ''.join(syllable_list)
-        nb_bouts['U'] = get_nb_bouts(self.songNote, syllables)
+        nb_bouts['U'] = get_nb_bouts(song_note, syllables)
 
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'D']
         syllables = ''.join(syllable_list)
-        nb_bouts['D'] = get_nb_bouts(self.songNote, syllables)
+        nb_bouts['D'] = get_nb_bouts(song_note, syllables)
         nb_bouts['All'] = nb_bouts['U'] + nb_bouts['D']
 
         return nb_bouts
 
-    @property
-    def nb_motifs(self):
+    def nb_motifs(self, motif):
 
         nb_motifs = {}
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
         syllables = ''.join(syllable_list)
-        nb_motifs['U'] = len(find_str(syllables, self.motif))
+        nb_motifs['U'] = len(find_str(syllables, motif))
 
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'D']
         syllables = ''.join(syllable_list)
-        nb_motifs['D'] = len(find_str(syllables, self.motif))
+        nb_motifs['D'] = len(find_str(syllables, motif))
 
         nb_motifs['All'] = nb_motifs['U'] + nb_motifs['D']
 
@@ -558,7 +513,6 @@ class MotifInfo(ClusterInfo):
         syllable_list = []
         duration_list = []
         context_list = []
-        motif_info = {}
 
         list_zip = zip(self.files, self.spk_ts, self.onsets, self.offsets, self.syllables, self.contexts)
 
@@ -972,20 +926,24 @@ class BaselineInfo(ClusterInfo):
         return isi
 
 
-class AudioData():
+class AudioData:
     """
     Create an object that has concatenated audio signal and its timestamps
     Get all data by default; specify time range if needed
     """
 
-    def __init__(self, database, update=False, ext='.wav'):
-        self.name, self.path = load_cluster(database)
-        self.files = list_files(self.path, ext)
+    def __init__(self, path, format='.wav', update=False):
+
+        self.path = path
+        self.files = list_files(self.path, format)
         audio_info = load_audio(self.path)
 
         # Set the dictionary values to class attributes
         for key in audio_info:
             setattr(self, key, audio_info[key])
+
+    def __repr__(self):  # print attributes
+        return str([key for key in self.__dict__.keys()])
 
     @property
     def open_folder(self):
@@ -1008,8 +966,9 @@ class AudioData():
 
         return self
 
-    def spectrogram(self, freq_range):
-        self.spect, self.freqbins, self.timebins = spectrogram(self.data, self.sample_rate, freq_range=freq_range)
+    def spectrogram(self, freq_range=[300, 8000]):
+        self.spect, self.spect_freq = spectrogram(self.data, self.sample_rate, freq_range=freq_range)
+        self.spect_time = np.linspace(self.timestamp[0], self.timestamp[-1], self.spect.shape[1])
         # print("spect, freqbins, timebins added")
 
     def plot_spectrogram(self, MotifInfo):
@@ -1017,17 +976,13 @@ class AudioData():
 
 
 class NeuralData:
-    def __init__(self, database, update=False):
+    def __init__(self, path, channel_nb, format='rhd', update=False):
 
-        import re
+        self.path = path
+        self.channel = channel_nb
+        self.format = format  # format of the file (e.g., rhd), this info should be in the database
 
-        ci = ClusterInfo(database)
-        self.path = ci.path
-        self.channel = ci.channel
-        self.format = ci.format  # format of the file (e.g., rhd), this info should be in the database
-
-        channel_nb = int(re.findall(r'\d+', self.channel)[0])  # channel number in db
-        file_name = self.path / "NeuralData_{}.npy".format(self.channel)
+        file_name = self.path / "NeuralData_Ch{}.npy".format(self.channel)
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
             data_info = self.load_neural_data()
             # Save event_info as a numpy object
@@ -1038,14 +993,13 @@ class NeuralData:
         for key in data_info:
             setattr(self, key, data_info[key])
 
+    def __repr__(self):  # print attributes
+        return str([key for key in self.__dict__.keys()])
+
     def load_neural_data(self):
         """
         Load and concatenate all neural data files (e.g., .rhd) in the input dir (path)
         """
-
-        import re
-
-        channel_nb = int(re.findall(r'\d+', self.channel)[0])  # channel number in db
 
         # List .rhd files
         rhd_files = list(self.path.glob('*.rhd'))
@@ -1071,9 +1025,11 @@ class NeuralData:
                 intan['t_amplifier'] += (timestamp_concat[-1] + (1 / sample_rate[self.format]))
                 timestamp_concat = np.append(timestamp_concat, intan['t_amplifier'])
 
+            timestamp_concat *= 1E3  # convert to microsecond
+
             # Concatenate neural data
             for ind, ch in enumerate(intan['amplifier_channels']):
-                if channel_nb == int(ch['native_channel_name'][-2:]):
+                if self.channel == int(ch['native_channel_name'][-2:]):
                     amplifier_data_concat = np.append(amplifier_data_concat, intan['amplifier_data'][ind, :])
 
         # Organize data into a dictionary
@@ -1089,13 +1045,21 @@ class NeuralData:
 
         return data_info
 
-    def load_timestamp(self):
-        """Time stamp info for event (concatenated) """
-        pass
+    def extract(self, time_range):
+        """
+        Extracts data from the specified range
+        Args:
+            time_range: list
 
-    def __repr__(self):  # print attributes
-        return str([key for key in self.__dict__.keys()])
+        Returns:
+        """
+        start = time_range[0]
+        end = time_range[-1]
 
+        ind = np.where((self.timestamp >= start) & (self.timestamp <= end))
+        self.timestamp = self.timestamp[ind]
+        self.data = self.data[ind]
+        return self
 
 class Correlogram():
     """
