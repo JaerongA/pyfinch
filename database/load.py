@@ -25,10 +25,10 @@ class ProjectLoader:
 
     def load_db(self):
         db_path = self.path / self.db_path / self.db
-        return DBLoader(db_path)
+        return Database(db_path)
 
 
-class DBLoader:
+class Database:
     def __init__(self, db_path):
 
         self.path = db_path
@@ -89,3 +89,45 @@ class DBLoader:
             # Open the directory in win explorer
             import webbrowser
             webbrowser.open(self.dir)
+
+
+class DBInfo:
+    def __init__(self, db):
+        # Set all database fields as attributes
+
+        for key in db.keys():
+            # dic[col] = database[col]
+            setattr(self, key, db[key])
+
+    def __repr__(self):  # print attributes
+        return str([key for key in self.__dict__.keys()])
+
+    def load_cluster(self):
+        """
+        Return the list of files in the current directory
+            Input: SQL object (database row)
+            Output: name of the cluster
+        """
+        cluster_id = ''
+        if len(str(self.id)) == 1:
+            cluster_id = '00' + str(self.id)
+        elif len(str(self.id)) == 2:
+            cluster_id = '0' + str(self.id)
+        cluster_taskSession = ''
+        if len(str(self.taskSession)) == 1:
+            cluster_taskSession = 'D0' + str(self.taskSession)
+        elif len(str(self.taskSession)) == 2:
+            cluster_taskSession = 'D' + str(self.taskSession)
+        cluster_taskSession += '(' + str(self.sessionDate) + ')'
+
+        cluster_name = [cluster_id, self.birdID, self.taskName, cluster_taskSession,
+                        self.site, self.channel, self.unit]
+        cluster_name = '-'.join(map(str, cluster_name))
+
+        # Get cluster path
+        project_path = ProjectLoader().path
+        cluster_path = project_path / self.birdID / self.taskName /\
+                       cluster_taskSession / self.site[-2:] / 'Songs'
+        cluster_path = Path(cluster_path)
+
+        return cluster_name, cluster_path
