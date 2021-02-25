@@ -57,8 +57,7 @@ def spectrogram(dat, samp_freq, fft_size=512, step_size=64, thresh=None, transfo
         spectrogram
     freqbins : numpy.ndarray
         vector of centers of frequency bins from spectrogram
-    timebins : numpy.ndarray
-        vector of centers of time bins from spectrogram
+
     """
     noverlap = fft_size - step_size
 
@@ -92,4 +91,4 @@ def spectrogram(dat, samp_freq, fft_size=512, step_size=64, thresh=None, transfo
         spect = spect[f_inds, :]
         freqbins = freqbins[f_inds]
 
-    return spect, freqbins, timebins
+    return spect, freqbins
