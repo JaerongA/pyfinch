@@ -18,7 +18,7 @@ font_size = 12  # figure font size
 rec_yloc = 0.05
 rect_height = 0.3
 text_yloc = 1  # text height
-nb_row = 10
+nb_row = 13
 nb_col = 1
 tick_length = 1
 tick_width = 1
@@ -188,7 +188,7 @@ for row in db.cur.fetchall():
         audio.data = stats.zscore(audio.data)
         audio.timestamp = audio.timestamp - audio.timestamp[0] - peth_parm['buffer']
         ax_amp = plt.subplot2grid((nb_row, nb_col), (4, 0), rowspan=2, colspan=1, sharex=ax_spect)
-        ax_amp.plot(audio.timestamp, audio.data, 'k')
+        ax_amp.plot(audio.timestamp, audio.data, 'k', lw=0.1)
         ax_amp.axis('off')
 
         # Plot rasters
@@ -202,7 +202,7 @@ for row in db.cur.fetchall():
         nd = NeuralData(path, channel_nb, format, update=update).extract([start, end])  # raw neural data
         nd.timestamp = nd.timestamp - nd.timestamp[0] - peth_parm['buffer']
         ax_nd = plt.subplot2grid((nb_row, nb_col), (8, 0), rowspan=2, colspan=1, sharex=ax_spect)
-        ax_nd.plot(nd.timestamp, nd.data, 'k')
+        ax_nd.plot(nd.timestamp, nd.data, 'k', lw=0.5)
 
         # Add a scale bar
         plt.plot([ax_nd.get_xlim()[0] + 50, ax_nd.get_xlim()[0] + 50],
