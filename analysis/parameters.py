@@ -14,6 +14,12 @@ note_color = {'Intro': ['k', 'gray', 'darkseagreen', 'olive'],
               'Motif': ['r', 'b', 'lime', 'm', 'brown', 'purple', 'saddlebrown'],
               'Call': ['teal', 'darklategray', 'darkgray', 'indigo']}
 
+bout_color = {'i':'k', 'j':'gray', 'k':'darkseagreen',   # intro notes
+              'a':'r', 'b': 'b', 'c':'lime', 'd':'m', 'e':'brown', 'f': 'purple', 'g': 'saddlebrow',  # motif notes
+              'm':'teal', 'n':'darklategray', 'l':'darkgray', 'o':'indigo'  # calls
+              }
+
+
 # Define baseline period 1 sec window & 2 sec prior to syllable onset
 baseline = {'time_win': 1000, 'time_buffer': 2000}  # in ms
 
@@ -58,6 +64,9 @@ shuffling_iter = 50  # shuffling iteration for obtaining baseline
 # Waveform analysis
 interp_factor = 100  # factor by which to increase the sampling frequency
 spk_proportion = 0.2  # proportion of waveforms to plot
+
+# Bout raster plot
+bout_buffer = 100
 
 
 # def get_syl_color():

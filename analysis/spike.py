@@ -89,54 +89,44 @@ def load_audio(dir, format='wav'):
     """
     from scipy.io import wavfile
 
-    file_name = dir / 'AudioData.npy'
-    if file_name.exists():
-        audio_info = np.load(file_name, allow_pickle=True).item()
-    else:
+    # List all audio files in the dir
+    files = list_files(dir, format)
 
-        # List all audio files in the dir
-        files = list_files(dir, format)
+    # Initialize
+    timestamp_concat = np.array([], dtype=np.float64)
+    data_concat = np.array([], dtype=np.float64)
 
-        # Initialize
-        timestamp_concat = np.array([], dtype=np.float64)
-        data_concat = np.array([], dtype=np.float64)
+    # Store values in these lists
+    file_list = []
+    syllable_list = []
+    context_list = []
 
-        # Store values in these lists
-        file_list = []
-        syllable_list = []
-        context_list = []
+    # Loop through audio files
+    for file in files:
 
-        # Loop through audio files
-        for file in files:
+        # Load data file
+        print('Loading... ' + file.stem)
+        sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
 
-            # Load data file
-            print('Loading... ' + file.stem)
-            sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
+        # Add timestamp info
+        length = data.shape[0] / sample_rate
+        data_concat = np.append(data_concat, data)
 
-            # Add timestamp info
-            length = data.shape[0] / sample_rate
-            timestamp = np.round(np.linspace(0, length, data.shape[0]) * 1E3,
-                                 3)  # start from t = 0 in ms, reduce floating precision
-            start_ind = timestamp_concat.size  # start of the file
-            # print('timestamp size = {}, data size = {}'.format(len(timestamp), len(data)))
+        # Store results
+        file_list.append(file)
 
-            # Concatenate timestamp and data
-            if timestamp_concat.size:
-                timestamp += (timestamp_concat[-1] + (1 / sample_rate))
-            timestamp_concat = np.append(timestamp_concat, timestamp)
-            data_concat = np.append(data_concat, data)
+    # Create timestamps
+    timestamp_concat = np.arange(0, data_concat.shape[0] / sample_rate, (1 / sample_rate)) * 1E3
 
-            # Store results
-            file_list.append(file)
-
-        # Organize data into a dictionary
-        audio_info = {
-            'files': file_list,
-            'timestamp': timestamp_concat,
-            'data': data_concat,
-            'sample_rate': sample_rate
-        }
-        np.save(file_name, audio_info)
+    # Organize data into a dictionary
+    audio_info = {
+        'files': file_list,
+        'timestamp': timestamp_concat,
+        'data': data_concat,
+        'sample_rate': sample_rate
+    }
+    file_name = dir / "AudioData.npy"
+    np.save(file_name, audio_info)
 
     return audio_info
 
@@ -803,7 +793,87 @@ class PethInfo():
 
 
 class BoutInfo(ClusterInfo):
-    pass
+    """Child class of ClusterInfo"""
+
+    def __init__(self, path, channel_nb, unit_nb, song_note, format='rhd', *name, update=False):
+        super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
+
+        self.song_note = song_note
+
+        if name:
+           self.name = name[0]
+        else:
+           self.name = str(self.path)
+
+        file_name = self.path / "BoutInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
+        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+            bout_info = self.load_bouts()
+            # Save event_info as a numpy object
+            np.save(file_name, bout_info)
+        else:
+            bout_info = np.load(file_name, allow_pickle=True).item()
+
+        # Set the dictionary values to class attributes
+        for key in bout_info:
+            setattr(self, key, bout_info[key])
+
+    def print_name(self):
+        print('')
+        print('Load bout {self.name}'.format(self=self))
+
+    def __len__(self):
+        return len(self.files)
+
+    def load_bouts(self):
+        # Store values here
+        file_list = []
+        spk_list = []
+        onset_list = []
+        offset_list = []
+        syllable_list = []
+        duration_list = []
+        context_list = []
+
+        list_zip = zip(self.files, self.spk_ts, self.onsets, self.offsets, self.syllables, self.contexts)
+
+        for file, spks, onsets, offsets, syllables, context in list_zip:
+
+            bout_ind = find_str(syllables, '*')
+
+            for ind in range(len(bout_ind)):
+                if ind == 0:
+                    start_ind = 0
+                else:
+                    start_ind = bout_ind[ind - 1] + 1
+                stop_ind = bout_ind[ind] - 1
+                # breakpoint()
+                bout_onset = float(onsets[start_ind])
+                bout_offset = float(offsets[stop_ind])
+
+                bout_spk = spks[np.where((spks >= bout_onset) & (spks <= bout_offset))]
+                onsets_in_bout = onsets[start_ind:stop_ind + 1]  # list of bout onset timestamps
+                offsets_in_bout = offsets[start_ind:stop_ind + 1]  # list of bout offset timestamps
+
+                file_list.append(file)
+                spk_list.append(bout_spk)
+                duration_list.append(bout_offset - bout_onset)
+                onset_list.append(onsets_in_bout)
+                offset_list.append(offsets_in_bout)
+                syllable_list.append(syllables[start_ind:stop_ind + 1])
+                context_list.append(context)
+
+        # Organize event-related info into a single dictionary object
+        bout_info = {
+            'files': file_list,
+            'spk_ts': spk_list,
+            'onsets': onset_list,
+            'offsets': offset_list,
+            'durations': duration_list,  # this is bout durations
+            'syllables': syllable_list,
+            'contexts': context_list,
+        }
+
+        return bout_info
 
 
 class BaselineInfo(ClusterInfo):
@@ -931,12 +1001,16 @@ class AudioData:
     Create an object that has concatenated audio signal and its timestamps
     Get all data by default; specify time range if needed
     """
-
     def __init__(self, path, format='.wav', update=False):
 
         self.path = path
-        self.files = list_files(self.path, format)
-        audio_info = load_audio(self.path)
+        self.format = format
+
+        file_name = self.path / "AudioData.npy"
+        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+            audio_info = load_audio(self.path, self.format)
+        else:
+            audio_info = np.load(file_name, allow_pickle=True).item()
 
         # Set the dictionary values to class attributes
         for key in audio_info:
@@ -982,7 +1056,7 @@ class NeuralData:
         self.channel = channel_nb
         self.format = format  # format of the file (e.g., rhd), this info should be in the database
 
-        file_name = self.path / "NeuralData_Ch{}.npy".format(self.channel)
+        file_name = self.path / f"NeuralData_Ch{self.channel}.npy"
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
             data_info = self.load_neural_data()
             # Save event_info as a numpy object
@@ -1000,7 +1074,8 @@ class NeuralData:
         """
         Load and concatenate all neural data files (e.g., .rhd) in the input dir (path)
         """
-
+        print("")
+        print("Load neural data")
         # List .rhd files
         rhd_files = list(self.path.glob('*.rhd'))
 
@@ -1016,6 +1091,7 @@ class NeuralData:
 
             # Load data file
             print('Loading... ' + file.stem)
+            file_list.append(file)
             intan = read_rhd(file)  # note that the timestamp is in second
             # Concatenate timestamps
             intan['t_amplifier'] -= intan['t_amplifier'][0]  # start from t = 0
@@ -1025,12 +1101,12 @@ class NeuralData:
                 intan['t_amplifier'] += (timestamp_concat[-1] + (1 / sample_rate[self.format]))
                 timestamp_concat = np.append(timestamp_concat, intan['t_amplifier'])
 
-            timestamp_concat *= 1E3  # convert to microsecond
-
             # Concatenate neural data
             for ind, ch in enumerate(intan['amplifier_channels']):
                 if self.channel == int(ch['native_channel_name'][-2:]):
                     amplifier_data_concat = np.append(amplifier_data_concat, intan['amplifier_data'][ind, :])
+
+        timestamp_concat *= 1E3  # convert to microsecond
 
         # Organize data into a dictionary
         data_info = {
@@ -1040,7 +1116,7 @@ class NeuralData:
             'sample_rate': sample_rate[self.format]
         }
 
-        file_name = self.path / "NeuralData_{}.npy".format(self.channel)
+        file_name = self.path / f"NeuralData_Ch{self.channel}.npy"
         np.save(file_name, data_info)
 
         return data_info
