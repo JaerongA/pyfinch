@@ -5,6 +5,8 @@ Calculates a analysis signal-to-noise ratio (SNR) relative to the background (ra
 
 from analysis.spike import *
 from util import save
+from util.draw import *
+
 def plot_waveform(axis, wf_ts, spk_wf,
                   wf_ts_interp=None,
                   avg_wf_interp=None,
@@ -46,12 +48,12 @@ def plot_waveform(axis, wf_ts, spk_wf,
         plt.axis('off')
 
 
-from util.draw import *
 
 
 # Parameters
-save_fig = False
-update_db = False
+save_fig = True
+update_db = True
+update = True
 dir_name = 'WaveformAnalysis'
 fig_ext = '.png'  # .png or .pdf
 
@@ -60,15 +62,17 @@ db = ProjectLoader().load_db()
 
 # SQL statement
 # query = "SELECT * FROM cluster"
-query = "SELECT * FROM cluster WHERE id =2"
+query = "SELECT * FROM cluster WHERE ephysOK"
+# query = "SELECT * FROM cluster WHERE id =5"
 db.execute(query)
 
 # Loop through db
 for row in db.cur.fetchall():
 
-    ci = ClusterInfo(row)  # cluster object
+    ci = ClusterInfo(row, update=update)  # cluster object
     ci.analyze_waveform()  # get waveform features
-    nd = NeuralData(row, update=False)  # raw neural data
+
+    nd = NeuralData(row, update=update)  # raw neural data
 
     # Calculate the SNR (signal-to-noise ratio in dB)
     # variance of the signal (waveform) divided by the variance of the total neural trace
