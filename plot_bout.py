@@ -23,89 +23,6 @@ nb_col = 1
 tick_length = 1
 tick_width = 1
 
-class BoutInfo(ClusterInfo):
-    """Child class of ClusterInfo"""
-
-    def __init__(self, path, channel_nb, unit_nb, song_note, format='rhd', *name, update=False):
-        super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
-
-        self.song_note = song_note
-
-        if name:
-           self.name = name[0]
-        else:
-           self.name = str(self.path)
-
-        file_name = self.path / "BoutInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
-        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
-            bout_info = self.load_bouts()
-            # Save event_info as a numpy object
-            np.save(file_name, bout_info)
-        else:
-            bout_info = np.load(file_name, allow_pickle=True).item()
-
-        # Set the dictionary values to class attributes
-        for key in bout_info:
-            setattr(self, key, bout_info[key])
-
-    def print_name(self):
-        print('')
-        print('Load bout {self.name}'.format(self=self))
-
-    def __len__(self):
-        return len(self.files)
-
-    def load_bouts(self):
-        # Store values here
-        file_list = []
-        spk_list = []
-        onset_list = []
-        offset_list = []
-        syllable_list = []
-        duration_list = []
-        context_list = []
-
-        list_zip = zip(self.files, self.spk_ts, self.onsets, self.offsets, self.syllables, self.contexts)
-
-        for file, spks, onsets, offsets, syllables, context in list_zip:
-
-            bout_ind = find_str(syllables, '*')
-
-            for ind in range(len(bout_ind)):
-                if ind == 0:
-                    start_ind = 0
-                else:
-                    start_ind = bout_ind[ind - 1] + 1
-                stop_ind = bout_ind[ind] - 1
-                # breakpoint()
-                bout_onset = float(onsets[start_ind])
-                bout_offset = float(offsets[stop_ind])
-
-                bout_spk = spks[np.where((spks >= bout_onset) & (spks <= bout_offset))]
-                onsets_in_bout = onsets[start_ind:stop_ind + 1]  # list of bout onset timestamps
-                offsets_in_bout = offsets[start_ind:stop_ind + 1]  # list of bout offset timestamps
-
-                file_list.append(file)
-                spk_list.append(bout_spk)
-                duration_list.append(bout_offset - bout_onset)
-                onset_list.append(onsets_in_bout)
-                offset_list.append(offsets_in_bout)
-                syllable_list.append(syllables[start_ind:stop_ind + 1])
-                context_list.append(context)
-
-        # Organize event-related info into a single dictionary object
-        bout_info = {
-            'files': file_list,
-            'spk_ts': spk_list,
-            'onsets': onset_list,
-            'offsets': offset_list,
-            'durations': duration_list,  # this is bout durations
-            'syllables': syllable_list,
-            'contexts': context_list,
-        }
-
-        return bout_info
-
 
 # Load database
 db = ProjectLoader().load_db()
@@ -138,19 +55,20 @@ for row in db.cur.fetchall():
         spks = spks - onsets[0]
 
         # bout start and end
-        start = onsets[0] - peth_parm['buffer']
-        end = offsets[-1] + peth_parm['buffer']
+        start = onsets[0] - bout_buffer
+        end = offsets[-1] + bout_buffer
         duration = offsets[-1] - onsets[0]
 
         # Get spectrogram
         audio = AudioData(path, update=update).extract([start, end])  # audio object
         audio.spectrogram()
-        audio.spect_time = audio.spect_time - audio.spect_time[0] - peth_parm['buffer']
+        audio.spect_time = audio.spect_time - audio.spect_time[0] - bout_buffer
 
         # Plot figure
         fig = plt.figure(figsize=(8, 7))
         fig.tight_layout()
         fig_name = f"{file} - Bout # {bout_ind + 1}"
+        print("Processing... " + fig_name)
         fig.suptitle(fig_name, y=0.95)
 
         # Plot spectrogram
@@ -186,7 +104,7 @@ for row in db.cur.fetchall():
 
         # Plot song amplitude
         audio.data = stats.zscore(audio.data)
-        audio.timestamp = audio.timestamp - audio.timestamp[0] - peth_parm['buffer']
+        audio.timestamp = audio.timestamp - audio.timestamp[0] - bout_buffer
         ax_amp = plt.subplot2grid((nb_row, nb_col), (4, 0), rowspan=2, colspan=1, sharex=ax_spect)
         ax_amp.plot(audio.timestamp, audio.data, 'k', lw=0.1)
         ax_amp.axis('off')
@@ -200,23 +118,25 @@ for row in db.cur.fetchall():
 
         # Plot raw neural data
         nd = NeuralData(path, channel_nb, format, update=update).extract([start, end])  # raw neural data
-        nd.timestamp = nd.timestamp - nd.timestamp[0] - peth_parm['buffer']
+        nd.timestamp = nd.timestamp - nd.timestamp[0] - bout_buffer
         ax_nd = plt.subplot2grid((nb_row, nb_col), (8, 0), rowspan=2, colspan=1, sharex=ax_spect)
         ax_nd.plot(nd.timestamp, nd.data, 'k', lw=0.5)
 
         # Add a scale bar
         plt.plot([ax_nd.get_xlim()[0] + 50, ax_nd.get_xlim()[0] + 50],
                  [-250, 250], 'k', lw=3)  # for amplitude
-        plt.text(ax_nd.get_xlim()[0] , -200, '500 µV', rotation=90)
+        plt.text(ax_nd.get_xlim()[0] - (bout_buffer / 2), -200, '500 µV', rotation=90)
         plt.subplots_adjust(wspace=0, hspace=0)
         remove_right_top(ax_nd)
         ax_nd.spines['left'].set_visible(False)
         plt.yticks([], [])
         ax_nd.set_xlabel('Time (ms)')
 
+        # Save results
+        if save_fig:
+            save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'RasterBouts')
+            save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext)
+        else:
+            plt.show()
 
-
-
-        plt.show()
-
-        break
+print('Done!')
