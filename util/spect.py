@@ -91,4 +91,4 @@ def spectrogram(dat, samp_freq, fft_size=512, step_size=64, thresh=None, transfo
         spect = spect[f_inds, :]
         freqbins = freqbins[f_inds]
 
-    return spect, freqbins
+    return spect, freqbins, timebins
