@@ -51,9 +51,9 @@ def plot_waveform(axis, wf_ts, spk_wf,
 
 
 # Parameters
-save_fig = True
-update_db = True
-update = True
+save_fig = False
+update_db = False
+update = False
 dir_name = 'WaveformAnalysis'
 fig_ext = '.png'  # .png or .pdf
 
@@ -63,7 +63,7 @@ db = ProjectLoader().load_db()
 # SQL statement
 # query = "SELECT * FROM cluster"
 # query = "SELECT * FROM cluster WHERE ephysOK"
-query = "SELECT * FROM cluster WHERE id =6"
+query = "SELECT * FROM cluster WHERE id =11"
 db.execute(query)
 
 # Loop through db
@@ -90,8 +90,8 @@ for row in db.cur.fetchall():
     ax = plt.subplot(121)
     plot_waveform(ax, ci.wf_ts, ci.spk_wf,
                   ci.wf_ts_interp, ci.avg_wf_interp,
-                  spk_proportion
-                  # ci.deflection_range  # demarcate the deflection point
+                  spk_proportion,
+                  ci.deflection_range  # demarcate the deflection point
                   )
 
     # Print out text
