@@ -113,6 +113,9 @@ class DBInfo:
             cluster_id = '00' + str(self.id)
         elif len(str(self.id)) == 2:
             cluster_id = '0' + str(self.id)
+        else:
+            cluster_id = str(self.id)
+
         cluster_taskSession = ''
         if len(str(self.taskSession)) == 1:
             cluster_taskSession = 'D0' + str(self.taskSession)
