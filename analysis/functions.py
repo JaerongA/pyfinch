@@ -176,11 +176,14 @@ def get_half_width(wf_ts, avg_wf):
 
     import numpy as np
 
-    # Find the negative deflection
-    deflection_baseline = avg_wf.mean() - avg_wf.std(axis=0)  # the waveform baseline. Finds values below the baseline
+    # Find the negative (or positive if inverted) deflection
+    if np.argmin(avg_wf) > np.argmax(avg_wf):  # inverted waveform (peak comes first in extra-cellular recording)
+        deflection_baseline = np.abs(avg_wf).mean() + np.abs(avg_wf).std(axis=0)  # the waveform baseline. Finds values above the baseline
+    else:
+        deflection_baseline = avg_wf.mean() - avg_wf.std(axis=0)  # the waveform baseline. Finds values below the baseline
 
     diff_ind = []
-    for ind in np.where(np.diff(avg_wf < deflection_baseline))[0]:  # below mean amp
+    for ind in np.where(np.diff(avg_wf > deflection_baseline))[0]:  # below mean amp
         diff_ind.append(ind)
 
     # Get the deflection range where the peak is detected
