@@ -584,6 +584,10 @@ class MotifInfo(ClusterInfo):
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
+    @property
+    def open_folder(self):
+        open_folder(self.path)
+
     def get_note_duration(self):
         # Calculate note & gap duration per motif
         note_durations = np.empty((len(self), len(self.motif) * 2 - 1))
