@@ -13,7 +13,7 @@ from util.functions import *
 from util.spect import *
 
 
-def load_events(dir):
+def load_cluster(dir):
     """
     Obtain event info & serialized timestamps for song & neural analysis
     """
@@ -70,7 +70,7 @@ def load_events(dir):
         context_list.append(contexts)
 
     # Organize event-related info into a single dictionary object
-    event_info = {
+    cluster_info = {
         'files': file_list,
         'file_start': file_start_list,
         'file_end': file_end_list,
@@ -80,7 +80,7 @@ def load_events(dir):
         'syllables': syllable_list,
         'contexts': context_list
     }
-    return event_info
+    return cluster_info
 
 
 def load_audio(dir, format='wav'):
@@ -205,7 +205,7 @@ class ClusterInfo:
             self.channel_nb = 'Ch' + str(channel_nb)
 
         self.unit_nb = unit_nb
-
+        self.format = format
         if name:
             self.name = name[0]
         else:
@@ -214,17 +214,17 @@ class ClusterInfo:
         self.print_name()
 
         # Load events
-        file_name = self.path / 'EventInfo.npy'
+        file_name = self.path / "ClusterInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
-            event_info = load_events(self.path)
-            # Save event_info as a numpy object
-            np.save(file_name, event_info)
+            cluster_info = load_cluster(self.path)
+            # Save cluster_info as a numpy object
+            np.save(file_name, cluster_info)
         else:
-            event_info = np.load(file_name, allow_pickle=True).item()
+            cluster_info = np.load(file_name, allow_pickle=True).item()
 
         # Set the dictionary values to class attributes
-        for key in event_info:
-            setattr(self, key, event_info[key])
+        for key in cluster_info:
+            setattr(self, key, cluster_info[key])
 
         # Load spike
         self._load_spk(time_unit)
@@ -476,13 +476,19 @@ class ClusterInfo:
 class MotifInfo(ClusterInfo):
     """Child class of ClusterInfo"""
 
-    def __init__(self, database, update=False):
-        super().__init__(database)
+    def __init__(self, path, channel_nb, unit_nb, motif, format='rhd', *name, update=False):
+        super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
+
+        self.motif = motif
+
+        if name:
+           self.name = name[0]
+        else:
+           self.name = str(self.path)
 
         # Load motif info
-        file_name = self.path / 'MotifInfo.npy'
+        file_name = self.path / "MotifInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
-            ClusterInfo(database, update=True)
             motif_info = self.load_motif()
         else:
             motif_info = np.load(file_name, allow_pickle=True).item()
@@ -805,6 +811,7 @@ class BoutInfo(ClusterInfo):
         else:
            self.name = str(self.path)
 
+        # Load bout info
         file_name = self.path / "BoutInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
             bout_info = self.load_bouts()
