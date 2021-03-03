@@ -63,7 +63,7 @@ db = ProjectLoader().load_db()
 # SQL statement
 # query = "SELECT * FROM cluster"
 # query = "SELECT * FROM cluster WHERE ephysOK"
-query = "SELECT * FROM cluster WHERE id =11"
+query = "SELECT * FROM cluster WHERE id =96"
 db.execute(query)
 
 # Loop through db
@@ -116,11 +116,11 @@ for row in db.cur.fetchall():
         db.update('cluster', 'spkHalfWidth', row['id'], ci.half_width)
         db.create_col('cluster', 'nbSpk', 'INT')
         db.update('cluster', 'nbSpk', row['id'], ci.nb_spk)
-
     # Save results
     if save_fig:
         save_path = save.make_dir(ProjectLoader().path / 'Analysis', dir_name)
         save.save_fig(fig, save_path, ci.name, fig_ext=fig_ext, open_folder=True)
+
     else:
         plt.show()
 

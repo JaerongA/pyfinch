@@ -24,7 +24,6 @@ from util.functions import *
 from util.spect import *
 
 # "birdID": ["g20r5", "y58y59", "k71o7", "y3y18", "o54w8", "k77r57", "b86g86"],
-
 # "birdID": ["o54w8", "k77r57", "b86g86"]  # birds to make figures
 
 # Parameters
@@ -33,11 +32,11 @@ note_buffer = 10  # in ms before and after each note
 
 num_note_crit_basis = 30  # the number of basis note should be >= this criteria
 num_note_crit_testing = 10  # the number of testing syllables should be >= this criteria
-fig_save_ok = False
+fig_save_ok = True
 file_save_ok = False
 save_psd = True
 update = True  # generate a new .npz file or update the file
-fig_ext = '.png'  # figure file extension
+fig_ext = '.pdf'  # figure file extension
 
 
 def get_basis_psd(psd_array, notes):
@@ -139,8 +138,8 @@ def get_psd_mat(data_path, save_psd=False, update=False, open_folder=False, nfft
                     ax_psd = plt.subplot(gs[1:5, 2], sharey=ax_spect)
                     ax_psd.plot(psd_power, psd_freq, 'k')
                     ax_psd.spines['right'].set_visible(False), ax_psd.spines['top'].set_visible(False)
-                    ax_psd.spines['bottom'].set_visible(False)
-                    ax_psd.set_xticks([])  # remove xticks
+                    # ax_psd.spines['bottom'].set_visible(False)
+                    # ax_psd.set_xticks([])  # remove xticks
                     plt.setp(ax_psd.set_yticks([]))
                     # plt.show()
 

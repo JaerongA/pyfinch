@@ -31,7 +31,7 @@ time_warp = True  # spike time warping
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 96"
+query = "SELECT * FROM cluster WHERE id = 1"
 # query = "SELECT * FROM cluster"
 db.execute(query)
 

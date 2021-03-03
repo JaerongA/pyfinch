@@ -8,15 +8,17 @@ import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 from database.load import DBInfo
 from scipy import stats
+import warnings
+warnings.filterwarnings('ignore')
 
 # Parameters
-save_fig = True
+save_fig = False
 update = False
 dir_name = 'RasterBouts'
 fig_ext = '.png'  # .png or .pdf
 font_size = 12  # figure font size
 rec_yloc = 0.05
-rect_height = 0.3
+rect_height = 0.2
 text_yloc = 1  # text height
 nb_row = 13
 nb_col = 1
@@ -25,10 +27,10 @@ tick_width = 1
 
 # Load database
 db = ProjectLoader().load_db()
-# SQL statement
+# SQL statementwa
 # query = "SELECT * FROM cluster"
 # query = "SELECT * FROM cluster WHERE ephysOK"
-query = "SELECT * FROM cluster WHERE id = 6"
+query = "SELECT * FROM cluster WHERE id = 17"
 db.execute(query)
 
 # Loop through db
@@ -66,7 +68,7 @@ for row in db.cur.fetchall():
         # Plot figure
         fig = plt.figure(figsize=(8, 7))
         fig.tight_layout()
-        fig_name = f"{file} - Bout # {bout_ind + 1}"
+        fig_name = f"{file} - Bout # {bout_ind}"
         print("Processing... " + fig_name)
         fig.suptitle(fig_name, y=0.95)
 

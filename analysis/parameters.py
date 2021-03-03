@@ -15,7 +15,7 @@ note_color = {'Intro': ['k', 'gray', 'darkseagreen', 'olive'],
               'Call': ['teal', 'darklategray', 'darkgray', 'indigo']}
 
 bout_color = {'i':'k', 'j':'gray', 'k':'darkseagreen',   # intro notes
-              'a':'r', 'b': 'b', 'c':'lime', 'd':'m', 'e':'brown', 'f': 'purple', 'g': 'saddlebrow',  # motif notes
+              'a':'r', 'b': 'b', 'c':'lime', 'd':'m', 'e':'brown', 'f': 'purple', 'g': 'saddlebrown',  # motif notes
               'm':'teal', 'n':'darklategray', 'l':'darkgray', 'o':'indigo'  # calls
               }
 
