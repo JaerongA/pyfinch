@@ -23,7 +23,6 @@ nb_col = 1
 tick_length = 1
 tick_width = 1
 
-
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
@@ -86,7 +85,7 @@ for row in db.cur.fetchall():
         ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
         plt.yticks(freq_range, [str(freq_range[0]), str(freq_range[1])])
         plt.setp(ax_spect.get_xticklabels(), visible=False)
-        plt.xlim([audio.spect_time[0]-100, audio.spect_time[-1]+100])
+        plt.xlim([audio.spect_time[0] - 100, audio.spect_time[-1] + 100])
 
         # Plot syllable duration
         ax_syl = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=1, colspan=1, sharex=ax_spect)
