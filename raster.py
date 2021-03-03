@@ -8,6 +8,7 @@ import matplotlib.gridspec as gridspec
 
 from analysis.parameters import *
 from analysis.spike import *
+from database.load import DBInfo
 from util import save
 from util.draw import *
 from util.spect import *
@@ -23,25 +24,32 @@ nb_note_crit = 10  # minimum number of notes for analysis
 norm_method = None
 fig_ext = '.png'  # .png or .pdf
 update = False  # Set True for recreating a cache file
-save_fig = True
-update_db = True  # save results to DB
+save_fig = False
+update_db = False  # save results to DB
 time_warp = True  # spike time warping
 
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-# query = "SELECT * FROM cluster WHERE id = 1"
-query = "SELECT * FROM cluster"
+query = "SELECT * FROM cluster WHERE id = 96"
+# query = "SELECT * FROM cluster"
 db.execute(query)
 
 # Loop through db
 for row in db.cur.fetchall():
 
-    # ci = ClusterInfo(row, update=True)
-    mi = MotifInfo(row, update=update)
+    # Load cluster info from db
+    cluster_db = DBInfo(row)
+    name, path = cluster_db.load_cluster()
+    unit_nb = int(cluster_db.unit[-2:])
+    channel_nb = int(cluster_db.channel[-2:])
+    format = cluster_db.format
+    motif = cluster_db.motif
+    ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
+    mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
 
     # Get number of motifs
-    nb_motifs = mi.nb_motifs
+    nb_motifs = mi.nb_motifs(motif)
     nb_motifs.pop('All', None)
 
     # Skip if there are not enough motifs per condition
@@ -64,24 +72,25 @@ for row in db.cur.fetchall():
     duration = offset[-1] - onset[0]
 
     # Get spectrogram
-    audio = AudioData(row).extract([start, end])
+    audio = AudioData(path, update=update).extract([start, end])  # audio object
     audio.spectrogram(freq_range=freq_range)
 
     # Plot figure
-    fig = plt.figure(figsize=(8, 9), dpi=800)
+    fig = plt.figure(figsize=(8, 9), dpi=500)
 
     fig.set_tight_layout(False)
     if time_warp:
         fig_name = mi.name + '  (time-warped)'
     else:
         fig_name = mi.name + '  (non-warped)'
-    plt.suptitle(fig_name, y=.95)
+    plt.suptitle(fig_name, y=.93)
     gs = gridspec.GridSpec(18, 6)
     gs.update(wspace=0.025, hspace=0.05)
 
     # Plot spectrogram
     ax_spect = plt.subplot(gs[1:3, 0:4])
-    ax_spect.pcolormesh(audio.timebins * 1E3 - peth_parm['buffer'], audio.freqbins, audio.spect,  # data
+    audio.spect_time = audio.spect_time - audio.spect_time[0] - peth_parm['buffer']  # starts from zero
+    ax_spect.pcolormesh(audio.spect_time , audio.spect_freq, audio.spect,  # data
                         cmap='hot_r',
                         norm=colors.SymLogNorm(linthresh=0.05,
                                                linscale=0.03,
