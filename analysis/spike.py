@@ -798,7 +798,10 @@ class PethInfo():
 
 
 class BoutInfo(ClusterInfo):
-    """Child class of ClusterInfo"""
+    """
+    Get song & spike information for a song bout
+    Child class of ClusterInfo
+    """
 
     def __init__(self, path, channel_nb, unit_nb, song_note, format='rhd', *name, update=False):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
@@ -884,11 +887,11 @@ class BoutInfo(ClusterInfo):
 
 class BaselineInfo(ClusterInfo):
 
-    def __init__(self, database, update=False):
-        super().__init__(database)
+    def __init__(self, path, channel_nb, unit_nb, format='rhd', *name, update=False):
+        super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
 
-        # Load motif info
-        file_name = self.path / 'BaselineInfo.npy'
+        # Load baseline info
+        file_name = self.path / "BaselineInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
 
             # Store values in here
@@ -1243,3 +1246,109 @@ class Correlogram():
         else:
             ax.axis('off')
             ax.set_title(title, size=font_size)
+
+
+class BurstingInfo:
+
+    def __init__(self, ClassInfo, *input_context):
+
+        # ClassInfo can be BaselineInfo, MotifInfo etc
+        if input_context:  # select data based on social context
+            spk_list = [spk_ts for spk_ts, context in zip(ClassInfo.spk_ts, ClassInfo.contexts) if
+                        context == input_context[0]]
+            duration_list = [duration for duration, context in zip(ClassInfo.durations, ClassInfo.contexts) if
+                             context == input_context[0]]
+            self.context = input_context
+        else:
+            spk_list = ClassInfo.spk_ts
+            duration_list = ClassInfo.durations
+
+        # Bursting analysis
+        burst_spk_list = []
+        burst_duration_arr = []
+
+        nb_bursts = []
+        nb_burst_spk_list = []
+
+        for ind, spks in enumerate(spk_list):
+
+            # spk = bi.spk_ts[8]
+            isi = np.diff(spks)  # inter-spike interval
+            inst_fr = 1E3 / np.diff(spks)  # instantaneous firing rates (Hz)
+            bursts = np.where(inst_fr >= burst_hz)[0]  # burst index
+
+            # Skip if no bursting detected
+            if not bursts.size:
+                continue
+
+            # Get the number of bursts
+            temp = np.diff(bursts)[np.where(np.diff(bursts) == 1)].size  # check if the spikes occur in bursting
+            nb_bursts = np.append(nb_bursts, bursts.size - temp)
+
+            # Get burst onset
+            temp = np.where(np.diff(bursts) == 1)[0]
+            spk_ind = temp + 1
+            # Remove consecutive spikes in a burst and just get burst onset
+
+            burst_onset_ind = bursts
+
+            for i, ind in enumerate(temp):
+                burst_spk_ind = spk_ind[spk_ind.size - 1 - i]
+                burst_onset_ind = np.delete(burst_onset_ind, burst_spk_ind)
+
+            # Get burst offset index
+            burst_offset_ind = np.array([], dtype=np.int)
+
+            for i in range(bursts.size - 1):
+                if bursts[i + 1] - bursts[i] > 1:  # if not successive spikes
+                    burst_offset_ind = np.append(burst_offset_ind, bursts[i] + 1)
+
+            # Need to add the subsequent spike time stamp since it is not included (burst is the difference between successive spike time stamps)
+            burst_offset_ind = np.append(burst_offset_ind, bursts[bursts.size - 1] + 1)
+
+            burst_onset = spks[burst_onset_ind]
+            burst_offset = spks[burst_offset_ind]
+            burst_spk_list.append(spks[burst_onset_ind[0]: burst_offset_ind[0] + 1])
+            burst_duration_arr = np.append(burst_duration_arr, burst_offset - burst_onset)
+
+            # Get the number of burst spikes
+            nb_burst_spks = 1  # note that it should always be greater than 1
+
+            if nb_bursts.size:
+                if bursts.size == 1:
+                    nb_burst_spks = 2
+                    nb_burst_spk_list.append(nb_burst_spks)
+
+                elif bursts.size > 1:
+                    for ind in range(bursts.size - 1):
+                        if bursts[ind + 1] - bursts[ind] == 1:
+                            nb_burst_spks += 1
+                        else:
+                            nb_burst_spks += 1
+                            nb_burst_spk_list.append(nb_burst_spks)
+                            nb_burst_spks = 1
+
+                        if ind == bursts.size - 2:
+                            nb_burst_spks += 1
+                            nb_burst_spk_list.append(nb_burst_spks)
+            # print(nb_burst_spk_list)
+        if sum(nb_burst_spk_list):
+            self.spk_list = burst_spk_list
+            self.nb_burst_spk = sum(nb_burst_spk_list)
+            self.fraction = round(sum(nb_burst_spk_list) / sum([len(spks) for spks in spk_list]), 3)
+            self.duration = round((burst_duration_arr).sum(), 3)  # total duration
+            self.freq = round(nb_bursts.sum() / sum(duration_list), 3)
+            self.mean_nb_spk = round(np.array(nb_burst_spk_list).mean(), 3)
+            self.mean_duration = round(burst_duration_arr.mean(), 3)  # mean duration
+        else:  # no burst spike detected
+            self.spk_list = np.nan
+            self.nb_burst_spk = np.nan
+            self.fraction = np.nan
+            self.duration = np.nan
+            self.freq = np.nan
+            self.mean_nb_spk = np.nan
+            self.mean_duration = np.nan
+
+    def __repr__(self):  # print attributes
+        return str([key for key in self.__dict__.keys()])
+
