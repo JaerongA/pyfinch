@@ -490,15 +490,14 @@ class MotifInfo(ClusterInfo):
         file_name = self.path / "MotifInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
             motif_info = self.load_motif()
+            # Save info dict as a numpy object
+            np.save(file_name, motif_info)
         else:
             motif_info = np.load(file_name, allow_pickle=True).item()
 
         # Set the dictionary values to class attributes
         for key in motif_info:
             setattr(self, key, motif_info[key])
-
-        # Print out name
-        self.print_name()
 
     def load_motif(self):
         # Store values here
@@ -567,10 +566,6 @@ class MotifInfo(ClusterInfo):
         spk_ts_warp_list = self.piecewise_linear_warping()
         # self.spk_ts_warp = spk_ts_warp_list
         motif_info['spk_ts_warp'] = spk_ts_warp_list
-
-        # Save motif_info as a numpy object
-        file_name = self.path / 'MotifInfo.npy'
-        np.save(file_name, motif_info)
 
         return motif_info
 
@@ -819,7 +814,7 @@ class BoutInfo(ClusterInfo):
         file_name = self.path / "BoutInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
             bout_info = self.load_bouts()
-            # Save event_info as a numpy object
+            # Save info dict as a numpy object
             np.save(file_name, bout_info)
         else:
             bout_info = np.load(file_name, allow_pickle=True).item()
@@ -1052,8 +1047,8 @@ class AudioData:
         return self
 
     def spectrogram(self, freq_range=[300, 8000]):
-        self.spect, self.spect_freq = spectrogram(self.data, self.sample_rate, freq_range=freq_range)
-        self.spect_time = np.linspace(self.timestamp[0], self.timestamp[-1], self.spect.shape[1])
+        self.spect, self.spect_freq, _ = spectrogram(self.data, self.sample_rate, freq_range=freq_range)
+        self.spect_time = np.linspace(self.timestamp[0], self.timestamp[-1], self.spect.shape[1])  # timestamp for spectrogram
         # print("spect, freqbins, timebins added")
 
     def plot_spectrogram(self, MotifInfo):

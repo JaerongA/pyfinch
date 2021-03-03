@@ -3,6 +3,12 @@ By Jaerong
 A collection of functions used for song analysis
 """
 
+from analysis.parameters import *
+from matplotlib.pylab import psd
+from util import save
+from util.draw import *
+from util.functions import *
+from util.spect import *
 
 def read_not_mat(notmat, unit='ms'):
     """ read from .not.mat files generated from uisonganal
@@ -217,3 +223,116 @@ def get_half_width(wf_ts, avg_wf):
     half_width = (wf_ts[deflection_range[1]] - wf_ts[deflection_range[0]]) / 2
     half_width *= 1E3  # convert to microsecond
     return deflection_range, round(half_width, 3)
+
+
+def get_psd_mat(data_path, save_psd=False, update=False, open_folder=False, nfft=2 ** 10, fig_ext='.png'):
+
+    import numpy as np
+    from scipy.io import wavfile
+    import matplotlib.colors as colors
+    import matplotlib.gridspec as gridspec
+
+    # Parameters
+    note_buffer = 10  # in ms before and after each note
+    font_size = 12  # figure font size
+
+    # Read from a file if it already exists
+    file_name = data_path / 'PSD.npy'
+
+    if save_psd and not update:
+        raise Exception("psd can only be save in an update mode or when the .npy does not exist!, set update to TRUE")
+
+    if update or not file_name.exists():
+
+        # Load files
+        files = list(data_path.glob('*.wav'))
+
+        psd_list = []  # store psd vectors for training
+        file_list = []  # store files names containing psds
+        all_notes = ''  # concatenate all syllables
+
+        for file in files:
+
+            notmat_file = file.with_suffix('.wav.not.mat')
+            onsets, offsets, intervals, durations, syllables, contexts = read_not_mat(notmat_file, unit='ms')
+            sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
+            length = data.shape[0] / sample_rate
+            timestamp = np.round(np.linspace(0, length, data.shape[0]) * 1E3,
+                                 3)  # start from t = 0 in ms, reduce floating precision
+            list_zip = zip(onsets, offsets, syllables)
+
+            for i, (onset, offset, syllable) in enumerate(list_zip):
+
+                # Get spectrogram
+                ind, _ = extract_ind(timestamp, [onset - note_buffer, offset + note_buffer])
+                extracted_data = data[ind]
+                spect, freqbins, timebins = spectrogram(extracted_data, sample_rate, freq_range=freq_range)
+
+                # Get power spectral density
+                # nfft = int(round(2 ** 14 / 32000.0 * sample_rate))  # used by Dave Mets
+
+                # Get psd after normalization
+                psd_seg = psd(normalize(extracted_data), NFFT=nfft, Fs=sample_rate)  # PSD segment from the time range
+                seg_start = int(round(freq_range[0] / (sample_rate / float(nfft))))  # 307
+                seg_end = int(round(freq_range[1] / (sample_rate / float(nfft))))  # 8192
+                psd_power = normalize(psd_seg[0][seg_start:seg_end])
+                psd_freq = psd_seg[1][seg_start:seg_end]
+
+                # Plt & save figure
+                if save_psd:
+                    # Plot spectrogram & PSD
+                    fig = plt.figure(figsize=(3.5, 3))
+                    fig_name = "{}, note#{} - {}".format(file.name, i, syllable)
+                    fig.suptitle(fig_name, y=0.95)
+                    gs = gridspec.GridSpec(6, 3)
+
+                    # Plot spectrogram
+                    ax_spect = plt.subplot(gs[1:5, 0:2])
+                    ax_spect.pcolormesh(timebins * 1E3, freqbins, spect,  # data
+                                        cmap='hot_r',
+                                        norm=colors.SymLogNorm(linthresh=0.05,
+                                                               linscale=0.03,
+                                                               vmin=0.5, vmax=100
+                                                               ))
+
+                    remove_right_top(ax_spect)
+                    ax_spect.set_ylim(freq_range[0], freq_range[1])
+                    ax_spect.set_xlabel('Time (ms)', fontsize=font_size)
+                    ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
+
+                    # Plot psd
+                    ax_psd = plt.subplot(gs[1:5, 2], sharey=ax_spect)
+                    ax_psd.plot(psd_power, psd_freq, 'k')
+                    ax_psd.spines['right'].set_visible(False), ax_psd.spines['top'].set_visible(False)
+                    # ax_psd.spines['bottom'].set_visible(False)
+                    # ax_psd.set_xticks([])  # remove xticks
+                    plt.setp(ax_psd.set_yticks([]))
+                    # plt.show()
+
+                    # Save figures
+                    save_path = save.make_dir(file.parent, 'Spectrograms')
+                    save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, open_folder=open_folder)
+                    plt.close(fig)
+
+                all_notes += syllable
+                psd_list.append(psd_power)
+                file_list.append(file.name)
+
+        psd_array = np.asarray(psd_list)  # number of syllables x psd
+
+        # Organize data into a dictionary
+        data = {
+            'psd_array': psd_array,
+            'psd_list': psd_list,
+            'file_list': file_list,
+            'all_notes': all_notes,
+        }
+        # Save results
+        np.save(file_name, data)
+
+    else:  # if not update or file already exists
+        data = np.load(file_name, allow_pickle=True).item()
+        psd_array, psd_list, file_list, all_notes = data['psd_array'], data['psd_list'], data['file_list'], data[
+            'all_notes']
+
+    return psd_array, psd_list, file_list, all_notes
