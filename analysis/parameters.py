@@ -51,15 +51,15 @@ spk_count_parm = {'win_size': 30  # moving window where number of spikes will be
 tick_length = 0.8
 tick_width = 1
 
-# Add a random spike jitter
-jitter_limit = 3  # maximum amount of jitter (in ms)
-
 # Bursting criteria
 burst_hz = 200  # instantaneous firing rates >= 200 Hz to be considered bursting
 corr_burst_crit = 5  # bursting criteria (in ms) in a correlogram, peak latency of a correlogram should be <= than the criteria
 
 # Correlogram
-shuffling_iter = 50  # shuffling iteration for obtaining baseline
+shuffling_iter = 100  # shuffling iteration for obtaining baseline
+
+# Add a random spike jitter
+jitter_limit = 5  # maximum amount of jitter (in ms)
 
 # Waveform analysis
 interp_factor = 100  # factor by which to increase the sampling frequency

@@ -225,7 +225,9 @@ def get_half_width(wf_ts, avg_wf):
     return deflection_range, round(half_width, 3)
 
 
-def get_psd_mat(data_path, save_psd=False, update=False, open_folder=False, nfft=2 ** 10, fig_ext='.png'):
+def get_psd_mat(data_path, save_path,
+                save_psd=False, update=False, open_folder=False, add_date=False,
+                nfft=2 ** 10, fig_ext='.png'):
 
     import numpy as np
     from scipy.io import wavfile
@@ -233,7 +235,7 @@ def get_psd_mat(data_path, save_psd=False, update=False, open_folder=False, nfft
     import matplotlib.gridspec as gridspec
 
     # Parameters
-    note_buffer = 10  # in ms before and after each note
+    note_buffer = 20  # in ms before and after each note
     font_size = 12  # figure font size
 
     # Read from a file if it already exists
@@ -283,7 +285,7 @@ def get_psd_mat(data_path, save_psd=False, update=False, open_folder=False, nfft
                     # Plot spectrogram & PSD
                     fig = plt.figure(figsize=(3.5, 3))
                     fig_name = "{}, note#{} - {}".format(file.name, i, syllable)
-                    fig.suptitle(fig_name, y=0.95)
+                    fig.suptitle(fig_name, y=0.95, fontsize=10)
                     gs = gridspec.GridSpec(6, 3)
 
                     # Plot spectrogram
@@ -310,7 +312,7 @@ def get_psd_mat(data_path, save_psd=False, update=False, open_folder=False, nfft
                     # plt.show()
 
                     # Save figures
-                    save_path = save.make_dir(file.parent, 'Spectrograms')
+                    save_path = save.make_dir(save_path, add_date=add_date)
                     save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, open_folder=open_folder)
                     plt.close(fig)
 

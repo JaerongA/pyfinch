@@ -46,7 +46,7 @@ def load_song(database):
 
 
 class SongInfo:
-    def __init__(self, database):
+    def __init__(self, path, format='wav', *name, update=False):
 
         #Set all database fields as attributes (song database)
         for col in database.keys():
