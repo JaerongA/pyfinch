@@ -12,11 +12,11 @@ freq_range = [300, 8000]  # frequency range for bandpass filter for spectrogram 
 # Set syllable colors
 note_color = {'Intro': ['k', 'gray', 'darkseagreen', 'olive'],
               'Motif': ['r', 'b', 'lime', 'm', 'brown', 'purple', 'saddlebrown'],
-              'Call': ['teal', 'darklategray', 'darkgray', 'indigo']}
+              'Call': ['teal', 'darkgrey', 'darkgray', 'indigo']}
 
 bout_color = {'i':'k', 'j':'gray', 'k':'darkseagreen',   # intro notes
               'a':'r', 'b': 'b', 'c':'lime', 'd':'m', 'e':'brown', 'f': 'purple', 'g': 'saddlebrown',  # motif notes
-              'm':'teal', 'n':'darklategray', 'l':'darkgray', 'o':'indigo'  # calls
+              'm':'teal', 'n':'darkgrey', 'l':'darkgray', 'o':'indigo'  # calls
               }
 
 
