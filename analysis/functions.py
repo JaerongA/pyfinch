@@ -251,7 +251,7 @@ def get_psd_mat(data_path, save_path,
 
         psd_list = []  # store psd vectors for training
         file_list = []  # store files names containing psds
-        all_notes = ''  # concatenate all syllables
+        psd_notes = ''  # concatenate all syllables
 
         for file in files:
 
@@ -316,7 +316,7 @@ def get_psd_mat(data_path, save_path,
                     save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, open_folder=open_folder)
                     plt.close(fig)
 
-                all_notes += syllable
+                psd_notes += syllable
                 psd_list.append(psd_power)
                 file_list.append(file.name)
 
@@ -327,14 +327,14 @@ def get_psd_mat(data_path, save_path,
             'psd_array': psd_array,
             'psd_list': psd_list,
             'file_list': file_list,
-            'all_notes': all_notes,
+            'psd_notes': [psd_notes],
         }
         # Save results
         np.save(file_name, data)
 
     else:  # if not update or file already exists
         data = np.load(file_name, allow_pickle=True).item()
-        psd_array, psd_list, file_list, all_notes = data['psd_array'], data['psd_list'], data['file_list'], data[
-            'all_notes']
+        psd_array, psd_list, file_list, psd_notes = data['psd_array'], data['psd_list'], data['file_list'], data[
+            'psd_notes']
 
-    return psd_array, psd_list, file_list, all_notes
+    return psd_array, psd_list, file_list, psd_notes
