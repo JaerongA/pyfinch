@@ -13,7 +13,7 @@ from util.functions import *
 from util.spect import *
 
 
-def load_cluster(dir):
+def load_song(dir):
     """
     Obtain event info & serialized timestamps for song & neural analysis
     """
@@ -70,7 +70,7 @@ def load_cluster(dir):
         context_list.append(contexts)
 
     # Organize event-related info into a single dictionary object
-    cluster_info = {
+    song_info = {
         'files': file_list,
         'file_start': file_start_list,
         'file_end': file_end_list,
@@ -80,7 +80,7 @@ def load_cluster(dir):
         'syllables': syllable_list,
         'contexts': context_list
     }
-    return cluster_info
+    return song_info
 
 
 def load_audio(dir, format='wav'):
@@ -199,13 +199,17 @@ class ClusterInfo:
     def __init__(self, path, channel_nb, unit_nb, format='rhd', *name, update=False, time_unit='ms'):
 
         self.path = path
-        if len(str(channel_nb)) == 1:
-            self.channel_nb = 'Ch' + str(channel_nb)
-        elif len(str(channel_nb)) == 2:
-            self.channel_nb = 'Ch' + str(channel_nb)
+        if channel_nb:  # if a neuron was recorded
+            if len(str(channel_nb)) == 1:
+                self.channel_nb = 'Ch' + str(channel_nb)
+            elif len(str(channel_nb)) == 2:
+                self.channel_nb = 'Ch' + str(channel_nb)
+        else:
+            self.channel_nb = 'Ch'
 
         self.unit_nb = unit_nb
         self.format = format
+
         if name:
             self.name = name[0]
         else:
@@ -216,7 +220,7 @@ class ClusterInfo:
         # Load events
         file_name = self.path / "ClusterInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
-            cluster_info = load_cluster(self.path)
+            cluster_info = load_song(self.path)
             # Save cluster_info as a numpy object
             np.save(file_name, cluster_info)
         else:
@@ -227,7 +231,9 @@ class ClusterInfo:
             setattr(self, key, cluster_info[key])
 
         # Load spike
-        self._load_spk(time_unit)
+
+        if channel_nb and unit_nb:
+            self._load_spk(time_unit)
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
@@ -252,7 +258,8 @@ class ClusterInfo:
 
         spk_txt_file = list(self.path.glob('*' + self.channel_nb + '(merged).txt'))
         if not spk_txt_file:
-            raise FileNotFoundError
+            print("spk text file doesn't exist !")
+            return
 
         spk_txt_file = spk_txt_file[0]
         spk_info = np.loadtxt(spk_txt_file, delimiter=delimiter, skiprows=1)  # skip header
