@@ -28,7 +28,7 @@ from util.spect import *
 save_fig = False
 fig_save_ok = True
 file_save_ok = False
-save_psd = True
+save_psd = False
 update = False
 fig_ext = '.png'
 
@@ -37,7 +37,8 @@ db = ProjectLoader().load_db()
 # SQL statement
 # query = "SELECT * FROM cluster"
 # query = "SELECT * FROM cluster WHERE ephysOK"
-query = "SELECT * FROM cluster WHERE id = 2"
+# query = "SELECT * FROM cluster WHERE id <= 5"
+query = "SELECT * FROM cluster WHERE id = 3"
 db.execute(query)
 
 # Loop through db
@@ -46,41 +47,56 @@ for row in db.cur.fetchall():
     # Load cluster info from db
     cluster_db = DBInfo(row)
     name, path = cluster_db.load_cluster()  # data path
-    channel_nb = int(cluster_db.channel[-2:])
-    unit_nb = int(cluster_db.unit[-2:])
+
+    try:
+        channel_nb = int(cluster_db.channel[-2:])
+    except:
+        channel_nb = ''
+    try:
+        unit_nb = int(cluster_db.unit[-2:])
+    except:
+        unit_nb = ''
     format = cluster_db.format
 
-    if type(channel_nb) == int:
-        ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster class object
-    else:
-        si = SongInfo(path, name, update=update)  # song class object
+    ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster class object
 
-    save_path = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / name
-    psd_array, psd_list, file_list, psd_notes = get_psd_mat(path, save_path, save_psd=save_psd, update=True, fig_ext=fig_ext)
+    save_path = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / ci.name  # path to save psd output
+
+    # Get psd
+    # This will create PSD.npy in each cluster folder
+    # Note spectrograms & .npy per bird will be stored in PSD_similarity folder
+    psd_array, psd_list, file_list, psd_notes = \
+        get_psd_mat(path, save_path, save_psd=save_psd, update=True, fig_ext=fig_ext)
 
     # Organize data into a dictionary
-    # data = {
-    #     'psd_array': psd_array,
-    #     'psd_list': psd_list,
-    #     'file_list': file_list,
-    #     'psd_notes': psd_notes,
-    # }
+    data = {
+        'psd_array': psd_array,
+        'psd_list': [psd_list],
+        'file_list': [file_list],
+        'psd_notes' : [psd_notes],
+        'cluster_name' : [ci.name]
+     }
 
     bird_id = cluster_db.birdID
     task_name = cluster_db.taskName
 
     if task_name == 'Predeafening':
-        npz_name = bird_id + '_' + task_name
-        npz_name = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / npz_name
+        npy_name = bird_id + '_' + task_name + '.npy'
+        npy_name = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / npy_name
 
-        if npz_name.exists():
-            data = np.load(npz_name, allow_pickle=True).item()
-            # psd_array, psd_list, file_list, psd_notes = \
-            #     data['psd_array'], data['psd_list'], data['file_list'], data['psd_notes']
+        if npy_name.exists():
+            data_all = np.load(npy_name, allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
 
+            if data['cluster_name'][0] not in data_all['cluster_name']: # append to the existing file
+                data_all['psd_array'] = np.append(data_all['psd_array'], data['psd_array'])
+                data_all['psd_list'].append(data['psd_list'][0])
+                data_all['file_list'].append(data['file_list'][0])
+                data_all['psd_notes'].append(data['psd_notes'][0])
+                data_all['cluster_name'].append(data['cluster_name'][0])
+                np.save(npy_name, data_all)
         else:
             # Save results
-            np.save(npz_name, data)
+            np.save(npy_name, data)
 
 
     # Save results
