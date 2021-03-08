@@ -8,13 +8,13 @@ from database import load
 from pathlib import Path
 
 
-def make_dir(parent_path, dir_name, add_date=True):
+def make_dir(parent_path, *dir_name, add_date=True):
     """
     add date info in the sub-directory
 
     Args:
         parent_dir: path
-        dir_name: str
+        dir_name: str (optional), if not exists, files will be saved in parent_dir
         add_date: bool
 
     Returns:
@@ -22,9 +22,18 @@ def make_dir(parent_path, dir_name, add_date=True):
     """
 
     global save_path
-    if add_date:
-        today = date.today()
-        save_path = parent_path / dir_name / today.strftime("%Y-%m-%d")  # 2020-07-04
+    if dir_name:
+        if add_date:
+            today = date.today()
+            save_path = parent_path / dir_name[0] / today.strftime("%Y-%m-%d")  # 2020-07-04
+        else:
+            save_path = parent_path / dir_name[0]
+    else:
+        if add_date:
+            today = date.today()
+            save_path = parent_path /  today.strftime("%Y-%m-%d")  # 2020-07-04
+        else:
+            save_path = parent_path
 
     # print(save_path)
     if not save_path.exists():
