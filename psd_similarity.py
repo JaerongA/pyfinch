@@ -25,10 +25,10 @@ from util.spect import *
 
 
 # Parameters
-save_fig = False
+save_fig = True
 fig_save_ok = True
 file_save_ok = False
-save_psd = False
+save_psd = True
 update = False
 fig_ext = '.png'
 
@@ -37,8 +37,8 @@ db = ProjectLoader().load_db()
 # SQL statement
 # query = "SELECT * FROM cluster"
 # query = "SELECT * FROM cluster WHERE ephysOK"
-# query = "SELECT * FROM cluster WHERE id <= 5"
-query = "SELECT * FROM cluster WHERE id = 3"
+query = "SELECT * FROM cluster WHERE id <= 5"
+# query = "SELECT * FROM cluster WHERE id = 3"
 db.execute(query)
 
 # Loop through db
@@ -75,14 +75,14 @@ for row in db.cur.fetchall():
         'file_list': [file_list],
         'psd_notes' : [psd_notes],
         'cluster_name' : [ci.name]
-     }
+    }
 
     bird_id = cluster_db.birdID
     task_name = cluster_db.taskName
+    npy_name = bird_id + '_' + task_name + '.npy'
+    npy_name = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / npy_name
 
     if task_name == 'Predeafening':
-        npy_name = bird_id + '_' + task_name + '.npy'
-        npy_name = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / npy_name
 
         if npy_name.exists():
             data_all = np.load(npy_name, allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
@@ -97,6 +97,8 @@ for row in db.cur.fetchall():
         else:
             # Save results
             np.save(npy_name, data)
+    elif task_name == 'Postdeafening':
+        pass
 
 
     # Save results
