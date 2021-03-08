@@ -95,6 +95,7 @@ class DBInfo:
     def __init__(self, db):
         # Set all database fields as attributes
 
+        self.channel = None
         for key in db.keys():
             # dic[col] = database[col]
             setattr(self, key, db[key])
@@ -123,8 +124,12 @@ class DBInfo:
             cluster_taskSession = 'D' + str(self.taskSession)
         cluster_taskSession += '(' + str(self.sessionDate) + ')'
 
-        cluster_name = [cluster_id, self.birdID, self.taskName, cluster_taskSession,
-                        self.site, self.channel, self.unit]
+        if self.channel:  # if neural signal exists
+            cluster_name = [cluster_id, self.birdID, self.taskName, cluster_taskSession,
+                            self.site, self.channel, self.unit]
+        else:
+            cluster_name = [cluster_id, self.birdID, self.taskName, cluster_taskSession, self.site]
+
         cluster_name = '-'.join(map(str, cluster_name))
 
         # Get cluster path
