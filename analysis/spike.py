@@ -644,7 +644,7 @@ class MotifInfo(ClusterInfo):
                     origin = sum(self.median_durations[:i])
 
                 # Add spikes from motif
-                ind, spk_ts_temp = extract_ind(spk_new, [timestamp[i], timestamp[i + 1]])
+                ind, spk_ts_temp = extract_ind(spk_ts, [timestamp[i], timestamp[i + 1]])
                 spk_ts_temp = ((ratio * ((spk_ts_temp - timestamp[0]) - diff)) + origin) + timestamp[0]
                 # spk_ts_new = np.append(spk_ts_new, spk_ts_temp)
                 np.put(spk_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
