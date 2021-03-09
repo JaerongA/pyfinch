@@ -37,8 +37,8 @@ db = ProjectLoader().load_db()
 # SQL statement
 # query = "SELECT * FROM cluster"
 # query = "SELECT * FROM cluster WHERE ephysOK"
-query = "SELECT * FROM cluster WHERE id <= 5"
-# query = "SELECT * FROM cluster WHERE id = 3"
+# query = "SELECT * FROM cluster WHERE id <= 5"
+query = "SELECT * FROM cluster WHERE id = 5"
 db.execute(query)
 
 # Loop through db
@@ -82,23 +82,20 @@ for row in db.cur.fetchall():
     npy_name = bird_id + '_' + task_name + '.npy'
     npy_name = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / npy_name
 
-    if task_name == 'Predeafening':
 
-        if npy_name.exists():
-            data_all = np.load(npy_name, allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
+    if npy_name.exists():
+        data_all = np.load(npy_name, allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
 
-            if data['cluster_name'][0] not in data_all['cluster_name']: # append to the existing file
-                data_all['psd_array'] = np.append(data_all['psd_array'], data['psd_array'])
-                data_all['psd_list'].append(data['psd_list'][0])
-                data_all['file_list'].append(data['file_list'][0])
-                data_all['psd_notes'].append(data['psd_notes'][0])
-                data_all['cluster_name'].append(data['cluster_name'][0])
-                np.save(npy_name, data_all)
-        else:
-            # Save results
-            np.save(npy_name, data)
-    elif task_name == 'Postdeafening':
-        pass
+        if data['cluster_name'][0] not in data_all['cluster_name']: # append to the existing file
+            data_all['psd_array'] = np.append(data_all['psd_array'], data['psd_array'])
+            data_all['psd_list'].append(data['psd_list'][0])
+            data_all['file_list'].append(data['file_list'][0])
+            data_all['psd_notes'].append(data['psd_notes'][0])
+            data_all['cluster_name'].append(data['cluster_name'][0])
+            np.save(npy_name, data_all)
+    else:
+        # Save results
+        np.save(npy_name, data)
 
 
     # Save results
