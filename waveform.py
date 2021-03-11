@@ -128,3 +128,6 @@ for row in db.cur.fetchall():
 if update_db:
     db.to_csv('cluster')
 print('Done!')
+
+
+df = db.to_dataframe("SELECT DISTINCT birdID, taskName FROM cluster")

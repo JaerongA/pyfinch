@@ -5,14 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="moved BoutInfo class to spike module">
-      <change afterPath="$PROJECT_DIR$/psd_similarity.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/parameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/functions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/config.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/get_conditional_spk_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/note_similarity/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/note_similarity/config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/correlogram.py" beforeDir="false" afterPath="$PROJECT_DIR$/correlogram.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/load.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/note_similarity/note_similarity.py" beforeDir="false" afterPath="$PROJECT_DIR$/note_similarity/note_similarity.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plot_bout.py" beforeDir="false" afterPath="$PROJECT_DIR$/plot_bout.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/psd_similarity.py" beforeDir="false" afterPath="$PROJECT_DIR$/psd_similarity.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/raster.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/waveform.py" beforeDir="false" afterPath="$PROJECT_DIR$/waveform.py" afterDir="false" />
     </list>
@@ -62,6 +62,11 @@
         <item name="deafening" type="feb32156:DbDataSourceImpl" />
         <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
         <item name="main: schema" type="981a47c2:SqliteImplModel$Schema" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="deafening" type="feb32156:DbDataSourceImpl" />
+        <item name="collations" type="d4e8921:DatabaseStructure$FamilyGroup" />
       </path>
     </expand>
     <select />
@@ -139,13 +144,6 @@
     </option>
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="H:\Box\PythonToolbox\Deafening" />
-      <recent name="H:\Box\PythonToolbox\Deafening\note_similarity_" />
-      <recent name="H:\Box\PythonToolbox\Deafening\utilities" />
-      <recent name="H:\Box\PythonToolbox\Deafening\test" />
-      <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="H:\Box\PythonToolbox\Deafening\test" />
       <recent name="H:\Box\PythonToolbox\Deafening\preprocessing" />
@@ -153,8 +151,15 @@
       <recent name="H:\Box\PythonToolbox\Deafening\note_similarity" />
       <recent name="H:\Box\PythonToolbox\Deafening" />
     </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="H:\Box\PythonToolbox\Deafening" />
+      <recent name="H:\Box\PythonToolbox\Deafening\note_similarity_" />
+      <recent name="H:\Box\PythonToolbox\Deafening\utilities" />
+      <recent name="H:\Box\PythonToolbox\Deafening\test" />
+      <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
+    </key>
   </component>
-  <component name="RunManager" selected="Python.plot_bout">
+  <component name="RunManager" selected="Python.psd_similarity">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -199,7 +204,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="note_similarity" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="correlogram (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -207,12 +212,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/note_similarity" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/note_similarity/note_similarity.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/correlogram.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -221,17 +226,42 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="plot_bout" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="correlogram" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/plot_bout.py" />
+      <option name="SCRIPT_NAME" value="H:\Box\PythonToolbox\Deafening\correlogram.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="firing_rates" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="SongAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/firing_rates.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -244,9 +274,6 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -303,43 +330,20 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="waveform" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="SongAnalysis" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/waveform.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Python.SongAnalysis" />
-      <item itemvalue="Python.waveform" />
+      <item itemvalue="Python.correlogram" />
       <item itemvalue="Python.raster" />
-      <item itemvalue="Python.plot_bout" />
-      <item itemvalue="Python.note_similarity" />
       <item itemvalue="Python.psd_similarity" />
+      <item itemvalue="Python.firing_rates" />
+      <item itemvalue="Python.correlogram (1)" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.plot_bout" />
-        <item itemvalue="Python.raster" />
         <item itemvalue="Python.psd_similarity" />
-        <item itemvalue="Python.waveform" />
-        <item itemvalue="Python.note_similarity" />
+        <item itemvalue="Python.raster" />
+        <item itemvalue="Python.correlogram (1)" />
+        <item itemvalue="Python.firing_rates" />
       </list>
     </recent_temporary>
   </component>
@@ -599,105 +603,14 @@
       <workItem from="1614399394057" duration="42323000" />
       <workItem from="1614748193431" duration="716000" />
       <workItem from="1614793375637" duration="828000" />
-      <workItem from="1614794228730" duration="1381000" />
-    </task>
-    <task id="LOCAL-00211" summary="figure revision">
-      <created>1612500640647</created>
-      <option name="number" value="00211" />
-      <option name="presentableId" value="LOCAL-00211" />
-      <option name="project" value="LOCAL" />
-      <updated>1612500640647</updated>
-    </task>
-    <task id="LOCAL-00212" summary="fixed an error in getting corr peak latency">
-      <created>1612758776680</created>
-      <option name="number" value="00212" />
-      <option name="presentableId" value="LOCAL-00212" />
-      <option name="project" value="LOCAL" />
-      <updated>1612758776681</updated>
-    </task>
-    <task id="LOCAL-00213" summary="make random jitter reproducible">
-      <created>1612846754599</created>
-      <option name="number" value="00213" />
-      <option name="presentableId" value="LOCAL-00213" />
-      <option name="project" value="LOCAL" />
-      <updated>1612846754600</updated>
-    </task>
-    <task id="LOCAL-00214" summary="added jittered spike, bursting category function">
-      <created>1612933281368</created>
-      <option name="number" value="00214" />
-      <option name="presentableId" value="LOCAL-00214" />
-      <option name="project" value="LOCAL" />
-      <updated>1612933281369</updated>
-    </task>
-    <task id="LOCAL-00215" summary="shuffling parameters">
-      <created>1613014573821</created>
-      <option name="number" value="00215" />
-      <option name="presentableId" value="LOCAL-00215" />
-      <option name="project" value="LOCAL" />
-      <updated>1613014573821</updated>
-    </task>
-    <task id="LOCAL-00216" summary="get corr jittered baseline">
-      <created>1613014635002</created>
-      <option name="number" value="00216" />
-      <option name="presentableId" value="LOCAL-00216" />
-      <option name="project" value="LOCAL" />
-      <updated>1613014635002</updated>
-    </task>
-    <task id="LOCAL-00217" summary="get jittered correlogram (test program)">
-      <created>1613014694021</created>
-      <option name="number" value="00217" />
-      <option name="presentableId" value="LOCAL-00217" />
-      <option name="project" value="LOCAL" />
-      <updated>1613014694021</updated>
-    </task>
-    <task id="LOCAL-00218" summary="update">
-      <created>1613014747647</created>
-      <option name="number" value="00218" />
-      <option name="presentableId" value="LOCAL-00218" />
-      <option name="project" value="LOCAL" />
-      <updated>1613014747647</updated>
-    </task>
-    <task id="LOCAL-00219" summary="added bursting category criteria">
-      <created>1613016182009</created>
-      <option name="number" value="00219" />
-      <option name="presentableId" value="LOCAL-00219" />
-      <option name="project" value="LOCAL" />
-      <updated>1613016182009</updated>
-    </task>
-    <task id="LOCAL-00220" summary="update">
-      <created>1613023768327</created>
-      <option name="number" value="00220" />
-      <option name="presentableId" value="LOCAL-00220" />
-      <option name="project" value="LOCAL" />
-      <updated>1613023768327</updated>
-    </task>
-    <task id="LOCAL-00221" summary="update">
-      <created>1613097874271</created>
-      <option name="number" value="00221" />
-      <option name="presentableId" value="LOCAL-00221" />
-      <option name="project" value="LOCAL" />
-      <updated>1613097874272</updated>
-    </task>
-    <task id="LOCAL-00222" summary="added spike half width">
-      <created>1613111767647</created>
-      <option name="number" value="00222" />
-      <option name="presentableId" value="LOCAL-00222" />
-      <option name="project" value="LOCAL" />
-      <updated>1613111767648</updated>
-    </task>
-    <task id="LOCAL-00223" summary="added half width">
-      <created>1613112058449</created>
-      <option name="number" value="00223" />
-      <option name="presentableId" value="LOCAL-00223" />
-      <option name="project" value="LOCAL" />
-      <updated>1613112058449</updated>
-    </task>
-    <task id="LOCAL-00224" summary="update">
-      <created>1613112115880</created>
-      <option name="number" value="00224" />
-      <option name="presentableId" value="LOCAL-00224" />
-      <option name="project" value="LOCAL" />
-      <updated>1613112115880</updated>
+      <workItem from="1614794228730" duration="55110000" />
+      <workItem from="1615160494239" duration="1762000" />
+      <workItem from="1615169432658" duration="8618000" />
+      <workItem from="1615216597853" duration="1801000" />
+      <workItem from="1615244223341" duration="11909000" />
+      <workItem from="1615312292247" duration="802000" />
+      <workItem from="1615317893856" duration="11811000" />
+      <workItem from="1615416439982" duration="7339000" />
     </task>
     <task id="LOCAL-00225" summary="update">
       <created>1613193689782</created>
@@ -944,7 +857,105 @@
       <option name="project" value="LOCAL" />
       <updated>1614793573918</updated>
     </task>
-    <option name="localTasksCounter" value="260" />
+    <task id="LOCAL-00260" summary="moved BoutInfo class to spike module">
+      <created>1614795633563</created>
+      <option name="number" value="00260" />
+      <option name="presentableId" value="LOCAL-00260" />
+      <option name="project" value="LOCAL" />
+      <updated>1614795633564</updated>
+    </task>
+    <task id="LOCAL-00261" summary="added bursting info">
+      <created>1614806222719</created>
+      <option name="number" value="00261" />
+      <option name="presentableId" value="LOCAL-00261" />
+      <option name="project" value="LOCAL" />
+      <updated>1614806222719</updated>
+    </task>
+    <task id="LOCAL-00262" summary="update with a new class object">
+      <created>1614975325327</created>
+      <option name="number" value="00262" />
+      <option name="presentableId" value="LOCAL-00262" />
+      <option name="project" value="LOCAL" />
+      <updated>1614975325327</updated>
+    </task>
+    <task id="LOCAL-00263" summary="correlogram">
+      <created>1614976780249</created>
+      <option name="number" value="00263" />
+      <option name="presentableId" value="LOCAL-00263" />
+      <option name="project" value="LOCAL" />
+      <updated>1614976780249</updated>
+    </task>
+    <task id="LOCAL-00264" summary="moved BoutInfo class to spike module">
+      <created>1614977195431</created>
+      <option name="number" value="00264" />
+      <option name="presentableId" value="LOCAL-00264" />
+      <option name="project" value="LOCAL" />
+      <updated>1614977195431</updated>
+    </task>
+    <task id="LOCAL-00265" summary="SongInfo class">
+      <created>1615092751021</created>
+      <option name="number" value="00265" />
+      <option name="presentableId" value="LOCAL-00265" />
+      <option name="project" value="LOCAL" />
+      <updated>1615092751021</updated>
+    </task>
+    <task id="LOCAL-00266" summary="update">
+      <created>1615175921352</created>
+      <option name="number" value="00266" />
+      <option name="presentableId" value="LOCAL-00266" />
+      <option name="project" value="LOCAL" />
+      <updated>1615175921353</updated>
+    </task>
+    <task id="LOCAL-00267" summary="in some cases where there's no sortable units, cluster and channel info can be missing">
+      <created>1615178842893</created>
+      <option name="number" value="00267" />
+      <option name="presentableId" value="LOCAL-00267" />
+      <option name="project" value="LOCAL" />
+      <updated>1615178842893</updated>
+    </task>
+    <task id="LOCAL-00268" summary="update">
+      <created>1615179246509</created>
+      <option name="number" value="00268" />
+      <option name="presentableId" value="LOCAL-00268" />
+      <option name="project" value="LOCAL" />
+      <updated>1615179246509</updated>
+    </task>
+    <task id="LOCAL-00269" summary="update">
+      <created>1615179284434</created>
+      <option name="number" value="00269" />
+      <option name="presentableId" value="LOCAL-00269" />
+      <option name="project" value="LOCAL" />
+      <updated>1615179284434</updated>
+    </task>
+    <task id="LOCAL-00270" summary="in some rows in cluster db, channel or unit information can be missing becase no sortable neurons existed.">
+      <created>1615179362569</created>
+      <option name="number" value="00270" />
+      <option name="presentableId" value="LOCAL-00270" />
+      <option name="project" value="LOCAL" />
+      <updated>1615179362569</updated>
+    </task>
+    <task id="LOCAL-00271" summary="update">
+      <created>1615179489576</created>
+      <option name="number" value="00271" />
+      <option name="presentableId" value="LOCAL-00271" />
+      <option name="project" value="LOCAL" />
+      <updated>1615179489576</updated>
+    </task>
+    <task id="LOCAL-00272" summary="update">
+      <created>1615265245636</created>
+      <option name="number" value="00272" />
+      <option name="presentableId" value="LOCAL-00272" />
+      <option name="project" value="LOCAL" />
+      <updated>1615265245637</updated>
+    </task>
+    <task id="LOCAL-00273" summary="fixed an error in time-warping">
+      <created>1615274473379</created>
+      <option name="number" value="00273" />
+      <option name="presentableId" value="LOCAL-00273" />
+      <option name="project" value="LOCAL" />
+      <updated>1615274473379</updated>
+    </task>
+    <option name="localTasksCounter" value="274" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -978,13 +989,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="make random jitter reproducible" />
-    <MESSAGE value="added jittered spike, bursting category function" />
-    <MESSAGE value="shuffling parameters" />
-    <MESSAGE value="get corr jittered baseline" />
-    <MESSAGE value="get jittered correlogram (test program)" />
-    <MESSAGE value="added bursting category criteria" />
-    <MESSAGE value="added spike half width" />
     <MESSAGE value="added half width" />
     <MESSAGE value="find the baseline from the mean of the waveform amp" />
     <MESSAGE value="added interpolation" />
@@ -1001,9 +1005,16 @@
     <MESSAGE value="half-width update" />
     <MESSAGE value="revision on getting the deflection point for half-width calculation" />
     <MESSAGE value="update motif info" />
-    <MESSAGE value="update" />
+    <MESSAGE value="added bursting info" />
+    <MESSAGE value="update with a new class object" />
+    <MESSAGE value="correlogram" />
     <MESSAGE value="moved BoutInfo class to spike module" />
-    <option name="LAST_COMMIT_MESSAGE" value="moved BoutInfo class to spike module" />
+    <MESSAGE value="SongInfo class" />
+    <MESSAGE value="in some cases where there's no sortable units, cluster and channel info can be missing" />
+    <MESSAGE value="in some rows in cluster db, channel or unit information can be missing becase no sortable neurons existed." />
+    <MESSAGE value="update" />
+    <MESSAGE value="fixed an error in time-warping" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed an error in time-warping" />
   </component>
   <component name="WindowStateProjectService">
     <state x="773" y="276" key="#Inspections" timestamp="1608191135770">
@@ -1039,10 +1050,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="981" y="535" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607450511787" />
-    <state x="337" y="177" width="2099" height="1163" key="CommitChangelistDialog2" timestamp="1614793672568">
+    <state x="337" y="177" width="2099" height="1163" key="CommitChangelistDialog2" timestamp="1615312456222">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="337" y="177" width="2099" height="1163" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614793672568" />
+    <state x="337" y="177" width="2099" height="1163" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615312456222" />
     <state x="485" y="124" width="1925" height="1145" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614487726765" />
     <state width="1466" height="582" key="DebuggerActiveHint" timestamp="1607412284622">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -1057,45 +1068,45 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="346" y="615" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607822217424" />
-    <state width="2505" height="360" key="GridCell.Tab.0.bottom" timestamp="1614667093934">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state width="2505" height="513" key="GridCell.Tab.0.bottom" timestamp="1615435225022">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="360" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614642806182" />
+    <state width="2505" height="513" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615435225022" />
     <state width="2505" height="360" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state width="2505" height="360" key="GridCell.Tab.0.center" timestamp="1614667093934">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state width="2505" height="513" key="GridCell.Tab.0.center" timestamp="1615435225022">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="360" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614642806182" />
+    <state width="2505" height="513" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615435225022" />
     <state width="2505" height="360" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state width="2505" height="360" key="GridCell.Tab.0.left" timestamp="1614667093934">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state width="2505" height="513" key="GridCell.Tab.0.left" timestamp="1615435225022">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="360" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614642806182" />
+    <state width="2505" height="513" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615435225022" />
     <state width="2505" height="360" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state width="2505" height="360" key="GridCell.Tab.0.right" timestamp="1614667093934">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state width="2505" height="513" key="GridCell.Tab.0.right" timestamp="1615435225022">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="360" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614642806182" />
+    <state width="2505" height="513" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615435225022" />
     <state width="2505" height="360" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state width="2505" height="360" key="GridCell.Tab.1.bottom" timestamp="1614667093934">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state width="2505" height="513" key="GridCell.Tab.1.bottom" timestamp="1615435223142">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="360" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614642806183" />
+    <state width="2505" height="513" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615435223142" />
     <state width="2505" height="360" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state width="2505" height="360" key="GridCell.Tab.1.center" timestamp="1614667093934">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state width="2505" height="513" key="GridCell.Tab.1.center" timestamp="1615435223142">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="360" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614642806183" />
+    <state width="2505" height="513" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615435223142" />
     <state width="2505" height="360" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state width="2505" height="360" key="GridCell.Tab.1.left" timestamp="1614667093934">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state width="2505" height="513" key="GridCell.Tab.1.left" timestamp="1615435223142">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="360" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614642806183" />
+    <state width="2505" height="513" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615435223142" />
     <state width="2505" height="360" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state width="2505" height="360" key="GridCell.Tab.1.right" timestamp="1614667093934">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state width="2505" height="513" key="GridCell.Tab.1.right" timestamp="1615435223142">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="360" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614642806183" />
+    <state width="2505" height="513" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615435223142" />
     <state width="2505" height="360" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
     <state x="-2756" y="607" key="RollbackChangesDialog" timestamp="1612131537942">
       <screen x="-3840" y="262" width="2560" height="1400" />
@@ -1117,10 +1128,10 @@
     </state>
     <state width="629" height="498" key="SwitcherDM/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1608237331452" />
     <state width="629" height="498" key="SwitcherDM/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1610178964206" />
-    <state x="-3067" y="631" key="Vcs.Push.Dialog.v2" timestamp="1614793576013">
+    <state x="-3067" y="631" key="Vcs.Push.Dialog.v2" timestamp="1615274475223">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3067" y="631" key="Vcs.Push.Dialog.v2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614793576013" />
+    <state x="-3067" y="631" key="Vcs.Push.Dialog.v2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615274475223" />
     <state x="773" y="369" key="Vcs.Push.Dialog.v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614487728919" />
     <state width="1287" height="707" key="XDebugger.FullValuePopup" timestamp="1610394086522">
       <screen x="-3840" y="262" width="2560" height="1400" />
@@ -1132,10 +1143,10 @@
     </state>
     <state x="-2686" y="812" width="380" height="315" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613627425566" />
     <state x="1154" y="550" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1612137660601" />
-    <state x="-3079" y="536" key="com.intellij.database.dbimport.ImportDialog" timestamp="1612148381174">
+    <state x="-3079" y="536" key="com.intellij.database.dbimport.ImportDialog" timestamp="1614973588102">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3079" y="536" key="com.intellij.database.dbimport.ImportDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1612148381174" />
+    <state x="-3079" y="536" key="com.intellij.database.dbimport.ImportDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614973588102" />
     <state x="-2891" y="723" key="com.intellij.database.dbimport.ImportUtil.MyDialog" timestamp="1613627462627">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -1158,25 +1169,25 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3741" y="369" width="2375" height="1215" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613928579272" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1614794228737">
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1615416439976">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="336" y="617" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614794228737" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614748201072" />
-    <state x="-2783" y="860" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1614232839231">
+    <state x="336" y="617" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615416439976" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1615223585519" />
+    <state x="-2783" y="860" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1615175907036">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2783" y="860" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614232839231" />
+    <state x="-2783" y="860" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615175907036" />
     <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1611197271567" />
     <state x="-3118" y="638" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1610226798877">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3118" y="638" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1610226798877" />
-    <state x="0" y="0" width="890" height="928" maximized="true" key="dock-window-1" timestamp="1614794725789">
+    <state x="581" y="-7" width="1610" height="1004" maximized="true" key="dock-window-1" timestamp="1615437461332">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="0" y="0" width="890" height="928" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614794725789" />
-    <state x="274" y="-21" width="1108" height="926" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614540610942" />
+    <state x="581" y="-7" width="1610" height="1004" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615437461332" />
+    <state x="186" y="-10" width="1610" height="1004" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1615261483165" />
     <state x="859" y="225" width="895" height="1407" key="dock-window-10" timestamp="1611784766552">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -1223,10 +1234,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="0" y="418" width="2074" height="780" key="dock-window-9/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1611773900630" />
-    <state x="-2787" y="586" width="1167" height="1011" key="find.popup" timestamp="1614795371803">
+    <state x="-2787" y="586" width="1167" height="1011" key="find.popup" timestamp="1615156213949">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2787" y="586" width="1167" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614795371803" />
+    <state x="-2787" y="586" width="1167" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615156213949" />
     <state x="-2798" y="564" width="778" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613854052370" />
     <state x="835" y="361" width="875" height="663" key="recent.locations.popup" timestamp="1608237326059">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -1237,11 +1248,11 @@
     </state>
     <state x="-2877" y="539" key="refactoring.ChangeSignatureDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1611301685470" />
     <state x="963" y="277" key="refactoring.ChangeSignatureDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1609619214557" />
-    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup" timestamp="1614364372935">
+    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup" timestamp="1615432537347">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614364372935" />
-    <state x="-2981" y="570" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613331627024" />
+    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615432537347" />
+    <state x="-2981" y="570" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614812063005" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1262,9 +1273,9 @@
           <option name="timeStamp" value="115" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/raster.py</url>
-          <line>392</line>
-          <option name="timeStamp" value="127" />
+          <url>file://$PROJECT_DIR$/psd_similarity.py</url>
+          <line>152</line>
+          <option name="timeStamp" value="117" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -1293,8 +1304,8 @@
     <SUITE FILE_PATH="coverage/Deafening$change_cbin_names.coverage" NAME="change_cbin_names Coverage Results" MODIFIED="1605503403122" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preprocessing" />
     <SUITE FILE_PATH="coverage/Deafening$firing_rates.coverage" NAME="firing_rates Coverage Results" MODIFIED="1613191060836" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$load.coverage" NAME="load Coverage Results" MODIFIED="1611244433521" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/database" />
-    <SUITE FILE_PATH="coverage/Deafening$plot_bout.coverage" NAME="plot_bout Coverage Results" MODIFIED="1614206197945" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Deafening$raster.coverage" NAME="raster Coverage Results" MODIFIED="1614642792178" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$plot_bout.coverage" NAME="plot_bout Coverage Results" MODIFIED="1614801873953" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$raster.coverage" NAME="raster Coverage Results" MODIFIED="1615274367103" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$linear_warp.coverage" NAME="linear_warp Coverage Results" MODIFIED="1608185750200" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$get_song_bout_v2.coverage" NAME="get_song_bout_v2 Coverage Results" MODIFIED="1597282743127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$serialize_timestamp.coverage" NAME="serialize_timestamp Coverage Results" MODIFIED="1604885465974" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -1311,19 +1322,21 @@
     <SUITE FILE_PATH="coverage/Deafening$syllable_sequence_analysis.coverage" NAME="syllable_sequence_analysis Coverage Results" MODIFIED="1595650713751" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$save.coverage" NAME="save Coverage Results" MODIFIED="1593666809014" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/summary" />
     <SUITE FILE_PATH="coverage/Deafening$Unittests_in_test_MotifInfo_py.coverage" NAME="Unittests in test_MotifInfo.py Coverage Results" MODIFIED="1608949250594" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
-    <SUITE FILE_PATH="coverage/Deafening$correlogram_v2.coverage" NAME="correlogram_v2 Coverage Results" MODIFIED="1613632566020" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$note_similarity.coverage" NAME="note_similarity Coverage Results" MODIFIED="1614378962092" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/note_similarity" />
+    <SUITE FILE_PATH="coverage/Deafening$correlogram_v2.coverage" NAME="correlogram_v2 Coverage Results" MODIFIED="1614803788717" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$get_notestat__1_.coverage" NAME="get_notestat (1) Coverage Results" MODIFIED="1606870542860" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preprocessing" />
     <SUITE FILE_PATH="coverage/Deafening$copy_cluster_mat.coverage" NAME="copy_cluster_mat Coverage Results" MODIFIED="1594580187905" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$peth.coverage" NAME="peth Coverage Results" MODIFIED="1610257983795" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$syllable_duration_analysis_v2.coverage" NAME="syllable_duration_analysis_v2 Coverage Results" MODIFIED="1603258717928" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$correlogram_jitter.coverage" NAME="correlogram_jitter Coverage Results" MODIFIED="1613073666971" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$SAP_features.coverage" NAME="SAP_features Coverage Results" MODIFIED="1593832745438" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$psd_similarity.coverage" NAME="psd_similarity Coverage Results" MODIFIED="1615435219655" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$intan_to_wav_converter.coverage" NAME="intan_to_wav_converter Coverage Results" MODIFIED="1595209092331" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$raster_unwarped.coverage" NAME="raster_unwarped Coverage Results" MODIFIED="1613687731537" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$firing_rates__1_.coverage" NAME="firing_rates (1) Coverage Results" MODIFIED="1612131998130" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$get_song_bout_v3.coverage" NAME="get_song_bout_v3 Coverage Results" MODIFIED="1597374319283" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$linear_warp_v2.coverage" NAME="linear_warp_v2 Coverage Results" MODIFIED="1608097337499" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$waveform.coverage" NAME="waveform Coverage Results" MODIFIED="1614551358591" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$correlogram__1_.coverage" NAME="correlogram (1) Coverage Results" MODIFIED="1614976431870" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -221,7 +221,7 @@ for bird in config['birdID']:
                                                                                                     fig_ext=fig_ext)
 
             # Get basis psds per note
-            psd_basis_list, note_basis_list = get_basis_psd(psd_array_training, notes_training)
+            psd_list_basis, note_list_basis = get_basis_psd(psd_array_training, notes_training)
 
             # Get psd from the testing set
             psd_array_testing, psd_list_testing, file_list_testing, notes_testing = get_psd_mat(testing_path,
@@ -231,7 +231,7 @@ for bird in config['birdID']:
 
             # Get similarity per syllable
             # Get psd distance
-            distance = scipy.spatial.distance.cdist(psd_list_testing, psd_basis_list,
+            distance = scipy.spatial.distance.cdist(psd_list_testing, psd_list_basis,
                                                     'sqeuclidean')  # (number of test notes x number of basis notes)
 
             # Convert to similarity matrices
@@ -249,7 +249,7 @@ for bird in config['birdID']:
             # Get similarity matrix per test note
             for note in note_testing_list:
 
-                if note not in note_basis_list and note != 'x':
+                if note not in note_list_basis and note != 'x':
                     continue
 
                 ind = find_str(notes_testing, note)
@@ -288,7 +288,7 @@ for bird in config['birdID']:
                                  cmap='binary')
                 ax.set_title(title)
                 ax.set_ylabel('Test syllables')
-                ax.set_xticklabels(note_basis_list)
+                ax.set_xticklabels(note_list_basis)
                 plt.tick_params(left=False)
                 plt.yticks([0.5, nb_note - 0.5], ['1', str(nb_note)])
 
@@ -299,15 +299,15 @@ for bird in config['birdID']:
                                  annot_kws={"fontsize": 7})
                 ax.set_xlabel('Basis syllables')
                 ax.set_yticks([])
-                ax.set_xticklabels(note_basis_list)
+                ax.set_xticklabels(note_list_basis)
                 # plt.show()
 
                 if note is 'x':  # get the max if 'x'
                     similarity_mean_val = np.max(similarity_mean[0])
                     similarity_median_val = np.max(similarity_median[0])
                 else:  # get the value from the matching note
-                    similarity_mean_val = similarity_mean[0][note_basis_list.index(note)]
-                    similarity_median_val = similarity_median[0][note_basis_list.index(note)]
+                    similarity_mean_val = similarity_mean[0][note_list_basis.index(note)]
+                    similarity_median_val = similarity_median[0][note_list_basis.index(note)]
 
                 # Save figure
                 if fig_save_ok:
@@ -332,7 +332,7 @@ for bird in config['birdID']:
 
                 # 'x' in BMI condition only
                 if condition == 'BMI' and note is 'x':  # store mean similarity values for 'x'
-                    for ind, basis_note in enumerate(note_basis_list):
+                    for ind, basis_note in enumerate(note_list_basis):
                         temp_df_x = []
                         temp_df_x = pd.DataFrame({'BirdID': bird,
                                                   'BasisNote': basis_note,  # testing note
@@ -386,7 +386,7 @@ for bird in config['birdID']:
                      cmap='binary')
 
     ax.set_ylabel('Test syllables')
-    ax.set_xticklabels(note_basis_list)
+    ax.set_xticklabels(note_list_basis)
     plt.tick_params(left=False)
     plt.yticks([0.5, nb_note - 0.5], ['1', str(nb_note)])
 
@@ -403,7 +403,7 @@ for bird in config['birdID']:
     ax.axvline(x=0, color='k', linewidth=frame_width / 4)
     ax.axvline(x=x_similarity.shape[1], color='k', linewidth=frame_width)
 
-    ax.set_xticklabels(note_basis_list)
+    ax.set_xticklabels(note_list_basis)
     ax.set_yticklabels([])
     plt.tick_params(left=False)
     # plt.show()
@@ -415,7 +415,7 @@ for bird in config['birdID']:
     # Save the x similarity matrix (with nans) in .csv for visual verification (01/17/2021)
     x_csv_path = project_path / 'Results' / f'{bird}_SimilarityMat(x).csv'
     temp_df = []
-    temp_df = pd.DataFrame(np.round(x_similarity, 3), columns=note_basis_list)
+    temp_df = pd.DataFrame(np.round(x_similarity, 3), columns=note_list_basis)
     file_array = np.asarray(file_list_testing)
     temp_df['File'] = file_array[ind].tolist()
     temp_df.to_csv(x_csv_path, index=True, header=True)  # save the dataframe to .cvs format

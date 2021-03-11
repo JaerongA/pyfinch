@@ -30,7 +30,7 @@ db = ProjectLoader().load_db()
 # SQL statementwa
 # query = "SELECT * FROM cluster"
 # query = "SELECT * FROM cluster WHERE ephysOK"
-query = "SELECT * FROM cluster WHERE id = 17"
+query = "SELECT * FROM cluster WHERE id = 12"
 db.execute(query)
 
 # Loop through db

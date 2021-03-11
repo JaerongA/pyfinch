@@ -53,7 +53,7 @@ fig_ext = '.png'  # .png or .pdf
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 1"
+query = "SELECT * FROM cluster WHERE id = 2"
 # query = "SELECT * FROM cluster"
 db.execute(query)
 

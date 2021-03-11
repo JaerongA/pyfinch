@@ -23,16 +23,16 @@ nb_note_crit = 10  # minimum number of notes for analysis
 
 norm_method = None
 fig_ext = '.png'  # .png or .pdf
-update = False  # Set True for recreating a cache file
-save_fig = False
+update = True  # Set True for recreating a cache file
+save_fig = True
 update_db = False  # save results to DB
 time_warp = True  # spike time warping
 
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 1"
-# query = "SELECT * FROM cluster"
+# query = "SELECT * FROM cluster WHERE id = 46"
+query = "SELECT * FROM cluster"
 db.execute(query)
 
 # Loop through db
@@ -45,6 +45,7 @@ for row in db.cur.fetchall():
     channel_nb = int(cluster_db.channel[-2:])
     format = cluster_db.format
     motif = cluster_db.motif
+    # Load class object
     ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
     mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
 

@@ -90,6 +90,10 @@ class Database:
             import webbrowser
             webbrowser.open(self.dir)
 
+    def to_dataframe(self, query):
+        import pandas as pd
+        df = pd.read_sql_query(query, self.conn)
+        return df
 
 class DBInfo:
     def __init__(self, db):

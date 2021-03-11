@@ -338,3 +338,48 @@ def get_psd_mat(data_path, save_path,
             'psd_notes']
 
     return psd_array, psd_list, file_list, psd_notes
+
+
+def get_basis_psd(psd_array, notes, num_note_crit_basis=30):
+    """
+    Get avg psd from the training set (will serve as a basis)
+    Parameters
+    ----------
+    psd_array : array
+        Array of syllable psds
+    notes : str
+        String of all syllables
+    num_note_crit_basis : int (30 by default)
+        Minimum number of notes required to be a basis syllable
+
+    Returns
+    -------
+    psd_basis_list : list
+    syl_basis_list : list
+    """
+
+    psd_dict = {}
+    psd_basis_list = []
+    syl_basis_list = []
+
+    unique_note = unique(notes)  # convert note string into a list of unique syllables
+
+    # Remove unidentifiable note (e.g., '0' or 'x')
+    if '0' in unique_note:
+        unique_note.remove('0')
+    if 'x' in unique_note:
+        unique_note.remove('x')
+
+    for note in unique_note:
+        ind = find_str(notes, note)
+        if len(ind) >= num_note_crit_basis:  # number should exceed the  criteria
+            syl_pow_array = psd_array[ind, :]
+            syl_pow_avg = syl_pow_array.mean(axis=0)
+            temp_dict = {note: syl_pow_avg}
+            psd_basis_list.append(syl_pow_avg)
+            syl_basis_list.append(note)
+            psd_dict.update(temp_dict)  # basis
+            # plt.plot(psd_dict[note])
+            # plt.show()
+    return psd_basis_list, syl_basis_list
+
