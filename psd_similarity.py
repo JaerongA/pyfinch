@@ -47,8 +47,8 @@ for bird in bird_list:
 # SQL statement
 # query = "SELECT * FROM cluster"
 # query = "SELECT * FROM cluster WHERE ephysOK"
-# query = "SELECT * FROM cluster WHERE id <= 5"
-query = "SELECT * FROM cluster WHERE id = 5"
+query = "SELECT * FROM cluster WHERE id <= 5"
+# query = "SELECT * FROM cluster WHERE id = 5"
 db.execute(query)
 
 # Loop through db
@@ -95,18 +95,16 @@ for row in db.cur.fetchall():
 
             # Organize data into a dictionary
             data = {
-                'psd_array': psd_array,
-                'psd_list': [psd_list],
-                'file_list': [file_list],
-                'psd_notes': [psd_notes],
+                'psd_list': psd_list,
+                'file_list': file_list,
+                'psd_notes': psd_notes,
                 'cluster_name': [ci.name]
             }
 
-            data_all['psd_array'] = np.append(data_all['psd_array'], data['psd_array'])
-            data_all['psd_list'].append(data['psd_list'][0])
-            data_all['file_list'].append(data['file_list'][0])
-            data_all['psd_notes'].append(data['psd_notes'][0])
-            data_all['cluster_name'].append(data['cluster_name'][0])
+            data_all['psd_list'].extend(data['psd_list'])
+            data_all['file_list'].extend(data['file_list'])
+            data_all['psd_notes'] += data['psd_notes']
+            data_all['cluster_name'].extend(data['cluster_name'])
             np.save(npy_name, data_all)
     else:
         # Get psd
@@ -118,18 +116,12 @@ for row in db.cur.fetchall():
         # Organize data into a dictionary
         data = {
             'psd_array': psd_array,
-            'psd_list': [psd_list],
-            'file_list': [file_list],
-            'psd_notes': [psd_notes],
-            'cluster_name': [ci.name]
+            'psd_list': psd_list,
+            'file_list': file_list,
+            'psd_notes': psd_notes,
+            'cluster_name': ci.name
         }
-
-        data_all['psd_array'] = np.append(data_all['psd_array'], data['psd_array'])
-        data_all['psd_list'].append(data['psd_list'][0])
-        data_all['file_list'].append(data['file_list'][0])
-        data_all['psd_notes'].append(data['psd_notes'][0])
-        data_all['cluster_name'].append(data['cluster_name'][0])
-        np.save(npy_name, data_all)
+        np.save(npy_name, data)
 
 
     # Save results
