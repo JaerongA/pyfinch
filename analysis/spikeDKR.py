@@ -5,7 +5,7 @@ main package for neural analysis
 
 from pathlib import Path
 
-from analysis.functions import *
+from analysis.functionsDKR import *
 from analysis.load import *
 from analysis.parameters import *
 from database.load import ProjectLoader
@@ -299,14 +299,14 @@ class ClusterInfo:
 
 
 
-        def _get_spk_profile(wf_ts, avg_wf, interpolate=True):
+        def _get_spk_profile(wf_ts_interp, avg_wf_interp, interpolate=True):
             spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
             if interpolate:
                 spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * ((1 / sample_rate[self.format]) / interp_factor) * 1E6  # in microseconds
             else:
                 spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (1 / sample_rate[self.format]) * 1E6  # in microseconds
-            deflection_range, half_width = get_half_width(wf_ts, avg_wf)  # get the half width from the peak deflection
-            return spk_height, spk_width, half_width, deflection_range
+            #deflection_range, half_width = get_half_width(wf_ts, avg_wf)  # get the half width from the peak deflection
+            #return spk_height, spk_width, half_width, deflection_range
 
         if interpolate:  # interpolate the waveform to increase sampling frequency
             from scipy import interpolate
@@ -320,6 +320,7 @@ class ClusterInfo:
             self.wf_ts_interp = wf_ts_interp
             self.avg_wf_interp = avg_wf_interp
 
+            deflection_range, half_width = get_half_width(wf_ts_interp, avg_wf_interp)  # get the half width from the peak deflection
             spk_height, spk_width, half_width, deflection_range = _get_spk_profile(wf_ts_interp, avg_wf_interp)
         else:
             spk_height, spk_width, half_width, deflection_range = _get_spk_profile(self.wf_ts, self.avg_wf)
