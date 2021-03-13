@@ -320,11 +320,8 @@ def get_psd_mat(data_path, save_path,
                 psd_list.append(psd_power)
                 file_list.append(file.name)
 
-        psd_array = np.asarray(psd_list)  # number of syllables x psd
-
         # Organize data into a dictionary
         data = {
-            'psd_array': psd_array,
             'psd_list': psd_list,
             'file_list': file_list,
             'psd_notes': [psd_notes],
@@ -334,19 +331,17 @@ def get_psd_mat(data_path, save_path,
 
     else:  # if not update or file already exists
         data = np.load(file_name, allow_pickle=True).item()
-        psd_array, psd_list, file_list, psd_notes = data['psd_array'], data['psd_list'], data['file_list'], data[
-            'psd_notes']
+        psd_list, file_list, psd_notes = data['psd_list'], data['file_list'], data['psd_notes']
 
-    return psd_array, psd_list, file_list, psd_notes
+    return psd_list, file_list, psd_notes
 
-
-def get_basis_psd(psd_array, notes, num_note_crit_basis=30):
+def get_basis_psd(psd_list, notes, num_note_crit_basis=30):
     """
     Get avg psd from the training set (will serve as a basis)
     Parameters
     ----------
-    psd_array : array
-        Array of syllable psds
+    psd_list : list
+        List of syllable psds
     notes : str
         String of all syllables
     num_note_crit_basis : int (30 by default)
@@ -362,6 +357,7 @@ def get_basis_psd(psd_array, notes, num_note_crit_basis=30):
     psd_basis_list = []
     syl_basis_list = []
 
+    psd_array = np.asarray(psd_list)   # number of syllables x psd (get_basis_psd function accepts array format only)
     unique_note = unique(notes)  # convert note string into a list of unique syllables
 
     # Remove unidentifiable note (e.g., '0' or 'x')

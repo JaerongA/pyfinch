@@ -15,6 +15,7 @@ import scipy
 from scipy import spatial
 from scipy.io import wavfile
 from scipy.stats import sem
+import seaborn as sns
 from database.load import *
 from analysis.functions import *
 from analysis.parameters import *
@@ -28,8 +29,9 @@ from util.spect import *
 save_fig = False
 save_psd = False
 update = False
+save_heatmap = False
 fig_ext = '.png'
-
+num_note_crit = 10
 # Load database
 db = ProjectLoader().load_db()
 
@@ -47,7 +49,7 @@ for bird in bird_list:
 # SQL statement
 # query = "SELECT * FROM cluster"
 # query = "SELECT * FROM cluster WHERE ephysOK"
-query = "SELECT * FROM cluster WHERE id <= 5"
+query = "SELECT * FROM cluster WHERE id <= 21"
 # query = "SELECT * FROM cluster WHERE id = 5"
 db.execute(query)
 
@@ -90,7 +92,7 @@ for row in db.cur.fetchall():
             # Get psd
             # This will create PSD.npy in each cluster folder
             # Note spectrograms & .npy per bird will be stored in PSD_similarity folder
-            psd_array, psd_list, file_list, psd_notes = \
+            psd_list, file_list, psd_notes = \
                 get_psd_mat(path, save_path, save_psd=save_psd, update=True, fig_ext=fig_ext)
 
             # Organize data into a dictionary
@@ -110,24 +112,17 @@ for row in db.cur.fetchall():
         # Get psd
         # This will create PSD.npy in each cluster folder
         # Note spectrograms & .npy per bird will be stored in PSD_similarity folder
-        psd_array, psd_list, file_list, psd_notes = \
+        psd_list, file_list, psd_notes = \
             get_psd_mat(path, save_path, save_psd=save_psd, update=True, fig_ext=fig_ext)
 
         # Organize data into a dictionary
         data = {
-            'psd_array': psd_array,
             'psd_list': psd_list,
             'file_list': file_list,
             'psd_notes': psd_notes,
-            'cluster_name': ci.name
+            'cluster_name': [ci.name]
         }
         np.save(npy_name, data)
-
-
-    # Save results
-    if save_fig:
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', add_date=False)
-        # save.save_fig(fig, save_path, ci.name, fig_ext=fig_ext, open_folder=True)
 
 
 # Calculate syllable similarity
@@ -142,17 +137,80 @@ for bird_id in bird_list:
 
         #  Load data
         if task_name == 'Predeafening':
-            psd_array_pre, notes_pre = data['psd_array'], data['psd_notes']
-            psd_list_basis, note_list_basis = get_basis_psd(psd_array_pre, notes_pre)
+            psd_list_pre, notes_pre = data['psd_list'], data['psd_notes']
+            psd_list_basis, note_list_basis = get_basis_psd(psd_list_pre, notes_pre)
         elif task_name == 'Postdeafening':
-            psd_array_post, notes_post = data['psd_array'], data['psd_notes']
+            psd_list_post, notes_post = data['psd_list'], data['psd_notes']
 
         # Get similarity per syllable
         # Get psd distance
-        distance = scipy.spatial.distance.cdist(psd_list_basis, psd_array_post,
-                                                'sqeuclidean')  # (number of test notes x number of basis notes)
 
-        # Convert to similarity matrices
-        similarity = 1 - (distance / np.max(distance))  # (number of test notes x number of basis notes)
+        if 'psd_list_basis' in locals() and 'psd_list_post' in locals():
+            distance = \
+                scipy.spatial.distance.cdist(psd_list_post, psd_list_basis, 'sqeuclidean')  # (number of test notes x number of basis notes)
+
+            # Convert to similarity matrices
+            similarity = 1 - (distance / np.max(distance))  # (number of test notes x number of basis notes)
+        else:
+            continue
+
+        # Plot similarity matrix per syllable
+        note_testing_list = unique(notes_post)  # convert syllable string into a list of unique syllables
+
+        # Get similarity matrix per test note
+        for note in note_testing_list:
+
+            if note not in note_list_basis:
+                continue
+
+            ind = find_str(notes_post, note)
+            nb_note = len(ind)
+            if nb_note < num_note_crit:
+                continue
+
+            # Get similarity matrix per note
+            note_similarity = similarity[ind, :]  # number of the test notes x basis note
+
+            # Get mean or median similarity index
+            similarity_mean = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
+            similarity_sem = sem(note_similarity, ddof=1)
+            similarity_median = np.expand_dims(np.median(note_similarity, axis=0), axis=0)  # or axis=1
+
+            # Plot the similarity matrix
+            fig = plt.figure(figsize=(5, 5))
+            # title = "Sim matrix: note = {}".format(note)
+            fig_name = f"note - {note}"
+            title = f"Sim matrix: note = {note} ({nb_note})"
+            gs = gridspec.GridSpec(7, 8)
+            ax = plt.subplot(gs[0:5, 1:7])
+            ax = sns.heatmap(note_similarity,
+                             vmin=0, vmax=1,
+                             cmap='binary')
+            ax.set_title(title)
+            ax.set_ylabel('Test syllables')
+            ax.set_xticklabels(note_list_basis)
+            plt.tick_params(left=False)
+            plt.yticks([0.5, nb_note - 0.5], ['1', str(nb_note)])
+
+            ax = plt.subplot(gs[-1, 1:7], sharex=ax)
+
+            ax = sns.heatmap(similarity_mean, annot=True, cmap='binary',
+                             vmin=0, vmax=1,
+                             annot_kws={"fontsize": 7})
+            ax.set_xlabel('Basis syllables')
+            ax.set_yticks([])
+            ax.set_xticklabels(note_list_basis)
+            plt.show()
+
+            similarity_mean_val = similarity_mean[0][note_list_basis.index(note)]
+            similarity_median_val = similarity_median[0][note_list_basis.index(note)]
+
+            # Save heatmap (similarity matrix)
+            if save_heatmap:
+                save_path = save.make_dir(save_path, 'PSD_similarity', add_date=True)
+                save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, open_folder=False)
+            else:
+                plt.close(fig)
 
 print('Done!')
+

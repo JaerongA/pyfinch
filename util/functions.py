@@ -124,6 +124,16 @@ def normalize(array):
     return (np.array(array) - np.average(array)) / np.std(array)
 
 def exists(var):
-    """"Check if a variable exists"""
+    """
+    Check if a variable exists
+
+    Parameters
+    ----------
+    var : str
+        Note that the argument should be in parenthesis
+    Returns
+    -------
+    bool
+    """
 
     return var in globals()
