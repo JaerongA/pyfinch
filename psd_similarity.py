@@ -26,10 +26,10 @@ from util.spect import *
 
 
 # Parameters
-save_fig = False
-save_psd = False
+save_fig = True
+save_psd = True
 update = False
-save_heatmap = False
+save_heatmap = True
 fig_ext = '.png'
 num_note_crit = 10
 # Load database
@@ -49,8 +49,7 @@ for bird in bird_list:
 # SQL statement
 # query = "SELECT * FROM cluster"
 # query = "SELECT * FROM cluster WHERE ephysOK"
-query = "SELECT * FROM cluster WHERE id <= 21"
-# query = "SELECT * FROM cluster WHERE id = 5"
+query = "SELECT * FROM cluster WHERE id >= 97"
 db.execute(query)
 
 # Loop through db
@@ -126,7 +125,7 @@ for row in db.cur.fetchall():
 
 
 # Calculate syllable similarity
-bird_list = ['b70r38']
+# bird_list = ['b70r38']
 
 for bird_id in bird_list:
 
@@ -144,7 +143,6 @@ for bird_id in bird_list:
 
         # Get similarity per syllable
         # Get psd distance
-
         if 'psd_list_basis' in locals() and 'psd_list_post' in locals():
             distance = \
                 scipy.spatial.distance.cdist(psd_list_post, psd_list_basis, 'sqeuclidean')  # (number of test notes x number of basis notes)
@@ -200,7 +198,7 @@ for bird_id in bird_list:
             ax.set_xlabel('Basis syllables')
             ax.set_yticks([])
             ax.set_xticklabels(note_list_basis)
-            plt.show()
+            # plt.show()
 
             similarity_mean_val = similarity_mean[0][note_list_basis.index(note)]
             similarity_median_val = similarity_median[0][note_list_basis.index(note)]
