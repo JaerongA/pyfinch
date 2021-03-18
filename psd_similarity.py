@@ -10,6 +10,7 @@ from pathlib import Path
 import matplotlib.gridspec as gridspec
 import pandas as pd
 from matplotlib.pylab import psd
+import random
 import scipy
 from scipy import spatial
 from scipy.io import wavfile
@@ -17,7 +18,6 @@ from scipy.stats import sem
 import seaborn as sns
 from database.load import *
 from analysis.functions import *
-from analysis.parameters import *
 from util import save
 from util.draw import *
 from util.functions import *
@@ -28,7 +28,7 @@ from util.spect import *
 save_fig = True
 save_psd = True
 update = False
-save_heatmap = True
+save_heatmap = False
 fig_ext = '.png'
 num_note_crit = 10
 
@@ -130,13 +130,46 @@ def get_psd_bird(db, *bird_list):
                 np.save(npy_name, data)
 
 
+def psd_split(psd_list_pre_all, notes_pre_all):
+    """
+    Randomize the pre data and split into half.
+    one half will be used as a basis and the other for getting control similarity
+    """
+    np.random.seed(0)
+    psd_arr_pre_all = np.asarray(psd_list_pre_all)
+
+    arr = np.arange(psd_arr_pre_all.shape[0])
+    np.random.shuffle(arr)  # randomize the array
+    psd_arr_pre_1st = psd_arr_pre_all[arr[:int(arr.shape[0] / 2)], :]
+    psd_arr_pre_2nd = psd_arr_pre_all[arr[int(arr.shape[0] / 2):], :]
+
+    psd_list_1st = []
+    psd_list_2nd = []
+
+    for ind, row in enumerate(psd_arr_pre_1st):
+        psd_list_1st.append(row)
+
+    for ind, row in enumerate(psd_list_2nd):
+        psd_list_2nd.append(row)
+
+    notes_pre_1st = ''  # will be used as basis
+    for ind in arr[:int(arr.shape[0] / 2)]:
+        notes_pre_1st += notes_pre_all[ind]
+
+    notes_pre_2nd = ''  # will be used as control
+    for ind in arr[int(arr.shape[0] / 2):]:
+        notes_pre_2nd += notes_pre_all[ind]
+
+    return psd_list_1st, psd_list_2nd, notes_pre_1st, notes_pre_2nd
+
+
 # Load database
 db = ProjectLoader().load_db()
 bird_list, task_list, bird_to_use = get_bird_list(db)  # get bird list to analyze from db
 
 # Calculate PSD similarity
-bird_list = ['y44r34']
-for bird_id in bird_list:
+bird_to_use = ['b70r38']
+for bird_id in bird_to_use:
 
     for task_name in task_list:
         npy_name = bird_id + '_' + task_name + '.npy'
@@ -145,8 +178,13 @@ for bird_id in bird_list:
 
         #  Load data
         if task_name == 'Predeafening':
-            psd_list_pre, notes_pre = data['psd_list'], data['psd_notes']
-            psd_list_basis, note_list_basis = get_basis_psd(psd_list_pre, notes_pre)
+            psd_list_pre_all, notes_pre_all = data['psd_list'], data['psd_notes']
+
+            psd_list_basis, note_list_basis, psd_list_control, notes_control
+            = psd_split(psd_list_pre_all, notes_pre_all)
+
+            psd_list_basis, note_list_basis = get_basis_psd(psd_list_1st, notes_pre_1st)  # 1st half will be used as basis
+
         elif task_name == 'Postdeafening':
             psd_list_post, notes_post = data['psd_list'], data['psd_notes']
 
@@ -155,9 +193,6 @@ for bird_id in bird_list:
         if 'psd_list_basis' in locals() and 'psd_list_post' in locals():
             distance = \
                 scipy.spatial.distance.cdist(psd_list_post, psd_list_basis, 'sqeuclidean')  # (number of test notes x number of basis notes)
-
-            # Convert to similarity matrices
-            similarity = 1 - (distance / np.max(distance))  # (number of test notes x number of basis notes)
         else:
             continue
 
@@ -165,7 +200,7 @@ for bird_id in bird_list:
         note_testing_list = unique(notes_post)  # convert syllable string into a list of unique syllables
 
         # Get similarity matrix per test note
-        for note in note_testing_list:
+        for note in note_testing_list:  # loop through notes
 
             if note not in note_list_basis:
                 continue
@@ -175,13 +210,16 @@ for bird_id in bird_list:
             if nb_note < num_note_crit:
                 continue
 
-            # Get similarity matrix per note
-            note_similarity = similarity[ind, :]  # number of the test notes x basis note
+            # Get distance matrix per note
+            note_distance = distance[ind, :]
+
+            # Convert to similarity matrices
+            note_similarity = 1 - (note_distance / np.max(note_distance))  # (number of test notes x number of basis notes)
 
             # Get mean or median similarity index
             similarity_mean = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
             similarity_sem = sem(note_similarity, ddof=1)
-            similarity_median = np.expand_dims(np.median(note_similarity, axis=0), axis=0)  # or axis=1
+            # similarity_median = np.expand_dims(np.median(note_similarity, axis=0), axis=0)  # or axis=1
 
             # Plot the similarity matrix
             fig = plt.figure(figsize=(5, 5))
@@ -207,10 +245,10 @@ for bird_id in bird_list:
             ax.set_xlabel('Basis syllables')
             ax.set_yticks([])
             ax.set_xticklabels(note_list_basis)
-            # plt.show()
+            plt.show()
 
             similarity_mean_val = similarity_mean[0][note_list_basis.index(note)]
-            similarity_median_val = similarity_median[0][note_list_basis.index(note)]
+            # similarity_median_val = similarity_median[0][note_list_basis.index(note)]
 
             # Save heatmap (similarity matrix)
             if save_heatmap:
