@@ -3,8 +3,7 @@ By Jaerong
 Get PSD similarity to measure changes in song after deafening
 """
 
-from analysis.spike import *
-from analysis.song import *
+from analysis.spike import ClusterInfo
 from pathlib import Path
 
 import matplotlib.gridspec as gridspec
@@ -22,13 +21,15 @@ from util import save
 from util.draw import *
 from util.functions import *
 from util.spect import *
+import gc
+
 
 
 # Parameters
 save_fig = True
 save_psd = True
 update = False
-save_heatmap = False
+save_heatmap = True
 fig_ext = '.png'
 num_note_crit = 10
 
@@ -93,7 +94,6 @@ def get_psd_bird(db, *bird_list):
                 data_all = np.load(npy_name, allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
 
                 if ci.name not in data_all['cluster_name']: # append to the existing file
-
                     # Get psd
                     # This will create PSD.npy in each cluster folder
                     # Note spectrograms & .npy per bird will be stored in PSD_similarity folder
@@ -129,7 +129,6 @@ def get_psd_bird(db, *bird_list):
                 }
                 np.save(npy_name, data)
 
-
 def psd_split(psd_list_pre_all, notes_pre_all):
     """
     Randomize the pre data and split into half.
@@ -146,10 +145,10 @@ def psd_split(psd_list_pre_all, notes_pre_all):
     psd_list_1st = []
     psd_list_2nd = []
 
-    for ind, row in enumerate(psd_arr_pre_1st):
+    for row in psd_arr_pre_1st:
         psd_list_1st.append(row)
 
-    for ind, row in enumerate(psd_list_2nd):
+    for row in psd_arr_pre_2nd:
         psd_list_2nd.append(row)
 
     notes_pre_1st = ''  # will be used as basis
@@ -180,13 +179,17 @@ for bird_id in bird_to_use:
         if task_name == 'Predeafening':
             psd_list_pre_all, notes_pre_all = data['psd_list'], data['psd_notes']
 
-            psd_list_basis, note_list_basis, psd_list_control, notes_control
-            = psd_split(psd_list_pre_all, notes_pre_all)
+            # Split pre-deafening PSDSs into halves
+            # 1st half will be used as basis and the 2nd half as control
+            psd_list_basis, psd_list_pre, notes_basis, notes_pre = psd_split(psd_list_pre_all, notes_pre_all)
+            del psd_list_pre_all, notes_pre_all
 
-            psd_list_basis, note_list_basis = get_basis_psd(psd_list_1st, notes_pre_1st)  # 1st half will be used as basis
+            # Get basis psd and list of basis syllables
+            psd_list_basis, note_list_basis = get_basis_psd(psd_list_basis, notes_basis)
 
         elif task_name == 'Postdeafening':
             psd_list_post, notes_post = data['psd_list'], data['psd_notes']
+        del data
 
         # Get similarity per syllable
         # Get psd distance
@@ -245,7 +248,7 @@ for bird_id in bird_to_use:
             ax.set_xlabel('Basis syllables')
             ax.set_yticks([])
             ax.set_xticklabels(note_list_basis)
-            plt.show()
+            # plt.show()
 
             similarity_mean_val = similarity_mean[0][note_list_basis.index(note)]
             # similarity_median_val = similarity_median[0][note_list_basis.index(note)]
@@ -260,6 +263,6 @@ for bird_id in bird_to_use:
 
 
 
-
+gc.collect()
 print('Done!')
 
