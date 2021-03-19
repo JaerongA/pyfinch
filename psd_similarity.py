@@ -31,8 +31,7 @@ save_psd = True
 update = False
 save_heatmap = True
 fig_ext = '.png'
-num_note_crit = 10
-
+num_note_crit = 30
 
 def get_bird_list(db):
     # Select the birds to use that have both pre and post deafening songs
@@ -180,13 +179,21 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
     -------
     """
 
-    # Get psd distance
+    # Get psd distance between target and basis
     distance = \
         scipy.spatial.distance.cdist(psd_list_target, psd_list_basis, 'sqeuclidean')  # (number of test notes x number of basis notes)
 
-    # Plot similarity matrix per syllable
-    notes_list_basis = unique(notes_basis)  # convert syllable string into a list of unique syllables
-    notes_list_target = unique(notes_target)
+    # Get basis note info
+    notes_list_basis = []
+    nb_note_basis = {}
+    notes_basis_unique = unique(''.join(sorted(notes_basis)))  # convert syllable string into a list of unique syllables
+    for note in notes_basis_unique:
+        ind = find_str(notes_basis, note)
+        if len(ind) >= num_note_crit:  # number should exceed the  criteria
+            notes_list_basis.append(note)
+            nb_note_basis[note] = len(ind)  # Get the number of basis notes
+
+    notes_list_target = unique(''.join(sorted(notes_target)))
 
     # Get similarity matrix per test note
     for note in notes_list_target:  # loop through notes
@@ -210,11 +217,18 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
         similarity_sem = sem(note_similarity, ddof=1)
         # similarity_median = np.expand_dims(np.median(note_similarity, axis=0), axis=0)  # or axis=1
 
+        # Get task condition
+        condition = ''
+        if task_name == 'Predeafening':  # basis vs. predeafening
+            condition = 'Control'
+        else:   # basis vs. postdeafening
+            condition = 'Deafening'
+
         # Plot the similarity matrix
         fig = plt.figure(figsize=(5, 5))
         # title = "Sim matrix: note = {}".format(note)
-        fig_name = f"note - {note}"
-        title = f"{bird_id} Sim matrix: note = {note} ({nb_note})"
+        fig_name = f"{bird_id}-{condition}_note({note})"
+        title = f"{bird_id}-{condition}-Sim matrix: note '{note}' (basis n = {nb_note_basis[note]})"
         gs = gridspec.GridSpec(7, 8)
         ax = plt.subplot(gs[0:5, 1:7])
         ax = sns.heatmap(note_similarity,
@@ -222,7 +236,7 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
                          cmap='binary')
         ax.set_title(title)
         ax.set_ylabel('Test syllables')
-        ax.set_xticklabels(note_list_basis)
+        ax.set_xticklabels(notes_list_basis)
         plt.tick_params(left=False)
         plt.yticks([0.5, nb_note - 0.5], ['1', str(nb_note)])
 
@@ -233,10 +247,10 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
                          annot_kws={"fontsize": 7})
         ax.set_xlabel('Basis syllables')
         ax.set_yticks([])
-        ax.set_xticklabels(note_list_basis)
+        ax.set_xticklabels(notes_list_basis)
         # plt.show()
 
-        similarity_mean_val = similarity_mean[0][note_list_basis.index(note)]
+        similarity_mean_val = similarity_mean[0][notes_list_basis.index(note)]
         # similarity_median_val = similarity_median[0][note_list_basis.index(note)]
 
         # Save heatmap (similarity matrix)
@@ -273,13 +287,13 @@ for bird_id in bird_to_use:
             psd_list_basis, note_list_basis = get_basis_psd(psd_list_basis, notes_basis)
             # Get similarity heatmap between basis and pre-deafening control
             get_similarity_heatmap(psd_list_pre, psd_list_basis, notes_pre, notes_basis,
-                                   save_heatmap=True)
+                                   save_heatmap=save_heatmap)
 
         elif task_name == 'Postdeafening':
             psd_list_post, notes_post = data['psd_list'], data['psd_notes']
             # Get similarity heatmap between basis and post-deafening
             get_similarity_heatmap(psd_list_post, psd_list_basis, notes_post, notes_basis,
-                                   save_heatmap=True)
+                                   save_heatmap=save_heatmap)
 
 
 
