@@ -162,6 +162,91 @@ def psd_split(psd_list_pre_all, notes_pre_all):
     return psd_list_1st, psd_list_2nd, notes_pre_1st, notes_pre_2nd
 
 
+def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_basis,
+                           save_heatmap=True):
+    """
+    Get similarity per syllable
+    Parameters
+    ----------
+    psd_list_target : list
+        list of target psd (pre or post-deafening)
+    psd_list_basis : list
+        list of basis psd (random selection from pre-deafening)
+    notes_target : str
+        target notes
+    notes_basis : str
+        basis notes
+    Returns
+    -------
+    """
+
+    # Get psd distance
+    distance = \
+        scipy.spatial.distance.cdist(psd_list_target, psd_list_basis, 'sqeuclidean')  # (number of test notes x number of basis notes)
+
+    # Plot similarity matrix per syllable
+    notes_list_basis = unique(notes_basis)  # convert syllable string into a list of unique syllables
+    notes_list_target = unique(notes_target)
+
+    # Get similarity matrix per test note
+    for note in notes_list_target:  # loop through notes
+
+        if note not in notes_list_basis:  # skip if the note doesn't exist in the basis set
+            continue
+
+        ind = find_str(notes_target, note)
+        nb_note = len(ind)
+        if nb_note < num_note_crit:
+            continue
+
+        # Get distance matrix per note
+        note_distance = distance[ind, :]
+
+        # Convert to similarity matrices
+        note_similarity = 1 - (note_distance / np.max(note_distance))  # (number of test notes x number of basis notes)
+
+        # Get mean or median similarity index
+        similarity_mean = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
+        similarity_sem = sem(note_similarity, ddof=1)
+        # similarity_median = np.expand_dims(np.median(note_similarity, axis=0), axis=0)  # or axis=1
+
+        # Plot the similarity matrix
+        fig = plt.figure(figsize=(5, 5))
+        # title = "Sim matrix: note = {}".format(note)
+        fig_name = f"note - {note}"
+        title = f"{bird_id} Sim matrix: note = {note} ({nb_note})"
+        gs = gridspec.GridSpec(7, 8)
+        ax = plt.subplot(gs[0:5, 1:7])
+        ax = sns.heatmap(note_similarity,
+                         vmin=0, vmax=1,
+                         cmap='binary')
+        ax.set_title(title)
+        ax.set_ylabel('Test syllables')
+        ax.set_xticklabels(note_list_basis)
+        plt.tick_params(left=False)
+        plt.yticks([0.5, nb_note - 0.5], ['1', str(nb_note)])
+
+        ax = plt.subplot(gs[-1, 1:7], sharex=ax)
+
+        ax = sns.heatmap(similarity_mean, annot=True, cmap='binary',
+                         vmin=0, vmax=1,
+                         annot_kws={"fontsize": 7})
+        ax.set_xlabel('Basis syllables')
+        ax.set_yticks([])
+        ax.set_xticklabels(note_list_basis)
+        # plt.show()
+
+        similarity_mean_val = similarity_mean[0][note_list_basis.index(note)]
+        # similarity_median_val = similarity_median[0][note_list_basis.index(note)]
+
+        # Save heatmap (similarity matrix)
+        if save_heatmap:
+            save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + bird_id, add_date=False)
+            save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, open_folder=False)
+        else:
+            plt.close(fig)
+
+
 # Load database
 db = ProjectLoader().load_db()
 bird_list, task_list, bird_to_use = get_bird_list(db)  # get bird list to analyze from db
@@ -186,80 +271,15 @@ for bird_id in bird_to_use:
 
             # Get basis psd and list of basis syllables
             psd_list_basis, note_list_basis = get_basis_psd(psd_list_basis, notes_basis)
+            # Get similarity heatmap between basis and pre-deafening control
+            get_similarity_heatmap(psd_list_pre, psd_list_basis, notes_pre, notes_basis,
+                                   save_heatmap=True)
 
         elif task_name == 'Postdeafening':
             psd_list_post, notes_post = data['psd_list'], data['psd_notes']
-        del data
-
-        # Get similarity per syllable
-        # Get psd distance
-        if 'psd_list_basis' in locals() and 'psd_list_post' in locals():
-            distance = \
-                scipy.spatial.distance.cdist(psd_list_post, psd_list_basis, 'sqeuclidean')  # (number of test notes x number of basis notes)
-        else:
-            continue
-
-        # Plot similarity matrix per syllable
-        note_testing_list = unique(notes_post)  # convert syllable string into a list of unique syllables
-
-        # Get similarity matrix per test note
-        for note in note_testing_list:  # loop through notes
-
-            if note not in note_list_basis:
-                continue
-
-            ind = find_str(notes_post, note)
-            nb_note = len(ind)
-            if nb_note < num_note_crit:
-                continue
-
-            # Get distance matrix per note
-            note_distance = distance[ind, :]
-
-            # Convert to similarity matrices
-            note_similarity = 1 - (note_distance / np.max(note_distance))  # (number of test notes x number of basis notes)
-
-            # Get mean or median similarity index
-            similarity_mean = np.expand_dims(np.mean(note_similarity, axis=0), axis=0)  # or axis=1
-            similarity_sem = sem(note_similarity, ddof=1)
-            # similarity_median = np.expand_dims(np.median(note_similarity, axis=0), axis=0)  # or axis=1
-
-            # Plot the similarity matrix
-            fig = plt.figure(figsize=(5, 5))
-            # title = "Sim matrix: note = {}".format(note)
-            fig_name = f"note - {note}"
-            title = f"{bird_id} Sim matrix: note = {note} ({nb_note})"
-            gs = gridspec.GridSpec(7, 8)
-            ax = plt.subplot(gs[0:5, 1:7])
-            ax = sns.heatmap(note_similarity,
-                             vmin=0, vmax=1,
-                             cmap='binary')
-            ax.set_title(title)
-            ax.set_ylabel('Test syllables')
-            ax.set_xticklabels(note_list_basis)
-            plt.tick_params(left=False)
-            plt.yticks([0.5, nb_note - 0.5], ['1', str(nb_note)])
-
-            ax = plt.subplot(gs[-1, 1:7], sharex=ax)
-
-            ax = sns.heatmap(similarity_mean, annot=True, cmap='binary',
-                             vmin=0, vmax=1,
-                             annot_kws={"fontsize": 7})
-            ax.set_xlabel('Basis syllables')
-            ax.set_yticks([])
-            ax.set_xticklabels(note_list_basis)
-            # plt.show()
-
-            similarity_mean_val = similarity_mean[0][note_list_basis.index(note)]
-            # similarity_median_val = similarity_median[0][note_list_basis.index(note)]
-
-            # Save heatmap (similarity matrix)
-            if save_heatmap:
-                save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + bird_id, add_date=False)
-                save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, open_folder=False)
-            else:
-                plt.close(fig)
-
+            # Get similarity heatmap between basis and post-deafening
+            get_similarity_heatmap(psd_list_post, psd_list_basis, notes_post, notes_basis,
+                                   save_heatmap=True)
 
 
 
