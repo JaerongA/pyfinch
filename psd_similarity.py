@@ -23,15 +23,14 @@ from util.functions import *
 from util.spect import *
 import gc
 
-
-
 # Parameters
 save_fig = True
 save_psd = True
 update = False
-save_heatmap = True
+save_results = True  # heatmap & csv
 fig_ext = '.png'
 num_note_crit = 30
+
 
 def get_bird_list(db):
     # Select the birds to use that have both pre and post deafening songs
@@ -48,7 +47,6 @@ def get_bird_list(db):
 
 
 def get_psd_bird(db, *bird_list):
-
     # Make PSD.npy file for each cluster
     # Cluster PSD.npy will be concatenated per bird in a separate folder
     if bird_list:
@@ -90,9 +88,10 @@ def get_psd_bird(db, *bird_list):
             npy_name = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / npy_name
 
             if npy_name.exists():
-                data_all = np.load(npy_name, allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
+                data_all = np.load(npy_name,
+                                   allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
 
-                if ci.name not in data_all['cluster_name']: # append to the existing file
+                if ci.name not in data_all['cluster_name']:  # append to the existing file
                     # Get psd
                     # This will create PSD.npy in each cluster folder
                     # Note spectrograms & .npy per bird will be stored in PSD_similarity folder
@@ -128,6 +127,7 @@ def get_psd_bird(db, *bird_list):
                 }
                 np.save(npy_name, data)
 
+
 def psd_split(psd_list_pre_all, notes_pre_all):
     """
     Randomize the pre data and split into half.
@@ -161,8 +161,9 @@ def psd_split(psd_list_pre_all, notes_pre_all):
     return psd_list_1st, psd_list_2nd, notes_pre_1st, notes_pre_2nd
 
 
-def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_basis,
-                           save_heatmap=True):
+def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_basis, *file_list,
+                           save_results=True,
+                           ):
     """
     Get similarity per syllable
     Parameters
@@ -172,16 +173,22 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
     psd_list_basis : list
         list of basis psd (random selection from pre-deafening)
     notes_target : str
-        target notes
+        target notes (pre or post-deafening)
     notes_basis : str
         basis notes
+    file_list : list (optional)
+        list of files that contain psd
+    save_results : bool
+        save heatmap & csv
+
     Returns
     -------
     """
 
     # Get psd distance between target and basis
     distance = \
-        scipy.spatial.distance.cdist(psd_list_target, psd_list_basis, 'sqeuclidean')  # (number of test notes x number of basis notes)
+        scipy.spatial.distance.cdist(psd_list_target, psd_list_basis,
+                                     'sqeuclidean')  # (number of test notes x number of basis notes)
 
     # Get basis note info
     notes_list_basis = []
@@ -196,6 +203,9 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
     notes_list_target = unique(''.join(sorted(notes_target)))
 
     # Get similarity matrix per test note
+    # Store results in the dataframe
+    df = pd.DataFrame()
+
     for note in notes_list_target:  # loop through notes
 
         if note not in notes_list_basis:  # skip if the note doesn't exist in the basis set
@@ -221,8 +231,27 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
         condition = ''
         if task_name == 'Predeafening':  # basis vs. predeafening
             condition = 'Control'
-        else:   # basis vs. postdeafening
+        else:  # basis vs. postdeafening
             condition = 'Deafening'
+
+        # This is to mark the date
+        if file_list:
+            file_array = np.asarray(file_list[0])
+            note_file = file_array[ind]
+            date_list = []
+            for file in note_file:
+                date_list.append(file.split('_')[1])
+            date_list_unique = unique(date_list)
+
+            # Get date change info
+            prev_date = ''
+            date_change_ind = []
+
+            for ind, file in enumerate(note_file):
+                date = file.split('_')[1]
+                if prev_date and prev_date != date:
+                    date_change_ind.append(ind-0.5)
+                prev_date = date
 
         # Plot the similarity matrix
         fig = plt.figure(figsize=(5, 5))
@@ -234,6 +263,13 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
         ax = sns.heatmap(note_similarity,
                          vmin=0, vmax=1,
                          cmap='binary')
+
+
+        # Mark change in date
+        if 'date_change_ind' in locals():
+            for ind in date_change_ind:
+                ax.axhline(y=ind, color='r', ls=':', lw=1)
+
         ax.set_title(title)
         ax.set_ylabel('Test syllables')
         ax.set_xticklabels(notes_list_basis)
@@ -254,9 +290,23 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
         # similarity_median_val = similarity_median[0][note_list_basis.index(note)]
 
         # Save heatmap (similarity matrix)
-        if save_heatmap:
-            save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + bird_id, add_date=False)
+        if save_results:
+            save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + bird_id,
+                                      add_date=False)
             save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, open_folder=False)
+
+            # Save results to a dataframe
+            # All notes
+            temp_df = []
+            temp_df = pd.DataFrame({'BirdID': bird_id,
+                                    'Condition': task_name,
+                                    'Note': note,  # testing note
+                                    'NbNotes': [nb_note],
+                                    'SimilarityMean': [similarity_mean_val],
+                                    })
+            df = df.append(temp_df, ignore_index=True)
+            csv_path = ProjectLoader().path / 'Analysis'/ 'PSD_similarity' / f'{bird_id}_{task_name}.csv'
+            temp_df.to_csv(csv_path, index=True, header=True)  # save the dataframe to .cvs format
         else:
             plt.close(fig)
 
@@ -272,7 +322,8 @@ for bird_id in bird_to_use:
     for task_name in task_list:
         npy_name = bird_id + '_' + task_name + '.npy'
         npy_name = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / npy_name
-        data = np.load(npy_name, allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
+        data = np.load(npy_name,
+                       allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
 
         #  Load data
         if task_name == 'Predeafening':
@@ -287,16 +338,17 @@ for bird_id in bird_to_use:
             psd_list_basis, note_list_basis = get_basis_psd(psd_list_basis, notes_basis)
             # Get similarity heatmap between basis and pre-deafening control
             get_similarity_heatmap(psd_list_pre, psd_list_basis, notes_pre, notes_basis,
-                                   save_heatmap=save_heatmap)
+                                   save_results=save_results)
 
         elif task_name == 'Postdeafening':
-            psd_list_post, notes_post = data['psd_list'], data['psd_notes']
+            # file list info is needed for this condition to track chronological changes
+            psd_list_post, notes_post, file_list_post = data['psd_list'], data['psd_notes'], data['file_list']
             # Get similarity heatmap between basis and post-deafening
-            get_similarity_heatmap(psd_list_post, psd_list_basis, notes_post, notes_basis,
-                                   save_heatmap=save_heatmap)
+            get_similarity_heatmap(psd_list_post, psd_list_basis, notes_post, notes_basis, file_list_post,
+                                   save_results=save_results)
+
 
 
 
 gc.collect()
 print('Done!')
-
