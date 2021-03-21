@@ -3,14 +3,9 @@ By Jaerong
 main package for neural analysis
 """
 
-from pathlib import Path
-
 from analysis.functions import *
-from analysis.load import *
-from database.load import ProjectLoader
 from util.functions import *
 from util.spect import *
-
 
 
 def load_audio(dir, format='wav'):
@@ -28,12 +23,9 @@ def load_audio(dir, format='wav'):
 
     # Store values in these lists
     file_list = []
-    syllable_list = []
-    context_list = []
 
     # Loop through audio files
     for file in files:
-
         # Load data file
         print('Loading... ' + file.stem)
         sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
@@ -85,7 +77,7 @@ def get_peth(evt_ts: list, spk_ts: list, *duration: float):
 
     for song peth event_ts indicates syllable onset
     """
-
+    from analysis.parameters import peth_parm
     import math
 
     peth = np.zeros((len(evt_ts), peth_parm['bin_size'] * peth_parm['nb_bins']))  # nb of trials x nb of time bins
@@ -137,9 +129,9 @@ def get_pcc(fr_array):
 
 class ClusterInfo:
 
-    name: object
-
     def __init__(self, path, channel_nb, unit_nb, format='rhd', *name, update=False, time_unit='ms'):
+
+        from analysis.song import load_song
 
         self.path = path
         if channel_nb:  # if a neuron was recorded
@@ -163,18 +155,17 @@ class ClusterInfo:
         # Load events
         file_name = self.path / "ClusterInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
-            cluster_info = load_song(self.path)
+            song_info = load_song(self.path)
             # Save cluster_info as a numpy object
-            np.save(file_name, cluster_info)
+            np.save(file_name, song_info)
         else:
-            cluster_info = np.load(file_name, allow_pickle=True).item()
+            song_info = np.load(file_name, allow_pickle=True).item()
 
         # Set the dictionary values to class attributes
-        for key in cluster_info:
-            setattr(self, key, cluster_info[key])
+        for key in song_info:
+            setattr(self, key, song_info[key])
 
         # Load spike
-
         if channel_nb and unit_nb:
             self._load_spk(time_unit)
 
@@ -234,6 +225,7 @@ class ClusterInfo:
         """
         Perform waveform analysis
         """
+        from analysis.parameters import sample_rate, interp_factor
 
         self.avg_wf = np.nanmean(self.spk_wf, axis=0)
         self.wf_ts = np.arange(0, self.avg_wf.shape[0]) / sample_rate[self.format] * 1E3  # x-axis in ms
@@ -241,9 +233,11 @@ class ClusterInfo:
         def _get_spk_profile(wf_ts, avg_wf, interpolate=True):
             spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
             if interpolate:
-                spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * ((1 / sample_rate[self.format]) / interp_factor) * 1E6  # in microseconds
+                spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
+                            (1 / sample_rate[self.format]) / interp_factor) * 1E6  # in microseconds
             else:
-                spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (1 / sample_rate[self.format]) * 1E6  # in microseconds
+                spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
+                            1 / sample_rate[self.format]) * 1E6  # in microseconds
             deflection_range, half_width = get_half_width(wf_ts, avg_wf)  # get the half width from the peak deflection
             return spk_height, spk_width, half_width, deflection_range
 
@@ -281,12 +275,10 @@ class ClusterInfo:
     def get_correlogram(self, ref_spk_list, target_spk_list, normalize=False):
         """Get analysis auto- or cross-correlogram"""
 
+        from analysis.parameters import spk_corr_parm
         import math
 
-        # time_bin = np.arange(-spk_corr_parm['lag'], spk_corr_parm['lag'] + 1, spk_corr_parm['bin_size'])
         correlogram = {}
-
-        # spk_corr = np.array([], dtype=np.float32)
 
         for social_context in set(self.contexts):
             # Compute spk correlogram
@@ -329,6 +321,9 @@ class ClusterInfo:
         reproducible : bool
             make the results reproducible by setting the seed as equal to index
         """
+
+        from analysis.parameters import jitter_limit
+
         spk_ts_jittered_list = []
         for ind, spk_ts in enumerate(self.spk_ts):
             np.random.seed()
@@ -345,6 +340,7 @@ class ClusterInfo:
 
     def get_jittered_corr(self):
 
+        from analysis.parameters import shuffling_iter
         from collections import defaultdict
 
         correlogram_jitter = defaultdict(list)
@@ -431,9 +427,9 @@ class MotifInfo(ClusterInfo):
 
         self.motif = motif
         if name:
-           self.name = name[0]
+            self.name = name[0]
         else:
-           self.name = str(self.path)
+            self.name = str(self.path)
 
         # Load motif info
         file_name = self.path / "MotifInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
@@ -789,9 +785,9 @@ class BoutInfo(ClusterInfo):
         self.song_note = song_note
 
         if name:
-           self.name = name[0]
+            self.name = name[0]
         else:
-           self.name = str(self.path)
+            self.name = str(self.path)
 
         # Load bout info
         file_name = self.path / "BoutInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
@@ -873,9 +869,9 @@ class BaselineInfo(ClusterInfo):
         from analysis.parameters import baseline
 
         if name:
-           self.name = name[0]
+            self.name = name[0]
         else:
-           self.name = str(self.path)
+            self.name = str(self.path)
 
         # Load baseline info
         file_name = self.path / "BaselineInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
@@ -997,11 +993,13 @@ class BaselineInfo(ClusterInfo):
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
+
 class AudioData:
     """
     Create an object that has concatenated audio signal and its timestamps
     Get all data by default; specify time range if needed
     """
+
     def __init__(self, path, format='.wav', update=False):
 
         self.path = path
@@ -1043,7 +1041,8 @@ class AudioData:
 
     def spectrogram(self, freq_range=[300, 8000]):
         self.spect, self.spect_freq, _ = spectrogram(self.data, self.sample_rate, freq_range=freq_range)
-        self.spect_time = np.linspace(self.timestamp[0], self.timestamp[-1], self.spect.shape[1])  # timestamp for spectrogram
+        self.spect_time = np.linspace(self.timestamp[0], self.timestamp[-1],
+                                      self.spect.shape[1])  # timestamp for spectrogram
         # print("spect, freqbins, timebins added")
 
     def plot_spectrogram(self, MotifInfo):
@@ -1075,6 +1074,10 @@ class NeuralData:
         """
         Load and concatenate all neural data files (e.g., .rhd) in the input dir (path)
         """
+
+        from analysis.load import read_rhd
+        from analysis.parameters import sample_rate
+
         print("")
         print("Load neural data")
         # List .rhd files
@@ -1116,7 +1119,6 @@ class NeuralData:
             'data': amplifier_data_concat,
             'sample_rate': sample_rate[self.format]
         }
-
         file_name = self.path / f"NeuralData_Ch{self.channel}.npy"
         np.save(file_name, data_info)
 
@@ -1138,12 +1140,15 @@ class NeuralData:
         self.data = self.data[ind]
         return self
 
+
 class Correlogram():
     """
     Class for correlogram analysis
     """
 
     def __init__(self, correlogram):
+
+        from analysis.parameters import spk_corr_parm, burst_hz
 
         corr_center = round(correlogram.shape[0] / 2) + 1  # center of the correlogram
         self.data = correlogram
@@ -1152,7 +1157,8 @@ class Correlogram():
                                   spk_corr_parm['bin_size'])
         if self.data.sum():
             self.peak_ind = np.min(
-                np.abs(np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center  # index of the peak
+                np.abs(
+                    np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center  # index of the peak
             self.peak_latency = self.time_bin[self.peak_ind]
             self.peak_value = self.data[self.peak_ind]
             burst_range = np.arange(corr_center - (1000 / burst_hz) - 1, corr_center + (1000 / burst_hz),
@@ -1175,6 +1181,8 @@ class Correlogram():
             Category of a neuron ('Bursting' or 'Nonbursting')
         -------
         """
+        from analysis.parameters import corr_burst_crit
+
         corr_mean = correlogram_jitter.mean(axis=0)
 
         if corr_mean.sum():
@@ -1215,6 +1223,7 @@ class Correlogram():
         """
         import matplotlib.pyplot as plt
         from util.draw import remove_right_top
+
         if correlogram.sum():
             ax.bar(time_bin, correlogram, color='k')
             ymax = max([self.baseline.max(), correlogram.max()])
@@ -1243,6 +1252,8 @@ class Correlogram():
 class BurstingInfo:
 
     def __init__(self, ClassInfo, *input_context):
+
+        from analysis.parameters import burst_hz
 
         # ClassInfo can be BaselineInfo, MotifInfo etc
         if input_context:  # select data based on social context
@@ -1343,4 +1354,3 @@ class BurstingInfo:
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
-
