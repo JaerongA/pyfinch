@@ -10,7 +10,7 @@ from analysis.spike import *
 from database.load import ProjectLoader, DBInfo
 
 # Parameters
-update = True
+update = False
 update_db = False
 
 # Load database
@@ -25,7 +25,7 @@ for row in db.cur.fetchall():
 
     # Load cluster info from db
     cluster_db = DBInfo(row)
-    name, path = cluster_db.load_cluster()
+    name, path = cluster_db.load_cluster_db()
     unit_nb = int(cluster_db.unit[-2:])
     channel_nb = int(cluster_db.channel[-2:])
     format = cluster_db.format
