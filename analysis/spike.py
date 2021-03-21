@@ -7,80 +7,10 @@ from pathlib import Path
 
 from analysis.functions import *
 from analysis.load import *
-from analysis.parameters import *
 from database.load import ProjectLoader
 from util.functions import *
 from util.spect import *
 
-
-def load_song(dir):
-    """
-    Obtain event info & serialized timestamps for song & neural analysis
-    """
-    import numpy as np
-    from scipy.io import wavfile
-
-    # List audio files
-    audio_files = list(dir.glob('*.wav'))
-
-    # Initialize
-    timestamp_serialized = np.array([], dtype=np.float32)
-
-    # Store values in these lists
-    file_list = []
-    file_start_list = []
-    file_end_list = []
-    onset_list = []
-    offset_list = []
-    duration_list = []
-    syllable_list = []
-    context_list = []
-
-    # Loop through Intan .rhd files
-    for file in audio_files:
-
-        # Load audio files
-        print('Loading... ' + file.stem)
-        sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
-        length = data.shape[0] / sample_rate
-        timestamp = np.linspace(0., length, data.shape[0]) * 1E3  # start from t = 0 in ms
-
-        # Load the .not.mat file
-        notmat_file = file.with_suffix('.wav.not.mat')
-        onsets, offsets, intervals, durations, syllables, contexts = read_not_mat(notmat_file, unit='ms')
-        start_ind = timestamp_serialized.size  # start of the file
-
-        if timestamp_serialized.size:
-            timestamp += (timestamp_serialized[-1] + (1 / sample_rate))
-        timestamp_serialized = np.append(timestamp_serialized, timestamp)
-
-        # File information (name, start & end timestamp of each file)
-        file_list.append(file.stem)
-        file_start_list.append(timestamp_serialized[start_ind])  # in ms
-        file_end_list.append(timestamp_serialized[-1])  # in ms
-
-        onsets += timestamp[0]
-        offsets += timestamp[0]
-
-        # Demarcate song bouts
-        onset_list.append(demarcate_bout(onsets, intervals))
-        offset_list.append(demarcate_bout(offsets, intervals))
-        duration_list.append(demarcate_bout(durations, intervals))
-        syllable_list.append(demarcate_bout(syllables, intervals))
-        context_list.append(contexts)
-
-    # Organize event-related info into a single dictionary object
-    song_info = {
-        'files': file_list,
-        'file_start': file_start_list,
-        'file_end': file_end_list,
-        'onsets': onset_list,
-        'offsets': offset_list,
-        'durations': duration_list,
-        'syllables': syllable_list,
-        'contexts': context_list
-    }
-    return song_info
 
 
 def load_audio(dir, format='wav'):
@@ -132,10 +62,21 @@ def load_audio(dir, format='wav'):
 
 
 def get_isi(spk_ts: list):
-    """Get inter-analysis interval of spikes"""
-    isi = []
-    for spk_ts in spk_ts:
-        isi.append(np.diff(spk_ts))
+    """
+    Get inter-analysis interval of spikes
+    Parameters
+    ----------
+    spk_ts : list
+
+    Returns
+    -------
+    isi : array
+        array of inter-spike intervals
+    """
+    isi = np.array([], dtype=np.float64)
+
+    for spk in spk_ts:
+        isi = np.append(isi, np.diff(spk))
     return isi
 
 
@@ -296,8 +237,6 @@ class ClusterInfo:
 
         self.avg_wf = np.nanmean(self.spk_wf, axis=0)
         self.wf_ts = np.arange(0, self.avg_wf.shape[0]) / sample_rate[self.format] * 1E3  # x-axis in ms
-
-
 
         def _get_spk_profile(wf_ts, avg_wf, interpolate=True):
             spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
@@ -491,7 +430,6 @@ class MotifInfo(ClusterInfo):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
 
         self.motif = motif
-
         if name:
            self.name = name[0]
         else:
@@ -511,6 +449,9 @@ class MotifInfo(ClusterInfo):
             setattr(self, key, motif_info[key])
 
     def load_motif(self):
+
+        from analysis.parameters import peth_parm
+
         # Store values here
         file_list = []
         spk_list = []
@@ -593,6 +534,30 @@ class MotifInfo(ClusterInfo):
     @property
     def open_folder(self):
         open_folder(self.path)
+
+    def get_isi(self, add_premotor_spk=False):
+
+        "Get inter-spike interval"
+        isi_dict = {}
+        list_zip = zip(self.onsets, self.offsets, self.spk_ts)
+
+        if not add_premotor_spk:
+            # Include spikes from the pre-motif buffer for calculation
+            # Pre-motor spikes are included in spk_list by default
+            motif_spk_list = []
+            for onset, offset, spks in list_zip:
+                onset = np.asarray(list(map(float, onset)))
+                offset = np.asarray(list(map(float, offset)))
+                motif_spk_list.append(spks[np.where((spks >= onset[0]) & (spks <= offset[-1]))])
+
+        for context1 in unique(self.contexts):
+            if not add_premotor_spk:
+                spk_list = [spk_ts for spk_ts, context2 in zip(motif_spk_list, self.contexts) if context2 == context1]
+            else:
+                spk_list = [spk_ts for spk_ts, context2 in zip(self.spk_ts, self.contexts) if context2 == context1]
+            isi_dict[context1] = get_isi(spk_list)
+
+        return isi_dict
 
     def get_note_duration(self):
         # Calculate note & gap duration per motif
@@ -706,6 +671,7 @@ class PethInfo():
         """
 
         # Set the dictionary values to class attributes
+
         for key in peth_dict:
             setattr(self, key, peth_dict[key])
 
@@ -733,6 +699,7 @@ class PethInfo():
         #     peth = peth[:, ind]
         #     time_bin = time_bin[ind]
 
+        from analysis.parameters import peth_parm, gauss_std
         from scipy.ndimage import gaussian_filter1d
 
         # Get trial-by-trial firing rates
@@ -771,6 +738,8 @@ class PethInfo():
         self.pcc = pcc_dict
 
     def get_spk_count(self):
+
+        from analysis.parameters import peth_parm, spk_count_parm
 
         win_size = spk_count_parm['win_size']
         spk_count_dict = {}
@@ -901,6 +870,13 @@ class BaselineInfo(ClusterInfo):
     def __init__(self, path, channel_nb, unit_nb, format='rhd', *name, update=False):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
 
+        from analysis.parameters import baseline
+
+        if name:
+           self.name = name[0]
+        else:
+           self.name = str(self.path)
+
         # Load baseline info
         file_name = self.path / "BaselineInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
@@ -974,9 +950,15 @@ class BaselineInfo(ClusterInfo):
         for key in baseline_info:
             setattr(self, key, baseline_info[key])
 
+    def print_name(self):
+        print('')
+        print('Load baseline {self.name}'.format(self=self))
+
     def get_correlogram(self, ref_spk_list, target_spk_list, normalize=False):
         """Override the parent method
         combine correlogram from undir and dir since no contextual differentiation is needed in baseline"""
+
+        from analysis.parameters import spk_corr_parm
 
         correlogram_all = super().get_correlogram(ref_spk_list, target_spk_list, normalize=False)
         correlogram = np.zeros(len(spk_corr_parm['time_bin']))
@@ -990,6 +972,8 @@ class BaselineInfo(ClusterInfo):
 
     def get_jittered_corr(self):
 
+        from analysis.parameters import shuffling_iter
+
         correlogram_jitter = []
 
         for iter in range(shuffling_iter):
@@ -998,6 +982,9 @@ class BaselineInfo(ClusterInfo):
             correlogram_jitter.append(corr_temp)
 
         return np.array(correlogram_jitter)
+
+    def get_isi(self):
+        return get_isi(self.spk_ts)
 
     @property
     def mean_fr(self):
@@ -1009,12 +996,6 @@ class BaselineInfo(ClusterInfo):
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
-
-    @property
-    def isi(self):
-        isi = get_isi(self.spk_ts)
-        return isi
-
 
 class AudioData:
     """

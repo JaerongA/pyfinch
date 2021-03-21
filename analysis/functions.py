@@ -3,7 +3,7 @@ By Jaerong
 A collection of functions used for song analysis
 """
 
-from analysis.parameters import *
+# from analysis.parameters import *
 from matplotlib.pylab import psd
 from util import save
 from util.draw import *
@@ -358,7 +358,7 @@ def get_basis_psd(psd_list, notes, num_note_crit_basis=30):
     syl_basis_list = []
 
     psd_array = np.asarray(psd_list)   # number of syllables x psd (get_basis_psd function accepts array format only)
-    unique_note = unique(notes)  # convert note string into a list of unique syllables
+    unique_note = unique(''.join(sorted(notes)))  # convert note string into a list of unique syllables
 
     # Remove unidentifiable note (e.g., '0' or 'x')
     if '0' in unique_note:
