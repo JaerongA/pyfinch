@@ -7,6 +7,7 @@ Inter-spike interval analysis
 from analysis.spike import MotifInfo, BaselineInfo
 from database.load import ProjectLoader, DBInfo
 import matplotlib.pyplot as plt
+import numpy as np
 from util import save
 
 
@@ -77,6 +78,11 @@ for row in db.cur.fetchall():
     # Get ISI per condition
     isi = mi.get_isi(add_premotor_spk=False)
     isi['B'] = bi.get_isi()
+
+    # Get isi bin size (note that this will be in log scale)
+    isi_win = 4
+    isi_scale = 100
+    hist_bin = np.arange(-1, isi_win, 1 / isi_scale)
 
     # Plot the results
     fig = plt.figure(figsize=(13, 7))
