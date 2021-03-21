@@ -107,7 +107,7 @@ class DBInfo:
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
-    def load_cluster(self):
+    def load_cluster_db(self):
         """
         Return the list of files in the current directory
             Input: SQL object (database row)
@@ -141,5 +141,7 @@ class DBInfo:
         cluster_path = project_path / self.birdID / self.taskName /\
                        cluster_taskSession / self.site[-2:] / 'Songs'
         cluster_path = Path(cluster_path)
-
         return cluster_name, cluster_path
+
+    def load_song_db(self):
+        pass

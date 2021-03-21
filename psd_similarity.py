@@ -65,7 +65,7 @@ def get_psd_bird(db, *bird_list):
             if not cluster_db.birdID in bird_to_use:  # skip if the bird doesn't have both pre and post deafening songs
                 continue
 
-            name, path = cluster_db.load_cluster()  # data path
+            name, path = cluster_db.load_cluster_db()  # data path
 
             try:
                 channel_nb = int(cluster_db.channel[-2:])
