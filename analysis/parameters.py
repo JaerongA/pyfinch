@@ -55,6 +55,11 @@ tick_width = 1
 burst_hz = 200  # instantaneous firing rates >= 200 Hz to be considered bursting
 corr_burst_crit = 5  # bursting criteria (in ms) in a correlogram, peak latency of a correlogram should be <= than the criteria
 
+# ISI analysis
+isi_win = 4  # 10^isi_win ms (log scale)
+isi_scale = 100
+isi_bin = np.arange(0, isi_win, 1 / isi_scale)
+
 # Correlogram
 shuffling_iter = 100  # shuffling iteration for obtaining baseline
 
@@ -67,6 +72,14 @@ spk_proportion = 0.2  # proportion of waveforms to plot
 
 # Bout raster plot
 bout_buffer = 100
+
+
+
+
+
+
+
+
 
 
 # def get_syl_color():

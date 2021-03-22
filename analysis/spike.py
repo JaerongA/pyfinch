@@ -66,9 +66,10 @@ def get_isi(spk_ts: list):
         array of inter-spike intervals
     """
     isi = np.array([], dtype=np.float64)
-
     for spk in spk_ts:
         isi = np.append(isi, np.diff(spk))
+
+    isi = ISI(isi)  # return the class object
     return isi
 
 
@@ -1354,3 +1355,45 @@ class BurstingInfo:
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
+
+
+class ISI:
+    """
+    Class object for inter-spike interval analysis
+    """
+    def __init__(self, isi):
+        """
+
+        Parameters
+        ----------
+        isi : array
+            Inter-spike interval array
+        """
+        from analysis.parameters import isi_win, isi_scale, isi_bin
+
+        self.data = isi
+        self.hist, self.time_bin = np.histogram(np.log10(isi), bins=isi_bin)
+        self.time_bin = 10**self.time_bin[:-1]
+        # Peak latency of the ISI distribution
+        self.peak_latency = self.time_bin[np.min(np.where(self.hist == np.min(self.hist.max())))]  # in ms
+        # Proportion of within-refractory period spikes
+        self.within_ref_prop = (np.sum(isi < 1) / isi.shape[0]) * 100
+
+    def plot(self, ax,
+             *title,
+             font_size = 10):
+
+        import matplotlib.pyplot as plt
+        from util.draw import remove_right_top
+        import math
+
+        ax.bar((self.time_bin), self.hist, color='k')
+        ax.set_ylim([0, myround(math.ceil(ax.get_ylim()[1]), base=10)])
+        ax.axvline(1, color='k', linestyle='dashed', linewidth=1)
+        ax.axvline(self.peak_latency, color='r', linestyle='dashed', linewidth=0.3)
+        ax.set_ylabel('Count')
+        ax.set_xlabel('Time (ms)')
+        ax.set_xscale('log')
+        if title:
+            ax.set_title(title[0], size=font_size)
+        remove_right_top(ax)
