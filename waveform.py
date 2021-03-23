@@ -106,6 +106,8 @@ for row in db.cur.fetchall():
 
     # Save results to database
     if update_db:
+        db.create_col('cluster', 'nbSpk', 'INT')
+        db.update('cluster', 'nbSpk', row['id'], ci.nb_spk)
         db.create_col('cluster', 'SNR', 'REAL')
         db.update('cluster', 'SNR', row['id'], snr)
         db.create_col('cluster', 'spkHeight', 'REAL')
@@ -114,8 +116,7 @@ for row in db.cur.fetchall():
         db.update('cluster', 'spkWidth', row['id'], ci.spk_width)
         db.create_col('cluster', 'spkHalfWidth', 'REAL')
         db.update('cluster', 'spkHalfWidth', row['id'], ci.half_width)
-        db.create_col('cluster', 'nbSpk', 'INT')
-        db.update('cluster', 'nbSpk', row['id'], ci.nb_spk)
+
     # Save results
     if save_fig:
         save_path = save.make_dir(ProjectLoader().path / 'Analysis', dir_name)

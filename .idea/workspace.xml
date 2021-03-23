@@ -4,9 +4,14 @@
     <option name="GROUP_BY_SEVERITY" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
+    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="update">
+      <change afterPath="$PROJECT_DIR$/database/create_unit_profile.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/unit_profile.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/psd_similarity.py" beforeDir="false" afterPath="$PROJECT_DIR$/psd_similarity.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/spike.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/spike.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/create_song_table.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/create_song_table.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/isi.py" beforeDir="false" afterPath="$PROJECT_DIR$/isi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/waveform.py" beforeDir="false" afterPath="$PROJECT_DIR$/waveform.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,21 +32,6 @@
     <expand>
       <path>
         <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="AreaX" type="feb32156:DbDataSourceImpl" />
-      </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="AreaX" type="feb32156:DbDataSourceImpl" />
-        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
-      </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="AreaX" type="feb32156:DbDataSourceImpl" />
-        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
-        <item name="main: schema" type="981a47c2:SqliteImplModel$Schema" />
-      </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
         <item name="deafening" type="feb32156:DbDataSourceImpl" />
       </path>
       <path>
@@ -54,11 +44,6 @@
         <item name="deafening" type="feb32156:DbDataSourceImpl" />
         <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
         <item name="main: schema" type="981a47c2:SqliteImplModel$Schema" />
-      </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="deafening" type="feb32156:DbDataSourceImpl" />
-        <item name="collations" type="d4e8921:DatabaseStructure$FamilyGroup" />
       </path>
     </expand>
     <select />
@@ -101,6 +86,10 @@
       </set>
     </option>
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/firing_rates.py" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/analysis/spikeDKR.py" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="JupyterTrust" id="86462266-d9c7-46bb-8973-8b9a20ef1990" />
   <component name="ProjectId" id="1WqnWwYAqffUpv2XRnIvqmntdmx" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -126,7 +115,7 @@
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable" />
+    <property name="settings.editor.selected.configurable" value="database.main" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -151,7 +140,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\song_analysis" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.psd_similarity">
+  <component name="RunManager" selected="Python.isi">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -196,42 +185,17 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="correlogram (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="isi" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/correlogram.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="firing_rates" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="SongAnalysis" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/firing_rates.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/isi.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -244,6 +208,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -300,6 +267,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="spike" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="SongAnalysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/analysis" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/analysis/spike.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="waveform" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -326,17 +315,17 @@
       <item itemvalue="Python.SongAnalysis" />
       <item itemvalue="Python.raster" />
       <item itemvalue="Python.psd_similarity" />
-      <item itemvalue="Python.firing_rates" />
-      <item itemvalue="Python.correlogram (1)" />
       <item itemvalue="Python.waveform" />
+      <item itemvalue="Python.isi" />
+      <item itemvalue="Python.spike" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.isi" />
+        <item itemvalue="Python.spike" />
         <item itemvalue="Python.psd_similarity" />
         <item itemvalue="Python.waveform" />
         <item itemvalue="Python.raster" />
-        <item itemvalue="Python.correlogram (1)" />
-        <item itemvalue="Python.firing_rates" />
       </list>
     </recent_temporary>
   </component>
@@ -349,11 +338,12 @@
             <expand>
               <path>
                 <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
-                <item name="AreaX: root" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+                <item name="deafening: root" type="7427dc5b:ServiceModel$ServiceGroupNode" />
               </path>
               <path>
                 <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
                 <item name="deafening: root" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+                <item name="com.intellij.database.console.session.MessageBusSession@580a0755" type="9fbbdea:ServiceModel$ServiceNode" />
               </path>
             </expand>
             <select />
@@ -611,133 +601,22 @@
       <workItem from="1615608428658" duration="642000" />
       <workItem from="1615662087779" duration="1918000" />
       <workItem from="1615769586100" duration="3214000" />
-      <workItem from="1615779336209" duration="819000" />
-    </task>
-    <task id="LOCAL-00228" summary="added interpolation">
-      <created>1613282721638</created>
-      <option name="number" value="00228" />
-      <option name="presentableId" value="LOCAL-00228" />
-      <option name="project" value="LOCAL" />
-      <updated>1613282721638</updated>
-    </task>
-    <task id="LOCAL-00229" summary="firing rates round up to 3 floating points">
-      <created>1613452662589</created>
-      <option name="number" value="00229" />
-      <option name="presentableId" value="LOCAL-00229" />
-      <option name="project" value="LOCAL" />
-      <updated>1613452662589</updated>
-    </task>
-    <task id="LOCAL-00230" summary="firing rates round up to 3 floating points">
-      <created>1613452946069</created>
-      <option name="number" value="00230" />
-      <option name="presentableId" value="LOCAL-00230" />
-      <option name="project" value="LOCAL" />
-      <updated>1613452946069</updated>
-    </task>
-    <task id="LOCAL-00231" summary="update half-width calculation">
-      <created>1613530123886</created>
-      <option name="number" value="00231" />
-      <option name="presentableId" value="LOCAL-00231" />
-      <option name="project" value="LOCAL" />
-      <updated>1613530123886</updated>
-    </task>
-    <task id="LOCAL-00232" summary="update">
-      <created>1613598280631</created>
-      <option name="number" value="00232" />
-      <option name="presentableId" value="LOCAL-00232" />
-      <option name="project" value="LOCAL" />
-      <updated>1613598280631</updated>
-    </task>
-    <task id="LOCAL-00233" summary="update">
-      <created>1613624318179</created>
-      <option name="number" value="00233" />
-      <option name="presentableId" value="LOCAL-00233" />
-      <option name="project" value="LOCAL" />
-      <updated>1613624318179</updated>
-    </task>
-    <task id="LOCAL-00234" summary="update">
-      <created>1613705638520</created>
-      <option name="number" value="00234" />
-      <option name="presentableId" value="LOCAL-00234" />
-      <option name="project" value="LOCAL" />
-      <updated>1613705638520</updated>
-    </task>
-    <task id="LOCAL-00235" summary="added time_warp option">
-      <created>1613705724757</created>
-      <option name="number" value="00235" />
-      <option name="presentableId" value="LOCAL-00235" />
-      <option name="project" value="LOCAL" />
-      <updated>1613705724757</updated>
-    </task>
-    <task id="LOCAL-00236" summary="update">
-      <created>1613705813784</created>
-      <option name="number" value="00236" />
-      <option name="presentableId" value="LOCAL-00236" />
-      <option name="project" value="LOCAL" />
-      <updated>1613705813784</updated>
-    </task>
-    <task id="LOCAL-00237" summary="update : print out name">
-      <created>1613753321246</created>
-      <option name="number" value="00237" />
-      <option name="presentableId" value="LOCAL-00237" />
-      <option name="project" value="LOCAL" />
-      <updated>1613753321246</updated>
-    </task>
-    <task id="LOCAL-00238" summary="update : new format">
-      <created>1613894765477</created>
-      <option name="number" value="00238" />
-      <option name="presentableId" value="LOCAL-00238" />
-      <option name="project" value="LOCAL" />
-      <updated>1613894765477</updated>
-    </task>
-    <task id="LOCAL-00239" summary="plot spk &amp; song per bout">
-      <created>1613968281729</created>
-      <option name="number" value="00239" />
-      <option name="presentableId" value="LOCAL-00239" />
-      <option name="project" value="LOCAL" />
-      <updated>1613968281729</updated>
-    </task>
-    <task id="LOCAL-00240" summary="plot spk &amp; song per bout">
-      <created>1613974273217</created>
-      <option name="number" value="00240" />
-      <option name="presentableId" value="LOCAL-00240" />
-      <option name="project" value="LOCAL" />
-      <updated>1613974273217</updated>
-    </task>
-    <task id="LOCAL-00241" summary="update">
-      <created>1614141125437</created>
-      <option name="number" value="00241" />
-      <option name="presentableId" value="LOCAL-00241" />
-      <option name="project" value="LOCAL" />
-      <updated>1614141125437</updated>
-    </task>
-    <task id="LOCAL-00242" summary="update DBInfo">
-      <created>1614141165677</created>
-      <option name="number" value="00242" />
-      <option name="presentableId" value="LOCAL-00242" />
-      <option name="project" value="LOCAL" />
-      <updated>1614141165677</updated>
-    </task>
-    <task id="LOCAL-00243" summary="update">
-      <created>1614194051061</created>
-      <option name="number" value="00243" />
-      <option name="presentableId" value="LOCAL-00243" />
-      <option name="project" value="LOCAL" />
-      <updated>1614194051062</updated>
-    </task>
-    <task id="LOCAL-00244" summary="removed timebin array&#10;&#10;revised to make a new timebin array instead of using the function output">
-      <created>1614227554244</created>
-      <option name="number" value="00244" />
-      <option name="presentableId" value="LOCAL-00244" />
-      <option name="project" value="LOCAL" />
-      <updated>1614227554245</updated>
-    </task>
-    <task id="LOCAL-00245" summary="plot song bout and spike">
-      <created>1614237025575</created>
-      <option name="number" value="00245" />
-      <option name="presentableId" value="LOCAL-00245" />
-      <option name="project" value="LOCAL" />
-      <updated>1614237025575</updated>
+      <workItem from="1615779336209" duration="2528000" />
+      <workItem from="1615862732004" duration="8685000" />
+      <workItem from="1615954721365" duration="2282000" />
+      <workItem from="1615997149553" duration="3927000" />
+      <workItem from="1616005607512" duration="6194000" />
+      <workItem from="1616012362933" duration="14351000" />
+      <workItem from="1616102755487" duration="724000" />
+      <workItem from="1616106659112" duration="24609000" />
+      <workItem from="1616269520438" duration="18444000" />
+      <workItem from="1616346435565" duration="12139000" />
+      <workItem from="1616423441905" duration="4403000" />
+      <workItem from="1616430761209" duration="16194000" />
+      <workItem from="1616453508232" duration="700000" />
+      <workItem from="1616454219379" duration="1173000" />
+      <workItem from="1616466843888" duration="5208000" />
+      <workItem from="1616472155882" duration="1954000" />
     </task>
     <task id="LOCAL-00246" summary="update">
       <created>1614237245107</created>
@@ -956,7 +835,133 @@
       <option name="project" value="LOCAL" />
       <updated>1615609887126</updated>
     </task>
-    <option name="localTasksCounter" value="277" />
+    <task id="LOCAL-00277" summary="psd similarity update">
+      <created>1615780171048</created>
+      <option name="number" value="00277" />
+      <option name="presentableId" value="LOCAL-00277" />
+      <option name="project" value="LOCAL" />
+      <updated>1615780171049</updated>
+    </task>
+    <task id="LOCAL-00278" summary="update get_bird_list">
+      <created>1615780743540</created>
+      <option name="number" value="00278" />
+      <option name="presentableId" value="LOCAL-00278" />
+      <option name="project" value="LOCAL" />
+      <updated>1615780743540</updated>
+    </task>
+    <task id="LOCAL-00279" summary="update psd_similarity">
+      <created>1615949291643</created>
+      <option name="number" value="00279" />
+      <option name="presentableId" value="LOCAL-00279" />
+      <option name="project" value="LOCAL" />
+      <updated>1615949291643</updated>
+    </task>
+    <task id="LOCAL-00280" summary="update psd_similarity">
+      <created>1616039411059</created>
+      <option name="number" value="00280" />
+      <option name="presentableId" value="LOCAL-00280" />
+      <option name="project" value="LOCAL" />
+      <updated>1616039411060</updated>
+    </task>
+    <task id="LOCAL-00281" summary="update">
+      <created>1616046365375</created>
+      <option name="number" value="00281" />
+      <option name="presentableId" value="LOCAL-00281" />
+      <option name="project" value="LOCAL" />
+      <updated>1616046365375</updated>
+    </task>
+    <task id="LOCAL-00282" summary="add get_similarity_heatmap function">
+      <created>1616118900239</created>
+      <option name="number" value="00282" />
+      <option name="presentableId" value="LOCAL-00282" />
+      <option name="project" value="LOCAL" />
+      <updated>1616118900240</updated>
+    </task>
+    <task id="LOCAL-00283" summary="working version update">
+      <created>1616128647713</created>
+      <option name="number" value="00283" />
+      <option name="presentableId" value="LOCAL-00283" />
+      <option name="project" value="LOCAL" />
+      <updated>1616128647713</updated>
+    </task>
+    <task id="LOCAL-00284" summary="update">
+      <created>1616270267885</created>
+      <option name="number" value="00284" />
+      <option name="presentableId" value="LOCAL-00284" />
+      <option name="project" value="LOCAL" />
+      <updated>1616270267886</updated>
+    </task>
+    <task id="LOCAL-00285" summary="update">
+      <created>1616298742589</created>
+      <option name="number" value="00285" />
+      <option name="presentableId" value="LOCAL-00285" />
+      <option name="project" value="LOCAL" />
+      <updated>1616298742589</updated>
+    </task>
+    <task id="LOCAL-00286" summary="isi analysis">
+      <created>1616299239172</created>
+      <option name="number" value="00286" />
+      <option name="presentableId" value="LOCAL-00286" />
+      <option name="project" value="LOCAL" />
+      <updated>1616299239172</updated>
+    </task>
+    <task id="LOCAL-00287" summary="isi analysis">
+      <created>1616299255844</created>
+      <option name="number" value="00287" />
+      <option name="presentableId" value="LOCAL-00287" />
+      <option name="project" value="LOCAL" />
+      <updated>1616299255844</updated>
+    </task>
+    <task id="LOCAL-00288" summary="changed function name load_cluster in database/load to load_cluster_db to avoid confusion">
+      <created>1616301886039</created>
+      <option name="number" value="00288" />
+      <option name="presentableId" value="LOCAL-00288" />
+      <option name="project" value="LOCAL" />
+      <updated>1616301886039</updated>
+    </task>
+    <task id="LOCAL-00289" summary="get isi time bin (log scale)">
+      <created>1616301947189</created>
+      <option name="number" value="00289" />
+      <option name="presentableId" value="LOCAL-00289" />
+      <option name="project" value="LOCAL" />
+      <updated>1616301947189</updated>
+    </task>
+    <task id="LOCAL-00290" summary="load_cluster_db">
+      <created>1616302156795</created>
+      <option name="number" value="00290" />
+      <option name="presentableId" value="LOCAL-00290" />
+      <option name="project" value="LOCAL" />
+      <updated>1616302156796</updated>
+    </task>
+    <task id="LOCAL-00291" summary="cleaned up importing errors">
+      <created>1616349128001</created>
+      <option name="number" value="00291" />
+      <option name="presentableId" value="LOCAL-00291" />
+      <option name="project" value="LOCAL" />
+      <updated>1616349128001</updated>
+    </task>
+    <task id="LOCAL-00292" summary="added ISI class">
+      <created>1616442491952</created>
+      <option name="number" value="00292" />
+      <option name="presentableId" value="LOCAL-00292" />
+      <option name="project" value="LOCAL" />
+      <updated>1616442491952</updated>
+    </task>
+    <task id="LOCAL-00293" summary="script for analyzing isi">
+      <created>1616446411582</created>
+      <option name="number" value="00293" />
+      <option name="presentableId" value="LOCAL-00293" />
+      <option name="project" value="LOCAL" />
+      <updated>1616446411582</updated>
+    </task>
+    <task id="LOCAL-00294" summary="move get_isi to ClusterInfo (parent class)">
+      <created>1616471485347</created>
+      <option name="number" value="00294" />
+      <option name="presentableId" value="LOCAL-00294" />
+      <option name="project" value="LOCAL" />
+      <updated>1616471485348</updated>
+    </task>
+    <option name="localTasksCounter" value="295" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -990,18 +995,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="added interpolation" />
-    <MESSAGE value="firing rates round up to 3 floating points" />
-    <MESSAGE value="update half-width calculation" />
-    <MESSAGE value="added time_warp option" />
-    <MESSAGE value="update : print out name" />
-    <MESSAGE value="update : new format" />
-    <MESSAGE value="plot spk &amp; song per bout" />
-    <MESSAGE value="update DBInfo" />
-    <MESSAGE value="removed timebin array&#10;&#10;revised to make a new timebin array instead of using the function output" />
-    <MESSAGE value="plot song bout and spike" />
-    <MESSAGE value="added bout info" />
-    <MESSAGE value="half-width update" />
     <MESSAGE value="revision on getting the deflection point for half-width calculation" />
     <MESSAGE value="update motif info" />
     <MESSAGE value="added bursting info" />
@@ -1011,25 +1004,29 @@
     <MESSAGE value="SongInfo class" />
     <MESSAGE value="in some cases where there's no sortable units, cluster and channel info can be missing" />
     <MESSAGE value="in some rows in cluster db, channel or unit information can be missing becase no sortable neurons existed." />
-    <MESSAGE value="update" />
     <MESSAGE value="fixed an error in time-warping" />
     <MESSAGE value="added get_basis_psd function" />
     <MESSAGE value="psd similarity update" />
-    <option name="LAST_COMMIT_MESSAGE" value="psd similarity update" />
+    <MESSAGE value="update get_bird_list" />
+    <MESSAGE value="update psd_similarity" />
+    <MESSAGE value="add get_similarity_heatmap function" />
+    <MESSAGE value="working version update" />
+    <MESSAGE value="update" />
+    <MESSAGE value="isi analysis" />
+    <MESSAGE value="changed function name load_cluster in database/load to load_cluster_db to avoid confusion" />
+    <MESSAGE value="get isi time bin (log scale)" />
+    <MESSAGE value="load_cluster_db" />
+    <MESSAGE value="cleaned up importing errors" />
+    <MESSAGE value="added ISI class" />
+    <MESSAGE value="script for analyzing isi" />
+    <MESSAGE value="move get_isi to ClusterInfo (parent class)" />
+    <option name="LAST_COMMIT_MESSAGE" value="move get_isi to ClusterInfo (parent class)" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="773" y="276" key="#Inspections" timestamp="1608191135770">
+    <state x="773" y="276" key="#Inspections" timestamp="1616006473535">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="773" y="276" key="#Inspections/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1608191135770" />
-    <state x="773" y="276" width="1014" height="908" key="#Intentions" timestamp="1607743223667">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="773" y="276" width="1014" height="908" key="#Intentions/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607743223667" />
-    <state x="773" y="276" key="#Plugins" timestamp="1607743086599">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="773" y="276" key="#Plugins/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607743086599" />
+    <state x="773" y="276" key="#Inspections/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616006473535" />
     <state x="-3260" y="583" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1613627502568">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -1047,77 +1044,69 @@
     </state>
     <state x="-2899" y="615" width="1159" height="758" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614378931138" />
     <state x="941" y="353" width="1251" height="791" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1610302074306" />
-    <state x="981" y="535" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1607450511787">
+    <state x="269" y="155" width="2099" height="1163" key="CommitChangelistDialog2" timestamp="1616471484360">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="981" y="535" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607450511787" />
-    <state x="337" y="177" width="2099" height="1163" key="CommitChangelistDialog2" timestamp="1615609886403">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="337" y="177" width="2099" height="1163" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615609886403" />
-    <state x="485" y="124" width="1925" height="1145" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614487726765" />
-    <state width="1466" height="582" key="DebuggerActiveHint" timestamp="1607412284622">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state width="1466" height="582" key="DebuggerActiveHint/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607412284622" />
-    <state x="-3821" y="397" width="2375" height="1215" key="DiffContextDialog" timestamp="1612647749914">
+    <state x="269" y="155" width="2099" height="1163" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616471484360" />
+    <state x="485" y="124" width="1925" height="1145" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1616270267240" />
+    <state width="2017" height="582" key="DebuggerActiveHint" timestamp="1616473259783">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3821" y="397" width="2375" height="1215" key="DiffContextDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1612647749914" />
+    <state width="2017" height="582" key="DebuggerActiveHint/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616473259783" />
+    <state x="-3821" y="397" width="2375" height="1215" key="DiffContextDialog" timestamp="1616348185182">
+      <screen x="-3840" y="262" width="2560" height="1400" />
+    </state>
+    <state x="-3821" y="397" width="2375" height="1215" key="DiffContextDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616348185182" />
     <state x="93" y="93" width="2375" height="1215" key="DiffContextDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1612137047140" />
-    <state x="346" y="615" key="FileChooserDialogImpl" timestamp="1607822217424">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="346" y="615" key="FileChooserDialogImpl/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1607822217424" />
-    <state width="2505" height="513" key="GridCell.Tab.0.bottom" timestamp="1615568509146">
+    <state width="2505" height="282" key="GridCell.Tab.0.bottom" timestamp="1616474167347">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="513" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615568509146" />
-    <state width="2505" height="360" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state width="2505" height="513" key="GridCell.Tab.0.center" timestamp="1615568509140">
+    <state width="2505" height="282" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616474167347" />
+    <state width="2505" height="843" key="GridCell.Tab.0.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1616189903874" />
+    <state width="2505" height="282" key="GridCell.Tab.0.center" timestamp="1616474167347">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="513" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615568509140" />
-    <state width="2505" height="360" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state width="2505" height="513" key="GridCell.Tab.0.left" timestamp="1615568509139">
+    <state width="2505" height="282" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616474167347" />
+    <state width="2505" height="843" key="GridCell.Tab.0.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1616189903874" />
+    <state width="2505" height="282" key="GridCell.Tab.0.left" timestamp="1616474167347">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="513" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615568509139" />
-    <state width="2505" height="360" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state width="2505" height="513" key="GridCell.Tab.0.right" timestamp="1615568509146">
+    <state width="2505" height="282" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616474167347" />
+    <state width="2505" height="843" key="GridCell.Tab.0.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1616189903874" />
+    <state width="2505" height="282" key="GridCell.Tab.0.right" timestamp="1616474167347">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="513" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615568509146" />
-    <state width="2505" height="360" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state width="2505" height="513" key="GridCell.Tab.1.bottom" timestamp="1615568509146">
+    <state width="2505" height="282" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616474167347" />
+    <state width="2505" height="843" key="GridCell.Tab.0.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1616189903874" />
+    <state width="2505" height="282" key="GridCell.Tab.1.bottom" timestamp="1616474167348">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="513" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615568509146" />
-    <state width="2505" height="360" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state width="2505" height="513" key="GridCell.Tab.1.center" timestamp="1615568509146">
+    <state width="2505" height="282" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616474167348" />
+    <state width="2505" height="843" key="GridCell.Tab.1.bottom/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1616189903874" />
+    <state width="2505" height="282" key="GridCell.Tab.1.center" timestamp="1616474167348">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="513" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615568509146" />
-    <state width="2505" height="360" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state width="2505" height="513" key="GridCell.Tab.1.left" timestamp="1615568509146">
+    <state width="2505" height="282" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616474167348" />
+    <state width="2505" height="843" key="GridCell.Tab.1.center/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1616189903874" />
+    <state width="2505" height="282" key="GridCell.Tab.1.left" timestamp="1616474167348">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="513" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615568509146" />
-    <state width="2505" height="360" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state width="2505" height="513" key="GridCell.Tab.1.right" timestamp="1615568509146">
+    <state width="2505" height="282" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616474167348" />
+    <state width="2505" height="843" key="GridCell.Tab.1.left/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1616189903874" />
+    <state width="2505" height="282" key="GridCell.Tab.1.right" timestamp="1616474167348">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state width="2505" height="513" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615568509146" />
-    <state width="2505" height="360" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614667093934" />
-    <state x="-2756" y="607" key="RollbackChangesDialog" timestamp="1612131537942">
+    <state width="2505" height="282" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616474167348" />
+    <state width="2505" height="843" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1616189903874" />
+    <state x="-2756" y="607" key="RollbackChangesDialog" timestamp="1616473737325">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2756" y="607" key="RollbackChangesDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1612131537942" />
+    <state x="-2756" y="607" key="RollbackChangesDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616473737325" />
     <state x="1084" y="345" key="RollbackChangesDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1608002294189" />
-    <state x="127" y="74" width="1819" height="1326" key="SettingsEditor" timestamp="1612027357835">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state x="-3017" y="521" width="1819" height="1326" key="SettingsEditor" timestamp="1616454012104">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3713" y="336" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1607808633054" />
+    <state x="-3017" y="521" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616454012104" />
     <state x="127" y="74" width="1819" height="1326" key="SettingsEditor/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1612027357835" />
     <state x="-2905" y="642" width="675" height="655" key="StructurePopup" timestamp="1612131433994">
       <screen x="-3840" y="262" width="2560" height="1400" />
@@ -1129,66 +1118,66 @@
     </state>
     <state width="629" height="498" key="SwitcherDM/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1608237331452" />
     <state width="629" height="498" key="SwitcherDM/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1610178964206" />
-    <state x="-3067" y="631" key="Vcs.Push.Dialog.v2" timestamp="1615609889762">
+    <state x="-3067" y="631" key="Vcs.Push.Dialog.v2" timestamp="1616471487642">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3067" y="631" key="Vcs.Push.Dialog.v2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615609889762" />
-    <state x="773" y="369" key="Vcs.Push.Dialog.v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614487728919" />
+    <state x="-3067" y="631" key="Vcs.Push.Dialog.v2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616471487642" />
+    <state x="773" y="369" key="Vcs.Push.Dialog.v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1616270269496" />
     <state width="1287" height="707" key="XDebugger.FullValuePopup" timestamp="1610394086522">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state width="1287" height="707" key="XDebugger.FullValuePopup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1610394086522" />
     <state width="1287" height="707" key="XDebugger.FullValuePopup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1608516542881" />
-    <state x="-2686" y="812" width="380" height="315" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1" timestamp="1613627425566">
+    <state x="-2686" y="812" width="380" height="315" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1" timestamp="1616454381231">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2686" y="812" width="380" height="315" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613627425566" />
+    <state x="-2686" y="812" width="380" height="315" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616454381231" />
     <state x="1154" y="550" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1612137660601" />
-    <state x="-3079" y="536" key="com.intellij.database.dbimport.ImportDialog" timestamp="1614973588102">
+    <state x="-3079" y="536" key="com.intellij.database.dbimport.ImportDialog" timestamp="1616454353938">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3079" y="536" key="com.intellij.database.dbimport.ImportDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1614973588102" />
+    <state x="-3079" y="536" key="com.intellij.database.dbimport.ImportDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616454353938" />
     <state x="-2891" y="723" key="com.intellij.database.dbimport.ImportUtil.MyDialog" timestamp="1613627462627">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2891" y="723" key="com.intellij.database.dbimport.ImportUtil.MyDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613627462627" />
-    <state x="-2861" y="660" key="com.intellij.database.run.ParametersPanel.Standalone" timestamp="1612126865794">
+    <state x="-2861" y="660" key="com.intellij.database.run.ParametersPanel.Standalone" timestamp="1616454004457">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2861" y="660" key="com.intellij.database.run.ParametersPanel.Standalone/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1612126865794" />
-    <state x="-2908" y="623" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog" timestamp="1613627491991">
+    <state x="-2861" y="660" key="com.intellij.database.run.ParametersPanel.Standalone/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616454004457" />
+    <state x="-2908" y="623" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog" timestamp="1616292219492">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2908" y="623" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613627491991" />
-    <state x="533" y="507" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1612137712025" />
-    <state x="-3260" y="598" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1" timestamp="1613621597100">
+    <state x="-2908" y="623" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616292219492" />
+    <state x="533" y="507" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1616270060959" />
+    <state x="-3260" y="598" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1" timestamp="1616453999149">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-3260" y="598" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613621597100" />
+    <state x="-3260" y="598" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616453999149" />
     <state x="580" y="336" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1611257204687" />
     <state x="-3741" y="369" width="2375" height="1215" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1613928579272">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3741" y="369" width="2375" height="1215" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1613928579272" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1615779336221">
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog" timestamp="1616513959771">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="336" y="617" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615662087963" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1615779336221" />
-    <state x="-2783" y="860" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1615175907036">
+    <state x="336" y="617" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616513959771" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1616269520431" />
+    <state x="-2783" y="860" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1616447484855">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2783" y="860" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615175907036" />
+    <state x="-2783" y="860" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616447484855" />
     <state x="1057" y="598" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1611197271567" />
     <state x="-3118" y="638" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1610226798877">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3118" y="638" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1610226798877" />
-    <state x="-111" y="-25" width="1610" height="1004" maximized="true" key="dock-window-1" timestamp="1615779429274">
+    <state x="404" y="-19" width="1503" height="898" maximized="true" key="dock-window-1" timestamp="1616514018044">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="-111" y="-25" width="1610" height="1004" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615769940812" />
-    <state x="186" y="-10" width="1610" height="1004" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1615779429274" />
+    <state x="404" y="-19" width="1503" height="898" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616514018044" />
+    <state x="561" y="299" width="1503" height="898" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1616472239557" />
     <state x="859" y="225" width="895" height="1407" key="dock-window-10" timestamp="1611784766552">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -1235,10 +1224,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="0" y="418" width="2074" height="780" key="dock-window-9/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1611773900630" />
-    <state x="-2787" y="586" width="1167" height="1011" key="find.popup" timestamp="1615521290578">
+    <state x="-2673" y="508" width="1167" height="1011" key="find.popup" timestamp="1616471070776">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2787" y="586" width="1167" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615521290578" />
+    <state x="-2673" y="508" width="1167" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616471070776" />
     <state x="-2798" y="564" width="778" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1613854052370" />
     <state x="835" y="361" width="875" height="663" key="recent.locations.popup" timestamp="1608237326059">
       <screen x="0" y="0" width="2560" height="1400" />
@@ -1249,10 +1238,10 @@
     </state>
     <state x="-2877" y="539" key="refactoring.ChangeSignatureDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615524195419" />
     <state x="963" y="277" key="refactoring.ChangeSignatureDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1609619214557" />
-    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup" timestamp="1615575167033">
+    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup" timestamp="1616438034595">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1615575167033" />
+    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1616438034595" />
     <state x="-2981" y="570" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1614812063005" />
   </component>
   <component name="XDebuggerManager">
@@ -1273,6 +1262,11 @@
           <line>27</line>
           <option name="timeStamp" value="115" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/analysis/spike.py</url>
+          <line>376</line>
+          <option name="timeStamp" value="117" />
+        </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
@@ -1291,10 +1285,11 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Deafening$duration_analysis.coverage" NAME="duration_analysis Coverage Results" MODIFIED="1593837675960" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$Unittests_for_test_MotifInfo_TestMotifInfo_test_len.coverage" NAME="Unittests for test_MotifInfo.TestMotifInfo.test_len Coverage Results" MODIFIED="1608186270751" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
-    <SUITE FILE_PATH="coverage/Deafening$spike.coverage" NAME="spike Coverage Results" MODIFIED="1610310314320" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/analysis" />
     <SUITE FILE_PATH="coverage/Deafening$correlogram.coverage" NAME="correlogram Coverage Results" MODIFIED="1613080589171" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$spike.coverage" NAME="spike Coverage Results" MODIFIED="1616291584563" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/analysis" />
     <SUITE FILE_PATH="coverage/Deafening$practice__1_.coverage" NAME="practice (1) Coverage Results" MODIFIED="1597374447778" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$raster__1_.coverage" NAME="raster (1) Coverage Results" MODIFIED="1608072923443" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$isi.coverage" NAME="isi Coverage Results" MODIFIED="1616472511856" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SongAnalysis$Python.coverage" NAME="SongAnalysis Coverage Results" MODIFIED="1580362320237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$snr_analysis.coverage" NAME="snr_analysis Coverage Results" MODIFIED="1602044599129" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$change_cbin_names.coverage" NAME="change_cbin_names Coverage Results" MODIFIED="1605503403122" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preprocessing" />
@@ -1326,7 +1321,7 @@
     <SUITE FILE_PATH="coverage/Deafening$syllable_duration_analysis_v2.coverage" NAME="syllable_duration_analysis_v2 Coverage Results" MODIFIED="1603258717928" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$correlogram_jitter.coverage" NAME="correlogram_jitter Coverage Results" MODIFIED="1613073666971" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$SAP_features.coverage" NAME="SAP_features Coverage Results" MODIFIED="1593832745438" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Deafening$psd_similarity.coverage" NAME="psd_similarity Coverage Results" MODIFIED="1615517290214" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$psd_similarity.coverage" NAME="psd_similarity Coverage Results" MODIFIED="1616173897509" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$intan_to_wav_converter.coverage" NAME="intan_to_wav_converter Coverage Results" MODIFIED="1595209092331" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$raster_unwarped.coverage" NAME="raster_unwarped Coverage Results" MODIFIED="1613687731537" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$firing_rates__1_.coverage" NAME="firing_rates (1) Coverage Results" MODIFIED="1612131998130" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

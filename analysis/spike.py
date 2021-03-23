@@ -372,15 +372,15 @@ class ClusterInfo:
         if not add_premotor_spk:
             # Include spikes from the pre-motif buffer for calculation
             # Pre-motor spikes are included in spk_list by default
-            motif_spk_list = []
+            spk_list = []
             for onset, offset, spks in list_zip:
                 onset = np.asarray(list(map(float, onset)))
                 offset = np.asarray(list(map(float, offset)))
-                motif_spk_list.append(spks[np.where((spks >= onset[0]) & (spks <= offset[-1]))])
+                spk_list.append(spks[np.where((spks >= onset[0]) & (spks <= offset[-1]))])
 
         for context1 in unique(self.contexts):
             if not add_premotor_spk:
-                spk_list = [spk_ts for spk_ts, context2 in zip(motif_spk_list, self.contexts) if context2 == context1]
+                spk_list = [spk_ts for spk_ts, context2 in zip(spk_list, self.contexts) if context2 == context1]
             else:
                 spk_list = [spk_ts for spk_ts, context2 in zip(self.spk_ts, self.contexts) if context2 == context1]
             isi_dict[context1] = get_isi(spk_list)
