@@ -1365,11 +1365,14 @@ class ISI:
 
         self.data = isi
         self.hist, self.time_bin = np.histogram(np.log10(isi), bins=isi_bin)
-        self.time_bin = 10**self.time_bin[:-1]
+        self.time_bin = self.time_bin[:-1]
         # Peak latency of the ISI distribution
+        self.time_bin = 10**self.time_bin
         self.peak_latency = self.time_bin[np.min(np.where(self.hist == np.min(self.hist.max())))]  # in ms
         # Proportion of within-refractory period spikes
-        self.within_ref_prop = (np.sum(isi < 1) / isi.shape[0]) * 100
+        self.within_ref_prop = (np.sum(self.data < 1) / self.data.shape[0]) * 100
+        # CV of ISI
+        self.cv = round(self.hist.std(axis=0) / self.hist.mean(axis=0), 3)
 
     def plot(self, ax,
              *title,

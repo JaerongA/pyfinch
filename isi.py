@@ -12,15 +12,18 @@ from util import save
 
 def print_out_text(ax, peak_latency,
                    ref_prop,
+                   cv
                    ):
     txt_xloc = 0
-    txt_yloc = 0.5
+    txt_yloc = 0.8
     txt_inc = 0.3
     ax.set_ylim([0, 1])
     txt_yloc -= txt_inc
     ax.text(txt_xloc, txt_yloc, f"ISI peak latency = {round(peak_latency, 3)} (ms)", fontsize=font_size)
     txt_yloc -= txt_inc
     ax.text(txt_xloc, txt_yloc, f"Within Ref Proportion= {round(ref_prop, 3)} %", fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f"CV of ISI = {cv}", fontsize=font_size)
     ax.axis('off')
 
 
@@ -28,7 +31,7 @@ def print_out_text(ax, peak_latency,
 nb_row = 6
 nb_col = 3
 update = False
-save_fig = True
+save_fig = False
 update_db = False  # save results to DB
 fig_ext = '.png'  # .png or .pdf
 font_size = 12
@@ -37,7 +40,7 @@ font_size = 12
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 6"
+query = "SELECT * FROM cluster WHERE id = 13"
 db.execute(query)
 
 # Loop through db
@@ -60,26 +63,26 @@ for row in db.cur.fetchall():
 
     # Plot the results
     fig = plt.figure(figsize=(11, 5))
-    fig.set_dpi(500)
+    fig.set_dpi(550)
     plt.suptitle(mi.name, y=.95)
 
     if 'B'in isi.keys():
         ax1 = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=3, colspan=1)
         isi['B'].plot(ax1, 'Log ISI (Baseline)')
         ax_txt1 = plt.subplot2grid((nb_row, nb_col), (4, 0), rowspan=2, colspan=1)
-        print_out_text(ax_txt1, isi['B'].peak_latency, isi['B'].within_ref_prop)
+        print_out_text(ax_txt1, isi['B'].peak_latency, isi['B'].within_ref_prop, isi['B'].cv)
 
     if 'U'in isi.keys():
         ax2 = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=3, colspan=1)
         isi['U'].plot(ax2, 'Log ISI (Undir)')
         ax_txt2 = plt.subplot2grid((nb_row, nb_col), (4, 1), rowspan=2, colspan=1)
-        print_out_text(ax_txt2, isi['U'].peak_latency, isi['U'].within_ref_prop)
+        print_out_text(ax_txt2, isi['U'].peak_latency, isi['U'].within_ref_prop, isi['U'].cv)
 
     if 'D'in isi.keys():
         ax3 = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=3, colspan=1)
         isi['D'].plot(ax3, 'Log ISI (Dir)')
         ax_txt3 = plt.subplot2grid((nb_row, nb_col), (4, 2), rowspan=2, colspan=1)
-        print_out_text(ax_txt3, isi['D'].peak_latency, isi['D'].within_ref_prop)
+        print_out_text(ax_txt3, isi['D'].peak_latency, isi['D'].within_ref_prop, isi['D'].cv)
 
     # Save results
     if save_fig:
