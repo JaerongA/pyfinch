@@ -1380,7 +1380,7 @@ class ISI:
         import math
 
         ax.bar(self.time_bin, self.hist, color='k')
-        ax.set_ylim([0, myround(math.ceil(ax.get_ylim()[1]), base=10)])
+        # ax.set_ylim([0, myround(math.ceil(ax.get_ylim()[1]), base=5)])
         ax.axvline(1, color='k', linestyle='dashed', linewidth=1)
         ax.axvline(self.peak_latency, color='r', linestyle='dashed', linewidth=0.3)
         ax.set_ylabel('Count')
