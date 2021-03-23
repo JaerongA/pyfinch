@@ -47,14 +47,14 @@ nb_col = 3
 normalize = False
 update = False
 save_fig = True
-update_db = False  # save results to DB
+update_db = True  # save results to DB
 fig_ext = '.png'  # .png or .pdf
 
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 2"
-# query = "SELECT * FROM cluster"
+# query = "SELECT * FROM cluster WHERE id = 6"
+query = "SELECT * FROM cluster"
 db.execute(query)
 
 # Loop through db
@@ -140,13 +140,17 @@ for row in db.cur.fetchall():
     if update_db:
         # Baseline
         db.create_col('cluster', 'burstDurationBaseline', 'REAL')
-        db.update('cluster', 'burstDurationBaseline', row['id'], burst_info_b.mean_duration)
+        if corr_b:
+            db.update('cluster', 'burstDurationBaseline', row['id'], burst_info_b.mean_duration)
         db.create_col('cluster', 'burstFreqBaseline', 'REAL')
-        db.update('cluster', 'burstFreqBaseline', row['id'], burst_info_b.freq)
+        if corr_b:
+            db.update('cluster', 'burstFreqBaseline', row['id'], burst_info_b.freq)
         db.create_col('cluster', 'burstMeanNbSpkBaseline', 'REAL')
-        db.update('cluster', 'burstMeanNbSpkBaseline', row['id'], burst_info_b.mean_nb_spk)
+        if corr_b:
+            db.update('cluster', 'burstMeanNbSpkBaseline', row['id'], burst_info_b.mean_nb_spk)
         db.create_col('cluster', 'burstFractionBaseline', 'REAL')
-        db.update('cluster', 'burstFractionBaseline', row['id'], burst_info_b.fraction)
+        if corr_b:
+            db.update('cluster', 'burstFractionBaseline', row['id'], burst_info_b.fraction)
         db.create_col('cluster', 'unitCategoryBaseline', 'STRING')
         if corr_b:
             db.update('cluster', 'unitCategoryBaseline', row['id'], str(corr_b.category))
@@ -155,13 +159,17 @@ for row in db.cur.fetchall():
             db.update('cluster', 'burstIndexBaseline', row['id'], corr_b.burst_index)
         # Undir
         db.create_col('cluster', 'burstDurationUndir', 'REAL')
-        db.update('cluster', 'burstDurationUndir', row['id'], burst_info_u.mean_duration)
+        if corr_u:
+            db.update('cluster', 'burstDurationUndir', row['id'], burst_info_u.mean_duration)
         db.create_col('cluster', 'burstFreqUndir', 'REAL')
-        db.update('cluster', 'burstFreqUndir', row['id'], burst_info_u.freq)
+        if corr_u:
+            db.update('cluster', 'burstFreqUndir', row['id'], burst_info_u.freq)
         db.create_col('cluster', 'burstMeanNbSpkUndir', 'REAL')
-        db.update('cluster', 'burstMeanNbSpkUndir', row['id'], burst_info_u.mean_nb_spk)
+        if corr_u:
+            db.update('cluster', 'burstMeanNbSpkUndir', row['id'], burst_info_u.mean_nb_spk)
         db.create_col('cluster', 'burstFractionUndir', 'REAL')
-        db.update('cluster', 'burstFractionUndir', row['id'], burst_info_u.fraction)
+        if corr_u:
+            db.update('cluster', 'burstFractionUndir', row['id'], burst_info_u.fraction)
         db.create_col('cluster', 'unitCategoryUndir', 'STRING')
         if corr_u:
             db.update('cluster', 'unitCategoryUndir', row['id'], str(corr_u.category))
@@ -170,13 +178,17 @@ for row in db.cur.fetchall():
             db.update('cluster', 'burstIndexUndir', row['id'], corr_u.burst_index)
         # Dir
         db.create_col('cluster', 'burstDurationDir', 'REAL')
-        db.update('cluster', 'burstDurationDir', row['id'], burst_info_d.mean_duration)
+        if corr_d:
+            db.update('cluster', 'burstDurationDir', row['id'], burst_info_d.mean_duration)
         db.create_col('cluster', 'burstFreqDir', 'REAL')
-        db.update('cluster', 'burstFreqDir', row['id'], burst_info_d.freq)
+        if corr_d:
+            db.update('cluster', 'burstFreqDir', row['id'], burst_info_d.freq)
         db.create_col('cluster', 'burstMeanNbSpkDir', 'REAL')
-        db.update('cluster', 'burstMeanNbSpkDir', row['id'], burst_info_d.mean_nb_spk)
+        if corr_d:
+            db.update('cluster', 'burstMeanNbSpkDir', row['id'], burst_info_d.mean_nb_spk)
         db.create_col('cluster', 'burstFractionDir', 'REAL')
-        db.update('cluster', 'burstFractionDir', row['id'], burst_info_d.fraction)
+        if corr_d:
+            db.update('cluster', 'burstFractionDir', row['id'], burst_info_d.fraction)
         db.create_col('cluster', 'unitCategoryDir', 'STRING')
         if corr_d:
             db.update('cluster', 'unitCategoryDir', row['id'], str(corr_d.category))
