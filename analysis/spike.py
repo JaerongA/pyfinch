@@ -380,10 +380,10 @@ class ClusterInfo:
 
         for context1 in unique(self.contexts):
             if not add_premotor_spk:
-                spk_list = [spk_ts for spk_ts, context2 in zip(spk_list, self.contexts) if context2 == context1]
+                spk_list_context = [spk_ts for spk_ts, context2 in zip(spk_list, self.contexts) if context2 == context1]
             else:
-                spk_list = [spk_ts for spk_ts, context2 in zip(self.spk_ts, self.contexts) if context2 == context1]
-            isi_dict[context1] = get_isi(spk_list)
+                spk_list_context = [spk_ts for spk_ts, context2 in zip(self.spk_ts, self.contexts) if context2 == context1]
+            isi_dict[context1] = get_isi(spk_list_context)
 
         return isi_dict
 
@@ -1379,7 +1379,7 @@ class ISI:
         from util.draw import remove_right_top
         import math
 
-        ax.bar((self.time_bin), self.hist, color='k')
+        ax.bar(self.time_bin, self.hist, color='k')
         ax.set_ylim([0, myround(math.ceil(ax.get_ylim()[1]), base=10)])
         ax.axvline(1, color='k', linestyle='dashed', linewidth=1)
         ax.axvline(self.peak_latency, color='r', linestyle='dashed', linewidth=0.3)

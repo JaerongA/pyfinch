@@ -37,7 +37,7 @@ font_size = 12
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 96"
+query = "SELECT * FROM cluster WHERE id = 6"
 db.execute(query)
 
 # Loop through db
@@ -83,7 +83,7 @@ for row in db.cur.fetchall():
 
     # Save results
     if save_fig:
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'UnitProfiling')
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'ISI')
         save.save_fig(fig, save_path, mi.name, fig_ext=fig_ext)
     else:
         plt.show()
