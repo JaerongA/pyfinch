@@ -20,12 +20,24 @@
 -- FROM cluster;
 
 
-CREATE TABLE song2 AS
-    SELECT DISTINCT birdID, taskName, taskSession, taskSessionDeafening,
-                taskSessionPostDeafening, dph, block10days, sessionDate,
-                songNote, motif, introNotes, calls, callSeqeunce
-    FROM cluster;
+-- CREATE TABLE song2 AS
+--     SELECT DISTINCT birdID, taskName, taskSession, taskSessionDeafening,
+--                 taskSessionPostDeafening, dph, block10days, sessionDate,
+--                 songNote, motif, introNotes, calls, callSeqeunce
+--     FROM cluster;
 
+CREATE TABLE unit_profile(
+            cluster_id     INTEGER,
+            birdID         STRING  not null,
+            taskName       STRING  not null,
+            taskSession    INTEGER not null,
+            site           STRING  not null,
+            channel        STRING  not null,
+            unit           STRING,
+            region         STRING,
+            isiPeakLatency REAL,
+            withinRefProp  REAL,
+            FOREIGN KEY(cluster_id) REFERENCES cluster(id))
 
 
 
