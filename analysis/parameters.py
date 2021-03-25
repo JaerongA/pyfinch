@@ -73,6 +73,8 @@ spk_proportion = 0.2  # proportion of waveforms to plot
 # Bout raster plot
 bout_buffer = 100
 
+# Pre-motor window spike calculation
+pre_motor_win = 50  # in ms
 
 
 
