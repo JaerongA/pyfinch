@@ -12,6 +12,7 @@ from database.load import DBInfo, ProjectLoader
 from util import save
 from util.draw import *
 from util.spect import *
+import pandas as pd
 
 # parameters
 rec_yloc = 0.05
@@ -28,12 +29,16 @@ save_fig = True
 update_db = False  # save results to DB
 time_warp = True  # spike time warping
 
-# Load database
+# Create a new database (syllable)
 db = ProjectLoader().load_db()
-# SQL statement
-# query = "SELECT * FROM cluster WHERE id = 46"
+with open('database/create_syllable.sql.sql', 'r') as sql_file:
+    db.conn.executescript(sql_file.read())
+# Load database
 query = "SELECT * FROM cluster WHERE id = 96"
 db.execute(query)
+
+# Store results in the dataframe
+df = pd.DataFrame()
 
 # Loop through db
 for row in db.cur.fetchall():
@@ -48,32 +53,10 @@ for row in db.cur.fetchall():
 
     # Load class object
     ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
-    mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
-
-    # # Plot spectrogram & peri-event histogram (Just the first rendition)
-    # # for onset, offset in zip(mi.onsets, mi.offsets):
-    # onsets = mi.onsets[0]
-    # offsets = mi.offsets[0]
-    #
-    # # Convert from string to array of floats
-    # onsets = np.asarray(list(map(float, onsets)))
-    # offsets = np.asarray(list(map(float, offsets)))
 
     # Get number of spikes from pre-motor window per note
-    # nb_pre_motor_spk = np.array([], dtype=np.int)
-    # all_notes = ''
-    #
-    # for onsets, notes, spks in zip(mi.onsets, mi.syllables, mi.spk_ts):  # loop through renditions
-    #     onsets = np.asarray(list(map(float, onsets)))
-    #     spks = np.asarray(list(map(float, spks)))
-    #     for onset, note in zip(onsets, notes):  # loop through notes
-    #         pre_motor_win = [onset - 50, onset]
-    #         nb_spk = len(spks[np.where((spks >= pre_motor_win[0]) & (spks <= pre_motor_win[-1]))])
-    #         nb_pre_motor_spk = np.append(nb_pre_motor_spk, nb_spk)
-    #         all_notes += note
-
-
     nb_pre_motor_spk = np.array([], dtype=np.int)
+    note_onset_ts =  np.array([], dtype=np.float32)
     all_notes = ''
 
     for onsets, notes, spks in zip(ci.onsets, ci.syllables, ci.spk_ts):  # loop through renditions
@@ -81,13 +64,46 @@ for row in db.cur.fetchall():
         onsets = np.asarray(list(map(float, onsets)))
         notes = notes.replace('*','')
         for onset, note in zip(onsets, notes):  # loop through notes
-            pre_motor_win = [onset - 50, onset]
-            nb_spk = len(spks[np.where((spks >= pre_motor_win[0]) & (spks <= pre_motor_win[-1]))])
-            nb_pre_motor_spk = np.append(nb_pre_motor_spk, nb_spk)
-            all_notes += note
+            if note in motif:
+                pre_motor_win = [onset - 50, onset]
+                nb_spk = len(spks[np.where((spks >= pre_motor_win[0]) & (spks <= pre_motor_win[-1]))])
+                nb_pre_motor_spk = np.append(nb_pre_motor_spk, nb_spk)
+                all_notes += note
+
+    # Store info in a dictionary
+    pre_motor_spk_dict = {}
+    pre_motor_spk_dict['pre_motor_win'] = 50  # in ms
+
+    for note in unique(all_notes):
+
+        ind = find_str(all_notes, note)
+        pre_motor_spk_dict[note] = nb_pre_motor_spk[ind]
 
 
 
+        # # All notes
+        # temp_df = []
+        # temp_df = pd.DataFrame({'BirdID': row['birdID'],
+        #                         'Condition': condition,
+        #                         'Note': note,
+        #                         'Entropy': [note_similarity_entropy]
+        #                         })
+
+
+
+
+
+
+
+
+    # # Save results to database
+    # if update_db:
+    #
+    #     # Add information from cluster db
+    #     db.cur.execute('''INSERT OR IGNORE INTO syllable (clusterID) VALUES (?)''', (row["id"],))
+    #     db.cur.execute('''UPDATE syllable SET (birdID, taskName, taskSession, note) = \
+    #         (SELECT birdID, taskName, taskSession, site, channel, unit, region  FROM cluster WHERE cluster.id = unit_profile.clusterID)''')
+    #     db.conn.commit()
 
 #
 #     # Motif start and end
