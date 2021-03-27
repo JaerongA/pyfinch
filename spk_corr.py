@@ -14,6 +14,68 @@ from util.draw import *
 from util.spect import *
 import pandas as pd
 
+
+def get_pre_motor_spk_per_note(ClusterInfo):
+    """
+    Get the number of spikes in the pre-motor window for individual note
+
+    Parameters
+    ----------
+    ClusterInfo : class
+
+    Returns
+    -------
+    pre_motor_spk_dict : dict
+    """
+    # Get number of spikes from pre-motor window per note
+
+    from database.load import ProjectLoader
+    import numpy as np
+
+    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + 'SpkCount',
+                              add_date=False)
+    npy_name = ClusterInfo.name + '.npy'
+    npy_name = save_path / npy_name
+
+    if npy_name.exists():
+        pre_motor_spk_dict = np.load(npy_name,
+                                     allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
+    else:
+        nb_pre_motor_spk = np.array([], dtype=np.int)
+        note_onset_ts = np.array([], dtype=np.float32)
+        all_notes = ''
+
+        for onsets, notes, spks in zip(ClusterInfo.onsets, ClusterInfo.syllables,
+                                       ClusterInfo.spk_ts):  # loop through renditions
+            onsets = np.delete(onsets, np.where(onsets == '*'))
+            onsets = np.asarray(list(map(float, onsets)))
+            notes = notes.replace('*', '')
+            for onset, note in zip(onsets, notes):  # loop through notes
+                if note in motif:
+                    pre_motor_win = [onset - 50, onset]
+                    nb_spk = len(spks[np.where((spks >= pre_motor_win[0]) & (spks <= pre_motor_win[-1]))])
+                    nb_pre_motor_spk = np.append(nb_pre_motor_spk, nb_spk)
+                    note_onset_ts = np.append(note_onset_ts, onset)
+                    all_notes += note
+
+        # Store info in a dictionary
+        pre_motor_spk_dict = {}
+        pre_motor_spk_dict['pre_motor_win'] = 50  # pre-motor window before syllable onset in ms
+
+        for note in unique(all_notes):
+            ind = find_str(all_notes, note)
+            pre_motor_spk_dict[note] = {}  # nested dictionary
+            pre_motor_spk_dict[note]['nb_spk'] = nb_pre_motor_spk[ind]
+            pre_motor_spk_dict[note]['onset_ts'] = note_onset_ts[ind]
+
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + 'SpkCount',
+                                  add_date=False)
+        npy_name = ClusterInfo.name + '.npy'
+        npy_name = save_path / npy_name
+        np.save(npy_name, pre_motor_spk_dict)
+    return pre_motor_spk_dict
+
+
 # parameters
 rec_yloc = 0.05
 rec_height = 1  # syllable duration rect
@@ -51,87 +113,7 @@ for row in db.cur.fetchall():
     # Load class object
     ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
 
-    # Get number of spikes from pre-motor window per note
-    nb_pre_motor_spk = np.array([], dtype=np.int)
-    note_onset_ts =  np.array([], dtype=np.float32)
-    all_notes = ''
-
-    for onsets, notes, spks in zip(ci.onsets, ci.syllables, ci.spk_ts):  # loop through renditions
-        onsets = np.delete(onsets, np.where(onsets == '*'))
-        onsets = np.asarray(list(map(float, onsets)))
-        notes = notes.replace('*','')
-        for onset, note in zip(onsets, notes):  # loop through notes
-            if note in motif:
-                pre_motor_win = [onset - 50, onset]
-                nb_spk = len(spks[np.where((spks >= pre_motor_win[0]) & (spks <= pre_motor_win[-1]))])
-                nb_pre_motor_spk = np.append(nb_pre_motor_spk, nb_spk)
-                note_onset_ts = np.append(note_onset_ts, onset)
-                all_notes += note
-
-    # Store info in a dictionary
-    pre_motor_spk_dict = {}
-    pre_motor_spk_dict['pre_motor_win'] = 50  # pre-motor window before syllable onset in ms
-
-    for note in unique(all_notes):
-
-        ind = find_str(all_notes, note)
-        pre_motor_spk_dict[note] = {}  # nested dictionary
-        pre_motor_spk_dict[note]['nb_spk'] = nb_pre_motor_spk[ind]
-        pre_motor_spk_dict[note]['onset_ts'] = note_onset_ts[ind]
-
-    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + 'SpkCount',
-                              add_date=False)
-    npy_name = ci.name + '.npy'
-    npy_name = save_path / npy_name
-    np.save(npy_name, pre_motor_spk_dict)
-
-
-    def get_pre_motor_spk_per_note(ClusterInfo):
-        """
-        Get the number of spikes in the pre-motor window for individual note
-
-        Parameters
-        ----------
-        ClusterInfo : class
-
-        Returns
-        -------
-        pre_motor_spk_dict : dict
-        """
-        # Get number of spikes from pre-motor window per note
-        nb_pre_motor_spk = np.array([], dtype=np.int)
-        note_onset_ts = np.array([], dtype=np.float32)
-        all_notes = ''
-
-        for onsets, notes, spks in zip(ci.onsets, ci.syllables, ci.spk_ts):  # loop through renditions
-            onsets = np.delete(onsets, np.where(onsets == '*'))
-            onsets = np.asarray(list(map(float, onsets)))
-            notes = notes.replace('*', '')
-            for onset, note in zip(onsets, notes):  # loop through notes
-                if note in motif:
-                    pre_motor_win = [onset - 50, onset]
-                    nb_spk = len(spks[np.where((spks >= pre_motor_win[0]) & (spks <= pre_motor_win[-1]))])
-                    nb_pre_motor_spk = np.append(nb_pre_motor_spk, nb_spk)
-                    note_onset_ts = np.append(note_onset_ts, onset)
-                    all_notes += note
-
-        # Store info in a dictionary
-        pre_motor_spk_dict = {}
-        pre_motor_spk_dict['pre_motor_win'] = 50  # pre-motor window before syllable onset in ms
-
-        for note in unique(all_notes):
-            ind = find_str(all_notes, note)
-            pre_motor_spk_dict[note] = {}  # nested dictionary
-            pre_motor_spk_dict[note]['nb_spk'] = nb_pre_motor_spk[ind]
-            pre_motor_spk_dict[note]['onset_ts'] = note_onset_ts[ind]
-
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + 'SpkCount',
-                                  add_date=False)
-        npy_name = ci.name + '.npy'
-        npy_name = save_path / npy_name
-        np.save(npy_name, pre_motor_spk_dict)
-
-        return pre_motor_spk_dict
-
+    # Load number of spikes
+    pre_motor_spk_dict = get_pre_motor_spk_per_note(ci)
 
 print('Done!')
