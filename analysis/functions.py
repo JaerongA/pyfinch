@@ -229,6 +229,7 @@ def get_psd_mat(data_path, save_path,
                 save_psd=False, update=False, open_folder=False, add_date=False,
                 nfft=2 ** 10, fig_ext='.png'):
 
+    from analysis.parameters import freq_range
     import numpy as np
     from scipy.io import wavfile
     import matplotlib.colors as colors
