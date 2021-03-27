@@ -15,7 +15,7 @@ from util.spect import *
 import pandas as pd
 
 
-def get_pre_motor_spk_per_note(ClusterInfo):
+def get_pre_motor_spk_per_note(ClusterInfo, npy_update=False):
     """
     Get the number of spikes in the pre-motor window for individual note
 
@@ -37,7 +37,7 @@ def get_pre_motor_spk_per_note(ClusterInfo):
     npy_name = ClusterInfo.name + '.npy'
     npy_name = save_path / npy_name
 
-    if npy_name.exists():
+    if npy_name.exists() and not npy_update:
         pre_motor_spk_dict = np.load(npy_name,
                                      allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
     else:
@@ -90,9 +90,14 @@ update = False  # Set True for recreating a cache file
 save_fig = True
 update_db = False  # save results to DB
 time_warp = True  # spike time warping
+npy_update = True
+
+# Create a new database (syllable)
+db = ProjectLoader().load_db()
+with open('database/create_motif_syllable.sql', 'r') as sql_file:
+    db.conn.executescript(sql_file.read())
 
 # Load database
-db = ProjectLoader().load_db()
 query = "SELECT * FROM cluster WHERE id = 96"
 db.execute(query)
 
@@ -114,6 +119,8 @@ for row in db.cur.fetchall():
     ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
 
     # Load number of spikes
-    pre_motor_spk_dict = get_pre_motor_spk_per_note(ci)
+    pre_motor_spk_dict = get_pre_motor_spk_per_note(ci, npy_update=npy_update)
 
+    db.cur.execute('''INSERT OR IGNORE INTO motif_syllable (clusterID) VALUES (?)''', (row["id"],))
+    db.conn.commit()
 print('Done!')
