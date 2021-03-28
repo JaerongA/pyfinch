@@ -31,6 +31,7 @@ fig_ext = '.png'
 num_note_crit = 30
 psd_update = True
 
+
 def get_bird_list(db):
     # Select the birds to use that have both pre and post deafening songs
     df = db.to_dataframe("SELECT DISTINCT birdID, taskName FROM cluster")  # convert to dataframe by using pandas lib
@@ -50,16 +51,12 @@ def get_psd_bird(db, *bird_to_use, psd_update=False):
     # Cluster PSD.npy will be concatenated per bird in a separate folder
     if bird_to_use:
         # query = "select * from cluster where birdID in {}".format(tuple(bird_to_use[0]))
-        query = "select * from cluster where birdID in {}".format(tuple(bird_to_use[0]))
-        # query = "SELECT * FROM cluster WHERE birdID IN ?", tuple(bird_to_use[0])
-        db.execute(query)
+        # query = "select * from cluster where birdID in {}".format(tuple(bird_to_use[0]))
+        query = "SELECT * FROM cluster WHERE birdID IN (?)"
+        db.cur.execute(query, tuple(bird_to_use[0]))
     else:
         query = "SELECT * FROM cluster"
-    db.execute(query)
-
-    query = '''SELECT * FROM cluster WHERE birdID IN ('b70r38')'''
-    db.execute(query)
-
+        db.cur.execute(query)
 
 
     # Loop through db
@@ -105,7 +102,7 @@ def get_psd_bird(db, *bird_to_use, psd_update=False):
                     'psd_list': psd_list,
                     'file_list': file_list,
                     'psd_notes': psd_notes,
-                    'cluster_name': [ci.name]
+                    'cluster_name': [ci.name] * len(psd_notes)
                 }
                 data_all['psd_list'].extend(data['psd_list'])
                 data_all['file_list'].extend(data['file_list'])
@@ -124,7 +121,7 @@ def get_psd_bird(db, *bird_to_use, psd_update=False):
                 'psd_list': psd_list,
                 'file_list': file_list,
                 'psd_notes': psd_notes,
-                'cluster_name': [ci.name]
+                'cluster_name': [ci.name]*len(psd_notes)
             }
             np.save(npy_name, data)
 
@@ -162,7 +159,7 @@ def psd_split(psd_list_pre_all, notes_pre_all):
     return psd_list_1st, psd_list_2nd, notes_pre_1st, notes_pre_2nd
 
 
-def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_basis, *file_list,
+def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_basis, file_list, cluster_list,
                            save_results=True,
                            ):
     """
@@ -177,8 +174,10 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
         target notes (pre or post-deafening)
     notes_basis : str
         basis notes
-    file_list : list (optional)
+    file_list : list
         list of files that contain psd
+    cluster_list : list
+        list of cluster names
     save_results : bool
         save heatmap & csv
 
