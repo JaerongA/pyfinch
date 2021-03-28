@@ -2,11 +2,11 @@
 # extract audio, neural data (by using class)
 
 from analysis.spike import *
+from analysis.parameters import bout_buffer, freq_range, bout_color
 from util import save
 from util.draw import *
 import matplotlib.colors as colors
-import matplotlib.gridspec as gridspec
-from database.load import DBInfo
+from database.load import ProjectLoader, DBInfo
 from scipy import stats
 import warnings
 warnings.filterwarnings('ignore')

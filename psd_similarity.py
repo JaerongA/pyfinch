@@ -24,12 +24,12 @@ import gc
 
 # Parameters
 save_fig = True
-save_psd = True
+save_psd = False
 update = False
 save_results = False  # heatmap & csv
 fig_ext = '.png'
 num_note_crit = 30
-psd_update = True
+psd_update = False
 
 
 def get_bird_list(db):
@@ -95,15 +95,16 @@ def get_psd_bird(db, *bird_to_use, psd_update=False):
                 # This will create PSD.npy in each cluster folder
                 # Note spectrograms & .npy per bird will be stored in PSD_similarity folder
                 psd_list, file_list, psd_notes = \
-                    get_psd_mat(path, save_path, save_psd=save_psd, update=True, fig_ext=fig_ext)
+                    get_psd_mat(path, save_path, save_psd=save_psd, update=False, fig_ext=fig_ext)
 
                 # Organize data into a dictionary
                 data = {
                     'psd_list': psd_list,
                     'file_list': file_list,
-                    'psd_notes': psd_notes,
-                    'cluster_name': [ci.name] * len(psd_notes)
+                    'psd_notes': psd_notes[0],
+                    'cluster_name': [ci.name] * len(psd_notes[0])
                 }
+                # Concatenate the data
                 data_all['psd_list'].extend(data['psd_list'])
                 data_all['file_list'].extend(data['file_list'])
                 data_all['psd_notes'] += data['psd_notes']
@@ -205,6 +206,7 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
     # Get similarity matrix per test note
     # Store results in the dataframe
     df = pd.DataFrame()
+    similarity_info = {}
 
     for note in notes_list_target:  # loop through notes
 
@@ -235,9 +237,12 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
             condition = 'Deafening'
 
         # This is to mark the date
-        if file_list:
-            file_array = np.asarray(file_list[0])
+        if condition == 'Deafening':
+            file_array = np.asarray(file_list)
             note_file = file_array[ind]
+            cluster_array = np.asarray(cluster_list)
+            note_cluster = cluster_array[ind]
+
             date_list = []
             for file in note_file:
                 date_list.append(file.split('_')[1])
@@ -309,7 +314,14 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
         else:
             plt.close(fig)
 
-    return note_similarity
+        # Return similarity info only in deafening condition
+        if condition == 'Deafening':
+            similarity_info[note] = {}
+            similarity_info[note]['similarity'] = note_similarity
+            similarity_info[note]['note_file'] = note_file
+            similarity_info[note]['note_cluster'] = note_cluster
+
+    return similarity_info
 
 
 # Load database
@@ -318,7 +330,7 @@ bird_list, task_list, bird_to_use = get_bird_list(db)  # get bird list to analyz
 bird_to_use = ['b70r38']
 
 # Make PSD.npy file for each cluster
-get_psd_bird(db, bird_to_use, psd_update=True)
+get_psd_bird(db, bird_to_use, psd_update=psd_update)
 
 # Calculate PSD similarity
 for bird_id in bird_to_use:
@@ -347,9 +359,29 @@ for bird_id in bird_to_use:
         elif task_name == 'Postdeafening':
             # file list info is needed for this condition to track chronological changes
             psd_list_post, notes_post, file_list_post, cluster_name_post = data['psd_list'], data['psd_notes'], data['file_list'], data['cluster_name']
+            del data
             # Get similarity heatmap between basis and post-deafening
-            get_similarity_heatmap(psd_list_post, psd_list_basis, notes_post, notes_basis, file_list_post, cluster_name_post,
+            similarity_info = get_similarity_heatmap(psd_list_post, psd_list_basis, notes_post, notes_basis, file_list_post, cluster_name_post,
                                    save_results=save_results)
+
+
+##TODO: Get correlation between the number of spikes
+
+data_path = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / 'SpkCount'  # the folder where spike info is stored
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
