@@ -4,7 +4,8 @@ Get PSD similarity to measure changes in song after deafening
 """
 
 from analysis.spike import ClusterInfo
-from pathlib import Path
+from analysis.functions import get_pre_motor_spk_per_note
+
 
 import matplotlib.gridspec as gridspec
 import pandas as pd
@@ -13,7 +14,7 @@ import random
 import scipy
 from scipy import spatial
 from scipy.io import wavfile
-from scipy.stats import sem
+from scipy.stats import sem, pearsonr
 import seaborn as sns
 from database.load import *
 from analysis.functions import *
@@ -25,12 +26,16 @@ import gc
 
 # Parameters
 save_fig = True
-save_psd = True
+save_psd = False
 update = False
-save_results = True  # heatmap & csv
+save_results = False  # heatmap & csv
 fig_ext = '.png'
 num_note_crit = 30
-
+psd_update = False
+nb_row = 6
+nb_col = 6
+font_size = 12
+alpha = 0.05
 
 def get_bird_list(db):
     # Select the birds to use that have both pre and post deafening songs
@@ -46,86 +51,85 @@ def get_bird_list(db):
     return bird_list, task_list, bird_to_use
 
 
-def get_psd_bird(db, *bird_list):
+def get_psd_bird(db, *bird_to_use, psd_update=False):
     # Make PSD.npy file for each cluster
     # Cluster PSD.npy will be concatenated per bird in a separate folder
-    if bird_list:
-        for birdID in bird_list:
-            query = "SELECT * FROM cluster WHERE birdID == birdID"
-        else:
-            query = "SELECT * FROM cluster"
-        db.execute(query)
+    if bird_to_use:
+        # query = "select * from cluster where birdID in {}".format(tuple(bird_to_use[0]))
+        # query = "select * from cluster where birdID in {}".format(tuple(bird_to_use[0]))
+        query = "SELECT * FROM cluster WHERE birdID IN (?)"
+        db.cur.execute(query, tuple(bird_to_use[0]))
+    else:
+        query = "SELECT * FROM cluster"
+        db.cur.execute(query)
 
-        # Loop through db
-        for row in db.cur.fetchall():
 
-            # Load cluster info from db
-            cluster_db = DBInfo(row)
+    # Loop through db
+    for row in db.cur.fetchall():
 
-            if not cluster_db.birdID in bird_to_use:  # skip if the bird doesn't have both pre and post deafening songs
-                continue
+        # Load cluster info from db
+        cluster_db = DBInfo(row)
+        name, path = cluster_db.load_cluster_db()  # data path
 
-            name, path = cluster_db.load_cluster_db()  # data path
+        try:
+            channel_nb = int(cluster_db.channel[-2:])
+        except:
+            channel_nb = ''
+        try:
+            unit_nb = int(cluster_db.unit[-2:])
+        except:
+            unit_nb = ''
+        format = cluster_db.format
 
-            try:
-                channel_nb = int(cluster_db.channel[-2:])
-            except:
-                channel_nb = ''
-            try:
-                unit_nb = int(cluster_db.unit[-2:])
-            except:
-                unit_nb = ''
-            format = cluster_db.format
+        ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster class object
 
-            ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster class object
+        # Check if PSD file already exists
+        save_path = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / ci.name  # path to save psd output
 
-            # Check if PSD file already exists
-            save_path = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / ci.name  # path to save psd output
+        bird_id = cluster_db.birdID
+        task_name = cluster_db.taskName
+        npy_name = bird_id + '_' + task_name + '.npy'
+        npy_name = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / npy_name
 
-            bird_id = cluster_db.birdID
-            task_name = cluster_db.taskName
-            npy_name = bird_id + '_' + task_name + '.npy'
-            npy_name = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / npy_name
+        if npy_name.exists() and not psd_update:
+            data_all = np.load(npy_name,
+                               allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
 
-            if npy_name.exists():
-                data_all = np.load(npy_name,
-                                   allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
-
-                if ci.name not in data_all['cluster_name']:  # append to the existing file
-                    # Get psd
-                    # This will create PSD.npy in each cluster folder
-                    # Note spectrograms & .npy per bird will be stored in PSD_similarity folder
-                    psd_list, file_list, psd_notes = \
-                        get_psd_mat(path, save_path, save_psd=save_psd, update=True, fig_ext=fig_ext)
-
-                    # Organize data into a dictionary
-                    data = {
-                        'psd_list': psd_list,
-                        'file_list': file_list,
-                        'psd_notes': psd_notes,
-                        'cluster_name': [ci.name]
-                    }
-
-                    data_all['psd_list'].extend(data['psd_list'])
-                    data_all['file_list'].extend(data['file_list'])
-                    data_all['psd_notes'] += data['psd_notes']
-                    data_all['cluster_name'].extend(data['cluster_name'])
-                    np.save(npy_name, data_all)
-            else:
+            if ci.name not in data_all['cluster_name']:  # append to the existing file
                 # Get psd
                 # This will create PSD.npy in each cluster folder
                 # Note spectrograms & .npy per bird will be stored in PSD_similarity folder
                 psd_list, file_list, psd_notes = \
-                    get_psd_mat(path, save_path, save_psd=save_psd, update=True, fig_ext=fig_ext)
+                    get_psd_mat(path, save_path, save_psd=save_psd, update=False, fig_ext=fig_ext)
 
                 # Organize data into a dictionary
                 data = {
                     'psd_list': psd_list,
                     'file_list': file_list,
-                    'psd_notes': psd_notes,
-                    'cluster_name': [ci.name]
+                    'psd_notes': psd_notes[0],
+                    'cluster_name': [ci.name] * len(psd_notes[0])
                 }
-                np.save(npy_name, data)
+                # Concatenate the data
+                data_all['psd_list'].extend(data['psd_list'])
+                data_all['file_list'].extend(data['file_list'])
+                data_all['psd_notes'] += data['psd_notes']
+                data_all['cluster_name'].extend(data['cluster_name'])
+                np.save(npy_name, data_all)
+        else:
+            # Get psd
+            # This will create PSD.npy in each cluster folder
+            # Note spectrograms & .npy per bird will be stored in PSD_similarity folder
+            psd_list, file_list, psd_notes = \
+                get_psd_mat(path, save_path, save_psd=save_psd, update=True, fig_ext=fig_ext)
+
+            # Organize data into a dictionary
+            data = {
+                'psd_list': psd_list,
+                'file_list': file_list,
+                'psd_notes': psd_notes,
+                'cluster_name': [ci.name]*len(psd_notes)
+            }
+            np.save(npy_name, data)
 
 
 def psd_split(psd_list_pre_all, notes_pre_all):
@@ -161,7 +165,7 @@ def psd_split(psd_list_pre_all, notes_pre_all):
     return psd_list_1st, psd_list_2nd, notes_pre_1st, notes_pre_2nd
 
 
-def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_basis, *file_list,
+def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_basis, file_list, cluster_list,
                            save_results=True,
                            ):
     """
@@ -176,8 +180,10 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
         target notes (pre or post-deafening)
     notes_basis : str
         basis notes
-    file_list : list (optional)
+    file_list : list
         list of files that contain psd
+    cluster_list : list
+        list of cluster names
     save_results : bool
         save heatmap & csv
 
@@ -205,6 +211,7 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
     # Get similarity matrix per test note
     # Store results in the dataframe
     df = pd.DataFrame()
+    similarity_info = {}
 
     for note in notes_list_target:  # loop through notes
 
@@ -235,9 +242,12 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
             condition = 'Deafening'
 
         # This is to mark the date
-        if file_list:
-            file_array = np.asarray(file_list[0])
+        if condition == 'Deafening':
+            file_array = np.asarray(file_list)
             note_file = file_array[ind]
+            cluster_array = np.asarray(cluster_list)
+            note_cluster = cluster_array[ind]
+
             date_list = []
             for file in note_file:
                 date_list.append(file.split('_')[1])
@@ -263,7 +273,6 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
         ax = sns.heatmap(note_similarity,
                          vmin=0, vmax=1,
                          cmap='binary')
-
 
         # Mark change in date
         if 'date_change_ind' in locals():
@@ -310,13 +319,41 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
         else:
             plt.close(fig)
 
+        # Return similarity info only in deafening condition
+        if condition == 'Deafening':
+            similarity_info[note] = {}
+            similarity_info[note]['similarity'] = note_similarity
+            similarity_info[note]['note_file'] = note_file
+            similarity_info[note]['note_cluster'] = note_cluster
+
+    return similarity_info
+
+def print_out_text(ax, peak_latency,
+                   ref_prop,
+                   cv
+                   ):
+    txt_xloc = 0
+    txt_yloc = 0.8
+    txt_inc = 0.3
+    ax.set_ylim([0, 1])
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f"ISI peak latency = {round(peak_latency, 3)} (ms)", fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f"Within Ref Proportion= {round(ref_prop, 3)} %", fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f"CV of ISI = {cv}", fontsize=font_size)
+    ax.axis('off')
+
 
 # Load database
 db = ProjectLoader().load_db()
 bird_list, task_list, bird_to_use = get_bird_list(db)  # get bird list to analyze from db
+bird_to_use = ['b70r38']
+
+# Make PSD.npy file for each cluster
+get_psd_bird(db, bird_to_use, psd_update=psd_update)
 
 # Calculate PSD similarity
-bird_to_use = ['b70r38']
 for bird_id in bird_to_use:
 
     for task_name in task_list:
@@ -327,25 +364,114 @@ for bird_id in bird_to_use:
 
         #  Load data
         if task_name == 'Predeafening':
-            psd_list_pre_all, notes_pre_all = data['psd_list'], data['psd_notes']
+            psd_list_pre_all, notes_pre, file_list_pre, cluster_name_pre = data['psd_list'], data['psd_notes'], data['file_list'], data['cluster_name']
 
             # Split pre-deafening PSDSs into halves
             # 1st half will be used as basis and the 2nd half as control
-            psd_list_basis, psd_list_pre, notes_basis, notes_pre = psd_split(psd_list_pre_all, notes_pre_all)
-            del psd_list_pre_all, notes_pre_all
+            psd_list_basis, psd_list_pre, notes_basis, notes_pre = psd_split(psd_list_pre_all, notes_pre)
+            del psd_list_pre_all
 
             # Get basis psd and list of basis syllables
             psd_list_basis, note_list_basis = get_basis_psd(psd_list_basis, notes_basis)
             # Get similarity heatmap between basis and pre-deafening control
-            get_similarity_heatmap(psd_list_pre, psd_list_basis, notes_pre, notes_basis,
+            get_similarity_heatmap(psd_list_pre, psd_list_basis, notes_pre, notes_basis, file_list_pre, cluster_name_pre,
                                    save_results=save_results)
 
         elif task_name == 'Postdeafening':
             # file list info is needed for this condition to track chronological changes
-            psd_list_post, notes_post, file_list_post = data['psd_list'], data['psd_notes'], data['file_list']
+            psd_list_post, notes_post, file_list_post, cluster_name_post = data['psd_list'], data['psd_notes'], data['file_list'], data['cluster_name']
+            del data
             # Get similarity heatmap between basis and post-deafening
-            get_similarity_heatmap(psd_list_post, psd_list_basis, notes_post, notes_basis, file_list_post,
+            similarity_info = get_similarity_heatmap(psd_list_post, psd_list_basis, notes_post, notes_basis, file_list_post, cluster_name_post,
                                    save_results=save_results)
+
+
+#Get correlation between the number of spikes
+data_path = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / 'SpkCount'  # the folder where spike info is stored
+
+# Load database
+# query = "SELECT * FROM cluster WHERE id = 6"
+query = "SELECT * FROM cluster WHERE birdID = 'b70r38' AND ephysOK = 1"
+db.execute(query)
+
+# Loop through db
+for row in db.cur.fetchall():
+
+    # Load cluster info from db
+    cluster_db = DBInfo(row)
+    name, path = cluster_db.load_cluster_db()
+    unit_nb = int(cluster_db.unit[-2:])
+    channel_nb = int(cluster_db.channel[-2:])
+    format = cluster_db.format
+    song_note = cluster_db.songNote
+
+    # Load class object
+    ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
+
+    # Load number of spikes
+    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + 'SpkCount',
+                              add_date=False)
+
+    pre_motor_spk_dict = get_pre_motor_spk_per_note(ci, song_note, save_path, npy_update=True)
+    pre_motor_win = pre_motor_spk_dict['pre_motor_win']
+    del pre_motor_spk_dict['pre_motor_win']
+
+
+    # Plot the results
+    fig = plt.figure(figsize=(12, 6))
+    plt.suptitle(ci.name, y=.95)
+
+    # Plot scatter per note
+    for i, note in enumerate(pre_motor_spk_dict):  # loop through notes
+        # print(i, note)
+
+        ind = similarity_info[note]['note_cluster'] == ci.name
+        note_similarity = similarity_info[note]['similarity'][ind][:,i]
+        spk_count = pre_motor_spk_dict[note]['nb_spk']
+        pre_motor_fr = round(spk_count.sum() / (spk_count.shape[0] * (pre_motor_win / 1E3)), 3)  # firing rates during the pre-motor window
+        corr, corr_pval = pearsonr(note_similarity, spk_count)
+        r_square = corr**2
+
+        # Get correlation between number of spikes and similarity
+        ax = plt.subplot2grid((nb_row, len(pre_motor_spk_dict.keys())), (1, i), rowspan=2, colspan=1)
+        ax.scatter(spk_count, note_similarity, color='k', s=5)
+        ax.set_title(note, size=font_size)
+        if i == 0:
+            ax.set_ylabel('Note similarity')
+        ax.set_xlabel('Spk Count')
+        # ax.set_ylim([0, 1])
+
+        remove_right_top(ax)
+
+        # Print out results
+        ax_txt = plt.subplot2grid((nb_row, len(pre_motor_spk_dict.keys())), (3, i), rowspan=2, colspan=1)
+        txt_xloc = 0
+        txt_yloc = 0.5
+        txt_inc = 0.2
+        # ax_txt.set_ylim([0, 1])
+        ax_txt.text(txt_xloc, txt_yloc, f"PremotorFR = {round(pre_motor_fr, 3)} (Hz)", fontsize=font_size)
+        txt_yloc -= txt_inc
+        ax_txt.text(txt_xloc, txt_yloc, f"CorrR = {round(corr, 3)}", fontsize=font_size)
+        txt_yloc -= txt_inc
+        t = ax_txt.text(txt_xloc, txt_yloc, f"CorrR Pval = {round(corr_pval, 3)}", fontsize=font_size)
+        if corr_pval < alpha:
+            t.set_bbox(dict(facecolor='green', alpha=0.5))
+        else:
+            t.set_bbox(dict(facecolor='red', alpha=0.5))
+
+        txt_yloc -= txt_inc
+        ax_txt.text(txt_xloc, txt_yloc, f"R_square = {round(r_square, 3)}", fontsize=font_size)
+        ax_txt.axis('off')
+
+    # Save results
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity')
+        save.save_fig(fig, save_path, ci.name, fig_ext=fig_ext)
+    else:
+        plt.show()
+
+
+
 
 
 

@@ -8,7 +8,7 @@ import matplotlib.gridspec as gridspec
 
 from analysis.parameters import *
 from analysis.spike import *
-from database.load import DBInfo
+from database.load import DBInfo, ProjectLoader
 from util import save
 from util.draw import *
 from util.spect import *
@@ -60,17 +60,17 @@ for row in db.cur.fetchall():
 
     # Plot spectrogram & peri-event histogram (Just the first rendition)
     # for onset, offset in zip(mi.onsets, mi.offsets):
-    onset = mi.onsets[0]
-    offset = mi.offsets[0]
+    onsets = mi.onsets[0]
+    offsets = mi.offsets[0]
 
     # Convert from string to array of floats
-    onset = np.asarray(list(map(float, onset)))
-    offset = np.asarray(list(map(float, offset)))
+    onsets = np.asarray(list(map(float, onsets)))
+    offsets = np.asarray(list(map(float, offsets)))
 
     # Motif start and end
-    start = onset[0] - peth_parm['buffer']
-    end = offset[-1] + peth_parm['buffer']
-    duration = offset[-1] - onset[0]
+    start = onsets[0] - peth_parm['buffer']
+    end = offsets[-1] + peth_parm['buffer']
+    duration = offsets[-1] - onsets[0]
 
     # Get spectrogram
     audio = AudioData(path, update=update).extract([start, end])  # audio object
@@ -108,16 +108,16 @@ for row in db.cur.fetchall():
 
     # Plot syllable duration
     ax_syl = plt.subplot(gs[0, 0:4], sharex=ax_spect)
-    note_dur = offset - onset  # syllable duration
-    onset -= onset[0]  # start from 0
-    offset = onset + note_dur
+    note_dur = offsets - onsets  # syllable duration
+    onsets -= onsets[0]  # start from 0
+    offsets = onsets + note_dur
 
     # Mark syllables
     for i, syl in enumerate(mi.motif):
-        rectangle = plt.Rectangle((onset[i], rec_yloc), note_dur[i], 0.2,
+        rectangle = plt.Rectangle((onsets[i], rec_yloc), note_dur[i], 0.2,
                                   linewidth=1, alpha=0.5, edgecolor='k', facecolor=note_color['Motif'][i])
         ax_syl.add_patch(rectangle)
-        ax_syl.text((onset[i] + (offset[i] - onset[i]) / 2), text_yloc, syl, size=font_size)
+        ax_syl.text((onsets[i] + (offsets[i] - onsets[i]) / 2), text_yloc, syl, size=font_size)
     ax_syl.axis('off')
 
     # Plot raster
@@ -131,10 +131,10 @@ for row in db.cur.fetchall():
     pre_context = ''  # for marking  context change
     context_change = np.array([])
 
-    for motif_ind, (context, spk_ts, onset) in enumerate(zipped_lists):
+    for motif_ind, (context, spk_ts, onsets) in enumerate(zipped_lists):
 
         # Plot rasters
-        spk = spk_ts - float(onset[0])
+        spk = spk_ts - float(onsets[0])
         # print(len(spk))
         # print("spk ={}, nb = {}".format(spk, len(spk)))
         # print('')
@@ -209,10 +209,10 @@ for row in db.cur.fetchall():
     pre_context = ''  # for marking  context change
     context_change = np.array([])
 
-    for motif_ind, (context, spk_ts, onset) in enumerate(zipped_lists):
+    for motif_ind, (context, spk_ts, onsets) in enumerate(zipped_lists):
 
         # Plot rasters
-        spk = spk_ts - float(onset[0])
+        spk = spk_ts - float(onsets[0])
         # print(len(spk))
         # print("spk ={}, nb = {}".format(spk, len(spk)))
         # print('')
