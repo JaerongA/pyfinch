@@ -1,13 +1,11 @@
 -- Store results from firing rates, waveform metrics, bursting, ISI analysis
-
-
-CREATE TABLE unit_profile(
-            cluster_id     INTEGER,
-            birdID         STRING  not null,
-            taskName       STRING  not null,
-            taskSession    INTEGER not null,
-            site           STRING  not null,
-            channel        STRING  not null,
+CREATE TABLE IF NOT EXISTS unit_profile(
+            clusterID     INTEGER NOT NULL UNIQUE,
+            birdID         STRING,
+            taskName       STRING,
+            taskSession    INTEGER,
+            site           STRING,
+            channel        STRING,
             unit           STRING,
             region         STRING,
             SNR                      REAL,
@@ -40,11 +38,16 @@ CREATE TABLE unit_profile(
             burstFractionDir         REAL,
             burstIndexDir            REAL,
 
-            withinRefProp            REAL,
+            withinRefPropBaseline    REAL,
             isiPeakLatencyBaseline   REAL,
+            isiCVBaseline            REAL,
+
+            withinRefPropUndir       REAL,
             isiPeakLatencyUndir      REAL,
+            isiCVUndir               REAL,
+
+            withinRefPropDir         REAL,
             isiPeakLatencyDir        REAL,
-            FOREIGN KEY(cluster_id) REFERENCES cluster(id))
+            isiCVDir                 REAL,
 
-
-
+            FOREIGN KEY(clusterID) REFERENCES cluster(id))
