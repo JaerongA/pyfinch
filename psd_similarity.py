@@ -4,6 +4,8 @@ Get PSD similarity to measure changes in song after deafening
 """
 
 from analysis.spike import ClusterInfo
+from analysis.functions import get_pre_motor_spk_per_note
+
 
 import matplotlib.gridspec as gridspec
 import pandas as pd
@@ -12,7 +14,7 @@ import random
 import scipy
 from scipy import spatial
 from scipy.io import wavfile
-from scipy.stats import sem
+from scipy.stats import sem, pearsonr
 import seaborn as sns
 from database.load import *
 from analysis.functions import *
@@ -30,7 +32,10 @@ save_results = False  # heatmap & csv
 fig_ext = '.png'
 num_note_crit = 30
 psd_update = False
-
+nb_row = 6
+nb_col = 6
+font_size = 12
+alpha = 0.05
 
 def get_bird_list(db):
     # Select the birds to use that have both pre and post deafening songs
@@ -323,6 +328,22 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
 
     return similarity_info
 
+def print_out_text(ax, peak_latency,
+                   ref_prop,
+                   cv
+                   ):
+    txt_xloc = 0
+    txt_yloc = 0.8
+    txt_inc = 0.3
+    ax.set_ylim([0, 1])
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f"ISI peak latency = {round(peak_latency, 3)} (ms)", fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f"Within Ref Proportion= {round(ref_prop, 3)} %", fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f"CV of ISI = {cv}", fontsize=font_size)
+    ax.axis('off')
+
 
 # Load database
 db = ProjectLoader().load_db()
@@ -365,20 +386,89 @@ for bird_id in bird_to_use:
                                    save_results=save_results)
 
 
-##TODO: Get correlation between the number of spikes
-
+#Get correlation between the number of spikes
 data_path = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / 'SpkCount'  # the folder where spike info is stored
 
+# Load database
+# query = "SELECT * FROM cluster WHERE id = 6"
+query = "SELECT * FROM cluster WHERE birdID = 'b70r38' AND ephysOK = 1"
+db.execute(query)
+
+# Loop through db
+for row in db.cur.fetchall():
+
+    # Load cluster info from db
+    cluster_db = DBInfo(row)
+    name, path = cluster_db.load_cluster_db()
+    unit_nb = int(cluster_db.unit[-2:])
+    channel_nb = int(cluster_db.channel[-2:])
+    format = cluster_db.format
+    song_note = cluster_db.songNote
+
+    # Load class object
+    ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
+
+    # Load number of spikes
+    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + 'SpkCount',
+                              add_date=False)
+
+    pre_motor_spk_dict = get_pre_motor_spk_per_note(ci, song_note, save_path, npy_update=True)
+    pre_motor_win = pre_motor_spk_dict['pre_motor_win']
+    del pre_motor_spk_dict['pre_motor_win']
 
 
+    # Plot the results
+    fig = plt.figure(figsize=(12, 6))
+    plt.suptitle(ci.name, y=.95)
 
+    # Plot scatter per note
+    for i, note in enumerate(pre_motor_spk_dict):  # loop through notes
+        # print(i, note)
 
+        ind = similarity_info[note]['note_cluster'] == ci.name
+        note_similarity = similarity_info[note]['similarity'][ind][:,i]
+        spk_count = pre_motor_spk_dict[note]['nb_spk']
+        pre_motor_fr = round(spk_count.sum() / (spk_count.shape[0] * (pre_motor_win / 1E3)), 3)  # firing rates during the pre-motor window
+        corr, corr_pval = pearsonr(note_similarity, spk_count)
+        r_square = corr**2
 
+        # Get correlation between number of spikes and similarity
+        ax = plt.subplot2grid((nb_row, len(pre_motor_spk_dict.keys())), (1, i), rowspan=2, colspan=1)
+        ax.scatter(spk_count, note_similarity, color='k', s=5)
+        ax.set_title(note, size=font_size)
+        if i == 0:
+            ax.set_ylabel('Note similarity')
+        ax.set_xlabel('Spk Count')
+        # ax.set_ylim([0, 1])
 
+        remove_right_top(ax)
 
+        # Print out results
+        ax_txt = plt.subplot2grid((nb_row, len(pre_motor_spk_dict.keys())), (3, i), rowspan=2, colspan=1)
+        txt_xloc = 0
+        txt_yloc = 0.5
+        txt_inc = 0.2
+        # ax_txt.set_ylim([0, 1])
+        ax_txt.text(txt_xloc, txt_yloc, f"PremotorFR = {round(pre_motor_fr, 3)} (Hz)", fontsize=font_size)
+        txt_yloc -= txt_inc
+        ax_txt.text(txt_xloc, txt_yloc, f"CorrR = {round(corr, 3)}", fontsize=font_size)
+        txt_yloc -= txt_inc
+        t = ax_txt.text(txt_xloc, txt_yloc, f"CorrR Pval = {round(corr_pval, 3)}", fontsize=font_size)
+        if corr_pval < alpha:
+            t.set_bbox(dict(facecolor='green', alpha=0.5))
+        else:
+            t.set_bbox(dict(facecolor='red', alpha=0.5))
 
+        txt_yloc -= txt_inc
+        ax_txt.text(txt_xloc, txt_yloc, f"R_square = {round(r_square, 3)}", fontsize=font_size)
+        ax_txt.axis('off')
 
-
+    # Save results
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity')
+        save.save_fig(fig, save_path, ci.name, fig_ext=fig_ext)
+    else:
+        plt.show()
 
 
 
