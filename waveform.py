@@ -3,10 +3,11 @@ By Jaerong
 Calculates a analysis signal-to-noise ratio (SNR) relative to the background (raw neural trace)
 """
 
+from analysis.parameters import *
 from analysis.spike import *
 from util import save
 from util.draw import *
-from database.load import DBInfo
+from database.load import ProjectLoader, DBInfo
 
 
 def plot_waveform(axis, wf_ts, spk_wf,
@@ -51,9 +52,10 @@ def plot_waveform(axis, wf_ts, spk_wf,
 
 
 # Parameters
-save_fig = False
-update_db = False
-update = False
+save_fig = True
+update_db = True
+update = True
+save_wf_values = True
 dir_name = 'WaveformAnalysis'
 fig_ext = '.png'  # .png or .pdf
 
@@ -61,9 +63,9 @@ fig_ext = '.png'  # .png or .pdf
 db = ProjectLoader().load_db()
 
 # SQL statement
-# query = "SELECT * FROM cluster"
+#query = "SELECT * FROM cluster"
 # query = "SELECT * FROM cluster WHERE ephysOK"
-query = "SELECT * FROM cluster WHERE id =96"
+query = "SELECT * FROM cluster WHERE id = 4 "
 db.execute(query)
 
 # Loop through db
@@ -124,6 +126,19 @@ for row in db.cur.fetchall():
 
     else:
         plt.show()
+    # Print avg_spk_wf to csv
+    if save_wf_values:
+        import pandas as pd
+        df = pd.DataFrame(ci.avg_wf_interp)
+        # csv_path = C:\Users\dreill03\Box\AreaX\Analysis\WaveformAnalysis\AverageWaveforms
+        # df.to_csv(ProjectLoader().path / dir_name_2 + ci.name + 'ave_wf.csv', index=False)
+        df.to_csv(r'C:\Users\dreill03\Box\AreaX\Analysis\WaveformAnalysis\AverageWaveforms\ave_wf.csv')
+
+#        save_path = save.make_dir(ProjectLoader().path / dir_name_2)
+#        saveDKR.save_csv(save_path, ci.name, csv_ext='.csv', open_folder=True)
+    else:
+        print(ci.avg_wf_interp)
+
 
 # Convert db to csv
 if update_db:
