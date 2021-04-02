@@ -74,7 +74,7 @@ spk_proportion = 0.2  # proportion of waveforms to plot
 bout_buffer = 100
 
 # Pre-motor window spike calculation
-pre_motor_win = 50  # in ms
+pre_motor_win_size = 50  # in ms
 
 
 
