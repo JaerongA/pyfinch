@@ -32,7 +32,7 @@ psd_update = True
 save_results = True  # heatmap & csv
 context_selection= 'U'  # use undirected song only (default = None)
 fig_ext = '.png'
-num_note_crit = 30
+num_note_crit = 10
 nb_row = 6
 nb_col = 6
 font_size = 12
@@ -135,22 +135,13 @@ def get_psd_bird(db, *bird_to_use):
             np.save(npy_name, data)
 
 
-def psd_split(psd_list_pre_all, notes_pre_all, contexts_pre_all, context_selection='All'):
+def psd_split(psd_list_pre_all, notes_pre_all, contexts_pre_all):
     """
     Randomize the pre data and split into half.
     one half will be used as a basis and the other for getting control similarity
     """
 
     psd_arr_pre_all = np.asarray(psd_list_pre_all)
-
-    if context_selection != 'All':
-        contexts_pre_all = np.array(contexts_pre_all)
-        ind = np.where(contexts_pre_all==context_selection)[0]
-        psd_arr_pre_all = psd_arr_pre_all[ind]
-        notes_pre_all_new = ''
-        for i in ind:
-            notes_pre_all_new += notes_pre_all[i]
-
     arr = np.arange(psd_arr_pre_all.shape[0])
     np.random.seed(0)
     np.random.shuffle(arr)  # randomize the array
@@ -232,8 +223,7 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
 
         ind = find_str(notes_target, note)
         nb_note = len(ind)
-        if nb_note < num_note_crit:
-            continue
+        if nb_note < num_note_crit: continue
 
         # Get distance matrix per note
         note_distance = distance[ind, :]
@@ -340,21 +330,41 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
 
     return similarity_info
 
-def print_out_text(ax, peak_latency,
-                   ref_prop,
-                   cv
-                   ):
-    txt_xloc = 0
-    txt_yloc = 0.8
-    txt_inc = 0.3
-    ax.set_ylim([0, 1])
-    txt_yloc -= txt_inc
-    ax.text(txt_xloc, txt_yloc, f"ISI peak latency = {round(peak_latency, 3)} (ms)", fontsize=font_size)
-    txt_yloc -= txt_inc
-    ax.text(txt_xloc, txt_yloc, f"Within Ref Proportion= {round(ref_prop, 3)} %", fontsize=font_size)
-    txt_yloc -= txt_inc
-    ax.text(txt_xloc, txt_yloc, f"CV of ISI = {cv}", fontsize=font_size)
-    ax.axis('off')
+def select_context(data, context_selection=None):
+    """
+    Select data from only one context
+    Parameters
+    ----------
+    data : dict
+    context_selection : 'U' or 'D' (None by default)
+
+    Returns
+    -------
+    data : dict
+    """
+
+    if context_selection:  # if not None
+        psd_arr = np.asarray(data['psd_list'])
+        file_array = np.array(data['file_list'])
+        contexts_arr = np.array(data['psd_context_list'])
+        cluster_name_arr = np.array(data['cluster_name'])
+
+        ind = np.where(contexts_arr == context_selection)[0]
+        psd_arr = psd_arr[ind]
+        psd_list = []
+        for row in psd_arr:
+            psd_list.append(row)
+
+        notes_new = ''
+        for i in ind:
+            notes_new += data['psd_notes'][i]
+
+        data['psd_list'] = psd_list
+        data['psd_notes'] = notes_new
+        data['file_list'] = file_array[ind].tolist()
+        data['psd_context_list'] = contexts_arr[ind].tolist()
+        data['cluster_name'] = cluster_name_arr[ind].tolist()
+        return data
 
 
 # Load database
@@ -375,73 +385,32 @@ for bird_id in bird_to_use:
         data = np.load(npy_name,
                        allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
 
+        # Select data from one social context ('U' or 'D')
+        if context_selection:  # if not None
+            data = select_context(data, context_selection=context_selection)
+
         #  Load data
         if task_name == 'Predeafening':
             psd_list_pre_all, notes_pre, file_list_pre, context_list_pre, cluster_name_pre = \
                 data['psd_list'], data['psd_notes'], data['file_list'], data['psd_context_list'], data['cluster_name']
-
-            data = select_context(data, context_selection=context_selection)
-
             del data
+
             # Split pre-deafening PSDs into halves
             # 1st half will be used as basis and the 2nd half as control
-            psd_list_basis, psd_list_pre, notes_basis, notes_pre = psd_split(psd_list_pre_all, notes_pre, context_list_pre, context_selection=context_selection)
+            psd_list_basis, psd_list_pre, notes_basis, notes_pre = psd_split(psd_list_pre_all, notes_pre, context_list_pre)
             del psd_list_pre_all
 
             # Get basis psd and list of basis syllables
-            psd_list_basis, note_list_basis = get_basis_psd(psd_list_basis, notes_basis)
+            db.cur.execute("SELECT songNote FROM main.cluster WHERE birdID = ?", (bird_id,))
+            song_note = db.cur.fetchone()[0]
+
+            psd_list_basis, note_list_basis = get_basis_psd(psd_list_basis, notes_basis, song_note=song_note, num_note_crit_basis=num_note_crit)
             # Get similarity heatmap between basis and pre-deafening control
             get_similarity_heatmap(psd_list_pre, psd_list_basis, notes_pre, notes_basis, file_list_pre, cluster_name_pre, save_results=save_results)
 
         elif task_name == 'Postdeafening':
 
-            def select_context(data, context_selection=None):
-
-                if context_selection:  # if not None
-                    psd_arr = np.asarray(data['psd_list'])
-                    file_array = np.array(data['file_list'])
-                    contexts_arr = np.array(data['psd_context_list'])
-                    cluster_name_arr = np.array(data['cluster_name'])
-
-                    ind = np.where(contexts_arr == context_selection)[0]
-                    psd_arr = psd_arr[ind]
-                    psd_list = []
-                    for row in psd_arr:
-                        psd_list.append(row)
-
-                    notes_new = ''
-                    for i in ind:
-                        notes_new += data['psd_notes'][i]
-
-                    data['psd_list'] = psd_list
-                    data['psd_notes'] = notes_new
-                    data['file_list'] = file_array[ind].tolist()
-                    data['psd_context_list'] = contexts_arr[ind].tolist()
-                    data['cluster_name'] = cluster_name_arr[ind].tolist()
-                    return data
             data = select_context(data, context_selection=context_selection)
-            # if context_selection != 'All':  # select context
-            #
-            #     psd_arr = np.asarray(data['psd_list'])
-            #     file_array = np.array(data['file_list'])
-            #     contexts_arr = np.array(data['psd_context_list'])
-            #     cluster_name_arr = np.array(data['cluster_name'])
-            #
-            #     ind = np.where(contexts_arr == context_selection)[0]
-            #     psd_arr = psd_arr[ind]
-            #     psd_list = []
-            #     for row in psd_arr:
-            #         psd_list.append(row)
-            #
-            #     notes_new = ''
-            #     for i in ind:
-            #         notes_new += data['psd_notes'][i]
-            #
-            #     data['psd_list'] = psd_list
-            #     data['psd_notes'] = notes_new
-            #     data['file_list'] = file_array[ind].tolist()
-            #     data['psd_context_list'] = contexts_arr[ind].tolist()
-            #     data['cluster_name'] = cluster_name_arr[ind].tolist()
 
             # file list info is needed for this condition to track chronological changes
             psd_list_post, notes_post, file_list_post, context_list_post, cluster_name_post = \
@@ -451,6 +420,7 @@ for bird_id in bird_to_use:
             # Get similarity heatmap between basis and post-deafening
             similarity_info = \
                 get_similarity_heatmap(psd_list_post, psd_list_basis, notes_post, notes_basis, file_list_post, cluster_name_post, save_results=save_results)
+
 
 #Get correlation between the number of spikes
 data_path = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / 'SpkCount'  # the folder where spike info is stored
