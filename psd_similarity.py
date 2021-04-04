@@ -28,10 +28,11 @@ import gc
 save_fig = True
 save_psd = False
 update = False
-save_results = False  # heatmap & csv
+psd_update = True
+save_results = True  # heatmap & csv
+context_selection= 'U'  # use undirected song only
 fig_ext = '.png'
 num_note_crit = 30
-psd_update = False
 nb_row = 6
 nb_col = 6
 font_size = 12
@@ -51,7 +52,7 @@ def get_bird_list(db):
     return bird_list, task_list, bird_to_use
 
 
-def get_psd_bird(db, *bird_to_use, psd_update=False):
+def get_psd_bird(db, *bird_to_use):
     # Make PSD.npy file for each cluster
     # Cluster PSD.npy will be concatenated per bird in a separate folder
     if bird_to_use:
@@ -91,7 +92,7 @@ def get_psd_bird(db, *bird_to_use, psd_update=False):
         npy_name = bird_id + '_' + task_name + '.npy'
         npy_name = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / npy_name
 
-        if npy_name.exists() and not psd_update:
+        if npy_name.exists():
             data_all = np.load(npy_name,
                                allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
 
@@ -99,48 +100,59 @@ def get_psd_bird(db, *bird_to_use, psd_update=False):
                 # Get psd
                 # This will create PSD.npy in each cluster folder
                 # Note spectrograms & .npy per bird will be stored in PSD_similarity folder
-                psd_list, file_list, psd_notes = \
-                    get_psd_mat(path, save_path, save_psd=save_psd, update=False, fig_ext=fig_ext)
+                psd_list, file_list, psd_notes, psd_context_list = \
+                    get_psd_mat(path, save_path, save_psd=save_psd, update=True, fig_ext=fig_ext)
 
                 # Organize data into a dictionary
                 data = {
                     'psd_list': psd_list,
                     'file_list': file_list,
-                    'psd_notes': psd_notes[0],
-                    'cluster_name': [ci.name] * len(psd_notes[0])
+                    'psd_notes': psd_notes,
+                    'psd_context_list': psd_context_list,
+                    'cluster_name': [ci.name] * len(psd_notes)
                 }
                 # Concatenate the data
                 data_all['psd_list'].extend(data['psd_list'])
                 data_all['file_list'].extend(data['file_list'])
                 data_all['psd_notes'] += data['psd_notes']
+                data_all['psd_context_list'].extend(data['psd_context_list'])
                 data_all['cluster_name'].extend(data['cluster_name'])
                 np.save(npy_name, data_all)
         else:
             # Get psd
             # This will create PSD.npy in each cluster folder
             # Note spectrograms & .npy per bird will be stored in PSD_similarity folder
-            psd_list, file_list, psd_notes = \
-                get_psd_mat(path, save_path, save_psd=save_psd, update=True, fig_ext=fig_ext)
+            psd_list, file_list, psd_notes, psd_context_list = get_psd_mat(path, save_path, save_psd=save_psd, update=True, fig_ext=fig_ext)
 
             # Organize data into a dictionary
             data = {
                 'psd_list': psd_list,
                 'file_list': file_list,
                 'psd_notes': psd_notes,
-                'cluster_name': [ci.name]*len(psd_notes)
+                'psd_context_list': psd_context_list,
+                'cluster_name': [ci.name] * len(psd_notes)
             }
             np.save(npy_name, data)
 
 
-def psd_split(psd_list_pre_all, notes_pre_all):
+def psd_split(psd_list_pre_all, notes_pre_all, contexts_pre_all, context_selection='All'):
     """
     Randomize the pre data and split into half.
     one half will be used as a basis and the other for getting control similarity
     """
-    np.random.seed(0)
+
     psd_arr_pre_all = np.asarray(psd_list_pre_all)
 
+    if context_selection != 'All':
+        contexts_pre_all = np.array(contexts_pre_all)
+        ind = np.where(contexts_pre_all==context_selection)[0]
+        psd_arr_pre_all = psd_arr_pre_all[ind]
+        notes_pre_all_new = ''
+        for i in ind:
+            notes_pre_all_new += notes_pre_all[i]
+
     arr = np.arange(psd_arr_pre_all.shape[0])
+    np.random.seed(0)
     np.random.shuffle(arr)  # randomize the array
     psd_arr_pre_1st = psd_arr_pre_all[arr[:int(arr.shape[0] / 2)], :]
     psd_arr_pre_2nd = psd_arr_pre_all[arr[int(arr.shape[0] / 2):], :]
@@ -351,7 +363,8 @@ bird_list, task_list, bird_to_use = get_bird_list(db)  # get bird list to analyz
 bird_to_use = ['b70r38']
 
 # Make PSD.npy file for each cluster
-get_psd_bird(db, bird_to_use, psd_update=psd_update)
+# Make sure to delete the existing .npy before making a new one
+get_psd_bird(db, bird_to_use)
 
 # Calculate PSD similarity
 for bird_id in bird_to_use:
@@ -364,11 +377,12 @@ for bird_id in bird_to_use:
 
         #  Load data
         if task_name == 'Predeafening':
-            psd_list_pre_all, notes_pre, file_list_pre, cluster_name_pre = data['psd_list'], data['psd_notes'], data['file_list'], data['cluster_name']
-
-            # Split pre-deafening PSDSs into halves
+            psd_list_pre_all, notes_pre, file_list_pre, context_list_pre, cluster_name_pre = \
+                data['psd_list'], data['psd_notes'], data['file_list'], data['psd_context_list'], data['cluster_name']
+            del data
+            # Split pre-deafening PSDs into halves
             # 1st half will be used as basis and the 2nd half as control
-            psd_list_basis, psd_list_pre, notes_basis, notes_pre = psd_split(psd_list_pre_all, notes_pre)
+            psd_list_basis, psd_list_pre, notes_basis, notes_pre = psd_split(psd_list_pre_all, notes_pre, context_list_pre, context_selection='U')
             del psd_list_pre_all
 
             # Get basis psd and list of basis syllables
@@ -378,12 +392,15 @@ for bird_id in bird_to_use:
                                    save_results=save_results)
 
         elif task_name == 'Postdeafening':
+
             # file list info is needed for this condition to track chronological changes
-            psd_list_post, notes_post, file_list_post, cluster_name_post = data['psd_list'], data['psd_notes'], data['file_list'], data['cluster_name']
+            psd_list_post, notes_post, file_list_post, context_list_post, cluster_name_post = \
+                data['psd_list'], data['psd_notes'], data['file_list'], data['psd_context_list'], data['cluster_name']
             del data
+
             # Get similarity heatmap between basis and post-deafening
-            similarity_info = get_similarity_heatmap(psd_list_post, psd_list_basis, notes_post, notes_basis, file_list_post, cluster_name_post,
-                                   save_results=save_results)
+            similarity_info = \
+                get_similarity_heatmap(psd_list_post, psd_list_basis, notes_post, notes_basis, file_list_post, cluster_name_post, save_results=save_results)
 
 
 #Get correlation between the number of spikes
