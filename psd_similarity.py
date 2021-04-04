@@ -30,7 +30,7 @@ save_psd = False
 update = False
 psd_update = True
 save_results = True  # heatmap & csv
-context_selection= 'U'  # use undirected song only
+context_selection= 'U'  # use undirected song only (default = None)
 fig_ext = '.png'
 num_note_crit = 30
 nb_row = 6
@@ -177,7 +177,7 @@ def psd_split(psd_list_pre_all, notes_pre_all, contexts_pre_all, context_selecti
     return psd_list_1st, psd_list_2nd, notes_pre_1st, notes_pre_2nd
 
 
-def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_basis, file_list, cluster_list,
+def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_basis, file_list=None, cluster_list=None,
                            save_results=True,
                            ):
     """
@@ -379,19 +379,69 @@ for bird_id in bird_to_use:
         if task_name == 'Predeafening':
             psd_list_pre_all, notes_pre, file_list_pre, context_list_pre, cluster_name_pre = \
                 data['psd_list'], data['psd_notes'], data['file_list'], data['psd_context_list'], data['cluster_name']
+
+            data = select_context(data, context_selection=context_selection)
+
             del data
             # Split pre-deafening PSDs into halves
             # 1st half will be used as basis and the 2nd half as control
-            psd_list_basis, psd_list_pre, notes_basis, notes_pre = psd_split(psd_list_pre_all, notes_pre, context_list_pre, context_selection='U')
+            psd_list_basis, psd_list_pre, notes_basis, notes_pre = psd_split(psd_list_pre_all, notes_pre, context_list_pre, context_selection=context_selection)
             del psd_list_pre_all
 
             # Get basis psd and list of basis syllables
             psd_list_basis, note_list_basis = get_basis_psd(psd_list_basis, notes_basis)
             # Get similarity heatmap between basis and pre-deafening control
-            get_similarity_heatmap(psd_list_pre, psd_list_basis, notes_pre, notes_basis, file_list_pre, cluster_name_pre,
-                                   save_results=save_results)
+            get_similarity_heatmap(psd_list_pre, psd_list_basis, notes_pre, notes_basis, file_list_pre, cluster_name_pre, save_results=save_results)
 
         elif task_name == 'Postdeafening':
+
+            def select_context(data, context_selection=None):
+
+                if context_selection:  # if not None
+                    psd_arr = np.asarray(data['psd_list'])
+                    file_array = np.array(data['file_list'])
+                    contexts_arr = np.array(data['psd_context_list'])
+                    cluster_name_arr = np.array(data['cluster_name'])
+
+                    ind = np.where(contexts_arr == context_selection)[0]
+                    psd_arr = psd_arr[ind]
+                    psd_list = []
+                    for row in psd_arr:
+                        psd_list.append(row)
+
+                    notes_new = ''
+                    for i in ind:
+                        notes_new += data['psd_notes'][i]
+
+                    data['psd_list'] = psd_list
+                    data['psd_notes'] = notes_new
+                    data['file_list'] = file_array[ind].tolist()
+                    data['psd_context_list'] = contexts_arr[ind].tolist()
+                    data['cluster_name'] = cluster_name_arr[ind].tolist()
+                    return data
+            data = select_context(data, context_selection=context_selection)
+            # if context_selection != 'All':  # select context
+            #
+            #     psd_arr = np.asarray(data['psd_list'])
+            #     file_array = np.array(data['file_list'])
+            #     contexts_arr = np.array(data['psd_context_list'])
+            #     cluster_name_arr = np.array(data['cluster_name'])
+            #
+            #     ind = np.where(contexts_arr == context_selection)[0]
+            #     psd_arr = psd_arr[ind]
+            #     psd_list = []
+            #     for row in psd_arr:
+            #         psd_list.append(row)
+            #
+            #     notes_new = ''
+            #     for i in ind:
+            #         notes_new += data['psd_notes'][i]
+            #
+            #     data['psd_list'] = psd_list
+            #     data['psd_notes'] = notes_new
+            #     data['file_list'] = file_array[ind].tolist()
+            #     data['psd_context_list'] = contexts_arr[ind].tolist()
+            #     data['cluster_name'] = cluster_name_arr[ind].tolist()
 
             # file list info is needed for this condition to track chronological changes
             psd_list_post, notes_post, file_list_post, context_list_post, cluster_name_post = \
@@ -401,7 +451,6 @@ for bird_id in bird_to_use:
             # Get similarity heatmap between basis and post-deafening
             similarity_info = \
                 get_similarity_heatmap(psd_list_post, psd_list_basis, notes_post, notes_basis, file_list_post, cluster_name_post, save_results=save_results)
-
 
 #Get correlation between the number of spikes
 data_path = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / 'SpkCount'  # the folder where spike info is stored
@@ -432,7 +481,6 @@ for row in db.cur.fetchall():
     pre_motor_spk_dict = get_pre_motor_spk_per_note(ci, song_note, save_path, npy_update=True)
     pre_motor_win = pre_motor_spk_dict['pre_motor_win']
     del pre_motor_spk_dict['pre_motor_win']
-
 
     # Plot the results
     fig = plt.figure(figsize=(12, 6))
@@ -486,11 +534,6 @@ for row in db.cur.fetchall():
         save.save_fig(fig, save_path, ci.name, fig_ext=fig_ext)
     else:
         plt.show()
-
-
-
-
-
 
 
 gc.collect()
