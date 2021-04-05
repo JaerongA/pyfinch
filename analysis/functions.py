@@ -253,6 +253,7 @@ def get_psd_mat(data_path, save_path,
         psd_list = []  # store psd vectors for training
         file_list = []  # store files names containing psds
         psd_notes = ''  # concatenate all syllables
+        psd_context_list = []  # concatenate syllable contexts
 
         for file in files:
 
@@ -260,11 +261,11 @@ def get_psd_mat(data_path, save_path,
             onsets, offsets, intervals, durations, syllables, contexts = read_not_mat(notmat_file, unit='ms')
             sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
             length = data.shape[0] / sample_rate
-            timestamp = np.round(np.linspace(0, length, data.shape[0]) * 1E3,
-                                 3)  # start from t = 0 in ms, reduce floating precision
-            list_zip = zip(onsets, offsets, syllables)
+            timestamp = np.round(np.linspace(0, length, data.shape[0]) * 1E3, 3)  # start from t = 0 in ms, reduce floating precision
+            contexts = contexts * len(syllables)
+            list_zip = zip(onsets, offsets, syllables, contexts)
 
-            for i, (onset, offset, syllable) in enumerate(list_zip):
+            for i, (onset, offset, syllable, context) in enumerate(list_zip):
 
                 # Get spectrogram
                 ind, _ = extract_ind(timestamp, [onset - note_buffer, offset + note_buffer])
@@ -285,7 +286,7 @@ def get_psd_mat(data_path, save_path,
                 if save_psd:
                     # Plot spectrogram & PSD
                     fig = plt.figure(figsize=(3.5, 3))
-                    fig_name = "{}, note#{} - {}".format(file.name, i, syllable)
+                    fig_name = "{}, note#{} - {} - {}".format(file.name, i, syllable, context)
                     fig.suptitle(fig_name, y=0.95, fontsize=10)
                     gs = gridspec.GridSpec(6, 3)
 
@@ -317,26 +318,28 @@ def get_psd_mat(data_path, save_path,
                     save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, open_folder=open_folder)
                     plt.close(fig)
 
-                psd_notes += syllable
                 psd_list.append(psd_power)
                 file_list.append(file.name)
+                psd_notes += syllable
+                psd_context_list.append(context)
 
         # Organize data into a dictionary
         data = {
             'psd_list': psd_list,
             'file_list': file_list,
-            'psd_notes': [psd_notes],
+            'psd_notes': psd_notes,
+            'psd_context': psd_context_list,
         }
         # Save results
         np.save(file_name, data)
 
     else:  # if not update or file already exists
         data = np.load(file_name, allow_pickle=True).item()
-        psd_list, file_list, psd_notes = data['psd_list'], data['file_list'], data['psd_notes']
 
-    return psd_list, file_list, psd_notes
+    return data['psd_list'], data['file_list'], data['psd_notes'], data['psd_context']
 
-def get_basis_psd(psd_list, notes, num_note_crit_basis=30):
+
+def get_basis_psd(psd_list, notes, song_note=None, num_note_crit_basis=30):
     """
     Get avg psd from the training set (will serve as a basis)
     Parameters
@@ -345,18 +348,20 @@ def get_basis_psd(psd_list, notes, num_note_crit_basis=30):
         List of syllable psds
     notes : str
         String of all syllables
+    song_note : str
+        String of all syllables
     num_note_crit_basis : int (30 by default)
         Minimum number of notes required to be a basis syllable
 
     Returns
     -------
-    psd_basis_list : list
-    syl_basis_list : list
+    psd_list_basis : list
+    note_list_basis : list
     """
 
     psd_dict = {}
-    psd_basis_list = []
-    syl_basis_list = []
+    psd_list_basis = []
+    note_list_basis = []
 
     psd_array = np.asarray(psd_list)   # number of syllables x psd (get_basis_psd function accepts array format only)
     unique_note = unique(''.join(sorted(notes)))  # convert note string into a list of unique syllables
@@ -368,20 +373,23 @@ def get_basis_psd(psd_list, notes, num_note_crit_basis=30):
         unique_note.remove('x')
 
     for note in unique_note:
+        if note not in song_note: continue
         ind = find_str(notes, note)
         if len(ind) >= num_note_crit_basis:  # number should exceed the  criteria
-            syl_pow_array = psd_array[ind, :]
-            syl_pow_avg = syl_pow_array.mean(axis=0)
-            temp_dict = {note: syl_pow_avg}
-            psd_basis_list.append(syl_pow_avg)
-            syl_basis_list.append(note)
+            note_pow_array = psd_array[ind, :]
+            note_pow_avg = note_pow_array.mean(axis=0)
+            temp_dict = {note: note_pow_avg}
+            psd_list_basis.append(note_pow_avg)
+            note_list_basis.append(note)
             psd_dict.update(temp_dict)  # basis
             # plt.plot(psd_dict[note])
             # plt.show()
-    return psd_basis_list, syl_basis_list
+    return psd_list_basis, note_list_basis
 
 
-def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path, npy_update=False):
+def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
+                               context_selection=None,
+                               npy_update=False):
     """
     Get the number of spikes in the pre-motor window for individual note
 
@@ -391,7 +399,10 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path, npy_update=Fal
     song_note : str
         notes to be used for analysis
     save_path : path
-
+    context_selection : str
+        select data from a certain context ('U' or 'D')
+    npy_update : bool
+        make new .npy file
     Returns
     -------
     pre_motor_spk_dict : dict
@@ -458,4 +469,14 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path, npy_update=Fal
         npy_name = ClusterInfo.name + '.npy'
         npy_name = save_path / npy_name
         np.save(npy_name, pre_motor_spk_dict)
+
+    # Select context
+    if context_selection:  # 'U' or 'D' and not None
+        context_arr = np.array(list(pre_motor_spk_dict['a']['context']))
+        ind = np.where(context_arr == context_selection)[0]
+        for note in list(pre_motor_spk_dict.keys()):
+            pre_motor_spk_dict[note]['nb_spk'] = pre_motor_spk_dict[note]['nb_spk'][ind]
+            pre_motor_spk_dict[note]['onset_ts'] = pre_motor_spk_dict[note]['onset_ts'][ind]
+            pre_motor_spk_dict[note]['context'] = ''.join(context_arr[ind])
+
     return pre_motor_spk_dict
