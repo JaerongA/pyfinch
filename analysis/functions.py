@@ -472,11 +472,13 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
 
     # Select context
     if context_selection:  # 'U' or 'D' and not None
-        context_arr = np.array(list(pre_motor_spk_dict['a']['context']))
-        ind = np.where(context_arr == context_selection)[0]
+
         for note in list(pre_motor_spk_dict.keys()):
-            pre_motor_spk_dict[note]['nb_spk'] = pre_motor_spk_dict[note]['nb_spk'][ind]
-            pre_motor_spk_dict[note]['onset_ts'] = pre_motor_spk_dict[note]['onset_ts'][ind]
-            pre_motor_spk_dict[note]['context'] = ''.join(context_arr[ind])
+            if note is not 'pre_motor_win':
+                context_arr = np.array(list(pre_motor_spk_dict[note]['context']))
+                ind = np.where(context_arr == context_selection)[0]
+                pre_motor_spk_dict[note]['nb_spk'] = pre_motor_spk_dict[note]['nb_spk'][ind]
+                pre_motor_spk_dict[note]['onset_ts'] = pre_motor_spk_dict[note]['onset_ts'][ind]
+                pre_motor_spk_dict[note]['context'] = ''.join(context_arr[ind])
 
     return pre_motor_spk_dict
