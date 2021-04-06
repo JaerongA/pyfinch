@@ -15,13 +15,16 @@ from util.spect import *
 import pandas as pd
 
 
-def get_pre_motor_spk_per_note(ClusterInfo, npy_update=False):
+def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path, npy_update=False):
     """
     Get the number of spikes in the pre-motor window for individual note
 
     Parameters
     ----------
     ClusterInfo : class
+    song_note : str
+        notes to be used for analysis
+    save_path : path
 
     Returns
     -------
@@ -32,8 +35,14 @@ def get_pre_motor_spk_per_note(ClusterInfo, npy_update=False):
     from database.load import ProjectLoader
     import numpy as np
 
-    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + 'SpkCount',
-                              add_date=False)
+    # Create a new database (song_syllable)
+    db = ProjectLoader().load_db()
+    with open('database/create_song_syllable.sql', 'r') as sql_file:
+        db.conn.executescript(sql_file.read())
+
+    cluster_id = int(ClusterInfo.name.split('-')[0])
+
+    # Set save file (.npy)
     npy_name = ClusterInfo.name + '.npy'
     npy_name = save_path / npy_name
 
@@ -51,12 +60,19 @@ def get_pre_motor_spk_per_note(ClusterInfo, npy_update=False):
             onsets = np.asarray(list(map(float, onsets)))
             notes = notes.replace('*', '')
             for onset, note in zip(onsets, notes):  # loop through notes
-                if note in motif:
+                if note in song_note:
                     pre_motor_win = [onset - 50, onset]
                     nb_spk = len(spks[np.where((spks >= pre_motor_win[0]) & (spks <= pre_motor_win[-1]))])
                     nb_pre_motor_spk = np.append(nb_pre_motor_spk, nb_spk)
                     note_onset_ts = np.append(note_onset_ts, onset)
                     all_notes += note
+
+                    # Update database
+                    # query = "INSERT INTO motif_syllable(clusterID, note, nb_premotor_spk) VALUES({}, {}, {})".format(cluster_id, note, nb_spk)
+                    # query = "INSERT INTO motif_syllable(clusterID, note, nbPremotorSpk) VALUES(?, ?, ?)"
+                    # db.cur.execute(query, (cluster_id, note, nb_spk))
+        # db.conn.commit()
+
 
         # Store info in a dictionary
         pre_motor_spk_dict = {}
@@ -94,11 +110,11 @@ npy_update = True
 
 # Create a new database (syllable)
 db = ProjectLoader().load_db()
-with open('database/create_motif_syllable.sql', 'r') as sql_file:
+with open('database/create_song_syllable.sql', 'r') as sql_file:
     db.conn.executescript(sql_file.read())
 
 # Load database
-query = "SELECT * FROM cluster WHERE id = 96"
+query = "SELECT * FROM cluster WHERE id = 5"
 db.execute(query)
 
 # Store results in the dataframe
@@ -113,13 +129,17 @@ for row in db.cur.fetchall():
     unit_nb = int(cluster_db.unit[-2:])
     channel_nb = int(cluster_db.channel[-2:])
     format = cluster_db.format
-    motif = cluster_db.motif
+    song_note = cluster_db.songNote
+
 
     # Load class object
     ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
 
     # Load number of spikes
-    pre_motor_spk_dict = get_pre_motor_spk_per_note(ci, npy_update=npy_update)
+    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + 'SpkCount',
+                              add_date=False)
+
+    pre_motor_spk_dict = get_pre_motor_spk_per_note(ci, song_note, save_path, npy_update=True)
 
     db.cur.execute('''INSERT OR IGNORE INTO motif_syllable (clusterID) VALUES (?)''', (row["id"],))
     db.conn.commit()
