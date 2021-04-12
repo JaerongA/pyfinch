@@ -4,9 +4,7 @@ A function that differentially labels undir and dir files by tagging the string 
 """
 
 
-
 def main():
-
     import os
     import shutil
     from tkinter import Tk
@@ -48,7 +46,6 @@ def main():
     root = Tk()
     root.withdraw()
 
-
     def ask():
         """ Ask if you wish to keep/delete the root folder"""
         resp = mb.askquestion('Question', 'Do you want to delete the root folder?')
@@ -60,12 +57,8 @@ def main():
             mb.showinfo('', 'Done!')
             root.destroy()
 
-
     ask()
 
 
-
-
 if __name__ == '__main__':
-
     main()
