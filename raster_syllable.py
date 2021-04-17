@@ -58,11 +58,16 @@ for row in db.cur.fetchall():
     import copy
 
     syllables = ''.join(ci.syllables)
+
+    onsets = np.hstack(ci.onsets)
+    offsets = np.hstack(ci.offsets)
     durations = np.hstack(ci.durations)
 
     for note in cluster_db.songNote:
+        print(note)
         ind = np.array(find_str(syllables, note))  # note indices
         note_durations = np.asarray(list(map(float, durations[ind])))
+        median_dur = np.median(note_durations, axis=0)
 
 
 
