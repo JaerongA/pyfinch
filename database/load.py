@@ -9,13 +9,12 @@ from pathlib import Path
 
 class ProjectLoader:
     def __init__(self):
-        config_file = 'config.ini'
+        config_file = Path(__file__).resolve().parent.parent / 'config.ini'
         config = ConfigParser()
         config.read(config_file)
         self.path = Path(config.get('path', 'project'))
         self.db_path = Path(config.get('path', 'database'))
         self.db = Path(config.get('file', 'database'))
-        self.parameter = config['parameter']
 
     @property
     def open_folder(self):
