@@ -4,11 +4,13 @@ Load project information and read from the project database
 """
 import sqlite3
 from configparser import ConfigParser
-from pathlib import Path
 
 
 class ProjectLoader:
+
     def __init__(self):
+        from pathlib import Path
+
         config_file = Path(__file__).resolve().parent.parent / 'config.ini'
         config = ConfigParser()
         config.read(config_file)
@@ -76,6 +78,7 @@ class Database:
         """
         from datetime import datetime
         import pandas as pd
+        from pathlib import Path
 
         csv_name = Path(f"{table}.csv")
         if add_date:  # append time&time info to csv
@@ -96,6 +99,7 @@ class Database:
 
 class DBInfo:
     def __init__(self, db):
+
         # Set all database fields as attributes
 
         self.channel = None
@@ -112,6 +116,8 @@ class DBInfo:
             Input: SQL object (database row)
             Output: name of the cluster
         """
+        from pathlib import Path
+
         cluster_id = ''
         if len(str(self.id)) == 1:
             cluster_id = '00' + str(self.id)
