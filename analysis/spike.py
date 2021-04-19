@@ -137,7 +137,7 @@ class ClusterInfo:
         self.path = path
         if channel_nb:  # if a neuron was recorded
             if len(str(channel_nb)) == 1:
-                self.channel_nb = 'Ch' + str(channel_nb)
+                self.channel_nb = 'Ch0' + str(channel_nb)
             elif len(str(channel_nb)) == 2:
                 self.channel_nb = 'Ch' + str(channel_nb)
         else:
