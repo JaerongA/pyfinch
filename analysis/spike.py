@@ -12,6 +12,7 @@ def load_audio(dir, format='wav'):
     """
     Load and concatenate all audio files (e.g., .wav) in the input dir (path)
     """
+    import numpy as np
     from scipy.io import wavfile
 
     # List all audio files in the dir
@@ -65,6 +66,8 @@ def get_isi(spk_ts: list):
     isi : array
         array of inter-spike intervals
     """
+    import numpy as np
+
     isi = np.array([], dtype=np.float64)
     for spk in spk_ts:
         isi = np.append(isi, np.diff(spk))
@@ -80,6 +83,7 @@ def get_peth(evt_ts: list, spk_ts: list, *duration: float):
     """
     from analysis.parameters import peth_parm
     import math
+    import numpy as np
 
     peth = np.zeros((len(evt_ts), peth_parm['bin_size'] * peth_parm['nb_bins']))  # nb of trials x nb of time bins
 
@@ -113,6 +117,8 @@ def get_pcc(fr_array):
     Returns:
         pcc_dict : dict
     """
+    import numpy as np
+
     pcc_dict = {}
     pcc_arr = np.array([])
 
@@ -133,6 +139,7 @@ class ClusterInfo:
     def __init__(self, path, channel_nb, unit_nb, format='rhd', *name, update=False, time_unit='ms'):
 
         from analysis.song import load_song
+        import numpy as np
 
         self.path = path
         if channel_nb:  # if a neuron was recorded
@@ -190,6 +197,7 @@ class ClusterInfo:
         Returns:
             sets spk_wf, spk_ts, nb_spk as attributes
         """
+        import numpy as np
 
         spk_txt_file = list(self.path.glob('*' + self.channel_nb + '(merged).txt'))
         if not spk_txt_file:
@@ -227,6 +235,7 @@ class ClusterInfo:
         Perform waveform analysis
         """
         from analysis.parameters import sample_rate, interp_factor
+        import numpy as np
 
         self.avg_wf = np.nanmean(self.spk_wf, axis=0)
         self.wf_ts = np.arange(0, self.avg_wf.shape[0]) / sample_rate[self.format] * 1E3  # x-axis in ms
@@ -278,6 +287,7 @@ class ClusterInfo:
 
         from analysis.parameters import spk_corr_parm
         import math
+        import numpy as np
 
         correlogram = {}
 
@@ -324,6 +334,7 @@ class ClusterInfo:
         """
 
         from analysis.parameters import jitter_limit
+        import numpy as np
 
         spk_ts_jittered_list = []
         for ind, spk_ts in enumerate(self.spk_ts):
@@ -343,6 +354,8 @@ class ClusterInfo:
 
         from analysis.parameters import shuffling_iter
         from collections import defaultdict
+        import numpy as np
+
 
         correlogram_jitter = defaultdict(list)
 
@@ -364,8 +377,17 @@ class ClusterInfo:
         return correlogram_jitter
 
     def get_isi(self, add_premotor_spk=False):
+        """
+        Get inter-spike interval
+        Parameters
+        ----------
+        add_premotor_spk : bool
+            add spikes from the premotor window for calculation
 
-        "Get inter-spike interval"
+        """
+
+        import numpy as np
+
         isi_dict = {}
         list_zip = zip(self.onsets, self.offsets, self.spk_ts)
 
@@ -442,6 +464,8 @@ class MotifInfo(ClusterInfo):
     def __init__(self, path, channel_nb, unit_nb, motif, format='rhd', *name, update=False):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
 
+        import numpy as np
+
         self.motif = motif
         if name:
             self.name = name[0]
@@ -464,6 +488,7 @@ class MotifInfo(ClusterInfo):
     def load_motif(self):
 
         from analysis.parameters import peth_parm
+        import numpy as np
 
         # Store values here
         file_list = []
@@ -549,7 +574,11 @@ class MotifInfo(ClusterInfo):
         open_folder(self.path)
 
     def get_note_duration(self):
-        # Calculate note & gap duration per motif
+        """
+        Calculate note & gap duration per motif
+        """
+        import numpy as np
+
         note_durations = np.empty((len(self), len(self.motif) * 2 - 1))
 
         list_zip = zip(self.onsets, self.offsets)
@@ -578,6 +607,8 @@ class MotifInfo(ClusterInfo):
         Based on each median note and gap durations
         """
         import copy
+        import numpy as np
+
 
         spk_ts_warped_list = []
         list_zip = zip(self.note_durations, self.onsets, self.offsets, self.spk_ts)
@@ -612,6 +643,8 @@ class MotifInfo(ClusterInfo):
 
     def get_mean_fr(self):
         "Mean motif firing rates"
+        import numpy as np
+
         fr_dict = {}
         motif_spk_list = []
         list_zip = zip(self.onsets, self.offsets, self.spk_ts)
@@ -660,6 +693,7 @@ class PethInfo():
         """
 
         # Set the dictionary values to class attributes
+        import numpy as np
 
         for key in peth_dict:
             setattr(self, key, peth_dict[key])
@@ -689,6 +723,7 @@ class PethInfo():
         #     time_bin = time_bin[ind]
 
         from analysis.parameters import peth_parm, gauss_std
+        import numpy as np
         from scipy.ndimage import gaussian_filter1d
 
         # Get trial-by-trial firing rates
@@ -729,6 +764,7 @@ class PethInfo():
     def get_spk_count(self):
 
         from analysis.parameters import peth_parm, spk_count_parm
+        import numpy as np
 
         win_size = spk_count_parm['win_size']
         spk_count_dict = {}
@@ -775,6 +811,8 @@ class BoutInfo(ClusterInfo):
     def __init__(self, path, channel_nb, unit_nb, song_note, format='rhd', *name, update=False):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
 
+        import numpy as np
+
         self.song_note = song_note
 
         if name:
@@ -804,6 +842,8 @@ class BoutInfo(ClusterInfo):
 
     def load_bouts(self):
         # Store values here
+        import numpy as np
+
         file_list = []
         spk_list = []
         onset_list = []
@@ -860,6 +900,7 @@ class BaselineInfo(ClusterInfo):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
 
         from analysis.parameters import baseline
+        import numpy as np
 
         if name:
             self.name = name[0]
@@ -948,6 +989,7 @@ class BaselineInfo(ClusterInfo):
         combine correlogram from undir and dir since no contextual differentiation is needed in baseline"""
 
         from analysis.parameters import spk_corr_parm
+        import numpy as np
 
         correlogram_all = super().get_correlogram(ref_spk_list, target_spk_list, normalize=False)
         correlogram = np.zeros(len(spk_corr_parm['time_bin']))
@@ -962,6 +1004,7 @@ class BaselineInfo(ClusterInfo):
     def get_jittered_corr(self):
 
         from analysis.parameters import shuffling_iter
+        import numpy as np
 
         correlogram_jitter = []
 
@@ -992,8 +1035,11 @@ class AudioData:
     Create an object that has concatenated audio signal and its timestamps
     Get all data by default; specify time range if needed
     """
+    import numpy as np
 
     def __init__(self, path, format='.wav', update=False):
+
+        import numpy as np
 
         self.path = path
         self.format = format
@@ -1023,6 +1069,8 @@ class AudioData:
 
         Returns:
         """
+        import numpy as np
+
         start = time_range[0]
         end = time_range[-1]
 
@@ -1033,6 +1081,8 @@ class AudioData:
         return self
 
     def spectrogram(self, freq_range=[300, 8000]):
+        import numpy as np
+
         self.spect, self.spect_freq, _ = spectrogram(self.data, self.sample_rate, freq_range=freq_range)
         self.spect_time = np.linspace(self.timestamp[0], self.timestamp[-1],
                                       self.spect.shape[1])  # timestamp for spectrogram
@@ -1044,6 +1094,8 @@ class AudioData:
 
 class NeuralData:
     def __init__(self, path, channel_nb, format='rhd', update=False):
+
+        import numpy as np
 
         self.path = path
         self.channel = channel_nb
@@ -1070,6 +1122,7 @@ class NeuralData:
 
         from analysis.load import read_rhd
         from analysis.parameters import sample_rate
+        import numpy as np
 
         print("")
         print("Load neural data")
@@ -1125,6 +1178,8 @@ class NeuralData:
 
         Returns:
         """
+        import numpy as np
+
         start = time_range[0]
         end = time_range[-1]
 
@@ -1142,6 +1197,7 @@ class Correlogram():
     def __init__(self, correlogram):
 
         from analysis.parameters import spk_corr_parm, burst_hz
+        import numpy as np
 
         corr_center = round(correlogram.shape[0] / 2) + 1  # center of the correlogram
         self.data = correlogram
@@ -1175,6 +1231,7 @@ class Correlogram():
         -------
         """
         from analysis.parameters import corr_burst_crit
+        import numpy as np
 
         corr_mean = correlogram_jitter.mean(axis=0)
 
@@ -1215,6 +1272,7 @@ class Correlogram():
         normalize : normalize the correlogram
         """
         import matplotlib.pyplot as plt
+        import numpy as np
         from util.draw import remove_right_top
 
         if correlogram.sum():
@@ -1247,6 +1305,7 @@ class BurstingInfo:
     def __init__(self, ClassInfo, *input_context):
 
         from analysis.parameters import burst_hz
+        import numpy as np
 
         # ClassInfo can be BaselineInfo, MotifInfo etc
         if input_context:  # select data based on social context
@@ -1362,6 +1421,7 @@ class ISI:
             Inter-spike interval array
         """
         from analysis.parameters import isi_win, isi_scale, isi_bin
+        import numpy as np
 
         self.data = isi
         self.hist, self.time_bin = np.histogram(np.log10(isi), bins=isi_bin)
