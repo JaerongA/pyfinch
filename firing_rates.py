@@ -6,18 +6,18 @@ Get mean firing rates per condition
 
 from contextlib import suppress
 
-from analysis.spike import *
+from analysis.spike import BaselineInfo, MotifInfo
 from database.load import ProjectLoader, DBInfo
+from analysis.parameters import nb_note_crit
 
 # Parameters
 update = False
-update_db = False
+update_db = True
 
 # Load database
 db = ProjectLoader().load_db()
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 1"
-# query = "SELECT * FROM cluster"
+query = "SELECT * FROM cluster WHERE analysisOK = 1"
 db.execute(query)
 
 # Loop through db
@@ -34,6 +34,9 @@ for row in db.cur.fetchall():
     bi = BaselineInfo(path, channel_nb, unit_nb, format, name, update=update)
     mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
 
+    # Get number of motifs
+    nb_motifs = mi.nb_motifs(motif)
+    nb_motifs.pop('All', None)
 
     # Calculate firing rates
     mi.get_mean_fr()
@@ -41,20 +44,15 @@ for row in db.cur.fetchall():
     # Save results to database
     if update_db:
         db.create_col('cluster', 'baselineFR', 'REAL')
-        try:
-            db.update('cluster', 'baselineFR', row['id'], round(bi.mean_fr, 3))  # baseline firing rates
-        except:
-            pass
+        db.update('cluster', 'baselineFR', row['id'], round(bi.mean_fr, 3))  # baseline firing rates
+
         db.create_col('cluster', 'motifFRUndir', 'REAL')
-        try:
+        if 'U' in mi.mean_fr and nb_motifs['U'] >= nb_note_crit:
             db.update('cluster', 'motifFRUndir', row['id'], round(mi.mean_fr['U'], 3))  # motif firing rates during Undir
-        except:
-            pass
+
         db.create_col('cluster', 'motifFRDir', 'REAL')
-        try:
+        if 'D' in mi.mean_fr and nb_motifs['D'] >= nb_note_crit:
             db.update('cluster', 'motifFRDir', row['id'], round(mi.mean_fr['D'], 3))  # motif firing rates during Dir
-        except:
-            pass
 
 # Convert db to csv
 if update_db:
