@@ -8,12 +8,11 @@ https://github.com/timsainb/python_spectrograms_and_inversion
 
 Taken from vak library by David Nicholson https://github.com/NickleDave/vak
 """
-import numpy as np
-from scipy.signal import butter, lfilter
-from matplotlib.mlab import specgram
 
 
 def butter_bandpass(lowcut, highcut, fs, order=5):
+    from scipy.signal import butter, lfilter
+
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
@@ -22,6 +21,8 @@ def butter_bandpass(lowcut, highcut, fs, order=5):
 
 
 def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
+    from scipy.signal import butter, lfilter
+
     b, a = butter_bandpass(lowcut, highcut, fs, order=order)
     y = lfilter(b, a, data)
     return y
@@ -59,6 +60,9 @@ def spectrogram(dat, samp_freq, fft_size=512, step_size=64, thresh=None, transfo
         vector of centers of frequency bins from spectrogram
 
     """
+    import numpy as np
+    from matplotlib.mlab import specgram
+
     noverlap = fft_size - step_size
 
     if freq_range:
