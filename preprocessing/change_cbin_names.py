@@ -8,7 +8,7 @@ def main(data_path=None):
 
     import os
     from pathlib import Path
-    from utilities.functions import find_data_path
+    from util.functions import find_data_path
 
     if data_path is None:
         data_path = find_data_path()

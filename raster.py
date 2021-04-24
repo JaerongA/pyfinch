@@ -31,8 +31,8 @@ def get_raster(query,
         Set True to update results to database
     """
 
-    from analysis.parameters import peth_parm, freq_range, tick_length, tick_width, note_color
-    from analysis.spike import ClusterInfo, MotifInfo, AudioData
+    from analysis.parameters import peth_parm, freq_range, tick_length, tick_width, note_color, nb_note_crit
+    from analysis.spike import MotifInfo, AudioData
     from database.load import DBInfo, ProjectLoader
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
@@ -48,7 +48,6 @@ def get_raster(query,
     text_yloc = 0.5  # text height
     font_size = 10
     marker_size = 0.4  # for spike count
-    nb_note_crit = 10  # minimum number of notes for analysis
 
     # Load database
     db = ProjectLoader().load_db()
@@ -409,8 +408,8 @@ def get_raster(query,
         # Print out results on the figure
         txt_yloc -= txt_inc
         for i, (context, ff) in enumerate(pi.fano_factor.items()):
+            txt_yloc -= txt_inc
             if nb_motifs[context] >= nb_note_crit:
-                txt_yloc -= txt_inc
                 ax_txt.text(txt_xloc, txt_yloc, f"Fano Factor ({context}) = {round(np.nanmean(ff), 3)}", fontsize=font_size)
 
         # Save results to database

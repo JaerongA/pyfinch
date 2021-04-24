@@ -76,12 +76,7 @@ bout_buffer = 100
 # Pre-motor window spike calculation
 pre_motor_win_size = 50  # in ms
 
-
-
-
-
-
-
+nb_note_crit = 10  # minimum number of notes for analysis
 
 
 # def get_syl_color():

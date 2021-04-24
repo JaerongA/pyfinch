@@ -17,7 +17,7 @@ def convert_adbit2volts(spk_waveform):
     return spk_waveform_new
 
 
-def converter(query):
+def main(query):
     """
     Input: SQL query
     Batch process from the database
@@ -57,4 +57,4 @@ def converter(query):
 if __name__ == '__main__':
 
     query = "SELECT * FROM cluster WHERE adbit_cluster IS TRUE"
-    converter(query)
+    main(query)
