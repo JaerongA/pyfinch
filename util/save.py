@@ -10,15 +10,18 @@ from pathlib import Path
 
 def make_dir(parent_path, *dir_name, add_date=True):
     """
-    add date info in the sub-directory
 
-    Args:
-        parent_dir: path
-        dir_name: str (optional), if not exists, files will be saved in parent_dir
-        add_date: bool
+    Parameters
+    ----------
+    parent_path : str
+    dir_name : str
+         (optional), if not exists, files will be saved in parent_dir
+    add_date : bool
+        make a sub-dir with a date
 
-    Returns:
-        save_path: path
+    Returns
+    -------
+    save_path : path
     """
 
     global save_path

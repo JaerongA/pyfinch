@@ -6,6 +6,7 @@ from analysis.parameters import bout_buffer, freq_range, bout_color
 from util import save
 from util.draw import *
 import matplotlib.colors as colors
+import numpy as np
 from database.load import ProjectLoader, DBInfo
 from scipy import stats
 import warnings
