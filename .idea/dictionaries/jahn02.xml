@@ -44,6 +44,7 @@
       <w>spks</w>
       <w>sqeuclidean</w>
       <w>timebins</w>
+      <w>tval</w>
       <w>uisonganal</w>
       <w>undir</w>
       <w>unwarped</w>
@@ -51,6 +52,7 @@
       <w>xloc</w>
       <w>xlsx</w>
       <w>xticks</w>
+      <w>ylabel</w>
       <w>yloc</w>
       <w>ymax</w>
     </words>
