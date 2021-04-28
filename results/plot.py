@@ -69,7 +69,6 @@ def plot_cluster_pie_chart(axis, colors, category_column_name):
 from database.load import ProjectLoader
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy import stats
 from util import save
 
 
@@ -78,11 +77,15 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
                         col_order=None,
                         x_max=0, y_max=None,
                         jitter=0.1, alpha=0.5,
-                        stats=False
+                        run_stats=False
                         ):
 
     import math
+    import numpy as np
+    from scipy import stats
     from util.functions import myround
+
+    dependent_var.replace('', np.nan, inplace=True)  # replace empty cells with np.nans (to prevent the var to be recognized as non-numeric)
 
     ax = sns.stripplot(group_var, dependent_var,
                        size=5, hue=hue_var, jitter=jitter, order=col_order,
@@ -92,39 +95,35 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
                      linewidth=bar_line_width,
                      order=col_order, errcolor=".2", edgecolor=".2")
 
-    plt.title(title)
-    plt.xlabel(xlabel), plt.ylabel(ylabel)
+    plt.title(title), plt.xlabel(xlabel), plt.ylabel(ylabel)
+
+    # Add stat comparisons
+    if run_stats:
+        group1 = dependent_var[group_var == set(group_var)[0]]
+        group2 = dependent_var[group_var == set(group_var)[1]]
+        tval, pval = stats.ttest_ind(group1, group2)
+        degree_of_freedom = len(group1) + len(group2) - 2
+
+        if pval < 0.001:  sig = '***'
+        elif pval < 0.01:  sig = '**'
+        elif pval < 0.05:  sig = '*'
+        else:  sig = 'ns'
+
+        x1, x2 = 0, 1
+        y, h, col = df['motifFRUndir'].max() + 3, 1, 'k'
+        plt.plot([x1, x1, x2, x2], [y, y + h, y + h, y], lw=1.5, c=col)
+        plt.text((x1 + x2) * .5, y + h * 1, sig, ha='center', va='bottom', color=col, size=15)
+        msg = ('$P$ = {:.3f}'.format(pval))
+        plt.text((x1 + x2) * .5, y_max * 1.2, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
+        msg = ('t({:.0f})'.format(degree_of_freedom) + ' = {:.2f}'.format(tval))
+        plt.text((x1 + x2) * .5, y_max * 1.3, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
+
     if y_max:
         plt.ylim(x_max, y_max)
     else:
         ax.set_ylim([0, myround(math.ceil(ax.get_ylim()[1]), base=15)])
     ax.spines['right'].set_visible(False), ax.spines['top'].set_visible(False)
     ax.get_legend().remove()
-
-    if stats:
-        # Stats
-        pre_deafening = df.query('taskName == "Predeafening"')[dependent_var].dropna()
-        post_deafening = df.query('taskName == "Postdeafening"')[dependent_var].dropna()
-        tval, pval = stats.ttest_ind(pre_deafening, post_deafening)
-        degree_of_freedom = len(pre_deafening) + len(post_deafening) - 2
-
-        if pval < 0.001:
-            sig = '***'
-        elif pval < 0.01:
-            sig = '**'
-        elif pval < 0.05:
-            sig = '*'
-        else:
-            sig = 'ns'
-
-        x1, x2 = 0, 1
-        y, h, col = df['motifFRUndir'].max() + 3, 1, 'k'
-        plt.plot([x1, x1, x2, x2], [y, y + h, y + h, y], lw=1.5, c=col)
-        plt.text((x1 + x2) * .5, y + h * 1, sig, ha='center', va='bottom', color=col, size=15)
-        msg = ('$P$ = {:.4f}'.format(pval))
-        plt.text((x1 + x2) * .5, y_max * 1.2, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
-        msg = ('t({:.0f})'.format(degree_of_freedom) + ' = {:.2f}'.format(tval))
-        plt.text((x1 + x2) * .5, y_max * 1.3, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
 
 
 # Load database
@@ -143,63 +142,32 @@ save_fig=False
 # Plot the results
 fig = plt.figure(figsize=(9, 4))
 plt.subplot(1, 3, 1)
-plt.suptitle('Firing Rates', y=.9, fontsize=12)
-ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
+plt.suptitle('Firing Rates', y=.9, fontsize=20)
 
 # Baseline FR
+ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
 plot_bar_comparison(ax, df['baselineFR'], df['taskName'], hue_var=df['birdID'],
                     title='Baseline', ylabel='Firing Rates (Hz)',
                     col_order=("Predeafening", "Postdeafening"),
-                    jitter=0.1,
                     )
 
-# # Undir
-# plt.subplot(1, 3, 2)
-# ax = sns.stripplot(df.TaskName, df.MotifFR_Undir,
-#                    size=5, hue=df.BirdID, jitter=True, order=["Predeafening", "Postdeafening"],
-#                    edgecolor="gray", alpha=.5, linewidth=1)
-#
-# ax = sns.barplot(df.TaskName, df.MotifFR_Undir, facecolor=(1, 1, 1, 0),
-#                  linewidth=bar_linewidth,
-#                  order=["Predeafening", "Postdeafening"], errcolor=".2", edgecolor=".2")
-#
-# plt.title('Undir')
-# plt.xlabel(''), plt.ylabel('')
-# plt.ylim(-1, y_max)
-# ax.spines['right'].set_visible(False), ax.spines['top'].set_visible(False)
-# plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-#
-# pre_deafening, post_deafening = [], []
-# pre_deafening = df.query('TaskName == "Predeafening"')['MotifFR_Undir'].dropna()
-# post_deafening = df.query('TaskName == "Postdeafening"')['MotifFR_Undir'].dropna()
-# tval, pval = stats.ttest_ind(pre_deafening, post_deafening)
-# df = len(pre_deafening) + len(post_deafening) - 2
-#
-# # msg = ('t = {:.3f}'.format(tval)' $P$ = {:.3f}'.format(pval))
-#
-#
-# # 't = ({:.3f}'.format(tval),
-# if pval < 0.001:
-#     sig = '***'
-# elif pval < 0.01:
-#     sig = '**'
-# elif pval < 0.05:
-#     sig = '*'
-# else:
-#     sig = 'ns'
-#
-# x1, x2 = 0, 1
-# y, h, col = df['MotifFR_Undir'].max() + 3, 1, 'k'
-# plt.plot([x1, x1, x2, x2], [y, y + h, y + h, y], lw=1.5, c=col)
-# plt.text((x1 + x2) * .5, y + h * 2, sig, ha='center', va='bottom', color=col, size=12)
-# msg = ('$P$ = {:.4f}'.format(pval))
-# plt.text((x1 + x2) * .5, y_max * 1.2, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
-# msg = ('t({:.0f})'.format(df) + ' = {:.2f}'.format(tval))
-# plt.text((x1 + x2) * .5, y_max * 1.3, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
-#
-# # plt.tight_layout()
-# Save results
+# Undir
+ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
+plot_bar_comparison(ax, df['motifFRUndir'], df['taskName'], hue_var=df['birdID'],
+                    title='Undir',
+                    col_order=("Predeafening", "Postdeafening"),
+                    )
 
+# Dir
+ax = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=2, colspan=1)
+plot_bar_comparison(ax, df['motifFRDir'], df['taskName'], hue_var=df['birdID'],
+                    title='Dir',
+                    col_order=("Predeafening", "Postdeafening"),
+                    )
+
+
+plt.tight_layout()
+# Save results
 if save_fig:
     save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
     save.save_fig(fig, save_path, 'Firing Rates', fig_ext='.png')
