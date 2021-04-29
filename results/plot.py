@@ -38,13 +38,18 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
     dependent_var.replace('', np.nan,
                           inplace=True)  # replace empty cells with np.nans (to prevent the var to be recognized as non-numeric)
 
-    ax = sns.stripplot(group_var, dependent_var,
-                       size=5, hue=hue_var, jitter=jitter, order=col_order,
-                       edgecolor="gray", alpha=alpha, linewidth=1)
+    if hue_var is not None:
+        ax = sns.stripplot(group_var, dependent_var,
+                           size=5, hue=hue_var, jitter=jitter, order=col_order,
+                           edgecolor="k", alpha=alpha, linewidth=1, zorder=1)
+    else:
+        ax = sns.stripplot(group_var, dependent_var,
+                           size=5, color="w", jitter=jitter, order=col_order,
+                           edgecolor="k", alpha=alpha, linewidth=1, zorder=1)
 
     ax = sns.barplot(group_var, dependent_var, ax=ax, facecolor=(1, 1, 1, 0),
                      linewidth=1,
-                     order=col_order, errcolor=".2", edgecolor=".2")
+                     order=col_order, errcolor=".2", edgecolor=".2", zorder=0)
     title += '\n\n\n'
     plt.title(title), plt.xlabel(xlabel), plt.ylabel(ylabel)
 
@@ -78,7 +83,8 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
     else:
         ax.set_ylim([0, myround(math.ceil(y), base=10)])
     ax.spines['right'].set_visible(False), ax.spines['top'].set_visible(False)
-    if legend_ok:
+
+    if legend_ok and hue_var is not None:
         plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     else:
         ax.get_legend().remove()
@@ -90,30 +96,25 @@ def plot_cluster_pie_chart(axis, colors, category_column_name):
 
 
 
-from database.load import ProjectLoader
-import matplotlib.pyplot as plt
-from util import save
-
-# Load database
-db = ProjectLoader().load_db()
-# # SQL statement
-df = db.to_dataframe("SELECT unitCategoryUndir FROM cluster WHERE ephysOK=TRUE")
-unit_category = df['unitCategoryUndir']
-
-explode = (0.1, 0)
-colors = ['#66b3ff', '#ff9999']
-values = [sum(unit_category == 'Bursting'), sum(unit_category == 'NonBursting')]
-
-fig, ax = plt.subplots()
-ax.pie(values, explode=explode, colors=colors,
-        shadow=True, labels=unit_category.unique(), startangle=90,
-        autopct=lambda p: '{:.2f}%  ({:,.0f})'.format(p, p * sum(values) / 100))
-
-plt.title('Unit Category (Undir)')
-ax.axis('equal')
-
-plt.show()
-
-# summary = summary[summary['UnitCategory_Undir'] == 'Bursting']
-# labels=UnitCategory.unique()
-# print(labels)
+# from database.load import ProjectLoader
+# import matplotlib.pyplot as plt
+# from util import save
+#
+# # Load database
+# db = ProjectLoader().load_db()
+# # # SQL statement
+# df = db.to_dataframe("SELECT unitCategoryUndir FROM cluster WHERE ephysOK=TRUE")
+# unit_category = df['unitCategoryUndir']
+#
+# explode = (0.1, 0)
+# colors = ['#66b3ff', '#ff9999']
+# values = [sum(unit_category == 'Bursting'), sum(unit_category == 'NonBursting')]
+#
+# fig, ax = plt.subplots()
+# ax.pie(values, explode=explode, colors=colors,
+#         shadow=True, labels=unit_category.unique(), startangle=90,
+#         autopct=lambda p: '{:.2f}%  ({:,.0f})'.format(p, p * sum(values) / 100))
+#
+# plt.title('Unit Category (Undir)')
+# ax.axis('equal')
+# plt.show()

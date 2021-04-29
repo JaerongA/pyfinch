@@ -19,27 +19,30 @@ save_fig = True
 fig_ext = '.png'
 
 # Plot the results
-fig, ax1 = plt.subplots(figsize=(9, 4))
-ax1.text(0, 0.9, 'here', fontsize=15)
+fig, ax = plt.subplots(figsize=(9, 4))
+ax.text(0, 0.9, 'here', fontsize=15)
 plt.suptitle('Firing Rates', y=.9, fontsize=20)
 
 # Baseline FR
 ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['baselineFR'], df['taskName'], hue_var=df['birdID'],
+plot_bar_comparison(ax, df['baselineFR'], df['taskName'],
+                    hue_var=df['birdID'],
                     title='Baseline', ylabel='Firing Rates (Hz)',
                     col_order=("Predeafening", "Postdeafening"),
                     )
 
 # Undir
 ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['motifFRUndir'], df['taskName'], hue_var=df['birdID'],
+plot_bar_comparison(ax, df['motifFRUndir'], df['taskName'],
+                    hue_var=df['birdID'],
                     title='Undir',
                     col_order=("Predeafening", "Postdeafening"),
                     )
 
 # Dir
 ax = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['motifFRDir'], df['taskName'], hue_var=df['birdID'],
+plot_bar_comparison(ax, df['motifFRDir'], df['taskName'],
+                    hue_var=df['birdID'],
                     title='Dir',
                     col_order=("Predeafening", "Postdeafening"),
                     legend_ok=True
