@@ -15,12 +15,11 @@ df.set_index('id')
 # Parameters
 nb_row = 3
 nb_col = 3
-save_fig = True
+save_fig = False
 fig_ext = '.png'
 
 # Plot the results
 fig, ax = plt.subplots(figsize=(9, 4))
-ax.text(0, 0.9, 'here', fontsize=15)
 plt.suptitle('Firing Rates', y=.9, fontsize=20)
 
 # Baseline FR

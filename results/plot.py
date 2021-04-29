@@ -55,9 +55,9 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
 
     # Add stat comparisons
     if run_stats:
-        group1 = dependent_var[group_var == list(set(group_var))[0]]
-        group2 = dependent_var[group_var == list(set(group_var))[1]]
-        tval, pval = stats.ttest_ind(group1, group2, nan_policy='omit')
+        group1 = dependent_var[group_var == list(set(group_var))[0]].dropna()
+        group2 = dependent_var[group_var == list(set(group_var))[1]].dropna()
+        tval, pval = stats.ttest_ind(group2, group1, nan_policy='omit')
         degree_of_freedom = len(group1) + len(group2) - 2
 
         if pval < 0.001:
@@ -70,13 +70,16 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
             sig = 'ns'
 
         x1, x2 = 0, 1
-        y, h, col = ax.get_ylim()[1] * 1.01, 0.2, 'k'
+        y, h, col = ax.get_ylim()[1] * 1.02, 0, 'k'
         plt.plot([x1, x1, x2, x2], [y, y + h, y + h, y], lw=1, c=col)
-        plt.text((x1 + x2) * .5, y + h * 1, sig, ha='center', va='bottom', color=col, size=stat_txt_size)
-        msg = ('$P$ = {:.3f}'.format(pval))
-        plt.text((x1 + x2) * .5, y * 1.1, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
+        plt.text((x1 + x2) * .5, y + h * 1.1, sig, ha='center', va='bottom', color=col, size=stat_txt_size)
+        if sig == '***':  # mark significance
+            msg = ('$P$ < 0.001')
+        else:
+            msg = ('$P$ = {:.3f}'.format(pval))
+        plt.text((x1 + x2) * .5, y * 1.15, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
         msg = ('t({:.0f})'.format(degree_of_freedom) + ' = {:.2f}'.format(tval))
-        plt.text((x1 + x2) * .5, y * 1.2, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
+        plt.text((x1 + x2) * .5, y * 1.3, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
 
     if y_max:
         plt.ylim(x_max, y_max)
