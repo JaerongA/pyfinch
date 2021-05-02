@@ -1,4 +1,7 @@
--- Store results from firing rates, waveform metrics, bursting, ISI analysis
+DROP TABLE IF EXISTS unit_profile;
+
+-- Create unit_profile table
+-- Take values from cluster db
 CREATE TABLE IF NOT EXISTS unit_profile(
             clusterID     INTEGER NOT NULL UNIQUE,
             birdID         STRING,
@@ -50,4 +53,9 @@ CREATE TABLE IF NOT EXISTS unit_profile(
             isiPeakLatencyDir        REAL,
             isiCVDir                 REAL,
 
-            FOREIGN KEY(clusterID) REFERENCES cluster(id))
+            FOREIGN KEY(clusterID) REFERENCES cluster(id));
+
+INSERT OR IGNORE INTO unit_profile (clusterID, birdID, taskName, taskSession, site, channel, unit, region)
+SELECT id, birdID, taskName, taskSession, site, channel, unit, region FROM main.cluster
+WHERE ephysOK is TRUE
+
