@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS unit_profile(
             channel        STRING,
             unit           STRING,
             region         STRING,
+
             SNR                      REAL,
             spkHeight                REAL,
             spkWidth                 REAL,
@@ -19,7 +20,7 @@ CREATE TABLE IF NOT EXISTS unit_profile(
             baselineFR               REAL,
             motifFRUndir             REAL,
             motifFRDir               REAL,
-            unitCategoryBaseline     STRING,
+
             unitCategoryUndir        STRING,
             unitCategoryDir          STRING,
 

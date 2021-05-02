@@ -4,8 +4,6 @@ Run firing rate analysis
 Get mean firing rates per condition
 """
 
-from contextlib import suppress
-
 from analysis.spike import BaselineInfo, MotifInfo
 from database.load import ProjectLoader, DBInfo
 from analysis.parameters import nb_note_crit

@@ -142,7 +142,7 @@ for row in db.cur.fetchall():
             (SELECT birdID, taskName, taskSession, site, channel, unit, region  FROM cluster WHERE cluster.id = unit_profile.clusterID)''')
         db.conn.commit()
 
-
+        # Add results
 #         # Baseline
 #         db.create_col('cluster', 'burstDurationBaseline', 'REAL')
 #         db.update('cluster', 'burstDurationBaseline', row['id'], burst_info_b.mean_duration)

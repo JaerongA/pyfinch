@@ -1,6 +1,6 @@
 -- By Jaerong
 -- Create table for song data based on cluster table
-
+--
 -- CREATE TABLE IF NOT EXISTS song2
 -- (
 -- birdID                   STRING  not null,
@@ -18,8 +18,8 @@
 --                 taskSessionPostDeafening, dph, block10days, sessionDate,
 --                 songNote, motif, introNotes, calls, callSeqeunce
 -- FROM cluster;
-
-
+--
+--
 -- CREATE TABLE song2 AS
 --     SELECT DISTINCT birdID, taskName, taskSession, taskSessionDeafening,
 --                 taskSessionPostDeafening, dph, block10days, sessionDate,
