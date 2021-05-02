@@ -41,9 +41,6 @@ class Database:
     def execute(self, query):
         # Get column names
         self.cur.execute(query)
-        self.row = self.cur.fetchone()
-        self.col_names = self.row.keys()
-        self.cur.execute(query)
 
     def create_col(self, table, col_name, type):
         """
@@ -57,14 +54,22 @@ class Database:
                 data type for the column (e.g, TEXT, INT)
 
         """
-        if col_name not in self.col_names:
+        if col_name not in self.col_names(table):
             self.cur.execute("ALTER TABLE {} ADD COLUMN {} {}".format(table, col_name, type))
 
-    def update(self, table, col_name, id, value=None):
+    def col_names(self, table) -> list:
+        self.cur.execute(f"PRAGMA table_info({table})")
+        columns = self.cur.fetchall()
+        return [x[1] for x in columns]
 
-        if value:
-            self.cur.execute("UPDATE {} SET {} = ? WHERE id = ?".format(table, col_name), (value, id))
-            self.conn.commit()
+    def update(self, table, col_name, condition_col=None, condition_value=None, value=None):
+
+        if condition_col is not None:
+            self.cur.execute("UPDATE {} SET {} = ? WHERE {} = ?".format(table, col_name, condition_col), (value, condition_value))
+        else:
+            self.cur.execute("UPDATE {} SET {} = ? WHERE {} = ?".format(table, col_name, condition_col), (value, condition_value))
+        self.conn.commit()
+
 
     def to_csv(self, table, add_date=True, open_folder=True):
         """
