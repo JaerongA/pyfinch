@@ -324,7 +324,7 @@ class ClusterInfo:
 
         return correlogram
 
-    def jitter_spk_ts(self, reproducible=False):
+    def jitter_spk_ts(self, shuffle_limit, reproducible=True):
         """
         Add a random temporal jitter to the spike
         Parameters
@@ -333,7 +333,7 @@ class ClusterInfo:
             make the results reproducible by setting the seed as equal to index
         """
 
-        from analysis.parameters import jitter_limit
+        from analysis.parameters import corr_shuffle
         import numpy as np
 
         spk_ts_jittered_list = []
@@ -346,21 +346,21 @@ class ClusterInfo:
                 seed = np.random.randint(len(self.spk_ts), size=1)
                 np.random.seed(seed)  # make random jitter reproducible
             nb_spk = spk_ts.shape[0]
-            jitter = np.random.uniform(-jitter_limit, jitter_limit, nb_spk)
+            jitter = np.random.uniform(-shuffle_limit, shuffle_limit, nb_spk)
             spk_ts_jittered_list.append(spk_ts + jitter)
         self.spk_ts_jittered = spk_ts_jittered_list
 
     def get_jittered_corr(self):
 
-        from analysis.parameters import shuffling_iter
+        from analysis.parameters import corr_shuffle
         from collections import defaultdict
         import numpy as np
 
 
         correlogram_jitter = defaultdict(list)
 
-        for iter in range(shuffling_iter):
-            self.jitter_spk_ts()
+        for iter in range(corr_shuffle['shuffle_iter']):
+            self.jitter_spk_ts(corr_shuffle['shuffle_limit'])
             corr_temp = self.get_correlogram(self.spk_ts_jittered, self.spk_ts_jittered)
             # Combine correlogram from two contexts
             for key, value in corr_temp.items():
@@ -663,15 +663,45 @@ class MotifInfo(ClusterInfo):
         # print("mean_fr added")
         self.mean_fr = fr_dict
 
-    def get_peth(self, time_warp=True):
+    def jitter_spk_ts(self, shuffle_limit, reproducible=True):
+        """
+        Add a random temporal jitter to the spike
+        This version limit the jittered timestamp within the motif window
+        Parameters
+        ----------
+        reproducible : bool
+            make the results reproducible by setting the seed as equal to index
+        """
+
+        from analysis.parameters import corr_shuffle
+        import numpy as np
+
+        spk_ts_jittered_list = []
+        for ind, spk_ts in enumerate(self.spk_ts):
+            if reproducible:  # randomization seed
+                seed = ind
+                np.random.seed(seed)  # make random jitter reproducible
+            else:
+                seed = np.random.randint(len(self.spk_ts), size=1)
+                np.random.seed(seed)  # make random jitter reproducible
+            nb_spk = spk_ts.shape[0]
+            jitter = np.random.uniform(-shuffle_limit, shuffle_limit, nb_spk)
+            
+            spk_ts_jittered_list.append(spk_ts + jitter)
+        self.spk_ts_jittered = spk_ts_jittered_list
+
+    def get_peth(self, time_warp=True, shuffle=False):
         """Get peri-event time histograms & rasters during song motif"""
         peth_dict = {}
-        if time_warp:  # peth calculated from time-warped spikes by default
-            # peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
-            peth, time_bin = get_peth(self.onsets, self.spk_ts_warp)
+
+        if shuffle:
+            peth, time_bin = get_peth(self.onsets, self.spk_ts_jittered)
         else:
-            # peth, time_bin = get_peth(self.onsets, self.spk_ts, self.median_durations.sum())
-            peth, time_bin = get_peth(self.onsets, self.spk_ts)
+            if time_warp:  # peth calculated from time-warped spikes by default
+                # peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
+                peth, time_bin = get_peth(self.onsets, self.spk_ts_warp)
+            else:
+                peth, time_bin = get_peth(self.onsets, self.spk_ts)
 
         peth_dict['peth'] = peth
         peth_dict['time_bin'] = time_bin
@@ -1001,13 +1031,13 @@ class BaselineInfo(ClusterInfo):
 
     def get_jittered_corr(self):
 
-        from analysis.parameters import shuffling_iter
+        from analysis.parameters import corr_shuffle
         import numpy as np
 
         correlogram_jitter = []
 
-        for iter in range(shuffling_iter):
-            self.jitter_spk_ts()
+        for iter in range(corr_shuffle['shuffle_iter']):
+            self.jitter_spk_ts(corr_shuffle['shuffle_limit'])
             corr_temp = self.get_correlogram(self.spk_ts_jittered, self.spk_ts_jittered)
             correlogram_jitter.append(corr_temp)
 

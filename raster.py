@@ -4,6 +4,7 @@ plot raster & peth
 """
 
 def get_raster(query,
+               shuffled_baseline = False,
                norm_method = None,
                fig_ext = '.png',
                time_warp = True,
@@ -17,6 +18,8 @@ def get_raster(query,
     ----------
     query : str
         SQL selection statement from cluster database
+    shuffled_baseline : bool
+        Get PETH from shuffled spikes for getting pcc baseline
     norm_method : bool
         Set True to normalize firing rates
     fig_ext : str
@@ -76,7 +79,7 @@ def get_raster(query,
         # if nb_motifs['U'] < nb_note_crit and nb_motifs['D'] < nb_note_crit:
         #     print("Not enough motifs")
         #     continue
-
+        break
         # Plot spectrogram & peri-event histogram (Just the first rendition)
         # for onset, offset in zip(mi.onsets, mi.offsets):
         onsets = mi.onsets[0]
@@ -324,6 +327,16 @@ def get_raster(query,
         plt.setp(ax_peth.get_xticklabels(), visible=False)
         remove_right_top(ax_peth)
 
+        # Get shuffled PETH
+        for iter in range(peth_shuffle['shuffle_iter']):
+            mi.jitter_spk_ts(peth_shuffle['shuffle_limit'])
+
+        ## TODO : spike shuffle for motif
+
+
+
+
+
         # Calculate pairwise cross-correlation
         pi.get_pcc()
 
@@ -457,15 +470,17 @@ def get_raster(query,
 if __name__ == '__main__':
 
     # Parameters
+    shuffled_baseline = True
     fig_ext = '.png'
     time_warp = True
-    update = False
-    save_fig = True
-    update_db = True
+    update = False  # update the cache file
+    save_fig = False
+    update_db = False
     # Select from cluster db
-    query = "SELECT * FROM cluster WHERE analysisOK = 1"
+    # query = "SELECT * FROM cluster WHERE analysisOK = 1"
+    query = "SELECT * FROM cluster WHERE id = 96"
 
-    get_raster(query, fig_ext=fig_ext, time_warp=time_warp,
+    get_raster(query, shuffled_baseline, fig_ext=fig_ext, time_warp=time_warp,
                    update=update,
                    save_fig=save_fig,
                    update_db=update_db)

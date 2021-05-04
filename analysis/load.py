@@ -25,7 +25,7 @@ def read_spk_txt(spk_txt_file, *unit_nb, unit='second'):
     nb_spk = spk_waveform.shape[0]  # total number of spikes
 
     # units are in second by default, but convert to  millisecond with the argument
-    if unit is 'ms':
+    if unit == 'ms':
         spk_ts *= 1E3
 
     return spk_ts, spk_waveform, nb_spk

@@ -61,6 +61,11 @@ isi_scale = 100
 isi_bin = np.arange(0, isi_win, 1 / isi_scale)
 
 # Correlogram
+corr_shuffle = {''
+                '' : 5,  # in ms
+                'shuffle_iter' : 100  # bootstrap iterations
+               }
+
 shuffling_iter = 100  # shuffling iteration for obtaining baseline
 
 # Add a random spike jitter
@@ -77,6 +82,11 @@ bout_buffer = 100
 pre_motor_win_size = 50  # in ms
 
 nb_note_crit = 10  # minimum number of notes for analysis
+
+# Spike shuffling parameter for peth for getting baseline PCC
+peth_shuffle = {'shuffle_limit' : 50,  # in ms
+                'shuffle_iter' : 100  # bootstrap iterations
+                }
 
 
 # def get_syl_color():
