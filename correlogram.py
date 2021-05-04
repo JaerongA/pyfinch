@@ -57,7 +57,7 @@ with open('database/create_unit_profile.sql', 'r') as sql_file:
     db.conn.executescript(sql_file.read())
 
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 96"
+query = "SELECT * FROM cluster WHERE id = 9"
 # query = "SELECT * FROM cluster WHERE ephysOK=True"
 db.execute(query)
 
@@ -145,78 +145,34 @@ for row in db.cur.fetchall():
     if update_db:
 
         # Baseline
-        db.create_col('unit_profile', 'burstDurationBaseline', 'REAL')
         if corr_b:
+
+            # query = '''UPDATE unit_profile
+            #         SET burstDurationBaseline = ?, burstDurationBaseline = ?, burstDurationBaseline = ?, burstDurationBaseline = ?, burstDurationBaseline = ?
+            #         WHERE clusterID = ?'''
+            # db.cur.execute(query, (burst_info_b.mean_duration, burst_info_b.freq, burst_info_b.mean_nb_spk, burst_info_b.fraction, corr_b.burst_index, cluster_db.id))
             db.cur.execute(f"UPDATE unit_profile SET burstDurationBaseline = ({burst_info_b.mean_duration}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'burstFreqBaseline', 'REAL')
-        if corr_b:
             db.cur.execute(f"UPDATE unit_profile SET burstFreqBaseline = ({burst_info_b.freq}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'burstMeanNbSpkBaseline', 'REAL')
-        if corr_b:
             db.cur.execute(f"UPDATE unit_profile SET burstMeanNbSpkBaseline = ({burst_info_b.mean_nb_spk}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'burstFractionBaseline', 'REAL')
-        if corr_b:
             db.cur.execute(f"UPDATE unit_profile SET burstFractionBaseline = ({burst_info_b.fraction}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'unitCategoryBaseline', 'STRING')
-        if corr_b:
-            db.cur.execute(f"UPDATE unit_profile SET unitCategoryBaseline = ({str(corr_b.category)}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'burstIndexBaseline', 'REAL')
-        if corr_b:
             db.cur.execute(f"UPDATE unit_profile SET burstIndexBaseline = ({corr_b.burst_index}) WHERE clusterID = ({cluster_db.id})")
 
         # Undir
-        db.create_col('unit_profile', 'burstDurationUndir', 'REAL')
         if corr_u:
             db.cur.execute(f"UPDATE unit_profile SET burstDurationUndir = ({burst_info_u.mean_duration}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'burstFreqUndir', 'REAL')
-        if corr_u:
             db.cur.execute(f"UPDATE unit_profile SET burstFreqUndir = ({burst_info_u.freq}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'burstMeanNbSpkUndir', 'REAL')
-        if corr_u:
             db.cur.execute(f"UPDATE unit_profile SET burstMeanNbSpkUndir = ({burst_info_u.mean_nb_spk}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'burstFractionUndir', 'REAL')
-        if corr_u:
             db.cur.execute(f"UPDATE unit_profile SET burstFractionUndir = ({burst_info_u.fraction}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'unitCategoryUndir', 'STRING')
-        if corr_u:
-            db.cur.execute(f"UPDATE unit_profile SET unitCategoryUndir = ({str(corr_u.category)}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'burstIndexUndir', 'REAL')
-        if corr_u:
+            db.cur.execute("UPDATE {} SET {} = ? WHERE {} = ?".format('unit_profile', 'unitCategoryUndir', 'clusterID'), (corr_u.category, cluster_db.id))
             db.cur.execute(f"UPDATE unit_profile SET burstIndexUndir = ({corr_u.burst_index}) WHERE clusterID = ({cluster_db.id})")
 
         # Dir
-        db.create_col('unit_profile', 'burstDurationDir', 'REAL')
         if corr_d:
             db.cur.execute(f"UPDATE unit_profile SET burstDurationDir = ({burst_info_d.mean_duration}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'burstFreqDir', 'REAL')
-        if corr_d:
             db.cur.execute(f"UPDATE unit_profile SET burstFreqDir = ({burst_info_d.freq}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'burstMeanNbSpkDir', 'REAL')
-        if corr_d:
             db.cur.execute(f"UPDATE unit_profile SET burstMeanNbSpkDir = ({burst_info_d.mean_nb_spk}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'burstFractionDir', 'REAL')
-        if corr_d:
             db.cur.execute(f"UPDATE unit_profile SET burstFractionDir = ({burst_info_d.fraction}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'unitCategoryDir', 'STRING')
-        if corr_d:
-            db.cur.execute(f"UPDATE unit_profile SET unitCategoryDir = ({str(corr_d.category)}) WHERE clusterID = ({cluster_db.id})")
-
-        db.create_col('unit_profile', 'burstIndexDir', 'REAL')
-        if corr_d:
+            db.cur.execute("UPDATE {} SET {} = ? WHERE {} = ?".format('unit_profile', 'unitCategoryDir', 'clusterID'), (corr_d.category, cluster_db.id))
             db.cur.execute(f"UPDATE unit_profile SET burstIndexDir = ({corr_d.burst_index}) WHERE clusterID = ({cluster_db.id})")
         db.conn.commit()
 

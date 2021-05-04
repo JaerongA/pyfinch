@@ -11,7 +11,7 @@ def main():
     # Load database
     db = ProjectLoader().load_db()
     # SQL statement
-    query = "SELECT * FROM cluster WHERE ephysOK = 1"
+    query = "SELECT * FROM cluster WHERE analysisOK = 1"
     db.execute(query)
 
     # Loop through db

@@ -1,3 +1,5 @@
+## TODO: combine firing rates, correlogram, isi, not finished yet
+
 from analysis.parameters import spk_corr_parm
 from analysis.spike import *
 from database.load import ProjectLoader, DBInfo

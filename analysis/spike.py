@@ -609,7 +609,6 @@ class MotifInfo(ClusterInfo):
         import copy
         import numpy as np
 
-
         spk_ts_warped_list = []
         list_zip = zip(self.note_durations, self.onsets, self.offsets, self.spk_ts)
 
@@ -618,7 +617,7 @@ class MotifInfo(ClusterInfo):
             onset = np.asarray(list(map(float, onset)))
             offset = np.asarray(list(map(float, offset)))
             # Make a deep copy of spk_ts so as to make it modification won't affect the original
-            spk_new = copy.deepcopy(spk_ts)
+            spk_ts_new = copy.deepcopy(spk_ts)
 
             # Calculate note & interval duration
             timestamp = [[onset, offset] for onset, offset in zip(onset, offset)]
@@ -636,9 +635,9 @@ class MotifInfo(ClusterInfo):
                 ind, spk_ts_temp = extract_ind(spk_ts, [timestamp[i], timestamp[i + 1]])
                 spk_ts_temp = ((ratio * ((spk_ts_temp - timestamp[0]) - diff)) + origin) + timestamp[0]
                 # spk_ts_new = np.append(spk_ts_new, spk_ts_temp)
-                np.put(spk_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
+                np.put(spk_ts_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
 
-            spk_ts_warped_list.append(spk_new)
+            spk_ts_warped_list.append(spk_ts_new)
         return spk_ts_warped_list
 
     def get_mean_fr(self):
@@ -785,8 +784,7 @@ class PethInfo():
                 spk_arr = spk_arr[:, :ind.shape[0]]
 
                 spk_count = spk_arr.sum(axis=0)
-                fano_factor = spk_arr.var(axis=0) / spk_arr.mean(
-                    axis=0)  # per time window (across renditions) (renditions x time window)
+                fano_factor = spk_arr.var(axis=0) / spk_arr.mean(axis=0)  # per time window (across renditions) (renditions x time window)
                 spk_count_cv = spk_count.std(axis=0) / spk_count.mean(axis=0)  # cv across time (single value)
 
                 # store values in a dictionary
@@ -1254,7 +1252,7 @@ class Correlogram():
         return self.category
 
     def plot_corr(self, ax, time_bin, correlogram,
-                  title,
+                  title, xlabel=None, ylabel=None,
                   font_size=10,
                   peak_line_width=0.8,
                   normalize=False,
@@ -1282,11 +1280,11 @@ class Correlogram():
             ax.set_ylim(0, ymax)
             plt.yticks([0, ax.get_ylim()[1]], [str(0), str(int(ymax))])
             ax.set_title(title, size=font_size)
-            ax.set_xlabel('Time (ms)')
+            ax.set_xlabel(xlabel)
             if normalize:
-                ax.set_ylabel('Prob')
+                ax.set_ylabel(ylabel)
             else:
-                ax.set_ylabel('Count')
+                ax.set_ylabel(ylabel)
             remove_right_top(ax)
 
             if peak_line and not np.isnan(self.peak_ind):
@@ -1390,19 +1388,14 @@ class BurstingInfo:
         if sum(nb_burst_spk_list):
             self.spk_list = burst_spk_list
             self.nb_burst_spk = sum(nb_burst_spk_list)
-            self.fraction = round(sum(nb_burst_spk_list) / sum([len(spks) for spks in spk_list]), 3)
+            self.fraction = (round(sum(nb_burst_spk_list) / sum([len(spks) for spks in spk_list]), 3)) * 100
             self.duration = round((burst_duration_arr).sum(), 3)  # total duration
             self.freq = round(nb_bursts.sum() / sum(duration_list), 3)
             self.mean_nb_spk = round(np.array(nb_burst_spk_list).mean(), 3)
             self.mean_duration = round(burst_duration_arr.mean(), 3)  # mean duration
         else:  # no burst spike detected
-            self.spk_list = np.nan
-            self.nb_burst_spk = np.nan
-            self.fraction = np.nan
-            self.duration = np.nan
-            self.freq = np.nan
-            self.mean_nb_spk = np.nan
-            self.mean_duration = np.nan
+            self.spk_list = []
+            self.nb_burst_spk = self.fraction = self.duration = self.freq = self.mean_nb_spk = self.mean_duration = np.nan
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])

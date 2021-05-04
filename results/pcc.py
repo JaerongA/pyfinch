@@ -2,8 +2,9 @@
 
 from database.load import ProjectLoader
 import matplotlib.pyplot as plt
-from util import save
 from results.plot import plot_bar_comparison
+import seaborn as sns
+from util import save
 import numpy as np
 
 # Load database
@@ -14,12 +15,12 @@ df.set_index('id')
 
 # Parameters
 nb_row = 3
-nb_col = 3
-save_fig = False
+nb_col = 4
+save_fig = True
 fig_ext = '.png'
 
 # Plot the results
-fig, ax1 = plt.subplots(figsize=(9.5, 4))
+fig, ax = plt.subplots(figsize=(10, 4))
 plt.suptitle('Pairwise CC', y=.9, fontsize=20)
 
 # Undir
@@ -42,7 +43,6 @@ fig.tight_layout()
 
 
 # Undir (paired comparisons)
-import seaborn as sns
 
 pcc_mean_per_condition = df.groupby(['birdID','taskName'])['pairwiseCorrUndir'].mean().to_frame()
 pcc_mean_per_condition.reset_index(inplace = True)
@@ -56,7 +56,7 @@ ax = sns.pointplot(x='taskName', y='pairwiseCorrUndir', hue = 'birdID',
 
 ax.spines['right'].set_visible(False),ax.spines['top'].set_visible(False)
 
-title = 'Undir (Paired Comparison'
+title = 'Undir (Paired Comparison)'
 title += '\n\n\n'
 
 plt.title(title)

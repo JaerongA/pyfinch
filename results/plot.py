@@ -77,9 +77,9 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
             msg = ('$P$ < 0.001')
         else:
             msg = ('$P$ = {:.3f}'.format(pval))
-        plt.text((x1 + x2) * .5, y * 1.15, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
+        plt.text((x1 + x2) * .5, y * 1.1, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
         msg = ('t({:.0f})'.format(degree_of_freedom) + ' = {:.2f}'.format(tval))
-        plt.text((x1 + x2) * .5, y * 1.3, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
+        plt.text((x1 + x2) * .5, y * 1.2, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
 
     if y_max:
         plt.ylim(x_max, y_max)

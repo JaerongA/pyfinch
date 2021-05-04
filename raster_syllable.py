@@ -14,6 +14,7 @@ from database.load import DBInfo, ProjectLoader
 from util import save
 from util.draw import *
 from util.spect import *
+from analysis.parameters import pre_motor_win_size
 
 # parameters
 rec_yloc = 0.05
@@ -26,7 +27,7 @@ nb_note_crit = 10  # minimum number of notes for analysis
 norm_method = None
 fig_ext = '.png'  # .png or .pdf
 update = False  # Set True for recreating a cache file
-save_fig = True
+save_fig = False
 update_db = False  # save results to DB
 time_warp = True  # spike time warping
 
@@ -53,31 +54,57 @@ for row in db.cur.fetchall():
     motif = cluster_db.motif
     # Load class object
     ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
-    # mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
+    mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
 
     import copy
 
     syllables = ''.join(ci.syllables)
-
     onsets = np.hstack(ci.onsets)
     offsets = np.hstack(ci.offsets)
     durations = np.hstack(ci.durations)
+    spk_ts = np.hstack(ci.spk_ts)
+    contexts = ''
+    for i in range(len(ci.contexts)):
+        contexts += ci.contexts[i] * len(ci.syllables[i])
 
     for note in cluster_db.songNote:
-        print(note)
         ind = np.array(find_str(syllables, note))  # note indices
+        note_onsets = np.asarray(list(map(float, onsets[ind])))
+        note_offsets = np.asarray(list(map(float, offsets[ind])))
         note_durations = np.asarray(list(map(float, durations[ind])))
-        median_dur = np.median(note_durations, axis=0)
+        note_contexts = ''.join(np.asarray(list(contexts))[ind])
+        note_median_dur = np.median(note_durations, axis=0)
+
+        note_spk_ts_list = []
+        for onset, offset in zip(note_onsets, note_offsets):
+            note_spk_ts_list.append(spk_ts[np.where((spk_ts >= onset - pre_motor_win_size) & (spk_ts <= offset))])
+
+        note_spk_ts_warped_list = []
+
+        for onset, duration, spk_ts in zip(note_onsets, note_durations, note_spk_ts_list):
+
+            spk_ts_new = copy.deepcopy(spk_ts)
+            ratio = note_median_dur / duration
+            offset = 0
+            origin = 0
+
+            spk_ts_temp, ind = spk_ts[spk_ts >= onset], np.where(spk_ts >= onset)
+
+            spk_ts_temp = ((ratio * ((spk_ts_temp - timestamp[0]) - diff)) + origin) + timestamp[0]
+            # spk_ts_new = np.append(spk_ts_new, spk_ts_temp)
+
+            spk_ts_warp
 
 
 
+            np.put(spk_ts_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
 
 
 
 
     motif_note_durations = mi.median_durations[np.arange(0, len(mi.motif)*2-1, 2)]
     spk_ts_warped_list = []
-    list_zip = zip(self.note_durations, self.onsets, self.offsets, self.spk_ts)
+    list_zip = zip(mi.note_durations, mi.onsets, mi.offsets, mi.spk_ts)
 
     for motif_ind, (durations, onset, offset, spk_ts) in enumerate(list_zip):  # per motif
 
@@ -90,13 +117,13 @@ for row in db.cur.fetchall():
         timestamp = [[onset, offset] for onset, offset in zip(onset, offset)]
         timestamp = sum(timestamp, [])
 
-        for i in range(0, len(self.median_durations)):
-            ratio = self.median_durations[i] / durations[i]
+        for i in range(0, len(mi.median_durations)):
+            ratio = mi.median_durations[i] / durations[i]
             diff = timestamp[i] - timestamp[0]
             if i == 0:
                 origin = 0
             else:
-                origin = sum(self.median_durations[:i])
+                origin = sum(mi.median_durations[:i])
 
             # Add spikes from motif
             ind, spk_ts_temp = extract_ind(spk_ts, [timestamp[i], timestamp[i + 1]])
