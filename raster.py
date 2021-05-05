@@ -3,6 +3,13 @@ By Jaerong
 plot raster & peth
 """
 
+def create_db():
+    from database.load import ProjectLoader
+
+    db = ProjectLoader().load_db()
+    with open('database/create_pcc.sql', 'r') as sql_file:
+        db.conn.executescript(sql_file.read())
+
 def get_raster(query,
                shuffled_baseline = False,
                norm_method = None,
@@ -494,6 +501,9 @@ def get_raster(query,
             if 'D' in pi.fano_factor and nb_motifs['D'] >= nb_note_crit:
                 db.update('cluster', 'fanoSpkCountDir', row['id'], round(np.nanmean(pi.fano_factor['D']), 3))
 
+            # if shuffled_baseline:
+            #     db.cur.execute(f"UPDATE unit_profile SET burstDurationBaseline = ({burst_info_b.mean_duration}) WHERE clusterID = ({cluster_db.id})")
+
         # Save results
         if save_fig:
             save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Spk')
@@ -516,11 +526,17 @@ if __name__ == '__main__':
     update = False  # update the cache file
     save_fig = True
     update_db = False
+
     # Select from cluster db
     # query = "SELECT * FROM cluster WHERE analysisOK = 1"
     query = "SELECT * FROM cluster WHERE id = 96"
+
+    # Create & Load database
+    if update_db:
+        db = create_db()
 
     get_raster(query, shuffled_baseline, fig_ext=fig_ext, time_warp=time_warp,
                    update=update,
                    save_fig=save_fig,
                    update_db=update_db)
+
