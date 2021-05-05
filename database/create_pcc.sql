@@ -17,9 +17,13 @@ CREATE TABLE IF NOT EXISTS pcc(
             motifFRUndir             REAL,
             motifFRDir               REAL,
 
-            pairwiseCorrUndir        REAL,
-            pairwiseCorrDir          REAL,
+            pccUndir                 REAL,
+            pccDir                   REAL,
             corrRContext             REAL,
+
+            pccUndirSig              REAL,
+            pccDirSig                REAL,
+
             cvSpkCountUndir          REAL,
             cvSpkCountDir            REAL,
             fanoSpkCountUndir        REAL,
