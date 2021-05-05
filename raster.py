@@ -329,22 +329,6 @@ def get_raster(query,
         plt.setp(ax_peth.get_xticklabels(), visible=False)
         remove_right_top(ax_peth)
 
-        # Get shuffled PETH
-        if shuffled_baseline:
-
-            pcc_shuffle = defaultdict(partial(np.ndarray, 0))
-            for iter in range(peth_shuffle['shuffle_iter']):
-                mi.jitter_spk_ts(peth_shuffle['shuffle_limit'])
-                pi_shuffle = mi.get_peth(shuffle=True)  # peth object
-                pi_shuffle.get_fr(norm_method=norm_method)  # get firing rates
-                pi_shuffle.get_pcc()  # get pcc
-                for context, pcc in pi_shuffle.pcc.items():
-                    # pcc_shuffle[context].append(pcc['mean'])
-                    pcc_shuffle[context] = np.append(pcc_shuffle[context], pcc['mean'])
-
-        pcc_shuffle['U'].mean()
-        pcc_shuffle['D'].mean()
-
 
         # Calculate pairwise cross-correlation
         pi.get_pcc()
@@ -372,10 +356,57 @@ def get_raster(query,
         if "D" in pi.pcc and nb_motifs['D'] >= nb_note_crit:
             ax_txt.text(txt_xloc, txt_yloc, f"PCC (D) = {pi.pcc['D']['mean']}", fontsize=font_size)
 
+
+
+        # Get shuffled PETH
+        if shuffled_baseline:
+
+            pcc_shuffle = defaultdict(partial(np.ndarray, 0))
+            for iter in range(peth_shuffle['shuffle_iter']):
+                mi.jitter_spk_ts(peth_shuffle['shuffle_limit'])
+                pi_shuffle = mi.get_peth(shuffle=True)  # peth object
+                pi_shuffle.get_fr(norm_method=norm_method)  # get firing rates
+                pi_shuffle.get_pcc()  # get pcc
+                for context, pcc in pi_shuffle.pcc.items():
+                    # pcc_shuffle[context].append(pcc['mean'])
+                    pcc_shuffle[context] = np.append(pcc_shuffle[context], pcc['mean'])
+
+        # One-sample t-test (one-sided)
+        import scipy.stats as stats
+
+        p_val = {}
+        p_sig = {}
+        alpha = 0.05
+
+        for context in pcc_shuffle.keys():
+            (_, p_val[context]) = stats.ttest_1samp(a=pcc_shuffle[context], popmean=pi.pcc[context]['mean'],
+                                                    nan_policy='omit', alternative='less')
+        for context, value in p_val.items():
+            p_sig[context] = value < alpha
+
+        # Plot histogram
+        from util.draw import remove_right_top
+
+        fig, axes = plt.subplots(1,2, figsize=(6, 3))
+        plt.suptitle('PCC shuffle distribution', y=.98, fontsize=10)
+        for axis, context in zip(axes, pcc_shuffle.keys()):
+            axis.set_title(context)
+            axis.hist(pcc_shuffle[context], color='k')
+            axis.set_xlim([-0.1, 0.6])
+            axis.set_xlabel('PCC'), axis.set_ylabel('Count')
+            if p_sig[context]:
+                axis.axvline(x=pi.pcc[context]['mean'], color='r', linewidth=1, ls='--')
+            else:
+                axis.axvline(x=pi.pcc[context]['mean'], color='k', linewidth=1, ls='--')
+            remove_right_top(axis)
+        plt.tight_layout()
+
+        plt.show()
+
         # Corr context (correlation of firing rates between two contexts)
         txt_yloc -= txt_offset
         corr_context = np.nan
-        if 'U' in pi.mean_fr.keys() and 'D' in pi.mean_fr.keys()\
+        if 'U' in pi.mean_fr.keys() and 'D' in pi.mean_fr.keys() \
                 and (nb_motifs['U'] >= nb_note_crit and nb_motifs['D'] >= nb_note_crit):
             corr_context = round(np.corrcoef(pi.mean_fr['U'], pi.mean_fr['D'])[0, 1], 3)
         ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
