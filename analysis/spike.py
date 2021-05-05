@@ -663,31 +663,34 @@ class MotifInfo(ClusterInfo):
         # print("mean_fr added")
         self.mean_fr = fr_dict
 
-    def jitter_spk_ts(self, shuffle_limit, reproducible=True):
+    def jitter_spk_ts(self, shuffle_limit):
         """
         Add a random temporal jitter to the spike
         This version limit the jittered timestamp within the motif window
-        Parameters
-        ----------
-        reproducible : bool
-            make the results reproducible by setting the seed as equal to index
         """
 
-        from analysis.parameters import corr_shuffle
+        from analysis.parameters import pre_motor_win_size
         import numpy as np
 
         spk_ts_jittered_list = []
-        for ind, spk_ts in enumerate(self.spk_ts):
-            if reproducible:  # randomization seed
-                seed = ind
-                np.random.seed(seed)  # make random jitter reproducible
-            else:
-                seed = np.random.randint(len(self.spk_ts), size=1)
-                np.random.seed(seed)  # make random jitter reproducible
-            nb_spk = spk_ts.shape[0]
-            jitter = np.random.uniform(-shuffle_limit, shuffle_limit, nb_spk)
-            
-            spk_ts_jittered_list.append(spk_ts + jitter)
+        list_zip = zip(self.onsets, self.offsets, self.spk_ts)
+        for ind, (onset, offset, spk_ts) in enumerate(list_zip):
+
+            # Find motif onset & offset
+            onset = float(onset[0]) - pre_motor_win_size  # start from the premotor window
+            offset = float(offset[-1])
+
+            jittered_spk = np.array([], dtype=np.float32)
+
+            for spk_ind, spk in enumerate(spk_ts):
+                while True:
+                    jitter = np.random.uniform(-shuffle_limit, shuffle_limit, 1)
+                    new_spk = spk + jitter
+                    if onset < new_spk < offset:
+                        jittered_spk = np.append(jittered_spk , spk + jitter)
+                        break
+
+            spk_ts_jittered_list.append(jittered_spk)
         self.spk_ts_jittered = spk_ts_jittered_list
 
     def get_peth(self, time_warp=True, shuffle=False):

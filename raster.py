@@ -34,9 +34,11 @@ def get_raster(query,
         Set True to update results to database
     """
 
-    from analysis.parameters import peth_parm, freq_range, tick_length, tick_width, note_color, nb_note_crit
+    from analysis.parameters import peth_parm, freq_range, tick_length, tick_width, note_color, nb_note_crit, peth_shuffle
     from analysis.spike import MotifInfo, AudioData
+    from collections import defaultdict
     from database.load import DBInfo, ProjectLoader
+    from functools import partial
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
     import matplotlib.pyplot as plt
@@ -79,7 +81,7 @@ def get_raster(query,
         # if nb_motifs['U'] < nb_note_crit and nb_motifs['D'] < nb_note_crit:
         #     print("Not enough motifs")
         #     continue
-        break
+
         # Plot spectrogram & peri-event histogram (Just the first rendition)
         # for onset, offset in zip(mi.onsets, mi.offsets):
         onsets = mi.onsets[0]
@@ -328,13 +330,20 @@ def get_raster(query,
         remove_right_top(ax_peth)
 
         # Get shuffled PETH
-        for iter in range(peth_shuffle['shuffle_iter']):
-            mi.jitter_spk_ts(peth_shuffle['shuffle_limit'])
+        if shuffled_baseline:
 
-        ## TODO : spike shuffle for motif
+            pcc_shuffle = defaultdict(partial(np.ndarray, 0))
+            for iter in range(peth_shuffle['shuffle_iter']):
+                mi.jitter_spk_ts(peth_shuffle['shuffle_limit'])
+                pi_shuffle = mi.get_peth(shuffle=True)  # peth object
+                pi_shuffle.get_fr(norm_method=norm_method)  # get firing rates
+                pi_shuffle.get_pcc()  # get pcc
+                for context, pcc in pi_shuffle.pcc.items():
+                    # pcc_shuffle[context].append(pcc['mean'])
+                    pcc_shuffle[context] = np.append(pcc_shuffle[context], pcc['mean'])
 
-
-
+        pcc_shuffle['U'].mean()
+        pcc_shuffle['D'].mean()
 
 
         # Calculate pairwise cross-correlation
@@ -474,7 +483,7 @@ if __name__ == '__main__':
     fig_ext = '.png'
     time_warp = True
     update = False  # update the cache file
-    save_fig = False
+    save_fig = True
     update_db = False
     # Select from cluster db
     # query = "SELECT * FROM cluster WHERE analysisOK = 1"
