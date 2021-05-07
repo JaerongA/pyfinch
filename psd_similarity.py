@@ -5,9 +5,8 @@ Get PSD similarity to measure changes in song after deafening
 
 from analysis.spike import ClusterInfo
 from analysis.functions import get_pre_motor_spk_per_note
-
-
 import matplotlib.gridspec as gridspec
+import numpy as np
 import pandas as pd
 from matplotlib.pylab import psd
 import random
