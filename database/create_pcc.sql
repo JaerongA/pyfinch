@@ -1,7 +1,7 @@
 -- Create pcc database
 -- Take values from cluster db
 
-DROP TABLE IF EXISTS pcc;
+-- DROP TABLE IF EXISTS pcc;
 
 CREATE TABLE IF NOT EXISTS pcc(
             clusterID     INTEGER NOT NULL UNIQUE,
@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS pcc(
 
             cvSpkCountUndir          REAL,
             cvSpkCountDir            REAL,
+
             fanoSpkCountUndir        REAL,
             fanoSpkCountDir          REAL,
 

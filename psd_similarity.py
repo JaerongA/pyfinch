@@ -141,6 +141,7 @@ def psd_split(psd_list_pre_all, notes_pre_all, contexts_pre_all):
     Randomize the pre data and split into half.
     one half will be used as a basis and the other for getting control similarity
     """
+    import numpy as np
 
     psd_arr_pre_all = np.asarray(psd_list_pre_all)
     arr = np.arange(psd_arr_pre_all.shape[0])
@@ -196,7 +197,7 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
     Returns
     -------
     """
-
+    import numpy as np
     # Get psd distance between target and basis
     distance = \
         scipy.spatial.distance.cdist(psd_list_target, psd_list_basis,

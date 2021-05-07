@@ -3,6 +3,7 @@ By Jaerong
 plot raster & peth
 """
 
+
 def create_db():
     from database.load import ProjectLoader
 
@@ -10,14 +11,64 @@ def create_db():
     with open('database/create_pcc.sql', 'r') as sql_file:
         db.conn.executescript(sql_file.read())
 
+def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
+    from analysis.parameters import peth_shuffle
+    # from analysis.spike import MotifInfo
+    from collections import defaultdict
+    from functools import partial
+    import scipy.stats as stats
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    pcc_shuffle = defaultdict(partial(np.ndarray, 0))
+    for iter in range(peth_shuffle['shuffle_iter']):
+        MotifInfo.jitter_spk_ts(peth_shuffle['shuffle_limit'])
+        pi_shuffle = MotifInfo.get_peth(shuffle=True)  # peth object
+        pi_shuffle.get_fr()  # get firing rates
+        pi_shuffle.get_pcc()  # get pcc
+        for context, pcc in pi_shuffle.pcc.items():
+            pcc_shuffle[context] = np.append(pcc_shuffle[context], pcc['mean'])
+
+    # One-sample t-test (one-sided)
+    p_val = {}
+    p_sig = {}
+    alpha = 0.05
+
+    for context in pcc_shuffle.keys():
+        (_, p_val[context]) = stats.ttest_1samp(a=pcc_shuffle[context], popmean=PethInfo.pcc[context]['mean'],
+                                                nan_policy='omit', alternative='less')
+    for context, value in p_val.items():
+        p_sig[context] = value < alpha
+
+    # Plot histogram
+    if plot_hist:
+        from util.draw import remove_right_top
+
+        fig, axes = plt.subplots(1,2, figsize=(6, 3))
+        plt.suptitle('PCC shuffle distribution', y=.98, fontsize=10)
+        for axis, context in zip(axes, pcc_shuffle.keys()):
+            axis.set_title(context)
+            axis.hist(pcc_shuffle[context], color='k')
+            axis.set_xlim([-0.1, 0.6])
+            axis.set_xlabel('PCC'), axis.set_ylabel('Count')
+            if p_sig[context]:
+                axis.axvline(x=PethInfo.pcc[context]['mean'], color='r', linewidth=1, ls='--')
+            else:
+                axis.axvline(x=PethInfo.pcc[context]['mean'], color='k', linewidth=1, ls='--')
+            remove_right_top(axis)
+        plt.tight_layout()
+        plt.show()
+
+    return p_sig
+
 def get_raster(query,
-               shuffled_baseline = False,
-               norm_method = None,
-               fig_ext = '.png',
-               time_warp = True,
-               update = False,
-               save_fig = True,
-               update_db = True):
+               shuffled_baseline=False,
+               norm_method=None,
+               fig_ext='.png',
+               time_warp=True,
+               update=False,
+               save_fig=True,
+               update_db=True):
     """
     Plot raster & peri-event histogram
 
@@ -41,11 +92,9 @@ def get_raster(query,
         Set True to update results to database
     """
 
-    from analysis.parameters import peth_parm, freq_range, tick_length, tick_width, note_color, nb_note_crit, peth_shuffle
+    from analysis.parameters import peth_parm, freq_range, tick_length, tick_width, note_color, nb_note_crit
     from analysis.spike import MotifInfo, AudioData
-    from collections import defaultdict
     from database.load import DBInfo, ProjectLoader
-    from functools import partial
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
     import matplotlib.pyplot as plt
@@ -122,7 +171,7 @@ def get_raster(query,
         # Plot spectrogram
         ax_spect = plt.subplot(gs[1:3, 0:4])
         audio.spect_time = audio.spect_time - audio.spect_time[0] - peth_parm['buffer']  # starts from zero
-        ax_spect.pcolormesh(audio.spect_time , audio.spect_freq, audio.spect,  # data
+        ax_spect.pcolormesh(audio.spect_time, audio.spect_freq, audio.spect,  # data
                             cmap='hot_r',
                             norm=colors.SymLogNorm(linthresh=0.05,
                                                    linscale=0.03,
@@ -336,9 +385,12 @@ def get_raster(query,
         plt.setp(ax_peth.get_xticklabels(), visible=False)
         remove_right_top(ax_peth)
 
-
         # Calculate pairwise cross-correlation
         pi.get_pcc()
+
+        # Get shuffled PETH & pcc
+        if shuffled_baseline:
+            p_sig = pcc_shuffle_test(mi, pi, plot_hist=True)
 
         # Print out results on the figure
         txt_xloc = -0.5
@@ -357,62 +409,26 @@ def get_raster(query,
         # PCC
         txt_yloc -= txt_offset
         if "U" in pi.pcc and nb_motifs['U'] >= nb_note_crit:
-            ax_txt.text(txt_xloc, txt_yloc, f"PCC (U) = {pi.pcc['U']['mean']}", fontsize=font_size)
+            t = ax_txt.text(txt_xloc, txt_yloc, f"PCC (U) = {pi.pcc['U']['mean']}", fontsize=font_size)
+            if "p_sig" in locals():
+                if 'U' in p_sig and p_sig['U']:
+                    t.set_bbox(dict(facecolor='green', alpha=0.5))
+                else:
+                    t.set_bbox(dict(facecolor='red', alpha=0.5))
+
         txt_yloc -= txt_inc
 
         if "D" in pi.pcc and nb_motifs['D'] >= nb_note_crit:
-            ax_txt.text(txt_xloc, txt_yloc, f"PCC (D) = {pi.pcc['D']['mean']}", fontsize=font_size)
-
-
-
-        # Get shuffled PETH
-        if shuffled_baseline:
-
-            pcc_shuffle = defaultdict(partial(np.ndarray, 0))
-            for iter in range(peth_shuffle['shuffle_iter']):
-                mi.jitter_spk_ts(peth_shuffle['shuffle_limit'])
-                pi_shuffle = mi.get_peth(shuffle=True)  # peth object
-                pi_shuffle.get_fr(norm_method=norm_method)  # get firing rates
-                pi_shuffle.get_pcc()  # get pcc
-                for context, pcc in pi_shuffle.pcc.items():
-                    # pcc_shuffle[context].append(pcc['mean'])
-                    pcc_shuffle[context] = np.append(pcc_shuffle[context], pcc['mean'])
-
-        # One-sample t-test (one-sided)
-        import scipy.stats as stats
-
-        p_val = {}
-        p_sig = {}
-        alpha = 0.05
-
-        for context in pcc_shuffle.keys():
-            (_, p_val[context]) = stats.ttest_1samp(a=pcc_shuffle[context], popmean=pi.pcc[context]['mean'],
-                                                    nan_policy='omit', alternative='less')
-        for context, value in p_val.items():
-            p_sig[context] = value < alpha
-
-        # Plot histogram
-        from util.draw import remove_right_top
-
-        fig, axes = plt.subplots(1,2, figsize=(6, 3))
-        plt.suptitle('PCC shuffle distribution', y=.98, fontsize=10)
-        for axis, context in zip(axes, pcc_shuffle.keys()):
-            axis.set_title(context)
-            axis.hist(pcc_shuffle[context], color='k')
-            axis.set_xlim([-0.1, 0.6])
-            axis.set_xlabel('PCC'), axis.set_ylabel('Count')
-            if p_sig[context]:
-                axis.axvline(x=pi.pcc[context]['mean'], color='r', linewidth=1, ls='--')
-            else:
-                axis.axvline(x=pi.pcc[context]['mean'], color='k', linewidth=1, ls='--')
-            remove_right_top(axis)
-        plt.tight_layout()
-
-        plt.show()
+            t = ax_txt.text(txt_xloc, txt_yloc, f"PCC (D) = {pi.pcc['D']['mean']}", fontsize=font_size)
+            if "p_sig" in locals():
+                if 'D' in p_sig and p_sig['D']:
+                    t.set_bbox(dict(facecolor='green', alpha=0.5))
+                else:
+                    t.set_bbox(dict(facecolor='red', alpha=0.5))
 
         # Corr context (correlation of firing rates between two contexts)
         txt_yloc -= txt_offset
-        corr_context = np.nan
+        corr_context = None
         if 'U' in pi.mean_fr.keys() and 'D' in pi.mean_fr.keys() \
                 and (nb_motifs['U'] >= nb_note_crit and nb_motifs['D'] >= nb_note_crit):
             corr_context = round(np.corrcoef(pi.mean_fr['U'], pi.mean_fr['D'])[0, 1], 3)
@@ -470,42 +486,46 @@ def get_raster(query,
         for i, (context, ff) in enumerate(pi.fano_factor.items()):
             txt_yloc -= txt_inc
             if nb_motifs[context] >= nb_note_crit:
-                ax_txt.text(txt_xloc, txt_yloc, f"Fano Factor ({context}) = {round(np.nanmean(ff), 3)}", fontsize=font_size)
+                ax_txt.text(txt_xloc, txt_yloc, f"Fano Factor ({context}) = {round(np.nanmean(ff), 3)}",
+                            fontsize=font_size)
 
         # Save results to database
+
         if update_db and time_warp:  # only use values from time-warped data
-            db.create_col('cluster', 'pairwiseCorrUndir', 'REAL')
+
             if 'U' in pi.pcc and nb_motifs['U'] >= nb_note_crit:
-                db.update('cluster', 'pairwiseCorrUndir', row['id'], pi.pcc['U']['mean'])
+                db.cur.execute(
+                    f"UPDATE pcc SET pccUndir = ({pi.pcc['U']['mean']}) WHERE clusterID = ({cluster_db.id})")
 
-            db.create_col('cluster', 'pairwiseCorrDir', 'REAL')
             if 'D' in pi.pcc and nb_motifs['D'] >= nb_note_crit:
-                db.update('cluster', 'pairwiseCorrDir', row['id'], pi.pcc['D']['mean'])
+                db.cur.execute(
+                    f"UPDATE pcc SET pccDir = ({pi.pcc['D']['mean']}) WHERE clusterID = ({cluster_db.id})")
 
-            db.create_col('cluster', 'corrRContext', 'REAL')
-            db.update('cluster', 'corrRContext', row['id'], corr_context)
+            if corr_context:
+                db.cur.execute(f"UPDATE pcc SET corrRContext = ({corr_context}) WHERE clusterID = ({cluster_db.id})")
 
-            db.create_col('cluster', 'cvSpkCountUndir', 'REAL')
             if 'U' in pi.spk_count_cv and nb_motifs['U'] >= nb_note_crit:
-                db.update('cluster', 'cvSpkCountUndir', row['id'], pi.spk_count_cv['U'])
+                db.cur.execute(
+                    f"UPDATE pcc SET cvSpkCountUndir = ({pi.spk_count_cv['U']}) WHERE clusterID = ({cluster_db.id})")
 
-            db.create_col('cluster', 'cvSpkCountDir', 'REAL')
             if 'D' in pi.spk_count_cv and nb_motifs['D'] >= nb_note_crit:
-                db.update('cluster', 'cvSpkCountDir', row['id'], pi.spk_count_cv['D'])
+                db.cur.execute(
+                    f"UPDATE pcc SET cvSpkCountDir = ({pi.spk_count_cv['D']}) WHERE clusterID = ({cluster_db.id})")
 
-            db.create_col('cluster', 'fanoSpkCountUndir', 'REAL')
             if 'U' in pi.fano_factor and nb_motifs['U'] >= nb_note_crit:
-                db.update('cluster', 'fanoSpkCountUndir', row['id'], round(np.nanmean(pi.fano_factor['U']), 3))
+                db.cur.execute(
+                    f"UPDATE pcc SET fanoSpkCountUndir = ({round(np.nanmean(pi.fano_factor['U']), 3)}) WHERE clusterID = ({cluster_db.id})")
 
-            db.create_col('cluster', 'fanoSpkCountDir', 'REAL')
             if 'D' in pi.fano_factor and nb_motifs['D'] >= nb_note_crit:
-                db.update('cluster', 'fanoSpkCountDir', row['id'], round(np.nanmean(pi.fano_factor['D']), 3))
+                db.cur.execute(
+                    f"UPDATE pcc SET fanoSpkCountDir = ({round(np.nanmean(pi.fano_factor['D']), 3)}) WHERE clusterID = ({cluster_db.id})")
 
             if shuffled_baseline:
-                if p_sig['U']:
+                if 'U' in p_sig and nb_motifs['U'] >= nb_note_crit:
                     db.cur.execute(f"UPDATE pcc SET pccUndirSig = ({p_sig['U']}) WHERE clusterID = ({cluster_db.id})")
-                if p_sig['D']:
+                if 'D' in p_sig and nb_motifs['D'] >= nb_note_crit:
                     db.cur.execute(f"UPDATE pcc SET pccDirSig = ({p_sig['D']}) WHERE clusterID = ({cluster_db.id})")
+            db.conn.commit()
 
         # Save results
         if save_fig:
@@ -516,7 +536,7 @@ def get_raster(query,
 
     # Convert db to csv
     if update_db:
-        db.to_csv('cluster')
+        db.to_csv('pcc')
     print('Done!')
 
 
@@ -528,18 +548,17 @@ if __name__ == '__main__':
     time_warp = True
     update = False  # update the cache file
     save_fig = True
-    update_db = False
+    update_db = True
 
     # Select from cluster db
     # query = "SELECT * FROM cluster WHERE analysisOK = 1"
-    query = "SELECT * FROM cluster WHERE id = 96"
+    query = "SELECT * FROM cluster WHERE  analysisOK = 1 AND id = 17"
 
     # Create & Load database
     if update_db:
         db = create_db()
 
     get_raster(query, shuffled_baseline=shuffled_baseline, fig_ext=fig_ext, time_warp=time_warp,
-                   update=update,
-                   save_fig=save_fig,
-                   update_db=update_db)
-
+               update=update,
+               save_fig=save_fig,
+               update_db=update_db)

@@ -1,31 +1,40 @@
-
-
-from database.load import ProjectLoader, DBInfo
+from database.load import ProjectLoader
+import matplotlib.pyplot as plt
+from util import save
+import pandas as pd
 
 # Load database
 db = ProjectLoader().load_db()
-# Load database
-db = ProjectLoader().load_db()
-with open('database/create_unit_profile.sql', 'r') as sql_file:
-    db.conn.executescript(sql_file.read())
+# SQL statement
+# query = "SELECT * FROM pcc"
+# db.execute(query)
 
-# # Save results
-  # # query = "SELECT * FROM unit_pr to database
-# # # SQL statement
-# # query = "SELECT * FROM cluster WHERE id = 96"
-# # # query = "SELECT * FROM cluster WHERE ephysOK=True"
-# # db.execute(query)
-# #
-# # # Loop through db
-# # for row in db.cur.fetchall():
-# #
-# #   cluster_db = DBInfo(row)ofile"
-  # # db.execute(query)
-  # # db.cur.execute("INSERT OR IGNORE INTO unit_profile(clusterID) VALUES({})".format(cluster_db.id))
-  #
-  # db.cur.execute("INSERT OR IGNORE INTO unit_profile"
-  #                "(clusterID, birdID, taskName, taskSession, site, channel, unit, region) "
-  #                "VALUES({}, {}, {}, {}, {}, {}, {}, {})"
-  #                .format(cluster_db.id, cluster_db.birdID, cluster_db.taskName, cluster_db.taskSession,
-  #                        cluster_db.site, cluster_db.channel, cluster_db.unit, cluster_db.region))
-  # db.conn.commit()
+df = db.to_dataframe(query = "SELECT * FROM pcc")
+pcc_undir_sig = df['pccUndirSig']
+pcc_dir_sig = df['pccDirSig']
+task_list = pd.unique(df.taskName).tolist()
+explode = (0.1, 0)
+colors = ['#66b3ff', '#ff9999']
+values = [55, 6]
+
+fig, axes = plt.subplots(1, 2, figsize=(6, 3))
+
+axes[0].pie(values, explode=explode, colors=colors,
+        shadow=True,
+        labels=['sig', 'non-sig'],
+        startangle=90,
+        autopct=lambda p: '{:.2f}%  ({:,.0f})'.format(p, p * sum(values) / 100))
+axes[0].set_title('PCC sig (Undir)')
+
+values = [55, 6]
+axes[1].pie(values, explode=explode, colors=colors,
+        shadow=True,
+        labels=['sig', 'non-sig'],
+        startangle=90,
+        autopct=lambda p: '{:.2f}%  ({:,.0f})'.format(p, p * sum(values) / 100))
+axes[1].set_title('PCC sig (Dir)')
+
+axes[1].axis('equal')
+axes[1].axis('equal')
+
+plt.show()

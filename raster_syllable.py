@@ -96,7 +96,6 @@ for row in db.cur.fetchall():
             spk_ts_warp
 
 
-
             np.put(spk_ts_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
 
 
