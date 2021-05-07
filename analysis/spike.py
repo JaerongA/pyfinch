@@ -754,22 +754,23 @@ class PethInfo():
         #     peth = peth[:, ind]
         #     time_bin = time_bin[ind]
 
-        from analysis.parameters import peth_parm, gauss_std
+        from analysis.parameters import peth_parm, gauss_std, nb_note_crit
         import numpy as np
         from scipy.ndimage import gaussian_filter1d
 
         # Get trial-by-trial firing rates
         fr_dict = {}
         for k, v in self.peth.items():  # loop through different conditions in peth dict
-            fr = v / (peth_parm['bin_size'] / 1E3)  # in Hz
+            if v.shape[0] >= nb_note_crit:
+                fr = v / (peth_parm['bin_size'] / 1E3)  # in Hz
 
-            if smoothing:  # Gaussian smoothing
-                fr = gaussian_filter1d(fr, gauss_std)
+                if smoothing:  # Gaussian smoothing
+                    fr = gaussian_filter1d(fr, gauss_std)
 
-            # Truncate values outside the range
-            ind = (((0 - peth_parm['buffer']) <= self.time_bin) & (self.time_bin <= self.median_duration))
-            fr = fr[:, ind]
-            fr_dict[k] = fr
+                # Truncate values outside the range
+                ind = (((0 - peth_parm['buffer']) <= self.time_bin) & (self.time_bin <= self.median_duration))
+                fr = fr[:, ind]
+                fr_dict[k] = fr
         self.fr = fr_dict
         self.time_bin = self.time_bin[ind]
 
@@ -786,11 +787,14 @@ class PethInfo():
 
     def get_pcc(self):
         "Get pairwise cross-correlation"
+        from analysis.parameters import nb_note_crit
+
         pcc_dict = {}
         for k, v in self.fr.items():  # loop through different conditions in peth dict
             if k != 'All':
-                pcc = get_pcc(v)
-                pcc_dict[k] = pcc
+                if v.shape[0] >= nb_note_crit:
+                    pcc = get_pcc(v)
+                    pcc_dict[k] = pcc
         self.pcc = pcc_dict
 
     def get_spk_count(self):
