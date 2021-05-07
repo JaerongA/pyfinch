@@ -2,8 +2,13 @@
 By Jaerong
 plot raster & peth per syllable
 """
+def create_db():
+    from database.load import ProjectLoader
 
-## TODO: complete the code
+    db = ProjectLoader().load_db()
+    with open('database/create_song_syllable.sql.sql', 'r') as sql_file:
+        db.conn.executescript(sql_file.read())
+
 
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
@@ -33,8 +38,6 @@ time_warp = True  # spike time warping
 
 # Create a new database (syllable)
 db = ProjectLoader().load_db()
-# with open('database/create_song_syllable.sql', 'r') as sql_file:
-#     db.conn.executescript(sql_file.read())
 
 # Load database
 # SQL statement
@@ -64,9 +67,11 @@ for row in db.cur.fetchall():
     durations = np.hstack(ci.durations)
     spk_ts = np.hstack(ci.spk_ts)
     contexts = ''
-    for i in range(len(ci.contexts)):
+
+    for i in range(len(ci.contexts)):  # concatenate contexts
         contexts += ci.contexts[i] * len(ci.syllables[i])
 
+    # Loop through note
     for note in cluster_db.songNote:
         ind = np.array(find_str(syllables, note))  # note indices
         note_onsets = np.asarray(list(map(float, onsets[ind])))
@@ -74,11 +79,13 @@ for row in db.cur.fetchall():
         note_durations = np.asarray(list(map(float, durations[ind])))
         note_contexts = ''.join(np.asarray(list(contexts))[ind])
         note_median_dur = np.median(note_durations, axis=0)
+        nb_note = len(ind)
 
         note_spk_ts_list = []
         for onset, offset in zip(note_onsets, note_offsets):
             note_spk_ts_list.append(spk_ts[np.where((spk_ts >= onset - pre_motor_win_size) & (spk_ts <= offset))])
 
+        # Perform piecewise linear warping
         note_spk_ts_warped_list = []
 
         for onset, duration, spk_ts in zip(note_onsets, note_durations, note_spk_ts_list):
@@ -90,115 +97,71 @@ for row in db.cur.fetchall():
 
             spk_ts_temp, ind = spk_ts[spk_ts >= onset], np.where(spk_ts >= onset)
 
-            spk_ts_temp = ((ratio * ((spk_ts_temp - timestamp[0]) - diff)) + origin) + timestamp[0]
-            # spk_ts_new = np.append(spk_ts_new, spk_ts_temp)
-
-            spk_ts_warp
-
-
+            spk_ts_temp = ((ratio * ((spk_ts_temp - onset) )) + origin) + onset
             np.put(spk_ts_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
 
+        # Get note firing rates (includes pre-motor window)
+        note_spk = sum([len(spk) for spk in note_spk_ts_list])
+        note_fr = note_spk / (note_durations.sum() / 1E3)
+
+        # Nb_note per context
+        nb_note = {}
+        for context in set(note_contexts):
+            nb_note[context] = len(find_str(note_contexts, context))
+
+        # Skip if there are not enough motifs per condition
+        if np.prod([nb[1] < nb_note_crit for nb in nb_note.items()]):
+            print("Not enough notes")
+            continue
 
 
+        # Plot spectrogram & peri-event histogram (Just the first rendition)
 
-    motif_note_durations = mi.median_durations[np.arange(0, len(mi.motif)*2-1, 2)]
-    spk_ts_warped_list = []
-    list_zip = zip(mi.note_durations, mi.onsets, mi.offsets, mi.spk_ts)
+        # Note start and end
+        start = note_onsets[0] - peth_parm['buffer']
+        end = note_offsets[-1] + peth_parm['buffer']
+        duration = note_offsets[-1] - note_onsets[0]
 
-    for motif_ind, (durations, onset, offset, spk_ts) in enumerate(list_zip):  # per motif
+        # Get spectrogram
+        audio = AudioData(path, update=update).extract([start, end])  # audio object
+        audio.spectrogram(freq_range=freq_range)
 
-        onset = np.asarray(list(map(float, onset)))
-        offset = np.asarray(list(map(float, offset)))
-        # Make a deep copy of spk_ts so as to make it modification won't affect the original
-        spk_new = copy.deepcopy(spk_ts)
+        # Plot figure
+        fig = plt.figure(figsize=(8, 9), dpi=500)
+        fig.set_tight_layout(False)
+        note_name = mi.name + '-' + note
+        if time_warp:
+            fig_name = note_name + '  (time-warped)'
+        else:
+            fig_name = note_name + '  (non-warped)'
+        plt.suptitle(fig_name, y=.93)
+        gs = gridspec.GridSpec(18, 6)
+        gs.update(wspace=0.025, hspace=0.05)
 
-        # Calculate note & interval duration
-        timestamp = [[onset, offset] for onset, offset in zip(onset, offset)]
-        timestamp = sum(timestamp, [])
+        # Plot spectrogram
+        ax_spect = plt.subplot(gs[1:3, 0:4])
+        audio.spect_time = audio.spect_time - audio.spect_time[0] - peth_parm['buffer']  # starts from zero
+        ax_spect.pcolormesh(audio.spect_time , audio.spect_freq, audio.spect,  # data
+                            cmap='hot_r',
+                            norm=colors.SymLogNorm(linthresh=0.05,
+                                                   linscale=0.03,
+                                                   vmin=0.5,
+                                                   vmax=100
+                                                   ))
 
-        for i in range(0, len(mi.median_durations)):
-            ratio = mi.median_durations[i] / durations[i]
-            diff = timestamp[i] - timestamp[0]
-            if i == 0:
-                origin = 0
-            else:
-                origin = sum(mi.median_durations[:i])
+        remove_right_top(ax_spect)
+        ax_spect.set_xlim(-peth_parm['buffer'], duration + peth_parm['buffer'])
+        ax_spect.set_ylim(freq_range[0], freq_range[1])
+        ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
+        plt.yticks(freq_range, [str(freq_range[0]), str(freq_range[1])])
+        plt.setp(ax_spect.get_xticklabels(), visible=False)
 
-            # Add spikes from motif
-            ind, spk_ts_temp = extract_ind(spk_ts, [timestamp[i], timestamp[i + 1]])
-            spk_ts_temp = ((ratio * ((spk_ts_temp - timestamp[0]) - diff)) + origin) + timestamp[0]
-            # spk_ts_new = np.append(spk_ts_new, spk_ts_temp)
-            np.put(spk_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
+        # Plot syllable duration
+        ax_syl = plt.subplot(gs[0, 0:4], sharex=ax_spect)
+        note_dur = offset - onset  # syllable duration
+        onset -= onset[0]  # start from 0
+        offset = onset + note_dur
 
-        spk_ts_warped_list.append(spk_new)
-
-
-
-
-
-#     # Get number of motifs
-#     nb_motifs = mi.nb_motifs(motif)
-#     nb_motifs.pop('All', None)
-#
-#     # Skip if there are not enough motifs per condition
-#     # if nb_motifs['U'] < nb_note_crit and nb_motifs['D'] < nb_note_crit:
-#     #     print("Not enough motifs")
-#     #     continue
-#
-#     # Plot spectrogram & peri-event histogram (Just the first rendition)
-#     # for onset, offset in zip(mi.onsets, mi.offsets):
-#     onset = mi.onsets[0]
-#     offset = mi.offsets[0]
-#
-#     # Convert from string to array of floats
-#     onset = np.asarray(list(map(float, onset)))
-#     offset = np.asarray(list(map(float, offset)))
-#
-#     # Motif start and end
-#     start = onset[0] - peth_parm['buffer']
-#     end = offset[-1] + peth_parm['buffer']
-#     duration = offset[-1] - onset[0]
-#
-#     # Get spectrogram
-#     audio = AudioData(path, update=update).extract([start, end])  # audio object
-#     audio.spectrogram(freq_range=freq_range)
-#
-#     # Plot figure
-#     fig = plt.figure(figsize=(8, 9), dpi=500)
-#
-#     fig.set_tight_layout(False)
-#     if time_warp:
-#         fig_name = mi.name + '  (time-warped)'
-#     else:
-#         fig_name = mi.name + '  (non-warped)'
-#     plt.suptitle(fig_name, y=.93)
-#     gs = gridspec.GridSpec(18, 6)
-#     gs.update(wspace=0.025, hspace=0.05)
-#
-#     # Plot spectrogram
-#     ax_spect = plt.subplot(gs[1:3, 0:4])
-#     audio.spect_time = audio.spect_time - audio.spect_time[0] - peth_parm['buffer']  # starts from zero
-#     ax_spect.pcolormesh(audio.spect_time , audio.spect_freq, audio.spect,  # data
-#                         cmap='hot_r',
-#                         norm=colors.SymLogNorm(linthresh=0.05,
-#                                                linscale=0.03,
-#                                                vmin=0.5,
-#                                                vmax=100
-#                                                ))
-#
-#     remove_right_top(ax_spect)
-#     ax_spect.set_xlim(-peth_parm['buffer'], duration + peth_parm['buffer'])
-#     ax_spect.set_ylim(freq_range[0], freq_range[1])
-#     ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
-#     plt.yticks(freq_range, [str(freq_range[0]), str(freq_range[1])])
-#     plt.setp(ax_spect.get_xticklabels(), visible=False)
-#
-#     # Plot syllable duration
-#     ax_syl = plt.subplot(gs[0, 0:4], sharex=ax_spect)
-#     note_dur = offset - onset  # syllable duration
-#     onset -= onset[0]  # start from 0
-#     offset = onset + note_dur
-#
 #     # Mark syllables
 #     for i, syl in enumerate(mi.motif):
 #         rectangle = plt.Rectangle((onset[i], rec_yloc), note_dur[i], 0.2,
@@ -477,31 +440,7 @@ for row in db.cur.fetchall():
 #         txt_yloc -= txt_inc
 #         ax_txt.text(txt_xloc, txt_yloc, f"Fano Factor ({k}) = {round(np.nanmean(v), 3)}", fontsize=font_size)
 #
-#     # Save results to database
-#     if update_db and time_warp:  # only use values from time-warped data
-#         db.create_col('cluster', 'pairwiseCorrUndir', 'REAL')
-#         if 'U' in pi.pcc:
-#             db.update('cluster', 'pairwiseCorrUndir', row['id'], pi.pcc['U']['mean'])
-#         db.create_col('cluster', 'pairwiseCorrDir', 'REAL')
-#         if 'D' in pi.pcc:
-#             db.update('cluster', 'pairwiseCorrDir', row['id'], pi.pcc['D']['mean'])
-#         db.create_col('cluster', 'corrRContext', 'REAL')
-#         if 'U' in pi.pcc and 'D' in pi.pcc:
-#             db.update('cluster', 'corrRContext', row['id'], corr_context)
-#
-#         db.create_col('cluster', 'cvSpkCountUndir', 'REAL')
-#         if 'U' in pi.spk_count_cv:
-#             db.update('cluster', 'cvSpkCountUndir', row['id'], pi.spk_count_cv['U'])
-#         db.create_col('cluster', 'cvSpkCountDir', 'REAL')
-#         if 'D' in pi.spk_count_cv:
-#             db.update('cluster', 'cvSpkCountDir', row['id'], pi.spk_count_cv['D'])
-#         db.create_col('cluster', 'fanoSpkCountUndir', 'REAL')
-#         if 'U' in pi.fano_factor:
-#             db.update('cluster', 'fanoSpkCountUndir', row['id'], round(np.nanmean(pi.fano_factor['U']), 3))
-#         db.create_col('cluster', 'fanoSpkCountDir', 'REAL')
-#         if 'D' in pi.fano_factor:
-#             db.update('cluster', 'fanoSpkCountDir', row['id'], round(np.nanmean(pi.fano_factor['D']), 3))
-#
+
 #     # Save results
 #     if save_fig:
 #         save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Spk')
