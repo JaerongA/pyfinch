@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS song_syllable(
             dph                      INT,
             block10days              INT,
             note                     STRING,
+
             nbNote                   INT,
             nbSpk                    INTEGER,
             preMotorFR               REAL,

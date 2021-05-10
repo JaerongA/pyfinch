@@ -775,15 +775,15 @@ class PethInfo():
         self.time_bin = self.time_bin[ind]
 
         # Get mean firing rates
-        fr_dict = {}
+        mean_fr_dict = {}
         for k, v in self.fr.items():
             fr = np.mean(v, axis=0)
             if norm_method == 'sum':  # normalize by the total sum
                 fr = fr / sum(fr)
             elif norm_method == 'factor':  # normalize by a normalization factor (e.g., baseline firing rates)
                 fr = fr / norm_factor
-            fr_dict[k] = fr
-        self.mean_fr = fr_dict
+            mean_fr_dict[k] = fr
+        self.mean_fr = mean_fr_dict
 
     def get_pcc(self):
         "Get pairwise cross-correlation"

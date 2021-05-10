@@ -25,7 +25,7 @@ from analysis.parameters import pre_motor_win_size
 rec_yloc = 0.05
 rec_height = 1  # syllable duration rect
 text_yloc = 0.5  # text height
-font_size = 10
+font_size = 12
 marker_size = 0.4  # for spike count
 nb_note_crit = 10  # minimum number of notes for analysis
 
@@ -99,6 +99,7 @@ for row in db.cur.fetchall():
 
             spk_ts_temp = ((ratio * ((spk_ts_temp - onset) )) + origin) + onset
             np.put(spk_ts_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
+            note_spk_ts_warped_list.append(spk_ts_new)
 
         # Get note firing rates (includes pre-motor window)
         note_spk = sum([len(spk) for spk in note_spk_ts_list])
@@ -114,32 +115,31 @@ for row in db.cur.fetchall():
             print("Not enough notes")
             continue
 
-
         # Plot spectrogram & peri-event histogram (Just the first rendition)
 
         # Note start and end
         start = note_onsets[0] - peth_parm['buffer']
-        end = note_offsets[-1] + peth_parm['buffer']
-        duration = note_offsets[-1] - note_onsets[0]
+        end = note_offsets[0] + peth_parm['buffer']
+        duration = note_offsets[0] - note_onsets[0]
 
         # Get spectrogram
         audio = AudioData(path, update=update).extract([start, end])  # audio object
         audio.spectrogram(freq_range=freq_range)
 
         # Plot figure
-        fig = plt.figure(figsize=(8, 9), dpi=500)
+        fig = plt.figure(figsize=(6,10))
         fig.set_tight_layout(False)
         note_name = mi.name + '-' + note
         if time_warp:
             fig_name = note_name + '  (time-warped)'
         else:
             fig_name = note_name + '  (non-warped)'
-        plt.suptitle(fig_name, y=.93)
-        gs = gridspec.GridSpec(18, 6)
+        plt.suptitle(fig_name, y=.93, fontsize=10)
+        gs = gridspec.GridSpec(17, 5)
         gs.update(wspace=0.025, hspace=0.05)
 
         # Plot spectrogram
-        ax_spect = plt.subplot(gs[1:3, 0:4])
+        ax_spect = plt.subplot(gs[1:3, 0:5])
         audio.spect_time = audio.spect_time - audio.spect_time[0] - peth_parm['buffer']  # starts from zero
         ax_spect.pcolormesh(audio.spect_time , audio.spect_freq, audio.spect,  # data
                             cmap='hot_r',
@@ -157,298 +157,263 @@ for row in db.cur.fetchall():
         plt.setp(ax_spect.get_xticklabels(), visible=False)
 
         # Plot syllable duration
-        ax_syl = plt.subplot(gs[0, 0:4], sharex=ax_spect)
-        note_dur = offset - onset  # syllable duration
-        onset -= onset[0]  # start from 0
-        offset = onset + note_dur
+        ax_syl = plt.subplot(gs[0, 0:5], sharex=ax_spect)
+        onset = 0  # start from 0
+        offset = onset + duration
 
-#     # Mark syllables
-#     for i, syl in enumerate(mi.motif):
-#         rectangle = plt.Rectangle((onset[i], rec_yloc), note_dur[i], 0.2,
-#                                   linewidth=1, alpha=0.5, edgecolor='k', facecolor=note_color['Motif'][i])
-#         ax_syl.add_patch(rectangle)
-#         ax_syl.text((onset[i] + (offset[i] - onset[i]) / 2), text_yloc, syl, size=font_size)
-#     ax_syl.axis('off')
-#
-#     # Plot raster
-#     line_offsets = np.arange(0.5, len(mi))
-#     if time_warp:
-#         zipped_lists = zip(mi.contexts, mi.spk_ts_warp, mi.onsets)
-#     else:
-#         zipped_lists = zip(mi.contexts, mi.spk_ts, mi.onsets)
-#     ax_raster = plt.subplot(gs[4:6, 0:4], sharex=ax_spect)
-#
-#     pre_context = ''  # for marking  context change
-#     context_change = np.array([])
-#
-#     for motif_ind, (context, spk_ts, onset) in enumerate(zipped_lists):
-#
-#         # Plot rasters
-#         spk = spk_ts - float(onset[0])
-#         # print(len(spk))
-#         # print("spk ={}, nb = {}".format(spk, len(spk)))
-#         # print('')
-#         ax_raster.eventplot(spk, colors='k', lineoffsets=line_offsets[motif_ind],
-#                             linelengths=tick_length, linewidths=tick_width, orientation='horizontal')
-#
-#         # Demarcate the note
-#         if time_warp:
-#             note_duration = mi.median_durations
-#         else:  # plot (unwarped) raw data
-#             note_duration = mi.note_durations[motif_ind]
-#
-#         k = 1  # index for setting the motif color
-#         for i, dur in enumerate(note_duration):
-#
-#             if i == 0:
-#                 # print("i is {}, color is {}".format(i, i-k))
-#                 rectangle = plt.Rectangle((0, motif_ind), dur, rec_height,
-#                                           fill=True,
-#                                           linewidth=1,
-#                                           alpha=0.15,
-#                                           facecolor=note_color['Motif'][i])
-#             elif not i % 2:
-#                 # print("i is {}, color is {}".format(i, i-k))
-#                 rectangle = plt.Rectangle((sum(note_duration[:i]), motif_ind), note_duration[i], rec_height,
-#                                           fill=True,
-#                                           linewidth=1,
-#                                           alpha=0.15,
-#                                           facecolor=note_color['Motif'][i - k])
-#                 k += 1
-#             ax_raster.add_patch(rectangle)
-#
-#         # Demarcate song block (undir vs dir) with a horizontal line
-#         if pre_context != context:
-#             ax_raster.axhline(y=motif_ind, color='k', ls='-', lw=0.3)
-#             context_change = np.append(context_change, (motif_ind))
-#             if pre_context:
-#                 ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
-#                                ((context_change[-1] - context_change[-2]) / 3) + context_change[-2],
-#                                pre_context,
-#                                size=6)
-#
-#         pre_context = context
-#
-#     # Demarcate the last block
-#     ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
-#                    ((ax_raster.get_ylim()[1] - context_change[-1]) / 3) + context_change[-1],
-#                    pre_context,
-#                    size=6)
-#
-#     ax_raster.set_ylim(0, len(mi))
-#     ax_raster.set_ylabel('Trial #', fontsize=font_size)
-#     plt.setp(ax_raster.get_xticklabels(), visible=False)
-#     plt.yticks([0, len(mi)], [str(0), str(len(mi))])
-#     remove_right_top(ax_raster)
-#
-#     # Plot sorted raster
-#     ax_raster = plt.subplot(gs[7:9, 0:4], sharex=ax_spect)
-#     line_offsets = np.arange(0.5, len(mi))
-#
-#     # Sort trials based on context
-#     sort_ind = np.array([i[0] for i in sorted(enumerate(mi.contexts), key=lambda x: x[1], reverse=True)])
-#     mi.contexts_sorted = np.array(mi.contexts)[sort_ind].tolist()
-#     mi.onsets_sorted = np.array(mi.onsets)[sort_ind].tolist()
-#     if time_warp:
-#         mi.spk_ts_sorted = np.array(mi.spk_ts_warp)[sort_ind].tolist()
-#     else:
-#         mi.spk_ts_sorted = np.array(mi.spk_ts)[sort_ind].tolist()
-#
-#     zipped_lists = zip(mi.contexts_sorted, mi.spk_ts_sorted, mi.onsets_sorted)
-#
-#     pre_context = ''  # for marking  context change
-#     context_change = np.array([])
-#
-#     for motif_ind, (context, spk_ts, onset) in enumerate(zipped_lists):
-#
-#         # Plot rasters
-#         spk = spk_ts - float(onset[0])
-#         # print(len(spk))
-#         # print("spk ={}, nb = {}".format(spk, len(spk)))
-#         # print('')
-#         ax_raster.eventplot(spk, colors='k', lineoffsets=line_offsets[motif_ind],
-#                             linelengths=tick_length, linewidths=tick_width, orientation='horizontal')
-#
-#         # Demarcate the note
-#         if time_warp:
-#             note_duration = mi.median_durations
-#         else:  # plot (unwarped) raw data
-#             note_duration = mi.note_durations[motif_ind]
-#
-#         k = 1  # index for setting the motif color
-#         for i, dur in enumerate(note_duration):
-#
-#             if i == 0:
-#                 # print("i is {}, color is {}".format(i, i-k))
-#                 rectangle = plt.Rectangle((0, motif_ind), dur, rec_height,
-#                                           fill=True,
-#                                           linewidth=1,
-#                                           alpha=0.15,
-#                                           facecolor=note_color['Motif'][i])
-#             elif not i % 2:
-#                 # print("i is {}, color is {}".format(i, i-k))
-#                 rectangle = plt.Rectangle((sum(note_duration[:i]), motif_ind), note_duration[i], rec_height,
-#                                           fill=True,
-#                                           linewidth=1,
-#                                           alpha=0.15,
-#                                           facecolor=note_color['Motif'][i - k])
-#                 k += 1
-#             ax_raster.add_patch(rectangle)
-#
-#         # Demarcate song block (undir vs dir) with a horizontal line
-#         if pre_context != context:
-#
-#             ax_raster.axhline(y=motif_ind, color='k', ls='-', lw=0.3)
-#             context_change = np.append(context_change, (motif_ind))
-#             if pre_context:
-#                 ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
-#                                ((context_change[-1] - context_change[-2]) / 3) + context_change[-2],
-#                                pre_context,
-#                                size=6)
-#
-#         pre_context = context
-#
-#     # Demarcate the last block
-#     ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
-#                    ((ax_raster.get_ylim()[1] - context_change[-1]) / 3) + context_change[-1],
-#                    pre_context,
-#                    size=6)
-#
-#     ax_raster.set_ylim(0, len(mi))
-#     ax_raster.set_ylabel('Trial #', fontsize=font_size)
-#     # ax_raster.set_xlabel('Time (ms)', fontsize=font_size)
-#     ax_raster.set_title('sorted raster', size=font_size)
-#     plt.yticks([0, len(mi)], [str(0), str(len(mi))])
-#     plt.setp(ax_raster.get_xticklabels(), visible=False)
-#     remove_right_top(ax_raster)
-#
-#     # Draw peri-event histogram (PETH)
-#     pi = mi.get_peth(time_warp=time_warp)  # peth object
-#     # pi.get_fr(norm_method='sum')  # get firing rates
-#     pi.get_fr(norm_method=norm_method)  # get firing rates
-#
-#     ax_peth = plt.subplot(gs[10:12, 0:4], sharex=ax_spect)
-#     for context, mean_fr in pi.mean_fr.items():
-#         if context == 'U':
-#             ax_peth.plot(pi.time_bin, mean_fr, 'b', label=context)
-#         elif context == 'D':
-#             ax_peth.plot(pi.time_bin, mean_fr, 'm', label=context)
-#
-#     plt.legend(loc='center left', bbox_to_anchor=(0.98, 0.5), prop={'size': 6})  # print out legend
-#
-#     if norm_method:  # Normalize FR
-#         ax_peth.set_ylabel('Norm. FR', fontsize=font_size)
-#     else:  # Raw FR
-#         ax_peth.set_ylabel('FR', fontsize=font_size)
-#
-#     fr_ymax = myround(round(ax_peth.get_ylim()[1], 3), base=5)
-#     ax_peth.set_ylim(0, fr_ymax)
-#     plt.yticks([0, ax_peth.get_ylim()[1]], [str(0), str(int(fr_ymax))])
-#
-#     # Mark the baseline firing rates
-#     if 'baselineFR' in row.keys() and row['baselineFR']:
-#         ax_peth.axhline(y=row['baselineFR'], color='k', ls='--', lw=0.5)
-#
-#     # Mark end of the motif
-#     ax_peth.axvline(x=0, color='k', ls='--', lw=0.5)
-#     ax_peth.axvline(x=mi.median_durations.sum(), color='k', lw=0.1)
-#     plt.setp(ax_peth.get_xticklabels(), visible=False)
-#     remove_right_top(ax_peth)
-#
-#     # Calculate pairwise cross-correlation
-#     pi.get_pcc()
-#
-#     # Print out results on the figure
-#     txt_xloc = -0.5
-#     txt_yloc = 1
-#     txt_inc = 0.05  # y-distance between texts within the same section
-#     txt_offset = 0.1
-#
-#     ax_txt = plt.subplot(gs[::, 5])
-#     ax_txt.set_axis_off()  # remove all axes
-#
-#     # # of motifs
-#     for i, (k, v) in enumerate(nb_motifs.items()):
-#         txt_yloc -= txt_inc
-#         ax_txt.text(txt_xloc, txt_yloc, f"# of motifs ({k}) = {v}", fontsize=font_size)
-#
-#     # PCC
-#     txt_yloc -= txt_offset
-#     v = pi.pcc['U']['mean'] if "U" in pi.pcc else np.nan
-#     ax_txt.text(txt_xloc, txt_yloc, f"PCC (U) = {v}", fontsize=font_size)
-#     txt_yloc -= txt_inc
-#
-#     v = pi.pcc['D']['mean'] if "D" in pi.pcc else np.nan
-#     ax_txt.text(txt_xloc, txt_yloc, f"PCC (D) = {v}", fontsize=font_size)
-#
-#     # Corr context (correlation of firing rates between two contexts)
-#     txt_yloc -= txt_offset
-#     corr_context = np.nan
-#     if 'U' in pi.mean_fr.keys() and 'D' in pi.mean_fr.keys():
-#         corr_context = round(np.corrcoef(pi.mean_fr['U'], pi.mean_fr['D'])[0, 1], 3)
-#     ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
-#
-#     # Plot spike counts
-#     pi.get_spk_count()  # spike count per time window
-#     ax_spk_count = plt.subplot(gs[13:15, 0:4], sharex=ax_spect)
-#     for context, spk_count in pi.spk_count.items():
-#         if context == 'U':
-#             ax_spk_count.plot(pi.time_bin, spk_count, 'o', color='b', mfc='none', linewidth=0.5, label=context,
-#                               markersize=marker_size)
-#         elif context == 'D':
-#             ax_spk_count.plot(pi.time_bin, spk_count, 'o', color='m', mfc='none', linewidth=0.5, label=context,
-#                               markersize=marker_size)
-#
-#     plt.legend(loc='center left', bbox_to_anchor=(0.98, 0.5), prop={'size': 6})  # print out legend
-#     remove_right_top(ax_spk_count)
-#     ymax = myround(round(ax_spk_count.get_ylim()[1], 3), base=5)
-#     ax_spk_count.set_ylim(0, ymax)
-#     plt.yticks([0, ax_spk_count.get_ylim()[1]], [str(0), str(int(ymax))])
-#     ax_spk_count.set_ylabel('Spike Count', fontsize=font_size)
-#     ax_spk_count.axvline(x=0, color='k', ls='--', lw=0.5)
-#     ax_spk_count.axvline(x=mi.median_durations.sum(), color='k', ls='--', lw=0.5)
-#     plt.setp(ax_spk_count.get_xticklabels(), visible=False)
-#
-#     # Print out results on the figure
-#     txt_yloc -= txt_inc
-#     for i, (k, v) in enumerate(pi.spk_count_cv.items()):
-#         txt_yloc -= txt_inc
-#         ax_txt.text(txt_xloc, txt_yloc, f"CV of spk count ({k}) = {v}", fontsize=font_size)
-#
-#     # Plot fano factor
-#     ax_ff = plt.subplot(gs[16:18, 0:4], sharex=ax_spect)
-#     for context, fano_factor in pi.fano_factor.items():
-#         if context == 'U':
-#             ax_ff.plot(pi.time_bin, fano_factor, color='b', mfc='none', linewidth=0.5, label=context)
-#         elif context == 'D':
-#             ax_ff.plot(pi.time_bin, fano_factor, color='m', mfc='none', linewidth=0.5, label=context)
-#
-#     plt.legend(loc='center left', bbox_to_anchor=(0.98, 0.5), prop={'size': 6})  # print out legend
-#     remove_right_top(ax_ff)
-#     ymax = round(ax_ff.get_ylim()[1], 2)
-#     ax_ff.set_ylim(0, ymax)
-#     plt.yticks([0, ax_ff.get_ylim()[1]], [str(0), str(int(ymax))])
-#     ax_ff.set_ylabel('Fano factor', fontsize=font_size)
-#     ax_ff.axvline(x=0, color='k', ls='--', lw=0.5)
-#     ax_ff.axvline(x=mi.median_durations.sum(), color='k', ls='--', lw=0.5)
-#     ax_ff.axhline(y=1, color='k', ls='--', lw=0.5)  # baseline for fano factor
-#     ax_ff.set_xlabel('Time (ms)', fontsize=font_size)
-#
-#     # Print out results on the figure
-#     txt_yloc -= txt_inc
-#     for i, (k, v) in enumerate(pi.fano_factor.items()):
-#         txt_yloc -= txt_inc
-#         ax_txt.text(txt_xloc, txt_yloc, f"Fano Factor ({k}) = {round(np.nanmean(v), 3)}", fontsize=font_size)
-#
+        # Mark syllables
+        rectangle = plt.Rectangle((onset, rec_yloc), duration, 0.2,
+                                  linewidth=1, alpha=0.5, edgecolor='k', facecolor=note_color['Motif'][find_str(cluster_db.songNote, note)[0]])
+        ax_syl.add_patch(rectangle)
+        ax_syl.text((onset + (offset - onset) / 2), text_yloc, note, size=font_size)
+        ax_syl.axis('off')
 
-#     # Save results
-#     if save_fig:
-#         save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Spk')
-#         save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext)
-#     else:
-#         plt.show()
-#
-# # Convert db to csv
-# if update_db:
-#     db.to_csv('cluster')
-# print('Done!')
+        # Plot raster
+        ax_raster = plt.subplot(gs[4:6, 0:5], sharex=ax_spect)
+        line_offsets = np.arange(0.5, sum(nb_note.values()))
+        if time_warp:
+            zipped_lists = zip(note_contexts, note_spk_ts_warped_list, note_onsets)
+        else:
+            zipped_lists = zip(note_contexts, note_spk_ts_list, note_onsets)
+
+        pre_context = ''  # for marking  context change
+        context_change = np.array([])
+
+        for note_ind, (context, spk_ts, onset) in enumerate(zipped_lists):
+
+            spk = spk_ts - onset
+            # print(len(spk))
+            # print("spk ={}, nb = {}".format(spk, len(spk)))
+            # print('')
+            ax_raster.eventplot(spk, colors='k', lineoffsets=line_offsets[note_ind],
+                                linelengths=tick_length, linewidths=tick_width, orientation='horizontal')
+
+            # Demarcate the note
+            if time_warp:
+                note_duration = note_median_dur
+            else:
+                note_duration = note_durations[note_ind]
+
+            rectangle = plt.Rectangle((0, note_ind), note_duration, rec_height,
+                                      fill=True,
+                                      linewidth=1,
+                                      alpha=0.15,
+                                      facecolor=note_color['Motif'][find_str(cluster_db.songNote, note)[0]])
+            ax_raster.add_patch(rectangle)
+
+            # Demarcate song block (undir vs dir) with a horizontal line
+            if pre_context != context:
+                ax_raster.axhline(y=note_ind, color='k', ls='-', lw=0.3)
+                context_change = np.append(context_change, (note_ind))
+                if pre_context:
+                    ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
+                                   ((context_change[-1] - context_change[-2]) / 3) + context_change[-2],
+                                   pre_context,
+                                   size=6)
+            pre_context = context
+
+        # Demarcate the last block
+        ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
+                       ((ax_raster.get_ylim()[1] - context_change[-1]) / 3) + context_change[-1],
+                       pre_context,
+                       size=6)
+
+        ax_raster.set_ylim(0, sum(nb_note.values()))
+        ax_raster.set_ylabel('Trial #', fontsize=font_size)
+        plt.setp(ax_raster.get_xticklabels(), visible=False)
+        plt.yticks([0, len(mi)], [str(0), str(sum(nb_note.values()))])
+        remove_right_top(ax_raster)
+
+        # Plot sorted raster
+        ax_raster = plt.subplot(gs[7:9, 0:5], sharex=ax_spect)
+
+        # Sort trials based on context
+        sort_ind = np.array([i[0] for i in sorted(enumerate(note_contexts), key=lambda x: x[1], reverse=True)])
+        contexts_sorted = np.array(list(note_contexts))[sort_ind].tolist()
+        onsets_sorted = np.array(note_onsets)[sort_ind].tolist()
+        if time_warp:
+            spk_ts_sorted = np.array(note_spk_ts_warped_list)[sort_ind].tolist()
+        else:
+            spk_ts_sorted = np.array(note_spk_ts_list)[sort_ind].tolist()
+
+        zipped_lists = zip(contexts_sorted, spk_ts_sorted, onsets_sorted)
+
+        pre_context = ''  # for marking  context change
+        context_change = np.array([])
+
+        for note_ind, (context, spk_ts, onset) in enumerate(zipped_lists):
+
+            # Plot rasters
+            spk = spk_ts - onset
+            # print(len(spk))
+            # print("spk ={}, nb = {}".format(spk, len(spk)))
+            # print('')
+            ax_raster.eventplot(spk, colors='k', lineoffsets=line_offsets[note_ind],
+                                linelengths=tick_length, linewidths=tick_width, orientation='horizontal')
+
+            # Demarcate the note
+            if time_warp:
+                note_duration = note_median_dur
+            else:
+                note_duration = note_durations[note_ind]
+
+
+            rectangle = plt.Rectangle((0, note_ind), note_duration, rec_height,
+                                      fill=True,
+                                      linewidth=1,
+                                      alpha=0.15,
+                                      facecolor=note_color['Motif'][find_str(cluster_db.songNote, note)[0]])
+            ax_raster.add_patch(rectangle)
+
+            # Demarcate song block (undir vs dir) with a horizontal line
+            if pre_context != context:
+                ax_raster.axhline(y=note_ind, color='k', ls='-', lw=0.3)
+                context_change = np.append(context_change, (note_ind))
+                if pre_context:
+                    ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
+                                   ((context_change[-1] - context_change[-2]) / 3) + context_change[-2],
+                                   pre_context,
+                                   size=6)
+            pre_context = context
+
+        # Demarcate the last block
+        ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
+                       ((ax_raster.get_ylim()[1] - context_change[-1]) / 3) + context_change[-1],
+                       pre_context,
+                       size=6)
+
+        ax_raster.set_ylim(0, sum(nb_note.values()))
+        ax_raster.set_ylabel('Trial #', fontsize=font_size)
+        ax_raster.set_title('sorted raster', size=font_size)
+        plt.yticks([0, len(mi)], [str(0), str(len(mi))])
+        plt.setp(ax_raster.get_xticklabels(), visible=False)
+        remove_right_top(ax_raster)
+
+        # Draw peri-event histogram (PETH)
+        # TODO: should get syllable object as a class
+        # peth, time_bin = get_peth(note_onsets, note_spk_ts_warped_list)
+
+        from analysis.parameters import peth_parm
+        import math
+        import numpy as np
+
+        peth = np.zeros((len(note_onsets), peth_parm['bin_size'] * peth_parm['nb_bins']))  # nb of trials x nb of time bins
+        for trial_ind, (evt_ts, spk_ts) in enumerate(zip(note_onsets, note_spk_ts_warped_list)):
+            evt_ts -= peth_parm['buffer']
+            spk_ts -= evt_ts
+            for spk in spk_ts:
+                ind = math.ceil(spk / peth_parm['bin_size'])
+                # print("spk = {}, bin index = {}".format(spk, ind))  # for debugging
+                peth[trial_ind, ind] += 1
+        time_bin = peth_parm['time_bin'] - peth_parm['buffer']
+
+        peth_dict = {}
+        peth_dict['peth'] = peth
+        peth_dict['time_bin'] = time_bin
+        peth_dict['contexts'] = list(note_contexts)
+        peth_dict['median_duration'] = note_median_dur
+
+        # Get firing rates
+        pi = PethInfo(peth_dict)
+        # pi.get_fr(norm_method=norm_method)  # get firing rates
+        from analysis.parameters import peth_parm, gauss_std, nb_note_crit
+        import numpy as np
+        from scipy.ndimage import gaussian_filter1d
+        smoothing = True
+
+        # Get trial-by-trial firing rates
+        fr_dict = {}
+        for k, v in pi.peth.items():  # loop through different conditions in peth dict
+            if v.shape[0] >= nb_note_crit:
+                fr = v / (peth_parm['bin_size'] / 1E3)  # in Hz
+
+                if smoothing:  # Gaussian smoothing
+                    fr = gaussian_filter1d(fr, gauss_std)
+
+                # Truncate values outside the range
+                ind = (((0 - peth_parm['buffer']) <= time_bin) & (time_bin <= note_median_dur))
+                fr = fr[:, ind]
+                fr_dict[k] = fr
+        fr = fr_dict
+        time_bin = time_bin[ind]
+
+        # Get mean firing rates
+        mean_fr = {}
+        for k, v in fr.items():
+            fr = np.mean(v, axis=0)
+            mean_fr[k] = fr
+
+        # Plot mean firing rates
+        ax_peth = plt.subplot(gs[10:12, 0:5], sharex=ax_spect)
+        for context, fr in mean_fr.items():
+            if context == 'U':
+                ax_peth.plot(time_bin, fr, 'b', label=context)
+            elif context == 'D':
+                ax_peth.plot(time_bin, fr, 'm', label=context)
+
+        plt.legend(loc='center left', bbox_to_anchor=(0.98, 0.5), prop={'size': 6})  # print out legend
+        ax_peth.set_ylabel('FR', fontsize=font_size)
+
+        fr_ymax = myround(round(ax_peth.get_ylim()[1], 3), base=5)
+        ax_peth.set_ylim(0, fr_ymax)
+        plt.yticks([0, ax_peth.get_ylim()[1]], [str(0), str(int(fr_ymax))])
+
+        # Mark the baseline firing rates
+        if 'baselineFR' in row.keys() and cluster_db.baselineFR:
+            ax_peth.axhline(y=row['baselineFR'], color='k', ls='--', lw=0.5)
+
+        # Mark end of the motif
+        ax_peth.axvline(x=0, color='k', ls='--', lw=0.5)
+        ax_peth.axvline(x=note_median_dur, color='k', lw=0.5)
+        plt.setp(ax_peth.get_xticklabels(), visible=False)
+        remove_right_top(ax_peth)
+
+        # Calculate pairwise cross-correlation
+        pcc_dict = {}
+        for k, v in fr_dict.items():  # loop through different conditions in peth dict
+            if k != 'All':
+                if v.shape[0] >= nb_note_crit:
+                    pcc = get_pcc(v)
+                    pcc_dict[k] = pcc
+
+        # Print out results on the figure
+        txt_xloc = -0.5
+        txt_yloc = 1
+        txt_inc = 0.2  # y-distance between texts within the same section
+        txt_offset = 0.25
+
+        ax_txt = plt.subplot(gs[13:, 2])
+        ax_txt.set_axis_off()  # remove all axes
+
+        # # of motifs
+        for i, (k, v) in enumerate(nb_note.items()):
+            txt_yloc -= txt_inc
+            ax_txt.text(txt_xloc, txt_yloc, f"# of notes ({k}) = {v}", fontsize=font_size)
+
+        # PCC
+        txt_yloc -= txt_offset
+        v = pcc_dict['U']['mean'] if "U" in pcc_dict else np.nan
+        ax_txt.text(txt_xloc, txt_yloc, f"PCC (U) = {v}", fontsize=font_size)
+        txt_yloc -= txt_inc
+
+        v = pcc_dict['D']['mean'] if "D" in pcc_dict else np.nan
+        ax_txt.text(txt_xloc, txt_yloc, f"PCC (D) = {v}", fontsize=font_size)
+
+        # Corr context (correlation of firing rates between two contexts)
+        txt_yloc -= txt_offset
+        corr_context = np.nan
+        if 'U' in mean_fr.keys() and 'D' in mean_fr.keys():
+            corr_context = round(np.corrcoef(mean_fr['U'], mean_fr['D'])[0, 1], 3)
+        ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
+
+        # Save results
+        if save_fig:
+            save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'RasterSyllable')
+            save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext)
+        else:
+            plt.show()
+
+    # Convert db to csv
+    if update_db:
+        db.to_csv('cluster')
+    print('Done!')
