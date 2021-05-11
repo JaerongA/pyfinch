@@ -273,7 +273,6 @@ def get_raster(query,
 
         # Plot sorted raster
         ax_raster = plt.subplot(gs[7:9, 0:4], sharex=ax_spect)
-        line_offsets = np.arange(0.5, len(mi))
 
         # Sort trials based on context
         sort_ind = np.array([i[0] for i in sorted(enumerate(mi.contexts), key=lambda x: x[1], reverse=True)])
@@ -547,8 +546,8 @@ if __name__ == '__main__':
     fig_ext = '.png'
     time_warp = True
     update = False  # update the cache file
-    save_fig = True
-    update_db = True
+    save_fig = False
+    update_db = False
 
     # Select from cluster db
     # query = "SELECT * FROM cluster WHERE analysisOK = 1"

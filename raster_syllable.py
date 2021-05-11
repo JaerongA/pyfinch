@@ -6,7 +6,7 @@ def create_db():
     from database.load import ProjectLoader
 
     db = ProjectLoader().load_db()
-    with open('database/create_song_syllable.sql.sql', 'r') as sql_file:
+    with open('database/create_syllable.sql', 'r') as sql_file:
         db.conn.executescript(sql_file.read())
 
 
@@ -32,15 +32,19 @@ nb_note_crit = 10  # minimum number of notes for analysis
 norm_method = None
 fig_ext = '.png'  # .png or .pdf
 update = False  # Set True for recreating a cache file
-save_fig = False
-update_db = False  # save results to DB
+save_fig = True
+update_db = True  # save results to DB
 time_warp = True  # spike time warping
 
-# Create a new database (syllable)
-db = ProjectLoader().load_db()
+
+# Create & Load database
+if update_db:
+    db = create_db()
 
 # Load database
 # SQL statement
+# Create a new database (syllable)
+db = ProjectLoader().load_db()
 query = "SELECT * FROM cluster WHERE id = 96"
 # query = "SELECT * FROM cluster"
 db.execute(query)
@@ -101,9 +105,12 @@ for row in db.cur.fetchall():
             np.put(spk_ts_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
             note_spk_ts_warped_list.append(spk_ts_new)
 
-        # Get note firing rates (includes pre-motor window)
-        note_spk = sum([len(spk) for spk in note_spk_ts_list])
-        note_fr = note_spk / (note_durations.sum() / 1E3)
+        # Get note firing rates (includes pre-motor window) per context
+        note_spk = {}
+        note_fr = {}
+        for context1 in set(note_contexts):
+            note_spk[context1] = sum([len(spk) for context2, spk in zip(note_contexts, note_spk_ts_list) if context2==context1])
+            note_fr[context1] = note_spk[context1] / (note_durations[find_str(note_contexts, 'U')].sum() / 1E3)
 
         # Nb_note per context
         nb_note = {}
@@ -343,6 +350,12 @@ for row in db.cur.fetchall():
             fr = np.mean(v, axis=0)
             mean_fr[k] = fr
 
+        # if 'U' in pi.peth.keys():
+        #     pi.peth['U'] = pi.peth['U'][:, ind]
+        # if 'D' in pi.peth.keys():
+        #     pi.peth['D'] = pi.peth['D'][:, ind]
+
+
         # Plot mean firing rates
         ax_peth = plt.subplot(gs[10:12, 0:5], sharex=ax_spect)
         for context, fr in mean_fr.items():
@@ -406,6 +419,34 @@ for row in db.cur.fetchall():
             corr_context = round(np.corrcoef(mean_fr['U'], mean_fr['D'])[0, 1], 3)
         ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
 
+        # Save results to database
+        if update_db:   # only use values from time-warped data
+            query = "INSERT INTO syllable(clusterID, taskSession, taskSessionDeafening, taskSessionPostDeafening, dph, block10days, note)" \
+                    "VALUES({}, {}, {}, {}, {}, {}, {})".format(cluster_db.id, cluster_db.taskSession, cluster_db.taskSessionDeafening, cluster_db.taskSessionPostDeafening,
+                                                            cluster_db.dph, cluster_db.block10days, note)
+            db.cur.execute(query)
+
+            if 'U' in nb_note:
+                # db.cur.execute(f"UPDATE syllable SET nbNoteUndir = ({nb_note['U']}) WHERE note = '{note}'")
+                db.cur.execute(f"UPDATE syllable SET nbNoteUndir = ({nb_note['U']})")
+            if 'D' in nb_note:
+                db.cur.execute(f"UPDATE syllable SET nbNoteDir = ({nb_note['D']})")
+
+            if 'U' in note_fr and nb_note['U'] >= nb_note_crit:
+                db.cur.execute(f"UPDATE syllable SET frUndir = ({note_fr['U']})")
+            if 'D' in note_fr and nb_note['D'] >= nb_note_crit:
+                db.cur.execute(f"UPDATE syllable SET frDir = ({note_fr['D']})")
+
+            if 'U' in pcc_dict and nb_note['U'] >= nb_note_crit:
+                db.cur.execute(f"UPDATE syllable SET pccUndir = ({pcc_dict['U']['mean']})")
+
+            if 'D' in pcc_dict and nb_note['D'] >= nb_note_crit:
+                db.cur.execute(f"UPDATE syllable SET pccDir = ({pcc_dict['D']['mean']})")
+
+            if corr_context:
+                db.cur.execute(f"UPDATE syllable SET corrContext = ({corr_context})")
+            db.conn.commit()
+
         # Save results
         if save_fig:
             save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'RasterSyllable')
@@ -415,5 +456,5 @@ for row in db.cur.fetchall():
 
     # Convert db to csv
     if update_db:
-        db.to_csv('cluster')
+        db.to_csv('syllable')
     print('Done!')
