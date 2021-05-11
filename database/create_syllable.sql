@@ -1,5 +1,5 @@
 -- Store results from raster_syllable
-CREATE TABLE IF NOT EXISTS song_syllable(
+CREATE TABLE IF NOT EXISTS syllable(
             syllableID      INTEGER PRIMARY KEY,
             clusterID       INTEGER NOT NULL,
             taskSession              INT,
@@ -9,12 +9,17 @@ CREATE TABLE IF NOT EXISTS song_syllable(
             block10days              INT,
             note                     STRING,
 
-            nbNote                   INT,
-            nbSpk                    INTEGER,
-            preMotorFR               REAL,
-            psdSimilarity            REAL,
+            nbNoteUndir              INT,
+            nbNoteDir                INT,
+
+            frUndir                  REAL,
+            frDir                    REAL,
+
             pccUndir                 REAL,
             pccDir                   REAL,
+            corrContext              REAL,
+
+            psdSimilarity            REAL,
             FOREIGN KEY(clusterID) REFERENCES cluster(id)
                                    )
 
