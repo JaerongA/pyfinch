@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS syllable(
             corrContext              REAL,
 
             psdSimilarity            REAL,
-            FOREIGN KEY(clusterID) REFERENCES cluster(id)
+            FOREIGN KEY(clusterID) REFERENCES cluster(id),
+            UNIQUE (clusterID, note)
                                    )
 
