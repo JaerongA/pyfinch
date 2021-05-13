@@ -18,7 +18,6 @@ from analysis.spike import *
 from database.load import DBInfo, ProjectLoader
 from util import save
 from util.draw import *
-from util.spect import *
 from analysis.parameters import pre_motor_win_size
 
 # parameters
@@ -45,8 +44,8 @@ if update_db:
 # SQL statement
 # Create a new database (syllable)
 db = ProjectLoader().load_db()
-query = "SELECT * FROM cluster WHERE id = 96"
-# query = "SELECT * FROM cluster"
+query = "SELECT * FROM cluster WHERE analysisOK=1"
+# query = "SELECT * FROM cluster WHERE id=6"
 db.execute(query)
 
 # Loop through db
@@ -59,6 +58,7 @@ for row in db.cur.fetchall():
     channel_nb = int(cluster_db.channel[-2:])
     format = cluster_db.format
     motif = cluster_db.motif
+
     # Load class object
     ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
     mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
@@ -69,7 +69,6 @@ for row in db.cur.fetchall():
     onsets = np.hstack(ci.onsets)
     offsets = np.hstack(ci.offsets)
     durations = np.hstack(ci.durations)
-    spk_ts = np.hstack(ci.spk_ts)
     contexts = ''
 
     for i in range(len(ci.contexts)):  # concatenate contexts
@@ -77,13 +76,18 @@ for row in db.cur.fetchall():
 
     # Loop through note
     for note in cluster_db.songNote:
+
         ind = np.array(find_str(syllables, note))  # note indices
+        if not ind.size:  # if a note does not exist
+            continue
         note_onsets = np.asarray(list(map(float, onsets[ind])))
         note_offsets = np.asarray(list(map(float, offsets[ind])))
         note_durations = np.asarray(list(map(float, durations[ind])))
         note_contexts = ''.join(np.asarray(list(contexts))[ind])
         note_median_dur = np.median(note_durations, axis=0)
         nb_note = len(ind)
+
+        spk_ts = np.hstack(ci.spk_ts)
 
         note_spk_ts_list = []
         for onset, offset in zip(note_onsets, note_offsets):
@@ -105,17 +109,20 @@ for row in db.cur.fetchall():
             np.put(spk_ts_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
             note_spk_ts_warped_list.append(spk_ts_new)
 
+        # Nb_note per context
+        nb_note = {}
+        for context in ['U', 'D']:
+            nb_note[context] = len(find_str(note_contexts, context))
+
         # Get note firing rates (includes pre-motor window) per context
         note_spk = {}
         note_fr = {}
-        for context1 in set(note_contexts):
-            note_spk[context1] = sum([len(spk) for context2, spk in zip(note_contexts, note_spk_ts_list) if context2==context1])
-            note_fr[context1] = note_spk[context1] / (note_durations[find_str(note_contexts, 'U')].sum() / 1E3)
-
-        # Nb_note per context
-        nb_note = {}
-        for context in set(note_contexts):
-            nb_note[context] = len(find_str(note_contexts, context))
+        for context1 in ['U', 'D']:
+            if nb_note[context1] >= nb_note_crit:
+                note_spk[context1] = sum([len(spk) for context2, spk in zip(note_contexts, note_spk_ts_list) if context2==context1])
+                note_fr[context1] = round(note_spk[context1] / ((note_durations[find_str(note_contexts, context1)] + pre_motor_win_size).sum() / 1E3), 3)
+            else:
+                note_fr[context1] = np.nan
 
         # Skip if there are not enough motifs per condition
         if np.prod([nb[1] < nb_note_crit for nb in nb_note.items()]):
@@ -141,7 +148,7 @@ for row in db.cur.fetchall():
             fig_name = note_name + '  (time-warped)'
         else:
             fig_name = note_name + '  (non-warped)'
-        plt.suptitle(fig_name, y=.93, fontsize=10)
+        plt.suptitle(fig_name, y=.93, fontsize=11)
         gs = gridspec.GridSpec(17, 5)
         gs.update(wspace=0.025, hspace=0.05)
 
@@ -225,10 +232,11 @@ for row in db.cur.fetchall():
                        pre_context,
                        size=6)
 
-        ax_raster.set_ylim(0, sum(nb_note.values()))
+        ax_raster.set_yticks([0, sum(nb_note.values())])
+        ax_raster.set_yticklabels([0, sum(nb_note.values())])
+        ax_raster.set_ylim([0, sum(nb_note.values())])
         ax_raster.set_ylabel('Trial #', fontsize=font_size)
         plt.setp(ax_raster.get_xticklabels(), visible=False)
-        plt.yticks([0, len(mi)], [str(0), str(sum(nb_note.values()))])
         remove_right_top(ax_raster)
 
         # Plot sorted raster
@@ -289,16 +297,16 @@ for row in db.cur.fetchall():
                        pre_context,
                        size=6)
 
-        ax_raster.set_ylim(0, sum(nb_note.values()))
+        ax_raster.set_yticks([0, sum(nb_note.values())])
+        ax_raster.set_yticklabels([0, sum(nb_note.values())])
+        ax_raster.set_ylim([0, sum(nb_note.values())])
         ax_raster.set_ylabel('Trial #', fontsize=font_size)
         ax_raster.set_title('sorted raster', size=font_size)
-        plt.yticks([0, len(mi)], [str(0), str(len(mi))])
         plt.setp(ax_raster.get_xticklabels(), visible=False)
         remove_right_top(ax_raster)
 
         # Draw peri-event histogram (PETH)
         # TODO: should get syllable object as a class
-        # peth, time_bin = get_peth(note_onsets, note_spk_ts_warped_list)
 
         from analysis.parameters import peth_parm
         import math
@@ -350,12 +358,6 @@ for row in db.cur.fetchall():
             fr = np.mean(v, axis=0)
             mean_fr[k] = fr
 
-        # if 'U' in pi.peth.keys():
-        #     pi.peth['U'] = pi.peth['U'][:, ind]
-        # if 'D' in pi.peth.keys():
-        #     pi.peth['D'] = pi.peth['D'][:, ind]
-
-
         # Plot mean firing rates
         ax_peth = plt.subplot(gs[10:12, 0:5], sharex=ax_spect)
         for context, fr in mean_fr.items():
@@ -378,7 +380,7 @@ for row in db.cur.fetchall():
         # Mark end of the motif
         ax_peth.axvline(x=0, color='k', ls='--', lw=0.5)
         ax_peth.axvline(x=note_median_dur, color='k', lw=0.5)
-        plt.setp(ax_peth.get_xticklabels(), visible=False)
+        ax_peth.set_xlabel('Time (ms)')
         remove_right_top(ax_peth)
 
         # Calculate pairwise cross-correlation
@@ -403,6 +405,11 @@ for row in db.cur.fetchall():
             txt_yloc -= txt_inc
             ax_txt.text(txt_xloc, txt_yloc, f"# of notes ({k}) = {v}", fontsize=font_size)
 
+        # Firing rates (includes the pre-motor window)
+        for i, (k, v) in enumerate(note_fr.items()):
+            txt_yloc -= txt_inc
+            ax_txt.text(txt_xloc, txt_yloc, f"FR ({k}) = {v}", fontsize=font_size)
+
         # PCC
         txt_yloc -= txt_offset
         v = pcc_dict['U']['mean'] if "U" in pcc_dict else np.nan
@@ -414,37 +421,37 @@ for row in db.cur.fetchall():
 
         # Corr context (correlation of firing rates between two contexts)
         txt_yloc -= txt_offset
-        corr_context = np.nan
+        corr_context = None
         if 'U' in mean_fr.keys() and 'D' in mean_fr.keys():
             corr_context = round(np.corrcoef(mean_fr['U'], mean_fr['D'])[0, 1], 3)
         ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
 
         # Save results to database
         if update_db:   # only use values from time-warped data
-            query = "INSERT INTO syllable(clusterID, taskSession, taskSessionDeafening, taskSessionPostDeafening, dph, block10days, note)" \
-                    "VALUES({}, {}, {}, {}, {}, {}, {})".format(cluster_db.id, cluster_db.taskSession, cluster_db.taskSessionDeafening, cluster_db.taskSessionPostDeafening,
+            query = "INSERT OR IGNORE INTO syllable(clusterID, taskSession, taskSessionDeafening, taskSessionPostDeafening, dph, block10days, note)" \
+                    "VALUES({}, {}, {}, {}, {}, {}, '{}')".format(cluster_db.id, cluster_db.taskSession, cluster_db.taskSessionDeafening, cluster_db.taskSessionPostDeafening,
                                                             cluster_db.dph, cluster_db.block10days, note)
             db.cur.execute(query)
 
             if 'U' in nb_note:
-                # db.cur.execute(f"UPDATE syllable SET nbNoteUndir = ({nb_note['U']}) WHERE note = '{note}'")
-                db.cur.execute(f"UPDATE syllable SET nbNoteUndir = ({nb_note['U']})")
+                db.cur.execute(f"UPDATE syllable SET nbNoteUndir = ({nb_note['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
             if 'D' in nb_note:
-                db.cur.execute(f"UPDATE syllable SET nbNoteDir = ({nb_note['D']})")
+                db.cur.execute(f"UPDATE syllable SET nbNoteDir = ({nb_note['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             if 'U' in note_fr and nb_note['U'] >= nb_note_crit:
-                db.cur.execute(f"UPDATE syllable SET frUndir = ({note_fr['U']})")
+                db.cur.execute(f"UPDATE syllable SET frUndir = ({note_fr['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
             if 'D' in note_fr and nb_note['D'] >= nb_note_crit:
-                db.cur.execute(f"UPDATE syllable SET frDir = ({note_fr['D']})")
+                db.cur.execute(f"UPDATE syllable SET frDir = ({note_fr['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             if 'U' in pcc_dict and nb_note['U'] >= nb_note_crit:
-                db.cur.execute(f"UPDATE syllable SET pccUndir = ({pcc_dict['U']['mean']})")
+                db.cur.execute(f"UPDATE syllable SET pccUndir = ({pcc_dict['U']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             if 'D' in pcc_dict and nb_note['D'] >= nb_note_crit:
-                db.cur.execute(f"UPDATE syllable SET pccDir = ({pcc_dict['D']['mean']})")
+                db.cur.execute(f"UPDATE syllable SET pccDir = ({pcc_dict['D']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             if corr_context:
-                db.cur.execute(f"UPDATE syllable SET corrContext = ({corr_context})")
+                db.cur.execute(f"UPDATE syllable SET corrContext = ({corr_context}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
             db.conn.commit()
 
         # Save results
@@ -454,7 +461,7 @@ for row in db.cur.fetchall():
         else:
             plt.show()
 
-    # Convert db to csv
-    if update_db:
-        db.to_csv('syllable')
-    print('Done!')
+# Convert db to csv
+if update_db:
+    db.to_csv('syllable')
+print('Done!')

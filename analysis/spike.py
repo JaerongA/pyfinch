@@ -293,9 +293,7 @@ class ClusterInfo:
 
         for social_context in set(self.contexts):
             # Compute spk correlogram
-
             corr_temp = np.zeros(len(spk_corr_parm['time_bin']))
-
             for ref_spks, target_spks, context in zip(ref_spk_list, target_spk_list, self.contexts):
 
                 if context == social_context:
@@ -356,7 +354,6 @@ class ClusterInfo:
         from collections import defaultdict
         import numpy as np
 
-
         correlogram_jitter = defaultdict(list)
 
         for iter in range(corr_shuffle['shuffle_iter']):
@@ -409,7 +406,6 @@ class ClusterInfo:
 
         return isi_dict
 
-
     @classmethod
     def plot_isi(isi):
         pass
@@ -448,7 +444,6 @@ class ClusterInfo:
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'D']
         syllables = ''.join(syllable_list)
         nb_motifs['D'] = len(find_str(syllables, motif))
-
         nb_motifs['All'] = nb_motifs['U'] + nb_motifs['D']
 
         return nb_motifs
@@ -456,7 +451,6 @@ class ClusterInfo:
     @property
     def open_folder(self):
         open_folder(self.path)
-
 
 class MotifInfo(ClusterInfo):
     """Child class of ClusterInfo"""
