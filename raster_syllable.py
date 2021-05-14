@@ -428,9 +428,11 @@ for row in db.cur.fetchall():
 
         # Save results to database
         if update_db:   # only use values from time-warped data
-            query = "INSERT OR IGNORE INTO syllable(clusterID, taskSession, taskSessionDeafening, taskSessionPostDeafening, dph, block10days, note)" \
-                    "VALUES({}, {}, {}, {}, {}, {}, '{}')".format(cluster_db.id, cluster_db.taskSession, cluster_db.taskSessionDeafening, cluster_db.taskSessionPostDeafening,
-                                                            cluster_db.dph, cluster_db.block10days, note)
+            query = "INSERT OR IGNORE INTO " \
+                    "syllable(clusterID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, dph, block10days, note)" \
+                    "VALUES({}, '{}', '{}', {}, {}, {}, {}, {}, '{}')".format(cluster_db.id, cluster_db.birdID, cluster_db.taskName, cluster_db.taskSession,
+                                                                          cluster_db.taskSessionDeafening, cluster_db.taskSessionPostDeafening,
+                                                                          cluster_db.dph, cluster_db.block10days, note)
             db.cur.execute(query)
 
             if 'U' in nb_note:
