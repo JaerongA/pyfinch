@@ -6,13 +6,18 @@ from math import ceil
 from util import save
 from util.draw import remove_right_top
 
+# Parameters
+save_fig = True
+fig_ext = '.png'
+fr_criteria = 20
+
 # Load database
 db = ProjectLoader().load_db()
+
 
 def plot_fr_hist(save_fig=True, fig_ext='.png', bin_width=1,
                  hist_col='c',
                  edge_col='black'):
-
     # # SQL statement
     df = db.to_dataframe("SELECT * FROM syllable")
     df.set_index('syllableID')
@@ -20,7 +25,7 @@ def plot_fr_hist(save_fig=True, fig_ext='.png', bin_width=1,
     # Plot syllable FR histograms
     fig, ax = plt.subplots(1, 2, figsize=(6, 3))
     fig.set_dpi(400)
-    fig.suptitle('Syllable FR' +'\n', y=.995, fontsize=11)
+    fig.suptitle('Syllable FR' + '\n', y=.995, fontsize=11)
     ax[0].set_title('Undir')
     ax[0].hist(df['frUndir'], bins=range(0, ceil(max(df['frUndir'])) + bin_width, bin_width),
                color=hist_col, edgecolor=edge_col)
@@ -102,12 +107,161 @@ def plot_pcc_syllable_by_day(fr_criteria=0, save_fig=True):
         plt.show()
 
 
-# Parameters
-save_fig = True
-fig_ext = '.png'
-fr_criteria = 0
+def plot_pcc_regression(fr_criteria=fr_criteria, save_fig=save_fig, regression_fit=True):
+
+    from sklearn.linear_model import LinearRegression
+    from scipy.stats import pearsonr
+
+    # # SQL statement
+    # query = f"SELECT * FROM syllable WHERE frUndir >= {fr_criteria} AND taskSessionDeafening > 0 AND taskSessionDeafening < 40"
+    query = f"SELECT * FROM syllable WHERE frUndir >= {fr_criteria} AND taskSessionDeafening > 0"
+    # query = f"SELECT * FROM syllable WHERE frUndir >= {fr_criteria} AND taskSessionDeafening < 40"
+    # query = f"SELECT * FROM syllable WHERE frUndir >= {fr_criteria}"
+
+    df = db.to_dataframe(query)
+    df.set_index('syllableID')
+
+    fig, ax = plt.subplots(figsize=(5, 4))
+
+    x = df['taskSessionDeafening'].values.reshape(-1, 1)
+    y = df['pccUndir'].values.reshape(-1, 1)
+    ax.scatter(x, y, color='k')
+    ax.set_title(f"Undir FR over {fr_criteria}")
+    ax.set_xlabel('Days from deafening')
+    ax.set_xlabel('taskSessionDeafening')
+    ax.set_ylabel('Syllable PCC')
+    ax.set_ylim([-0.1, 0.5])
+
+    if regression_fit:
+        # Regression analysis
+        model = LinearRegression().fit(x, y).predict(x)
+        ax.plot(x, model, color='r')
+        x = df['taskSessionDeafening']
+        y = df['pccUndir']
+        corr, corr_pval = pearsonr(x, y)
+
+        txt_xloc = 0.7
+        txt_yloc = 0.85
+        txt_inc = 0.05
+        fig.text(txt_xloc, txt_yloc, f"CorrR = {round(corr, 3)}", fontsize=10)
+        txt_yloc -= txt_inc
+        t = fig.text(txt_xloc, txt_yloc, f"CorrR Pval = {round(corr_pval, 3)}", fontsize=10)
+
+    remove_right_top(ax)
+
+    # Save figure
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
+        save.save_fig(fig, save_path, f'pcc_syllable_reg(fr_over_{fr_criteria})', fig_ext=fig_ext)
+    else:
+        plt.show()
+
 
 # plot_fr_hist(save_fig=save_fig)
 
 # plot_pcc_syllable_by_day(fr_criteria=fr_criteria, save_fig=save_fig)
 
+# plot_pcc_regression(fr_criteria=fr_criteria, save_fig=False, regression_fit=True)
+
+
+
+# # Parameters
+# nb_row = 3
+# nb_col = 2
+#
+# from results.plot import plot_bar_comparison
+# import numpy as np
+# import seaborn as sns
+#
+# # # SQL statement
+# query = f"SELECT * FROM syllable WHERE frUndir >= {fr_criteria}"
+# # query = f"SELECT * FROM syllable"
+#
+# df = db.to_dataframe(query)
+# # Plot the results
+# fig, ax = plt.subplots(figsize=(5, 4))
+# plt.suptitle('Pairwise CC', y=.9, fontsize=20)
+#
+# # Undir
+# df['pccUndir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
+# ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
+# plot_bar_comparison(ax, df['pccUndir'], df['taskName'], hue_var=df['birdID'],
+#                     title='Undir', ylabel='PCC',
+#                     y_max=round(df['pccUndir'].max() * 10) / 10 + 0.1,
+#                     col_order=("Predeafening", "Postdeafening"),
+#                     )
+#
+# # Dir
+# df['pccDir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
+# ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
+# plot_bar_comparison(ax, df['pccDir'], df['taskName'], hue_var=df['birdID'],
+#                     title='Dir', y_max=round(df['pccDir'].max() * 10) / 10 + 0.2,
+#                     col_order=("Predeafening", "Postdeafening"),
+#                     )
+# fig.tight_layout()
+#
+# plt.show()
+
+
+# # Undir (paired comparisons)
+# pcc_mean_per_condition = df.groupby(['birdID','taskName'])['pccUndir'].mean().to_frame()
+# pcc_mean_per_condition.reset_index(inplace = True)
+#
+# ax = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=2, colspan=1)
+#
+# ax = sns.pointplot(x='taskName', y='pccUndir', hue = 'birdID',
+#                    data=pcc_mean_per_condition,
+#                    order=["Predeafening", "Postdeafening"],
+#                    aspect=.5, hue_order = df['birdID'].unique().tolist(), scale = 0.7)
+#
+# ax.spines['right'].set_visible(False),ax.spines['top'].set_visible(False)
+#
+# title = 'Undir (Paired Comparison)'
+# title += '\n\n\n'
+# plt.title(title)
+# plt.xlabel(''), plt.ylabel('')
+# plt.ylim(0, 0.3), plt.xlim(-0.5, 1.5)
+# plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+
+
+from results.plot import plot_bar_comparison
+import numpy as np
+import seaborn as sns
+
+# # SQL statement
+query = f"SELECT * FROM syllable WHERE frUndir >= {fr_criteria}"
+# query = f"SELECT * FROM syllable"
+
+mode = 'bar'
+
+df = db.to_dataframe(query)
+# Plot the results
+
+# Undir
+x = df['block10days']
+y = df['pccUndir']
+# dependent_var = df['pccDir']
+
+x.replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
+
+fig, ax = plt.subplots(figsize=(5, 4))
+
+if mode == 'bar':
+    ax = sns.barplot(x, y, ax=ax, facecolor=(1, 1, 1, 0),
+                     linewidth=1,
+                     errcolor=".2", edgecolor=".2", zorder=0)
+elif mode == 'violin':
+    ax = sns.violinplot(x, y, inner=None)
+    ax = sns.swarmplot(x, y, color="k")
+
+remove_right_top(ax)
+
+title = 'Syllable PCC per block (Undir)'
+title += '\n\n'
+plt.title(title), plt.xlabel('Day Block (10 days)'), plt.ylabel('PCC')
+ax.set_ylim([0, 0.2])
+day_block_label_list = ['Predeafening', 'Day 1-10', 'Day 11-20', 'Day 21-30', 'Day >= 31' ]
+ax.set_xticklabels(day_block_label_list)
+plt.xticks(rotation=45)
+plt.show()
