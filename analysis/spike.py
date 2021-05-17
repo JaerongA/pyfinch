@@ -1120,6 +1120,10 @@ class AudioData:
     def plot_spectrogram(self, MotifInfo):
         pass
 
+    def get_spectral_entropy(self, normalize=True):
+
+        return  get_spectral_entropy(self.spect, normalize=normalize)
+
 
 class NeuralData:
     def __init__(self, path, channel_nb, format='rhd', update=False):

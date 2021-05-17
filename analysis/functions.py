@@ -482,3 +482,13 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
                 pre_motor_spk_dict[note]['context'] = ''.join(context_arr[ind])
 
     return pre_motor_spk_dict
+
+def get_spectral_entropy(psd_array, normalize=True):
+
+    import numpy as np
+
+    psd_norm = psd_array / psd_array.sum(axis=0)
+    se = -(psd_norm * np.log2(psd_norm)).sum(axis=0)
+    if normalize:
+        se /= np.log2(psd_norm.shape[1])
+    return se
