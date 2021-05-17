@@ -2,6 +2,8 @@
 CREATE TABLE IF NOT EXISTS syllable(
             syllableID      INTEGER PRIMARY KEY,
             clusterID       INTEGER NOT NULL,
+            birdID          STRING,
+            taskName       STRING,
             taskSession              INT,
             taskSessionDeafening     INT,
             taskSessionPostDeafening INT,

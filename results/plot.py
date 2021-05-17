@@ -1,3 +1,5 @@
+# Functions used for plotting results
+
 def get_nb_cluster(ax):
     from database.load import ProjectLoader
     from pandas.plotting import table
