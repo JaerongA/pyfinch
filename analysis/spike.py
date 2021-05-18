@@ -1121,6 +1121,18 @@ class AudioData:
         pass
 
     def get_spectral_entropy(self, normalize=True):
+        """
+        Calculate spectral entropy
+        Parameters
+        ----------
+        normalize : bool
+            Get normalized spectral entropy
+
+        Returns
+        -------
+        array of spectral entropy
+        """
+        import numpy as np
 
         return  get_spectral_entropy(self.spect, normalize=normalize)
 

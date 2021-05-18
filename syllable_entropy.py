@@ -33,7 +33,7 @@ time_warp = True  # spike time warping
 # Create a new database (syllable)
 db = ProjectLoader().load_db()
 # query = "SELECT * FROM cluster WHERE analysisOK=1"
-query = "SELECT * FROM cluster WHERE id=6"
+query = "SELECT * FROM cluster WHERE id=96"
 db.execute(query)
 
 # Loop through db
@@ -117,7 +117,6 @@ for row in db.cur.fetchall():
             continue
 
         # Plot spectrogram & peri-event histogram (Just the first rendition)
-
         # Note start and end
         start = note_onsets[0] - peth_parm['buffer']
         end = note_offsets[0] + peth_parm['buffer']
@@ -173,8 +172,63 @@ for row in db.cur.fetchall():
         # Calculate spectral entropy per time bin
         ax_se = ax_spect.twinx()
         se = audio.get_spectral_entropy()
-        ax_se.plot(audio.spect_time, se, 'k')
-        ax_se.set_ylim(0, 1)
-        plt.show()
 
-    break
+        time = audio.spect_time[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
+        se = se[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
+        ax_se.plot(time, se, 'k')
+
+        ax_se.set_ylim(0, 1)
+        print(se.mean())
+        plt.show()
+        break
+
+    # Get spectrogram
+    se_array = np.array([], dtype=np.float32)
+    del audio
+    for (start, end) in zip(note_onsets, note_offsets):
+        audio = AudioData(path).extract([start, end])  # audio object
+        audio.spectrogram()  # get self.spect first
+        se = audio.get_spectral_entropy()
+        se_array = np.append(se_array, se.mean())  # spectral entropy averaged over time bins
+    print(se_array.mean())
+
+
+
+    # del audio
+    # fig = plt.figure(figsize=(6, 10))
+    # ax_spect = plt.subplot(gs[1:3, 0:5])
+    # audio = AudioData(path).extract([note_onsets[0]- peth_parm['buffer'], note_offsets[0]+ peth_parm['buffer']])  # audio object
+    # # audio = AudioData(path).extract([note_onsets[0], note_offsets[0]])  # audio object
+    # audio.spectrogram()  # get self.spect first
+    #
+    #
+    # # version 1
+    # # psd_norm = audio.spect / audio.spect.sum(axis=0)
+    # # # se = -(psd_norm * np.log2(psd_norm)).sum(axis=0)
+    # # se = -(np.multiply(psd_norm, np.log2(psd_norm))).sum(axis=0)
+    # # se /= np.log2(psd_norm.shape[1])
+    #
+    # # version 2
+    # se_array = np.array([], dtype=np.float32)
+    # for i in range(audio.spect.shape[1]):
+    #     psd_norm = audio.spect[:, i] / audio.spect[:, i].sum()
+    #     se = -(psd_norm * np.log2(psd_norm)).sum()
+    #     se /= np.log2(psd_norm.shape[0])
+    #     se_array = np.append(se_array, se)
+    #
+    # ax_spect.pcolormesh(audio.spect_time, audio.spect_freq, audio.spect,  # data
+    #                     cmap='hot_r',
+    #                     norm=colors.SymLogNorm(linthresh=0.05,
+    #                                            linscale=0.03,
+    #                                            vmin=0.5,
+    #                                            vmax=100
+    #                                            ))
+    # # ax_spect.plot(audio.get_spectral_entropy())
+    # ax_se = ax_spect.twinx()
+    # se = audio.get_spectral_entropy()
+    #
+    # ax_se.plot(audio.spect_time, se, 'k')
+    # ax_se.set_ylim(0, 1)
+    #
+    # print(se.mean())
+    # plt.show()

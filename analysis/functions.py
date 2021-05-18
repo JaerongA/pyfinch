@@ -10,6 +10,7 @@ from util.draw import *
 from util.functions import *
 from util.spect import *
 
+
 def read_not_mat(notmat, unit='ms'):
     """ read from .not.mat files generated from uisonganal
     Parameters
@@ -178,15 +179,17 @@ def get_snr(avg_wf, raw_neural_trace):
     snr = round(snr, 3)
     return snr
 
-def get_half_width(wf_ts, avg_wf):
 
+def get_half_width(wf_ts, avg_wf):
     import numpy as np
 
     # Find the negative (or positive if inverted) deflection
     if np.argmin(avg_wf) > np.argmax(avg_wf):  # inverted waveform (peak comes first in extra-cellular recording)
-        deflection_baseline = np.abs(avg_wf).mean() + np.abs(avg_wf).std(axis=0)  # the waveform baseline. Finds values above the baseline
+        deflection_baseline = np.abs(avg_wf).mean() + np.abs(avg_wf).std(
+            axis=0)  # the waveform baseline. Finds values above the baseline
     else:
-        deflection_baseline = avg_wf.mean() - avg_wf.std(axis=0)  # the waveform baseline. Finds values below the baseline
+        deflection_baseline = avg_wf.mean() - avg_wf.std(
+            axis=0)  # the waveform baseline. Finds values below the baseline
 
     diff_ind = []
     for ind in np.where(np.diff(avg_wf > deflection_baseline))[0]:  # below mean amp
@@ -228,7 +231,6 @@ def get_half_width(wf_ts, avg_wf):
 def get_psd_mat(data_path, save_path,
                 save_psd=False, update=False, open_folder=False, add_date=False,
                 nfft=2 ** 10, fig_ext='.png'):
-
     from analysis.parameters import freq_range
     import numpy as np
     from scipy.io import wavfile
@@ -261,7 +263,8 @@ def get_psd_mat(data_path, save_path,
             onsets, offsets, intervals, durations, syllables, contexts = read_not_mat(notmat_file, unit='ms')
             sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
             length = data.shape[0] / sample_rate
-            timestamp = np.round(np.linspace(0, length, data.shape[0]) * 1E3, 3)  # start from t = 0 in ms, reduce floating precision
+            timestamp = np.round(np.linspace(0, length, data.shape[0]) * 1E3,
+                                 3)  # start from t = 0 in ms, reduce floating precision
             contexts = contexts * len(syllables)
             list_zip = zip(onsets, offsets, syllables, contexts)
 
@@ -363,7 +366,7 @@ def get_basis_psd(psd_list, notes, song_note=None, num_note_crit_basis=30):
     psd_list_basis = []
     note_list_basis = []
 
-    psd_array = np.asarray(psd_list)   # number of syllables x psd (get_basis_psd function accepts array format only)
+    psd_array = np.asarray(psd_list)  # number of syllables x psd (get_basis_psd function accepts array format only)
     unique_note = unique(''.join(sorted(notes)))  # convert note string into a list of unique syllables
 
     # Remove unidentifiable note (e.g., '0' or 'x')
@@ -434,7 +437,7 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
         contexts_all = ''
 
         for onsets, notes, contexts, spks in zip(ClusterInfo.onsets, ClusterInfo.syllables, ClusterInfo.contexts,
-                                       ClusterInfo.spk_ts):  # loop through files
+                                                 ClusterInfo.spk_ts):  # loop through files
             onsets = np.delete(onsets, np.where(onsets == '*'))
             onsets = np.asarray(list(map(float, onsets)))
             notes = notes.replace('*', '')
@@ -483,12 +486,21 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
 
     return pre_motor_spk_dict
 
-def get_spectral_entropy(psd_array, normalize=True):
 
+def get_spectral_entropy(psd_array, normalize=True):
     import numpy as np
 
-    psd_norm = psd_array / psd_array.sum(axis=0)
-    se = -(psd_norm * np.log2(psd_norm)).sum(axis=0)
-    if normalize:
-        se /= np.log2(psd_norm.shape[1])
-    return se
+    # psd_norm = psd_array / psd_array.sum(axis=0)
+    # se = -(psd_norm * np.log2(psd_norm)).sum(axis=0)
+    # if normalize:
+    #     se /= np.log2(psd_norm.shape[1])
+    # return se
+
+    se_array = np.array([], dtype=np.float32)
+    for i in range(psd_array.shape[1]):
+        psd_norm = psd_array[:, i] / psd_array[:, i].sum()
+        se = -(psd_norm * np.log2(psd_norm)).sum()
+        if normalize:
+            se /= np.log2(psd_norm.shape[0])
+        se_array = np.append(se_array, se)
+    return se_array
