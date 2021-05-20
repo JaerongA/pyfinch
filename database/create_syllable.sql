@@ -22,6 +22,12 @@ CREATE TABLE IF NOT EXISTS syllable(
             corrContext              REAL,
 
             psdSimilarity            REAL,
+
+            entropyUndir             REAL,
+            entropyDir               REAL,
+            entropyVarUndir          REAL,
+            entropyVarDir            REAL,
+
             FOREIGN KEY(clusterID) REFERENCES cluster(id),
             UNIQUE (clusterID, note)
                                    )

@@ -9,10 +9,32 @@ def create_db():
     with open('database/create_syllable.sql', 'r') as sql_file:
         db.conn.executescript(sql_file.read())
 
+def get_entropy(note_onsets, note_offsets, note_contexts):
+    # Get mean entropy and variance
+    from analysis.spike import AudioData
+
+    entropy_mean = {}
+    entropy_var = {}
+
+    for context in ['U', 'D']:
+
+        se_mean = np.array([], dtype=np.float32)
+        se_var = np.array([], dtype=np.float32)
+        ind = np.array(find_str(note_contexts, context))
+
+        if ind.shape[0] >= nb_note_crit:
+            for (start, end) in zip(note_onsets[ind], note_offsets[ind]):
+                audio = AudioData(path).extract([start, end])  # audio object
+                audio.spectrogram()  # get self.spect first
+                se = audio.get_spectral_entropy()
+                se_mean = np.append(se_mean, se['mean'])  # spectral entropy averaged over time bins per rendition
+                se_var = np.append(se_var, se['var'])  # spectral entropy variance per rendition
+            entropy_mean[context] = round(se_mean.mean(), 3)
+            entropy_var[context] = round(se_var.mean(), 3)
+    return entropy_mean, entropy_var
 
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
-
 from analysis.parameters import *
 from analysis.spike import *
 from database.load import DBInfo, ProjectLoader
@@ -28,13 +50,18 @@ font_size = 12
 marker_size = 0.4  # for spike count
 nb_note_crit = 10  # minimum number of notes for analysis
 
+# Gauss parameter for PETH smoothing
+gauss_std = 3
+filter_width = 20  # filter length for smoothing (in ms)
+truncate = (((filter_width - 1)/2)-0.5)/ gauss_std
+
 norm_method = None
 fig_ext = '.png'  # .png or .pdf
 update = False  # Set True for recreating a cache file
 save_fig = True
 update_db = True  # save results to DB
 time_warp = True  # spike time warping
-
+entropy = True  # calculate entropy & entropy variance
 
 # Create & Load database
 if update_db:
@@ -45,7 +72,7 @@ if update_db:
 # Create a new database (syllable)
 db = ProjectLoader().load_db()
 query = "SELECT * FROM cluster WHERE analysisOK=1"
-# query = "SELECT * FROM cluster WHERE id=6"
+# query = "SELECT * FROM cluster WHERE id=96"
 db.execute(query)
 
 # Loop through db
@@ -61,7 +88,6 @@ for row in db.cur.fetchall():
 
     # Load class object
     ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
-    mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
 
     import copy
 
@@ -143,7 +169,7 @@ for row in db.cur.fetchall():
         # Plot figure
         fig = plt.figure(figsize=(6,10))
         fig.set_tight_layout(False)
-        note_name = mi.name + '-' + note
+        note_name = ci.name + '-' + note
         if time_warp:
             fig_name = note_name + '  (time-warped)'
         else:
@@ -174,6 +200,22 @@ for row in db.cur.fetchall():
         ax_syl = plt.subplot(gs[0, 0:5], sharex=ax_spect)
         onset = 0  # start from 0
         offset = onset + duration
+
+        # Calculate spectral entropy per time bin
+        # Plot syllable entropy
+        if entropy:
+            ax_se = ax_spect.twinx()
+            se = audio.get_spectral_entropy()
+
+            # time = audio.spect_time[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
+            # se = se[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
+            # ax_se.plot(time, se, 'k')
+            ax_se.plot(audio.spect_time, se['array'], 'k')
+            ax_se.set_ylim(0, 1)
+            # se['array'] = se['array'][np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
+            remove_right_top(ax_se)
+            # Calculate averaged entropy and entropy variance across renditions
+            entropy_mean, entropy_var = get_entropy(note_onsets, note_offsets, note_contexts)
 
         # Mark syllables
         rectangle = plt.Rectangle((onset, rec_yloc), duration, 0.2,
@@ -272,7 +314,6 @@ for row in db.cur.fetchall():
             else:
                 note_duration = note_durations[note_ind]
 
-
             rectangle = plt.Rectangle((0, note_ind), note_duration, rec_height,
                                       fill=True,
                                       linewidth=1,
@@ -331,19 +372,19 @@ for row in db.cur.fetchall():
         # Get firing rates
         pi = PethInfo(peth_dict)
         # pi.get_fr(norm_method=norm_method)  # get firing rates
-        from analysis.parameters import peth_parm, gauss_std, nb_note_crit
+        from analysis.parameters import peth_parm, nb_note_crit
         import numpy as np
         from scipy.ndimage import gaussian_filter1d
         smoothing = True
 
         # Get trial-by-trial firing rates
         fr_dict = {}
-        for k, v in pi.peth.items():  # loop through different conditions in peth dict
+        for k, v in pi.peth.items():  # loop through differ ent conditions in peth dict
             if v.shape[0] >= nb_note_crit:
                 fr = v / (peth_parm['bin_size'] / 1E3)  # in Hz
 
                 if smoothing:  # Gaussian smoothing
-                    fr = gaussian_filter1d(fr, gauss_std)
+                    fr = gaussian_filter1d(fr, gauss_std, truncate=truncate)
 
                 # Truncate values outside the range
                 ind = (((0 - peth_parm['buffer']) <= time_bin) & (time_bin <= note_median_dur))
@@ -431,8 +472,8 @@ for row in db.cur.fetchall():
             query = "INSERT OR IGNORE INTO " \
                     "syllable(clusterID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, dph, block10days, note)" \
                     "VALUES({}, '{}', '{}', {}, {}, {}, {}, {}, '{}')".format(cluster_db.id, cluster_db.birdID, cluster_db.taskName, cluster_db.taskSession,
-                                                                          cluster_db.taskSessionDeafening, cluster_db.taskSessionPostDeafening,
-                                                                          cluster_db.dph, cluster_db.block10days, note)
+                                                                              cluster_db.taskSessionDeafening, cluster_db.taskSessionPostDeafening,
+                                                                              cluster_db.dph, cluster_db.block10days, note)
             db.cur.execute(query)
 
             if 'U' in nb_note:
@@ -454,6 +495,23 @@ for row in db.cur.fetchall():
 
             if corr_context:
                 db.cur.execute(f"UPDATE syllable SET corrContext = ({corr_context}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
+            if entropy:
+                if 'U' in entropy_mean and nb_note['U'] >= nb_note_crit:
+                    db.cur.execute(
+                        f"UPDATE syllable SET entropyUndir = ({entropy_mean['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
+                if 'D' in entropy_mean and nb_note['D'] >= nb_note_crit:
+                    db.cur.execute(
+                        f"UPDATE syllable SET entropyDir = ({entropy_mean['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
+                if 'U' in entropy_var and nb_note['U'] >= nb_note_crit:
+                    db.cur.execute(
+                        f"UPDATE syllable SET entropyVarUndir = ({entropy_var['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
+                if 'D' in entropy_var and nb_note['D'] >= nb_note_crit:
+                    db.cur.execute(
+                        f"UPDATE syllable SET entropyVarDir = ({entropy_var['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
             db.conn.commit()
 
         # Save results

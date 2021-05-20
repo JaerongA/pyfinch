@@ -170,31 +170,53 @@ for row in db.cur.fetchall():
         ax_syl.axis('off')
 
         # Calculate spectral entropy per time bin
+        # Plot syllable entropy
         ax_se = ax_spect.twinx()
         se = audio.get_spectral_entropy()
 
-        time = audio.spect_time[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
-        se = se[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
-        ax_se.plot(time, se, 'k')
-
+        # time = audio.spect_time[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
+        # se = se[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
+        # ax_se.plot(time, se, 'k')
+        ax_se.plot(audio.spect_time, se['array'], 'k')
         ax_se.set_ylim(0, 1)
-        print(se.mean())
-        plt.show()
+        se['array'] = se['array'][np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
         break
 
     # Get spectrogram
-    se_array = np.array([], dtype=np.float32)
-    del audio
-    for (start, end) in zip(note_onsets, note_offsets):
-        audio = AudioData(path).extract([start, end])  # audio object
-        audio.spectrogram()  # get self.spect first
-        se = audio.get_spectral_entropy()
-        se_array = np.append(se_array, se.mean())  # spectral entropy averaged over time bins
-    print(se_array.mean())
-
-
-
+    # se_mean = np.array([], dtype=np.float32)
     # del audio
+    # for (start, end, context) in zip(note_onsets, note_offsets, note_contexts):
+    #     audio = AudioData(path).extract([start, end])  # audio object
+    #     audio.spectrogram()  # get self.spect first
+    #     se = audio.get_spectral_entropy()
+    #     se_mean = np.append(se_mean, se['mean'])  # spectral entropy averaged over time bins
+    # print(se_mean.mean())
+
+    # Get mean entropy and variance
+
+    entropy_mean = {}
+    entropy_var = {}
+
+    for context in ['U', 'D']:
+
+        se_mean = np.array([], dtype=np.float32)
+        se_var = np.array([], dtype=np.float32)
+        ind = np.array(find_str(note_contexts, context))
+
+        if ind.shape[0] >= nb_note_crit:
+            for (start, end) in zip(note_onsets[ind], note_offsets[ind]):
+                audio = AudioData(path).extract([start, end])  # audio object
+                audio.spectrogram()  # get self.spect first
+                se = audio.get_spectral_entropy()
+                se_mean = np.append(se_mean, se['mean'])  # spectral entropy averaged over time bins per rendition
+                se_var = np.append(se_var, se['var'])  # spectral entropy variance per rendition
+            entropy_mean[context] = se_mean.mean()
+            entropy_var[context] = se_var.mean()
+
+
+
+
+        # del audio
     # fig = plt.figure(figsize=(6, 10))
     # ax_spect = plt.subplot(gs[1:3, 0:5])
     # audio = AudioData(path).extract([note_onsets[0]- peth_parm['buffer'], note_offsets[0]+ peth_parm['buffer']])  # audio object
