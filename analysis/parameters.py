@@ -39,10 +39,14 @@ peth_parm = {'buffer': 50,  # time buffer before the event onset (in ms)
              }
 peth_parm['time_bin'] = np.arange(0, peth_parm['nb_bins'], peth_parm['bin_size'])
 
-gauss_filter = 40  # for peth smoothing (in ms)
+# Gauss parameter for PETH smoothing
 gauss_std = 8
-# gauss_filter = gausswin(filter_size);  %% Gaussian smoothing parameter
-# gauss_filter = gauss_filter/sum(gauss_filter);
+filter_width = 20  # filter length for smoothing (in ms)
+truncate = (((filter_width - 1)/2)-0.5)/ gauss_std
+# truncate = 2.5
+# gauss_std = 3
+# filter_width = 2*int(truncate*gauss_std + 0.5) + 1  # filter length for smoothing (in ms)
+# print(filter_width)
 
 spk_count_parm = {'win_size': 30  # moving window where number of spikes will be calculated (in ms)
                   }

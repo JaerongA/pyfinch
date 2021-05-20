@@ -490,12 +490,7 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
 def get_spectral_entropy(psd_array, normalize=True):
     import numpy as np
 
-    # psd_norm = psd_array / psd_array.sum(axis=0)
-    # se = -(psd_norm * np.log2(psd_norm)).sum(axis=0)
-    # if normalize:
-    #     se /= np.log2(psd_norm.shape[1])
-    # return se
-
+    se_dict = {}
     se_array = np.array([], dtype=np.float32)
     for i in range(psd_array.shape[1]):
         psd_norm = psd_array[:, i] / psd_array[:, i].sum()
@@ -503,4 +498,8 @@ def get_spectral_entropy(psd_array, normalize=True):
         if normalize:
             se /= np.log2(psd_norm.shape[0])
         se_array = np.append(se_array, se)
-    return se_array
+    se_dict['array'] = se_array
+    se_dict['mean'] = se_array.mean()
+    se_dict['var'] = 1 / -np.log(se_array.var())
+
+    return se_dict
