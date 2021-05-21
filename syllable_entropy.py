@@ -192,7 +192,10 @@ for row in db.cur.fetchall():
     #     se_mean = np.append(se_mean, se['mean'])  # spectral entropy averaged over time bins
     # print(se_mean.mean())
 
+
+    # Version1 : Get entropy per time bin and average across time bins
     # Get mean entropy and variance
+
 
     entropy_mean = {}
     entropy_var = {}
@@ -213,7 +216,11 @@ for row in db.cur.fetchall():
             entropy_mean[context] = se_mean.mean()
             entropy_var[context] = se_var.mean()
 
-
+    # Version2: Get time-resolved spectrogram and calculate entropy
+    avg_spect = audio.spect.mean(axis=1)
+    psd_norm = avg_spect / avg_spect.sum()
+    se = -(psd_norm * np.log2(psd_norm)).sum()
+    se /= np.log2(psd_norm.shape[0])
 
 
         # del audio
