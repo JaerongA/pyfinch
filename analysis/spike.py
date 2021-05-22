@@ -1120,7 +1120,7 @@ class AudioData:
     def plot_spectrogram(self, MotifInfo):
         pass
 
-    def get_spectral_entropy(self, normalize=True):
+    def get_spectral_entropy(self, normalize=True, time_resolved=True):
         """
         Calculate spectral entropy
         Parameters
@@ -1134,7 +1134,7 @@ class AudioData:
         """
         import numpy as np
 
-        return  get_spectral_entropy(self.spect, normalize=normalize)
+        return  get_spectral_entropy(self.spect, normalize=normalize, time_resolved=True)
 
 
 class NeuralData:

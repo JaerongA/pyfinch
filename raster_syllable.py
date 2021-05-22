@@ -9,7 +9,7 @@ def create_db():
     with open('database/create_syllable.sql', 'r') as sql_file:
         db.conn.executescript(sql_file.read())
 
-def get_entropy(note_onsets, note_offsets, note_contexts):
+def get_entropy(note_onsets, note_offsets, note_contexts, time_resolved):
     # Get mean entropy and variance
     from analysis.spike import AudioData
 
@@ -26,12 +26,18 @@ def get_entropy(note_onsets, note_offsets, note_contexts):
             for (start, end) in zip(note_onsets[ind], note_offsets[ind]):
                 audio = AudioData(path).extract([start, end])  # audio object
                 audio.spectrogram()  # get self.spect first
-                se = audio.get_spectral_entropy()
-                se_mean = np.append(se_mean, se['mean'])  # spectral entropy averaged over time bins per rendition
-                se_var = np.append(se_var, se['var'])  # spectral entropy variance per rendition
+                se = audio.get_spectral_entropy(time_resolved=time_resolved)
+                if type(se) == 'dict':
+                    se_mean = np.append(se_mean, se['mean'])  # spectral entropy averaged over time bins per rendition
+                    se_var = np.append(se_var, se['var'])  # spectral entropy variance per rendition
+                else:
+                    se_mean = np.append(se_mean, se)  # spectral entropy time-resolved
             entropy_mean[context] = round(se_mean.mean(), 3)
-            entropy_var[context] = round(se_var.mean(), 3)
-    return entropy_mean, entropy_var
+            if not time_resolved:
+                entropy_var[context] = round(se_var.mean(), 3)
+                return entropy_mean, entropy_var
+            else:  # time-resolved version does not have entropy variance
+                return entropy_mean
 
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
@@ -62,6 +68,7 @@ save_fig = True
 update_db = True  # save results to DB
 time_warp = True  # spike time warping
 entropy = True  # calculate entropy & entropy variance
+time_resolved = True  # computes time-resolved version of entropy
 
 # Create & Load database
 if update_db:
@@ -71,8 +78,8 @@ if update_db:
 # SQL statement
 # Create a new database (syllable)
 db = ProjectLoader().load_db()
-query = "SELECT * FROM cluster WHERE analysisOK=1"
-# query = "SELECT * FROM cluster WHERE id=96"
+# query = "SELECT * FROM cluster WHERE analysisOK=1"
+query = "SELECT * FROM cluster WHERE id=96"
 db.execute(query)
 
 # Loop through db
@@ -204,18 +211,21 @@ for row in db.cur.fetchall():
         # Calculate spectral entropy per time bin
         # Plot syllable entropy
         if entropy:
-            ax_se = ax_spect.twinx()
-            se = audio.get_spectral_entropy()
 
-            # time = audio.spect_time[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
-            # se = se[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
-            # ax_se.plot(time, se, 'k')
-            ax_se.plot(audio.spect_time, se['array'], 'k')
-            ax_se.set_ylim(0, 1)
-            # se['array'] = se['array'][np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
-            remove_right_top(ax_se)
-            # Calculate averaged entropy and entropy variance across renditions
-            entropy_mean, entropy_var = get_entropy(note_onsets, note_offsets, note_contexts)
+            if time_resolved:
+                entropy_mean = get_entropy(note_onsets, note_offsets, note_contexts)
+            else:
+                ax_se = ax_spect.twinx()
+                se = audio.get_spectral_entropy(time_resolved=time_resolved)
+                # time = audio.spect_time[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
+                # se = se[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
+                # ax_se.plot(time, se, 'k')
+                ax_se.plot(audio.spect_time, se['array'], 'k')
+                ax_se.set_ylim(0, 1)
+                # se['array'] = se['array'][np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
+                remove_right_top(ax_se)
+                # Calculate averaged entropy and entropy variance across renditions
+                entropy_mean, entropy_var = get_entropy(note_onsets, note_offsets, note_contexts)
 
         # Mark syllables
         rectangle = plt.Rectangle((onset, rec_yloc), duration, 0.2,
@@ -505,13 +515,14 @@ for row in db.cur.fetchall():
                     db.cur.execute(
                         f"UPDATE syllable SET entropyDir = ({entropy_mean['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
-                if 'U' in entropy_var and nb_note['U'] >= nb_note_crit:
-                    db.cur.execute(
-                        f"UPDATE syllable SET entropyVarUndir = ({entropy_var['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                if time_resolved:
+                    if 'U' in entropy_var and nb_note['U'] >= nb_note_crit:
+                        db.cur.execute(
+                            f"UPDATE syllable SET entropyVarUndir = ({entropy_var['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
-                if 'D' in entropy_var and nb_note['D'] >= nb_note_crit:
-                    db.cur.execute(
-                        f"UPDATE syllable SET entropyVarDir = ({entropy_var['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                    if 'D' in entropy_var and nb_note['D'] >= nb_note_crit:
+                        db.cur.execute(
+                            f"UPDATE syllable SET entropyVarDir = ({entropy_var['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
             db.conn.commit()
 
         # Save results
