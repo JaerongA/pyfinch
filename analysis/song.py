@@ -119,6 +119,8 @@ class SongInfo:
 
     def __init__(self, path, format='wav', *name, update=False):
 
+        import numpy as np
+
         self.path = path
         self.format = format
         if name:

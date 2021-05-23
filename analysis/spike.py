@@ -448,6 +448,37 @@ class ClusterInfo:
 
         return nb_motifs
 
+    def get_note_info(self, note, nb_note_crit=None):
+
+        from analysis.parameters import pre_motor_win_size
+        import numpy as np
+
+        syllables = ''.join(self.syllables)
+        onsets = np.hstack(self.onsets)
+        offsets = np.hstack(self.offsets)
+        durations = np.hstack(self.durations)
+        contexts = ''
+
+        for i in range(len(self.contexts)):  # concatenate contexts
+            contexts += self.contexts[i] * len(self.syllables[i])
+
+        ind = np.array(find_str(syllables, note))  # note indices
+        note_onsets = np.asarray(list(map(float, onsets[ind])))
+        note_offsets = np.asarray(list(map(float, offsets[ind])))
+        note_durations = np.asarray(list(map(float, durations[ind])))
+        note_contexts = ''.join(np.asarray(list(contexts))[ind])
+
+        # note_median_dur = np.median(note_durations, axis=0)
+        nb_note = len(ind)
+
+        # Get spike info
+        spk_ts = np.hstack(self.spk_ts)
+        note_spk_ts_list = []
+        for onset, offset in zip(note_onsets, note_offsets):
+            note_spk_ts_list.append(spk_ts[np.where((spk_ts >= onset - pre_motor_win_size) & (spk_ts <= offset))])
+
+        return NoteInfo()
+
     @property
     def open_folder(self):
         open_folder(self.path)
@@ -1058,6 +1089,12 @@ class BaselineInfo(ClusterInfo):
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
+class NoteInfo():
+    """
+    Contains information about a single note syllable and its associated spikes
+    """
+    def __init__(self, note):
+        pass
 
 class AudioData:
     """
