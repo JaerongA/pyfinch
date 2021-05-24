@@ -33,11 +33,11 @@ def get_entropy(note_onsets, note_offsets, note_contexts, time_resolved):
                 else:
                     se_mean = np.append(se_mean, se)  # spectral entropy time-resolved
             entropy_mean[context] = round(se_mean.mean(), 3)
-            if not time_resolved:
-                entropy_var[context] = round(se_var.mean(), 3)
-                return entropy_mean, entropy_var
-            else:  # time-resolved version does not have entropy variance
-                return entropy_mean
+    if not time_resolved:
+        entropy_var[context] = round(se_var.mean(), 3)
+        return entropy_mean, entropy_var
+    else:  # time-resolved version does not have entropy variance
+        return entropy_mean
 
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
@@ -213,7 +213,7 @@ for row in db.cur.fetchall():
         if entropy:
 
             if time_resolved:
-                entropy_mean = get_entropy(note_onsets, note_offsets, note_contexts)
+                entropy_mean = get_entropy(note_onsets, note_offsets, note_contexts, time_resolved)
             else:
                 ax_se = ax_spect.twinx()
                 se = audio.get_spectral_entropy(time_resolved=time_resolved)
@@ -443,39 +443,47 @@ for row in db.cur.fetchall():
                     pcc_dict[k] = pcc
 
         # Print out results on the figure
-        txt_xloc = -0.5
-        txt_yloc = 1
+        txt_xloc = -1.5
+        txt_yloc = 0.8
         txt_inc = 0.2  # y-distance between texts within the same section
-        txt_offset = 0.25
 
         ax_txt = plt.subplot(gs[13:, 2])
         ax_txt.set_axis_off()  # remove all axes
 
         # # of motifs
         for i, (k, v) in enumerate(nb_note.items()):
-            txt_yloc -= txt_inc
             ax_txt.text(txt_xloc, txt_yloc, f"# of notes ({k}) = {v}", fontsize=font_size)
+            txt_yloc -= txt_inc
 
         # Firing rates (includes the pre-motor window)
         for i, (k, v) in enumerate(note_fr.items()):
-            txt_yloc -= txt_inc
             ax_txt.text(txt_xloc, txt_yloc, f"FR ({k}) = {v}", fontsize=font_size)
+            txt_yloc -= txt_inc
 
         # PCC
-        txt_yloc -= txt_offset
         v = pcc_dict['U']['mean'] if "U" in pcc_dict else np.nan
         ax_txt.text(txt_xloc, txt_yloc, f"PCC (U) = {v}", fontsize=font_size)
         txt_yloc -= txt_inc
 
         v = pcc_dict['D']['mean'] if "D" in pcc_dict else np.nan
         ax_txt.text(txt_xloc, txt_yloc, f"PCC (D) = {v}", fontsize=font_size)
+        txt_yloc -= txt_inc
 
         # Corr context (correlation of firing rates between two contexts)
-        txt_yloc -= txt_offset
         corr_context = None
         if 'U' in mean_fr.keys() and 'D' in mean_fr.keys():
             corr_context = round(np.corrcoef(mean_fr['U'], mean_fr['D'])[0, 1], 3)
         ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
+
+        # Syllable entropy (if exists)
+        if entropy:
+            txt_xloc = 1
+            txt_yloc = 0.8
+            txt_inc = 0.2
+
+            for context, value in entropy_mean.items():
+                ax_txt.text(txt_xloc, txt_yloc, f"Entropy ({context}) = {value}", fontsize=font_size)
+                txt_yloc -= txt_inc
 
         # Save results to database
         if update_db:   # only use values from time-warped data
@@ -515,7 +523,7 @@ for row in db.cur.fetchall():
                     db.cur.execute(
                         f"UPDATE syllable SET entropyDir = ({entropy_mean['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
-                if time_resolved:
+                if not time_resolved:
                     if 'U' in entropy_var and nb_note['U'] >= nb_note_crit:
                         db.cur.execute(
                             f"UPDATE syllable SET entropyVarUndir = ({entropy_var['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
