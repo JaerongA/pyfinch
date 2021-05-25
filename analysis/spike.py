@@ -467,8 +467,6 @@ class ClusterInfo:
         note_offsets = np.asarray(list(map(float, offsets[ind])))
         note_durations = np.asarray(list(map(float, durations[ind])))
         note_contexts = ''.join(np.asarray(list(contexts))[ind])
-
-        # note_median_dur = np.median(note_durations, axis=0)
         nb_note = len(ind)
 
         # Get spike info
@@ -477,7 +475,17 @@ class ClusterInfo:
         for onset, offset in zip(note_onsets, note_offsets):
             note_spk_ts_list.append(spk_ts[np.where((spk_ts >= onset - pre_motor_win_size) & (spk_ts <= offset))])
 
-        return NoteInfo()
+
+        note_dict = {}
+        note_dict['onsets'] = note_onsets
+        note_dict['offsets'] = note_offsets
+        note_dict['durations'] = note_durations
+        note_dict['contexts'] = note_contexts
+        note_dict['nb_note'] = nb_note
+        note_dict['median_dur'] = np.median(note_durations, axis=0)
+        note_dict['spk_ts'] = note_spk_ts_list
+
+        return NoteInfo(note_dict)  # return note info
 
     @property
     def open_folder(self):
