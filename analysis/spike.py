@@ -467,7 +467,6 @@ class ClusterInfo:
         note_offsets = np.asarray(list(map(float, offsets[ind])))
         note_durations = np.asarray(list(map(float, durations[ind])))
         note_contexts = ''.join(np.asarray(list(contexts))[ind])
-        nb_note = len(ind)
 
         # Get spike info
         spk_ts = np.hstack(self.spk_ts)
@@ -475,21 +474,62 @@ class ClusterInfo:
         for onset, offset in zip(note_onsets, note_offsets):
             note_spk_ts_list.append(spk_ts[np.where((spk_ts >= onset - pre_motor_win_size) & (spk_ts <= offset))])
 
+        # Organize data into a dictionary
+        note_info = {
+            'onsets': note_onsets,
+            'offsets': note_offsets,
+            'durations': note_durations,
+            'contexts': note_contexts,
+            'median_dur': np.median(note_durations, axis=0),
+            'spk_ts': spk_ts
+        }
 
-        note_dict = {}
-        note_dict['onsets'] = note_onsets
-        note_dict['offsets'] = note_offsets
-        note_dict['durations'] = note_durations
-        note_dict['contexts'] = note_contexts
-        note_dict['nb_note'] = nb_note
-        note_dict['median_dur'] = np.median(note_durations, axis=0)
-        note_dict['spk_ts'] = note_spk_ts_list
-
-        return NoteInfo(note_dict)  # return note info
+        return NoteInfo(note_info)  # return note info
 
     @property
     def open_folder(self):
         open_folder(self.path)
+
+
+class NoteInfo():
+    """
+    Contains information about a single note syllable and its associated spikes
+    """
+
+    def __init__(self, note_dict):
+
+        # Set the dictionary values to class attributes
+        for key in note_dict:
+            setattr(self, key, note_dict[key])
+
+        # Get PLW (piecewise linear warping)
+        self.spk_ts_warp = self.piecewise_linear_warping()
+
+    def piecewise_linear_warping(self):
+        """Perform piecewise linear warping per note"""
+        import copy
+        import numpy as np
+
+        note_spk_ts_warped_list = []
+
+        for onset, duration, spk_ts in zip(self.onsets, self.durations, self.spk_ts):
+            spk_ts_new = copy.deepcopy(spk_ts)
+            ratio = self.median_dur / duration
+            origin = 0
+
+            spk_ts_temp, ind = spk_ts[spk_ts >= onset], np.where(spk_ts >= onset)
+
+            spk_ts_temp = ((ratio * ((spk_ts_temp - onset))) + origin) + onset
+            np.put(spk_ts_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
+            note_spk_ts_warped_list.append(spk_ts_new)
+        return note_spk_ts_warped_list
+
+    @property
+    def nb_note(self):
+        nb_note = {}
+        for context in ['U', 'D']:
+            nb_note[context] = len(find_str(self.contexts, context))
+            return nb_note
 
 class MotifInfo(ClusterInfo):
     """Child class of ClusterInfo"""
@@ -1097,12 +1137,6 @@ class BaselineInfo(ClusterInfo):
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
-class NoteInfo():
-    """
-    Contains information about a single note syllable and its associated spikes
-    """
-    def __init__(self, note):
-        pass
 
 class AudioData:
     """
