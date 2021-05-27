@@ -40,7 +40,7 @@ peth_parm = {'buffer': 50,  # time buffer before the event onset (in ms)
 peth_parm['time_bin'] = np.arange(0, peth_parm['nb_bins'], peth_parm['bin_size'])
 
 # Gauss parameter for PETH smoothing
-gauss_std = 8
+gauss_std = 3  # experiment with 0.5, 1, 3. Previously used 8
 filter_width = 20  # filter length for smoothing (in ms)
 truncate = (((filter_width - 1)/2)-0.5)/ gauss_std
 # truncate = 2.5

@@ -89,8 +89,11 @@ def get_peth(evt_ts: list, spk_ts: list, *duration: float):
 
     for trial_ind, (evt_ts, spk_ts) in enumerate(zip(evt_ts, spk_ts)):
 
-        evt_ts = np.asarray(list(map(float, evt_ts))) - peth_parm['buffer']
-        spk_ts -= evt_ts[0]
+        if not isinstance(evt_ts, np.float64):
+            evt_ts = np.asarray(list(map(float, evt_ts))) - peth_parm['buffer']
+            spk_ts -= evt_ts[0]
+        else:
+            spk_ts -= evt_ts - peth_parm['buffer']
 
         for spk in spk_ts:
             ind = math.ceil(spk / peth_parm['bin_size'])
@@ -448,7 +451,7 @@ class ClusterInfo:
 
         return nb_motifs
 
-    def get_note_info(self, note, nb_note_crit=None):
+    def get_note_info(self, note):
 
         from analysis.parameters import pre_motor_win_size
         import numpy as np
@@ -481,7 +484,7 @@ class ClusterInfo:
             'durations': note_durations,
             'contexts': note_contexts,
             'median_dur': np.median(note_durations, axis=0),
-            'spk_ts': spk_ts
+            'spk_ts': note_spk_ts_list
         }
 
         return NoteInfo(note_info)  # return note info
@@ -510,7 +513,7 @@ class NoteInfo():
         import copy
         import numpy as np
 
-        note_spk_ts_warped_list = []
+        note_spk_ts_warp_list = []
 
         for onset, duration, spk_ts in zip(self.onsets, self.durations, self.spk_ts):
             spk_ts_new = copy.deepcopy(spk_ts)
@@ -521,15 +524,55 @@ class NoteInfo():
 
             spk_ts_temp = ((ratio * ((spk_ts_temp - onset))) + origin) + onset
             np.put(spk_ts_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
-            note_spk_ts_warped_list.append(spk_ts_new)
-        return note_spk_ts_warped_list
+            note_spk_ts_warp_list.append(spk_ts_new)
+        return note_spk_ts_warp_list
 
     @property
     def nb_note(self):
+        """Get number of notes per context"""
         nb_note = {}
         for context in ['U', 'D']:
             nb_note[context] = len(find_str(self.contexts, context))
-            return nb_note
+        return nb_note
+
+    @property
+    def mean_fr(self):
+        """Get mean firing rates for the note (includes pre-motor window) per context"""
+        from analysis.parameters import nb_note_crit, pre_motor_win_size
+        import numpy as np
+
+        note_spk = {}
+        note_fr = {}
+        for context1 in ['U', 'D']:
+            if self.nb_note[context1] >= nb_note_crit:
+                note_spk[context1] = sum([len(spk) for context2, spk in zip(self.contexts, self.spk_ts) if context2==context1])
+                note_fr[context1] = round(note_spk[context1] / ((self.durations[find_str(self.contexts, context1)] + pre_motor_win_size).sum() / 1E3), 3)
+            else:
+                note_fr[context1] = np.nan
+        return note_fr
+
+    def get_peth(self, time_warp=True, shuffle=False):
+        """Get peri-event time histograms & rasters during song motif"""
+        peth_dict = {}
+
+        if shuffle:
+            peth, time_bin = get_peth(self.onsets, self.spk_ts_jittered)
+        else:
+            if time_warp:  # peth calculated from time-warped spikes by default
+                # peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
+                peth, time_bin = get_peth(self.onsets, self.spk_ts_warp)
+            else:
+                peth, time_bin = get_peth(self.onsets, self.spk_ts)
+
+        peth_dict['peth'] = peth
+        peth_dict['time_bin'] = time_bin
+        peth_dict['contexts'] = self.contexts
+        peth_dict['median_duration'] = self.median_dur
+        return PethInfo(peth_dict)  # return peth class object for further analysis
+
+    def __repr__(self):
+        return str([key for key in self.__dict__.keys()])
+
 
 class MotifInfo(ClusterInfo):
     """Child class of ClusterInfo"""
@@ -807,6 +850,8 @@ class PethInfo():
         peth_dict = {}
         peth_dict['All'] = self.peth
         for context in unique(self.contexts):
+            if type(self.contexts) == str:
+                self.contexts = list(self.contexts)
             ind = np.array(self.contexts) == context
             peth_dict[context] = self.peth[ind, :]
         self.peth = peth_dict
@@ -820,7 +865,7 @@ class PethInfo():
             norm_method: str ['sum', 'factor']
                 normalization by the sum (default)
             norm_factor:  float
-                (e.g., baseline firing rates).
+                (e.g., baseline firing rates), only when norm_method is set to True
         """
         # if duration:
         #     ind = (((0 - peth_parm['buffer']) <= time_bin) & (time_bin <= duration))
@@ -849,13 +894,14 @@ class PethInfo():
 
         # Get mean firing rates
         mean_fr_dict = {}
-        for k, v in self.fr.items():
-            fr = np.mean(v, axis=0)
+        for context, fr in self.fr.items():
+            fr = np.mean(fr, axis=0)
             if norm_method == 'sum':  # normalize by the total sum
                 fr = fr / sum(fr)
             elif norm_method == 'factor':  # normalize by a normalization factor (e.g., baseline firing rates)
                 fr = fr / norm_factor
-            mean_fr_dict[k] = fr
+            mean_fr_dict[context] = fr
+        mean_fr_dict['gauss_std'] = gauss_std
         self.mean_fr = mean_fr_dict
 
     def get_pcc(self):
