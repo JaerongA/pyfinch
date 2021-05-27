@@ -487,11 +487,11 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
     return pre_motor_spk_dict
 
 
-def get_spectral_entropy(psd_array, normalize=True, time_resolved=False):
+def get_spectral_entropy(psd_array, normalize=None, mode=None):
 
     import numpy as np
 
-    if time_resolved:
+    if mode == 'spectral':
         # Get time resolved version of the spectral entropy
         psd_array = psd_array.mean(axis=1)  # time-averaged spectrogram
         psd_norm = psd_array / psd_array.sum()
@@ -499,7 +499,7 @@ def get_spectral_entropy(psd_array, normalize=True, time_resolved=False):
         se /= np.log2(psd_norm.shape[0])
         return se
 
-    else:
+    elif mode == 'spectro_temporal':
         se_dict = {}
         se_array = np.array([], dtype=np.float32)
         for i in range(psd_array.shape[1]):
@@ -513,3 +513,4 @@ def get_spectral_entropy(psd_array, normalize=True, time_resolved=False):
         se_dict['var'] = 1 / -np.log(se_array.var())
 
         return se_dict
+

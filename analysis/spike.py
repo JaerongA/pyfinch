@@ -136,6 +136,92 @@ def get_pcc(fr_array):
     pcc_dict['mean'] = round(pcc_arr.mean(), 3)
     return pcc_dict
 
+def jitter_spk_ts(spk_ts_list, shuffle_limit, reproducible=True):
+    """
+    Add a random temporal jitter to the spike
+    Parameters
+    ----------
+    reproducible : bool
+        make the results reproducible by setting the seed as equal to index
+    """
+
+    import numpy as np
+
+    spk_ts_jittered_list = []
+    for ind, spk_ts in enumerate(spk_ts_list):
+        np.random.seed()
+        if reproducible:  # randomization seed
+            seed = ind
+            np.random.seed(seed)  # make random jitter reproducible
+        else:
+            seed = np.random.randint(len(spk_ts_list), size=1)
+            np.random.seed(seed)  # make random jitter reproducible
+        nb_spk = spk_ts.shape[0]
+        jitter = np.random.uniform(-shuffle_limit, shuffle_limit, nb_spk)
+        spk_ts_jittered_list.append(spk_ts + jitter)
+    return spk_ts_jittered_list
+
+def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
+    """
+    Run statistical test to see if baseline pairwise cross-correlation obtained by spike time shuffling
+    Parameters
+    ----------
+    ClassObject : class object (e.g., NoteInfo, MotifInfo)
+    PethInfo : peth info class object
+    plot_hist : bool
+        Plot histogram of bootstrapped pcc values (False by default)
+
+    Returns
+    -------
+    p_sig : bool
+        True if the pcc is significantly above the baseline
+    """
+    from analysis.parameters import peth_shuffle
+    from collections import defaultdict
+    from functools import partial
+    import scipy.stats as stats
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    pcc_shuffle = defaultdict(partial(np.ndarray, 0))
+    for iter in range(peth_shuffle['shuffle_iter']):
+        ClassObject.jitter_spk_ts(peth_shuffle['shuffle_limit'])
+        pi_shuffle = ClassObject.get_peth(shuffle=True)  # peth object
+        pi_shuffle.get_fr()  # get firing rates
+        pi_shuffle.get_pcc()  # get pcc
+        for context, pcc in pi_shuffle.pcc.items():
+            pcc_shuffle[context] = np.append(pcc_shuffle[context], pcc['mean'])
+
+    # One-sample t-test (one-sided)
+    p_val, p_sig = {}
+
+    for context in pcc_shuffle.keys():
+        (_, p_val[context]) = stats.ttest_1samp(a=pcc_shuffle[context], popmean=PethInfo.pcc[context]['mean'],
+                                                nan_policy='omit', alternative='less')
+    for context, value in p_val.items():
+        p_sig[context] = value < alpha
+
+    # Plot histogram
+    if plot_hist:
+        from util.draw import remove_right_top
+
+        fig, axes = plt.subplots(1,2, figsize=(6, 3))
+        plt.suptitle('PCC shuffle distribution', y=.98, fontsize=10)
+        for axis, context in zip(axes, pcc_shuffle.keys()):
+            axis.set_title(context)
+            axis.hist(pcc_shuffle[context], color='k')
+            axis.set_xlim([-0.1, 0.6])
+            axis.set_xlabel('PCC'), axis.set_ylabel('Count')
+            if p_sig[context]:
+                axis.axvline(x=PethInfo.pcc[context]['mean'], color='r', linewidth=1, ls='--')
+            else:
+                axis.axvline(x=PethInfo.pcc[context]['mean'], color='k', linewidth=1, ls='--')
+            remove_right_top(axis)
+        plt.tight_layout()
+        plt.show()
+
+    return p_sig
+
 
 class ClusterInfo:
 
@@ -484,7 +570,8 @@ class ClusterInfo:
             'durations': note_durations,
             'contexts': note_contexts,
             'median_dur': np.median(note_durations, axis=0),
-            'spk_ts': note_spk_ts_list
+            'spk_ts': note_spk_ts_list,
+            'path': self.path  # directory where the data exists
         }
 
         return NoteInfo(note_info)  # return note info
@@ -508,6 +595,44 @@ class NoteInfo():
         # Get PLW (piecewise linear warping)
         self.spk_ts_warp = self.piecewise_linear_warping()
 
+    def __repr__(self):
+        return str([key for key in self.__dict__.keys()])
+
+    def get_entropy(self, normalize=True, mode='spectral'):
+        """
+        Calculate syllable entropy
+        Two versions : spectro-temporal entropy & spectral entropy
+        """
+        from analysis.parameters import nb_note_crit
+        import numpy as np
+
+        entropy_mean = {}
+        entropy_var = {}
+
+        for context in ['U', 'D']:
+
+            se_mean = np.array([], dtype=np.float32)
+            se_var = np.array([], dtype=np.float32)
+            ind = np.array(find_str(self.contexts, context))
+
+            if ind.shape[0] >= nb_note_crit:
+                for (start, end) in zip(self.onsets[ind], self.offsets[ind]):
+                    audio = AudioData(self.path).extract([start, end])  # audio object
+                    audio.spectrogram()  # get self.spect first
+                    se = audio.get_spectral_entropy(normalize=normalize, mode=mode)
+                    if type(se) == 'dict':
+                        se_mean = np.append(se_mean,
+                                            se['mean'])  # spectral entropy averaged over time bins per rendition
+                        se_var = np.append(se_var, se['var'])  # spectral entropy variance per rendition
+                    else:
+                        se_mean = np.append(se_mean, se)  # spectral entropy time-resolved
+                entropy_mean[context] = round(se_mean.mean(), 3)
+        if mode == 'spectro_temporal':
+            entropy_var[context] = round(se_var.mean(), 3)
+            return entropy_mean, entropy_var
+        else:  # spectral entropy (does not have entropy variance)
+            return entropy_mean
+
     def piecewise_linear_warping(self):
         """Perform piecewise linear warping per note"""
         import copy
@@ -526,6 +651,30 @@ class NoteInfo():
             np.put(spk_ts_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
             note_spk_ts_warp_list.append(spk_ts_new)
         return note_spk_ts_warp_list
+
+    def get_peth(self, time_warp=True, shuffle=False):
+        """Get peri-event time histograms & rasters during song motif"""
+        peth_dict = {}
+
+        if shuffle:
+            peth, time_bin = get_peth(self.onsets, self.spk_ts_jittered)
+        else:
+            if time_warp:  # peth calculated from time-warped spikes by default
+                # peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
+                peth, time_bin = get_peth(self.onsets, self.spk_ts_warp)
+            else:
+                peth, time_bin = get_peth(self.onsets, self.spk_ts)
+
+        peth_dict['peth'] = peth
+        peth_dict['time_bin'] = time_bin
+        peth_dict['contexts'] = self.contexts
+        peth_dict['median_duration'] = self.median_dur
+        return PethInfo(peth_dict)  # return peth class object for further analysis
+
+    def jitter_spk_ts(self, reproducible=True):
+        from analysis.parameters import peth_shuffle
+
+        self.spk_ts_jittered = jitter_spk_ts(self.spk_ts, peth_shuffle['shuffle_limit'], reproducible=reproducible)
 
     @property
     def nb_note(self):
@@ -550,28 +699,6 @@ class NoteInfo():
             else:
                 note_fr[context1] = np.nan
         return note_fr
-
-    def get_peth(self, time_warp=True, shuffle=False):
-        """Get peri-event time histograms & rasters during song motif"""
-        peth_dict = {}
-
-        if shuffle:
-            peth, time_bin = get_peth(self.onsets, self.spk_ts_jittered)
-        else:
-            if time_warp:  # peth calculated from time-warped spikes by default
-                # peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
-                peth, time_bin = get_peth(self.onsets, self.spk_ts_warp)
-            else:
-                peth, time_bin = get_peth(self.onsets, self.spk_ts)
-
-        peth_dict['peth'] = peth
-        peth_dict['time_bin'] = time_bin
-        peth_dict['contexts'] = self.contexts
-        peth_dict['median_duration'] = self.median_dur
-        return PethInfo(peth_dict)  # return peth class object for further analysis
-
-    def __repr__(self):
-        return str([key for key in self.__dict__.keys()])
 
 
 class MotifInfo(ClusterInfo):
@@ -813,7 +940,7 @@ class MotifInfo(ClusterInfo):
         """Get peri-event time histograms & rasters during song motif"""
         peth_dict = {}
 
-        if shuffle:
+        if shuffle:  # Get peth with shuffled (jittered) spikes
             peth, time_bin = get_peth(self.onsets, self.spk_ts_jittered)
         else:
             if time_warp:  # peth calculated from time-warped spikes by default
@@ -1245,7 +1372,7 @@ class AudioData:
     def plot_spectrogram(self, MotifInfo):
         pass
 
-    def get_spectral_entropy(self, normalize=True, time_resolved=True):
+    def get_spectral_entropy(self, normalize=True, mode=None):
         """
         Calculate spectral entropy
         Parameters
@@ -1259,7 +1386,7 @@ class AudioData:
         """
         import numpy as np
 
-        return  get_spectral_entropy(self.spect, normalize=normalize, time_resolved=True)
+        return  get_spectral_entropy(self.spect, normalize=normalize, mode=mode)
 
 
 class NeuralData:
