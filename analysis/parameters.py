@@ -14,11 +14,10 @@ note_color = {'Intro': ['k', 'gray', 'darkseagreen', 'olive'],
               'Motif': ['r', 'b', 'lime', 'm', 'brown', 'purple', 'saddlebrown'],
               'Call': ['teal', 'darkgrey', 'darkgray', 'indigo']}
 
-bout_color = {'i':'k', 'j':'gray', 'k':'darkseagreen',   # intro notes
-              'a':'r', 'b': 'b', 'c':'lime', 'd':'m', 'e':'brown', 'f': 'purple', 'g': 'saddlebrown',  # motif notes
-              'm':'teal', 'n':'darkgrey', 'l':'darkgray', 'o':'indigo'  # calls
+bout_color = {'i': 'k', 'j': 'gray', 'k': 'darkseagreen',  # intro notes
+              'a': 'r', 'b': 'b', 'c': 'lime', 'd': 'm', 'e': 'brown', 'f': 'purple', 'g': 'saddlebrown',  # motif notes
+              'm': 'teal', 'n': 'darkgrey', 'l': 'darkgray', 'o': 'indigo'  # calls
               }
-
 
 # Define baseline period 1 sec window & 2 sec prior to syllable onset
 baseline = {'time_win': 1000, 'time_buffer': 2000}  # in ms
@@ -40,13 +39,10 @@ peth_parm = {'buffer': 50,  # time buffer before the event onset (in ms)
 peth_parm['time_bin'] = np.arange(0, peth_parm['nb_bins'], peth_parm['bin_size'])
 
 # Gauss parameter for PETH smoothing
-gauss_std = 3  # experiment with 0.5, 1, 3. Previously used 8
+gauss_std = 1  # experiment with 0.5, 1, 3. Previously used 8
 filter_width = 20  # filter length for smoothing (in ms)
-truncate = (((filter_width - 1)/2)-0.5)/ gauss_std
-# truncate = 2.5
-# gauss_std = 3
-# filter_width = 2*int(truncate*gauss_std + 0.5) + 1  # filter length for smoothing (in ms)
-# print(filter_width)
+# truncate = (((filter_width - 1)/2)-0.5)/ gauss_std
+
 
 spk_count_parm = {'win_size': 30  # moving window where number of spikes will be calculated (in ms)
                   }
@@ -66,9 +62,9 @@ isi_bin = np.arange(0, isi_win, 1 / isi_scale)
 
 # Correlogram
 corr_shuffle = {''
-                '' : 5,  # in ms
-                'shuffle_iter' : 100  # bootstrap iterations
-               }
+                '': 5,  # in ms
+                'shuffle_iter': 100  # bootstrap iterations
+                }
 
 shuffling_iter = 100  # shuffling iteration for obtaining baseline
 
@@ -88,8 +84,8 @@ pre_motor_win_size = 50  # in ms
 nb_note_crit = 10  # minimum number of notes for analysis
 
 # Spike shuffling parameter for peth for getting baseline PCC
-peth_shuffle = {'shuffle_limit' : 50,  # in ms
-                'shuffle_iter' : 100  # bootstrap iterations
+peth_shuffle = {'shuffle_limit': 10,  # in ms (50 for motif, 10 for syllable)
+                'shuffle_iter': 100  # bootstrap iterations
                 }
 
 
@@ -104,7 +100,6 @@ peth_shuffle = {'shuffle_limit' : 50,  # in ms
 #     syl_color[4, :] = [255, 127.5, 0]
 #     syl_color = syl_color / 255
 #     return syl_color
-
 
 # note_color = []
 #

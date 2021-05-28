@@ -173,7 +173,7 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
 
     Returns
     -------
-    p_sig : bool
+    p_sig : dict
         True if the pcc is significantly above the baseline
     """
     from analysis.parameters import peth_shuffle
@@ -193,7 +193,8 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
             pcc_shuffle[context] = np.append(pcc_shuffle[context], pcc['mean'])
 
     # One-sample t-test (one-sided)
-    p_val, p_sig = {}
+    p_val = {}
+    p_sig = {}
 
     for context in pcc_shuffle.keys():
         (_, p_val[context]) = stats.ttest_1samp(a=pcc_shuffle[context], popmean=PethInfo.pcc[context]['mean'],
@@ -565,6 +566,7 @@ class ClusterInfo:
 
         # Organize data into a dictionary
         note_info = {
+            'note': note,
             'onsets': note_onsets,
             'offsets': note_offsets,
             'durations': note_durations,
@@ -671,10 +673,34 @@ class NoteInfo():
         peth_dict['median_duration'] = self.median_dur
         return PethInfo(peth_dict)  # return peth class object for further analysis
 
-    def jitter_spk_ts(self, reproducible=True):
-        from analysis.parameters import peth_shuffle
+    def jitter_spk_ts(self, shuffle_limit):
+        """
+        Add a random temporal jitter to the spike
+        This version limit the jittered timestamp within the motif window
+        """
 
-        self.spk_ts_jittered = jitter_spk_ts(self.spk_ts, peth_shuffle['shuffle_limit'], reproducible=reproducible)
+        from analysis.parameters import pre_motor_win_size
+        import numpy as np
+
+        spk_ts_jittered_list = []
+        list_zip = zip(self.onsets, self.offsets, self.spk_ts)
+        for ind, (onset, offset, spk_ts) in enumerate(list_zip):
+
+            # Find motif onset & offset
+            onset = float(onset) - pre_motor_win_size  # start from the premotor window
+
+            jittered_spk = np.array([], dtype=np.float32)
+
+            for spk_ind, spk in enumerate(spk_ts):
+                while True:
+                    jitter = np.random.uniform(-shuffle_limit, shuffle_limit, 1)
+                    new_spk = spk + jitter
+                    if onset < new_spk < offset:
+                        jittered_spk = np.append(jittered_spk , spk + jitter)
+                        break
+
+            spk_ts_jittered_list.append(jittered_spk)
+        self.spk_ts_jittered = spk_ts_jittered_list
 
     @property
     def nb_note(self):

@@ -19,6 +19,10 @@ CREATE TABLE IF NOT EXISTS syllable(
 
             pccUndir                 REAL,
             pccDir                   REAL,
+
+            pccUndirSig              BOOLEAN,
+            pccDirSig                BOOLEAN,
+
             corrContext              REAL,
 
             psdSimilarity            REAL,
