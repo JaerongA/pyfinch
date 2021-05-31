@@ -9,35 +9,6 @@ def create_db():
     with open('database/create_syllable.sql', 'r') as sql_file:
         db.conn.executescript(sql_file.read())
 
-def get_entropy(note_onsets, note_offsets, note_contexts, time_resolved):
-    # Get mean entropy and variance
-    from analysis.spike import AudioData
-
-    entropy_mean = {}
-    entropy_var = {}
-
-    for context in ['U', 'D']:
-
-        se_mean = np.array([], dtype=np.float32)
-        se_var = np.array([], dtype=np.float32)
-        ind = np.array(find_str(note_contexts, context))
-
-        if ind.shape[0] >= nb_note_crit:
-            for (start, end) in zip(note_onsets[ind], note_offsets[ind]):
-                audio = AudioData(path).extract([start, end])  # audio object
-                audio.spectrogram()  # get self.spect first
-                se = audio.get_spectral_entropy(time_resolved=time_resolved)
-                if type(se) == 'dict':
-                    se_mean = np.append(se_mean, se['mean'])  # spectral entropy averaged over time bins per rendition
-                    se_var = np.append(se_var, se['var'])  # spectral entropy variance per rendition
-                else:
-                    se_mean = np.append(se_mean, se)  # spectral entropy time-resolved
-            entropy_mean[context] = round(se_mean.mean(), 3)
-    if not time_resolved:
-        entropy_var[context] = round(se_var.mean(), 3)
-        return entropy_mean, entropy_var
-    else:  # time-resolved version does not have entropy variance
-        return entropy_mean
 
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
@@ -46,7 +17,6 @@ from analysis.spike import *
 from database.load import DBInfo, ProjectLoader
 from util import save
 from util.draw import *
-from analysis.parameters import pre_motor_win_size
 
 # parameters
 rec_yloc = 0.05
@@ -56,19 +26,16 @@ font_size = 12
 marker_size = 0.4  # for spike count
 nb_note_crit = 10  # minimum number of notes for analysis
 
-# Gauss parameter for PETH smoothing
-gauss_std = 3
-filter_width = 20  # filter length for smoothing (in ms)
-truncate = (((filter_width - 1)/2)-0.5)/ gauss_std
-
 norm_method = None
 fig_ext = '.png'  # .png or .pdf
 update = False  # Set True for recreating a cache file
 save_fig = True
 update_db = True  # save results to DB
 time_warp = True  # spike time warping
-entropy = True  # calculate entropy & entropy variance
-time_resolved = True  # computes time-resolved version of entropy
+entropy = False  # calculate entropy & entropy variance
+entropy_mode = 'spectral'   # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
+shuffled_baseline = True
+plot_hist = False
 
 # Create & Load database
 if update_db:
@@ -78,8 +45,8 @@ if update_db:
 # SQL statement
 # Create a new database (syllable)
 db = ProjectLoader().load_db()
-# query = "SELECT * FROM cluster WHERE analysisOK=1"
-query = "SELECT * FROM cluster WHERE id=96"
+query = "SELECT * FROM cluster WHERE analysisOK=1"
+# query = "SELECT * FROM cluster WHERE analysisOK=1 AND id>=113"
 db.execute(query)
 
 # Loop through db
@@ -96,85 +63,28 @@ for row in db.cur.fetchall():
     # Load class object
     ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
 
-    import copy
-
-    syllables = ''.join(ci.syllables)
-    onsets = np.hstack(ci.onsets)
-    offsets = np.hstack(ci.offsets)
-    durations = np.hstack(ci.durations)
-    contexts = ''
-
-    for i in range(len(ci.contexts)):  # concatenate contexts
-        contexts += ci.contexts[i] * len(ci.syllables[i])
-
     # Loop through note
     for note in cluster_db.songNote:
 
-        ind = np.array(find_str(syllables, note))  # note indices
-        if not ind.size:  # if a note does not exist
-            continue
-        note_onsets = np.asarray(list(map(float, onsets[ind])))
-        note_offsets = np.asarray(list(map(float, offsets[ind])))
-        note_durations = np.asarray(list(map(float, durations[ind])))
-        note_contexts = ''.join(np.asarray(list(contexts))[ind])
-        note_median_dur = np.median(note_durations, axis=0)
-        nb_note = len(ind)
-
-        spk_ts = np.hstack(ci.spk_ts)
-
-        note_spk_ts_list = []
-        for onset, offset in zip(note_onsets, note_offsets):
-            note_spk_ts_list.append(spk_ts[np.where((spk_ts >= onset - pre_motor_win_size) & (spk_ts <= offset))])
-
-        # Perform piecewise linear warping
-        note_spk_ts_warped_list = []
-
-        for onset, duration, spk_ts in zip(note_onsets, note_durations, note_spk_ts_list):
-
-            spk_ts_new = copy.deepcopy(spk_ts)
-            ratio = note_median_dur / duration
-            offset = 0
-            origin = 0
-
-            spk_ts_temp, ind = spk_ts[spk_ts >= onset], np.where(spk_ts >= onset)
-
-            spk_ts_temp = ((ratio * ((spk_ts_temp - onset) )) + origin) + onset
-            np.put(spk_ts_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
-            note_spk_ts_warped_list.append(spk_ts_new)
-
-        # Nb_note per context
-        nb_note = {}
-        for context in ['U', 'D']:
-            nb_note[context] = len(find_str(note_contexts, context))
-
-        # Get note firing rates (includes pre-motor window) per context
-        note_spk = {}
-        note_fr = {}
-        for context1 in ['U', 'D']:
-            if nb_note[context1] >= nb_note_crit:
-                note_spk[context1] = sum([len(spk) for context2, spk in zip(note_contexts, note_spk_ts_list) if context2==context1])
-                note_fr[context1] = round(note_spk[context1] / ((note_durations[find_str(note_contexts, context1)] + pre_motor_win_size).sum() / 1E3), 3)
-            else:
-                note_fr[context1] = np.nan
+        ni = ci.get_note_info(note)
 
         # Skip if there are not enough motifs per condition
-        if np.prod([nb[1] < nb_note_crit for nb in nb_note.items()]):
+        if np.prod([nb[1] < nb_note_crit for nb in ni.nb_note.items()]):
             print("Not enough notes")
             continue
 
         # Plot spectrogram & peri-event histogram (Just the first rendition)
-
         # Note start and end
-        start = note_onsets[0] - peth_parm['buffer']
-        end = note_offsets[0] + peth_parm['buffer']
-        duration = note_offsets[0] - note_onsets[0]
+        start = ni.onsets[0] - peth_parm['buffer']
+        end = ni.offsets[0] + peth_parm['buffer']
+        duration = ni.durations[0]
 
         # Get spectrogram
         audio = AudioData(path, update=update).extract([start, end])  # audio object
         audio.spectrogram(freq_range=freq_range)
 
         # Plot figure
-        fig = plt.figure(figsize=(6,10))
+        fig = plt.figure(figsize=(7,10), dpi=500)
         fig.set_tight_layout(False)
         note_name = ci.name + '-' + note
         if time_warp:
@@ -212,11 +122,12 @@ for row in db.cur.fetchall():
         # Plot syllable entropy
         if entropy:
 
-            if time_resolved:
-                entropy_mean = get_entropy(note_onsets, note_offsets, note_contexts, time_resolved)
-            else:
+            if entropy_mode == 'spectral':
+                # entropy_mean = get_entropy(note_onsets, note_offsets, note_contexts, time_resolved)
+                entropy_mean = ni.get_entropy(mode=entropy_mode)
+            elif entropy_mode == 'spectro_temporal':
                 ax_se = ax_spect.twinx()
-                se = audio.get_spectral_entropy(time_resolved=time_resolved)
+                se = audio.get_spectral_entropy(mode=entropy_mode)
                 # time = audio.spect_time[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
                 # se = se[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
                 # ax_se.plot(time, se, 'k')
@@ -225,7 +136,7 @@ for row in db.cur.fetchall():
                 # se['array'] = se['array'][np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
                 remove_right_top(ax_se)
                 # Calculate averaged entropy and entropy variance across renditions
-                entropy_mean, entropy_var = get_entropy(note_onsets, note_offsets, note_contexts)
+                entropy_mean, entropy_var = ni.get_entropy(mode=entropy_mode)
 
         # Mark syllables
         rectangle = plt.Rectangle((onset, rec_yloc), duration, 0.2,
@@ -236,11 +147,12 @@ for row in db.cur.fetchall():
 
         # Plot raster
         ax_raster = plt.subplot(gs[4:6, 0:5], sharex=ax_spect)
-        line_offsets = np.arange(0.5, sum(nb_note.values()))
+        line_offsets = np.arange(0.5, sum(ni.nb_note.values()))
+
         if time_warp:
-            zipped_lists = zip(note_contexts, note_spk_ts_warped_list, note_onsets)
+            zipped_lists = zip(ni.contexts, ni.spk_ts_warp, ni.onsets)
         else:
-            zipped_lists = zip(note_contexts, note_spk_ts_list, note_onsets)
+            zipped_lists = zip(ni.contexts, ni.spk_ts, ni.onsets)
 
         pre_context = ''  # for marking  context change
         context_change = np.array([])
@@ -256,9 +168,9 @@ for row in db.cur.fetchall():
 
             # Demarcate the note
             if time_warp:
-                note_duration = note_median_dur
+                note_duration = ni.median_dur
             else:
-                note_duration = note_durations[note_ind]
+                note_duration = ni.durations[note_ind]
 
             rectangle = plt.Rectangle((0, note_ind), note_duration, rec_height,
                                       fill=True,
@@ -284,9 +196,9 @@ for row in db.cur.fetchall():
                        pre_context,
                        size=6)
 
-        ax_raster.set_yticks([0, sum(nb_note.values())])
-        ax_raster.set_yticklabels([0, sum(nb_note.values())])
-        ax_raster.set_ylim([0, sum(nb_note.values())])
+        ax_raster.set_yticks([0, sum(ni.nb_note.values())])
+        ax_raster.set_yticklabels([0, sum(ni.nb_note.values())])
+        ax_raster.set_ylim([0, sum(ni.nb_note.values())])
         ax_raster.set_ylabel('Trial #', fontsize=font_size)
         plt.setp(ax_raster.get_xticklabels(), visible=False)
         remove_right_top(ax_raster)
@@ -295,22 +207,24 @@ for row in db.cur.fetchall():
         ax_raster = plt.subplot(gs[7:9, 0:5], sharex=ax_spect)
 
         # Sort trials based on context
-        sort_ind = np.array([i[0] for i in sorted(enumerate(note_contexts), key=lambda x: x[1], reverse=True)])
-        contexts_sorted = np.array(list(note_contexts))[sort_ind].tolist()
-        onsets_sorted = np.array(note_onsets)[sort_ind].tolist()
+        sort_ind = np.array([i[0] for i in sorted(enumerate(ni.contexts), key=lambda x: x[1], reverse=True)])
+        contexts_sorted = np.array(list(ni.contexts))[sort_ind].tolist()
+        # ni.onsets = note_onsets
+        onsets_sorted = np.array(ni.onsets)[sort_ind].tolist()
         if time_warp:
-            spk_ts_sorted = np.array(note_spk_ts_warped_list)[sort_ind].tolist()
+            spk_ts_sorted = np.array(ni.spk_ts_warp)[sort_ind].tolist()
         else:
-            spk_ts_sorted = np.array(note_spk_ts_list)[sort_ind].tolist()
+            # ni.spk_ts = note_spk_ts_list
+            spk_ts_sorted = np.array(ni.spk_ts)[sort_ind].tolist()
 
         zipped_lists = zip(contexts_sorted, spk_ts_sorted, onsets_sorted)
+        # zipped_lists = zip(ni.contexts, ni.spk_ts, ni.onsets)
 
         pre_context = ''  # for marking  context change
         context_change = np.array([])
 
         for note_ind, (context, spk_ts, onset) in enumerate(zipped_lists):
 
-            # Plot rasters
             spk = spk_ts - onset
             # print(len(spk))
             # print("spk ={}, nb = {}".format(spk, len(spk)))
@@ -320,9 +234,9 @@ for row in db.cur.fetchall():
 
             # Demarcate the note
             if time_warp:
-                note_duration = note_median_dur
+                note_duration = ni.median_dur
             else:
-                note_duration = note_durations[note_ind]
+                note_duration = ni.durations[note_ind]
 
             rectangle = plt.Rectangle((0, note_ind), note_duration, rec_height,
                                       fill=True,
@@ -348,74 +262,25 @@ for row in db.cur.fetchall():
                        pre_context,
                        size=6)
 
-        ax_raster.set_yticks([0, sum(nb_note.values())])
-        ax_raster.set_yticklabels([0, sum(nb_note.values())])
-        ax_raster.set_ylim([0, sum(nb_note.values())])
+        ax_raster.set_yticks([0, sum(ni.nb_note.values())])
+        ax_raster.set_yticklabels([0, sum(ni.nb_note.values())])
+        ax_raster.set_ylim([0, sum(ni.nb_note.values())])
         ax_raster.set_ylabel('Trial #', fontsize=font_size)
         ax_raster.set_title('sorted raster', size=font_size)
         plt.setp(ax_raster.get_xticklabels(), visible=False)
         remove_right_top(ax_raster)
 
         # Draw peri-event histogram (PETH)
-        # TODO: should get syllable object as a class
-
-        from analysis.parameters import peth_parm
-        import math
-        import numpy as np
-
-        peth = np.zeros((len(note_onsets), peth_parm['bin_size'] * peth_parm['nb_bins']))  # nb of trials x nb of time bins
-        for trial_ind, (evt_ts, spk_ts) in enumerate(zip(note_onsets, note_spk_ts_warped_list)):
-            evt_ts -= peth_parm['buffer']
-            spk_ts -= evt_ts
-            for spk in spk_ts:
-                ind = math.ceil(spk / peth_parm['bin_size'])
-                # print("spk = {}, bin index = {}".format(spk, ind))  # for debugging
-                peth[trial_ind, ind] += 1
-        time_bin = peth_parm['time_bin'] - peth_parm['buffer']
-
-        peth_dict = {}
-        peth_dict['peth'] = peth
-        peth_dict['time_bin'] = time_bin
-        peth_dict['contexts'] = list(note_contexts)
-        peth_dict['median_duration'] = note_median_dur
-
-        # Get firing rates
-        pi = PethInfo(peth_dict)
-        # pi.get_fr(norm_method=norm_method)  # get firing rates
-        from analysis.parameters import peth_parm, nb_note_crit
-        import numpy as np
-        from scipy.ndimage import gaussian_filter1d
-        smoothing = True
-
-        # Get trial-by-trial firing rates
-        fr_dict = {}
-        for k, v in pi.peth.items():  # loop through differ ent conditions in peth dict
-            if v.shape[0] >= nb_note_crit:
-                fr = v / (peth_parm['bin_size'] / 1E3)  # in Hz
-
-                if smoothing:  # Gaussian smoothing
-                    fr = gaussian_filter1d(fr, gauss_std, truncate=truncate)
-
-                # Truncate values outside the range
-                ind = (((0 - peth_parm['buffer']) <= time_bin) & (time_bin <= note_median_dur))
-                fr = fr[:, ind]
-                fr_dict[k] = fr
-        fr = fr_dict
-        time_bin = time_bin[ind]
-
-        # Get mean firing rates
-        mean_fr = {}
-        for k, v in fr.items():
-            fr = np.mean(v, axis=0)
-            mean_fr[k] = fr
+        pi = ni.get_peth()
+        pi.get_fr()  # get firing rates
 
         # Plot mean firing rates
         ax_peth = plt.subplot(gs[10:12, 0:5], sharex=ax_spect)
-        for context, fr in mean_fr.items():
+        for context, fr in pi.mean_fr.items():
             if context == 'U':
-                ax_peth.plot(time_bin, fr, 'b', label=context)
+                ax_peth.plot(pi.time_bin, fr, 'b', label=context)
             elif context == 'D':
-                ax_peth.plot(time_bin, fr, 'm', label=context)
+                ax_peth.plot(pi.time_bin, fr, 'm', label=context)
 
         plt.legend(loc='center left', bbox_to_anchor=(0.98, 0.5), prop={'size': 6})  # print out legend
         ax_peth.set_ylabel('FR', fontsize=font_size)
@@ -430,17 +295,16 @@ for row in db.cur.fetchall():
 
         # Mark end of the motif
         ax_peth.axvline(x=0, color='k', ls='--', lw=0.5)
-        ax_peth.axvline(x=note_median_dur, color='k', lw=0.5)
+        ax_peth.axvline(x=ni.median_dur, color='k', lw=0.5)
         ax_peth.set_xlabel('Time (ms)')
         remove_right_top(ax_peth)
 
         # Calculate pairwise cross-correlation
-        pcc_dict = {}
-        for k, v in fr_dict.items():  # loop through different conditions in peth dict
-            if k != 'All':
-                if v.shape[0] >= nb_note_crit:
-                    pcc = get_pcc(v)
-                    pcc_dict[k] = pcc
+        pi.get_pcc()
+
+        # Get shuffled PETH & pcc
+        if shuffled_baseline:
+            p_sig = pcc_shuffle_test(ni, pi, plot_hist=plot_hist)
 
         # Print out results on the figure
         txt_xloc = -1.5
@@ -451,28 +315,38 @@ for row in db.cur.fetchall():
         ax_txt.set_axis_off()  # remove all axes
 
         # # of motifs
-        for i, (k, v) in enumerate(nb_note.items()):
+        for i, (k, v) in enumerate(ni.nb_note.items()):
             ax_txt.text(txt_xloc, txt_yloc, f"# of notes ({k}) = {v}", fontsize=font_size)
             txt_yloc -= txt_inc
 
         # Firing rates (includes the pre-motor window)
-        for i, (k, v) in enumerate(note_fr.items()):
+        for i, (k, v) in enumerate(ni.mean_fr.items()):
             ax_txt.text(txt_xloc, txt_yloc, f"FR ({k}) = {v}", fontsize=font_size)
             txt_yloc -= txt_inc
 
         # PCC
-        v = pcc_dict['U']['mean'] if "U" in pcc_dict else np.nan
-        ax_txt.text(txt_xloc, txt_yloc, f"PCC (U) = {v}", fontsize=font_size)
+        if "U" in pi.pcc and ni.nb_note['U'] >= nb_note_crit:
+            t = ax_txt.text(txt_xloc, txt_yloc, f"PCC (U) = {pi.pcc['U']['mean']}", fontsize=font_size)
+            if "p_sig" in locals():
+                if 'U' in p_sig and p_sig['U']:
+                    t.set_bbox(dict(facecolor='green', alpha=0.5))
+                else:
+                    t.set_bbox(dict(facecolor='red', alpha=0.5))
         txt_yloc -= txt_inc
 
-        v = pcc_dict['D']['mean'] if "D" in pcc_dict else np.nan
-        ax_txt.text(txt_xloc, txt_yloc, f"PCC (D) = {v}", fontsize=font_size)
+        if "D" in pi.pcc and ni.nb_note['D'] >= nb_note_crit:
+            t = ax_txt.text(txt_xloc, txt_yloc, f"PCC (D) = {pi.pcc['D']['mean']}", fontsize=font_size)
+            if "p_sig" in locals():
+                if 'D' in p_sig and p_sig['D']:
+                    t.set_bbox(dict(facecolor='green', alpha=0.5))
+                else:
+                    t.set_bbox(dict(facecolor='red', alpha=0.5))
         txt_yloc -= txt_inc
 
         # Corr context (correlation of firing rates between two contexts)
         corr_context = None
-        if 'U' in mean_fr.keys() and 'D' in mean_fr.keys():
-            corr_context = round(np.corrcoef(mean_fr['U'], mean_fr['D'])[0, 1], 3)
+        if 'U' in pi.mean_fr.keys() and 'D' in pi.mean_fr.keys():
+            corr_context = round(np.corrcoef(pi.mean_fr['U'], pi.mean_fr['D'])[0, 1], 3)
         ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
 
         # Syllable entropy (if exists)
@@ -494,41 +368,47 @@ for row in db.cur.fetchall():
                                                                               cluster_db.dph, cluster_db.block10days, note)
             db.cur.execute(query)
 
-            if 'U' in nb_note:
-                db.cur.execute(f"UPDATE syllable SET nbNoteUndir = ({nb_note['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+            if 'U' in ni.nb_note:
+                db.cur.execute(f"UPDATE syllable SET nbNoteUndir = ({ni.nb_note['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
-            if 'D' in nb_note:
-                db.cur.execute(f"UPDATE syllable SET nbNoteDir = ({nb_note['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+            if 'D' in ni.nb_note:
+                db.cur.execute(f"UPDATE syllable SET nbNoteDir = ({ni.nb_note['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
-            if 'U' in note_fr and nb_note['U'] >= nb_note_crit:
-                db.cur.execute(f"UPDATE syllable SET frUndir = ({note_fr['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
-            if 'D' in note_fr and nb_note['D'] >= nb_note_crit:
-                db.cur.execute(f"UPDATE syllable SET frDir = ({note_fr['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+            if 'U' in ni.mean_fr and ni.nb_note['U'] >= nb_note_crit:
+                db.cur.execute(f"UPDATE syllable SET frUndir = ({ni.mean_fr['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+            if 'D' in ni.mean_fr and ni.nb_note['D'] >= nb_note_crit:
+                db.cur.execute(f"UPDATE syllable SET frDir = ({ni.mean_fr['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
-            if 'U' in pcc_dict and nb_note['U'] >= nb_note_crit:
-                db.cur.execute(f"UPDATE syllable SET pccUndir = ({pcc_dict['U']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+            if 'U' in pi.pcc and ni.nb_note['U'] >= nb_note_crit:
+                db.cur.execute(f"UPDATE syllable SET pccUndir = ({pi.pcc['U']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
-            if 'D' in pcc_dict and nb_note['D'] >= nb_note_crit:
-                db.cur.execute(f"UPDATE syllable SET pccDir = ({pcc_dict['D']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+            if 'D' in pi.pcc and ni.nb_note['D'] >= nb_note_crit:
+                db.cur.execute(f"UPDATE syllable SET pccDir = ({pi.pcc['D']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             if corr_context:
                 db.cur.execute(f"UPDATE syllable SET corrContext = ({corr_context}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
+            if shuffled_baseline:
+                if 'U' in p_sig and ni.nb_note['U'] >= nb_note_crit:
+                    db.cur.execute(f"UPDATE syllable SET pccUndirSig = ({p_sig['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                if 'D' in p_sig and ni.nb_note['D'] >= nb_note_crit:
+                    db.cur.execute(f"UPDATE syllable SET pccDirSig = ({p_sig['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
             if entropy:
-                if 'U' in entropy_mean and nb_note['U'] >= nb_note_crit:
+                if 'U' in entropy_mean and ni.nb_note['U'] >= nb_note_crit:
                     db.cur.execute(
                         f"UPDATE syllable SET entropyUndir = ({entropy_mean['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
-                if 'D' in entropy_mean and nb_note['D'] >= nb_note_crit:
+                if 'D' in entropy_mean and ni.nb_note['D'] >= nb_note_crit:
                     db.cur.execute(
                         f"UPDATE syllable SET entropyDir = ({entropy_mean['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
-                if not time_resolved:
-                    if 'U' in entropy_var and nb_note['U'] >= nb_note_crit:
+                if entropy_mode == 'spectro_temporal':
+                    if 'U' in entropy_var and ni.nb_note['U'] >= nb_note_crit:
                         db.cur.execute(
                             f"UPDATE syllable SET entropyVarUndir = ({entropy_var['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
-                    if 'D' in entropy_var and nb_note['D'] >= nb_note_crit:
+                    if 'D' in entropy_var and ni.nb_note['D'] >= nb_note_crit:
                         db.cur.execute(
                             f"UPDATE syllable SET entropyVarDir = ({entropy_var['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
             db.conn.commit()
