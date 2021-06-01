@@ -32,9 +32,9 @@ update = False  # Set True for recreating a cache file
 save_fig = True
 update_db = True  # save results to DB
 time_warp = True  # spike time warping
-entropy = False  # calculate entropy & entropy variance
+entropy = True  # calculate entropy & entropy variance
 entropy_mode = 'spectral'   # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
-shuffled_baseline = True
+shuffled_baseline = False
 plot_hist = False
 
 # Create & Load database
@@ -46,7 +46,7 @@ if update_db:
 # Create a new database (syllable)
 db = ProjectLoader().load_db()
 query = "SELECT * FROM cluster WHERE analysisOK=1"
-# query = "SELECT * FROM cluster WHERE analysisOK=1 AND id>=113"
+# query = "SELECT * FROM cluster WHERE analysisOK=1 AND id>=115"
 db.execute(query)
 
 # Loop through db
@@ -67,6 +67,8 @@ for row in db.cur.fetchall():
     for note in cluster_db.songNote:
 
         ni = ci.get_note_info(note)
+        if not ni:  # the target note does not exist
+            continue
 
         # Skip if there are not enough motifs per condition
         if np.prod([nb[1] < nb_note_crit for nb in ni.nb_note.items()]):

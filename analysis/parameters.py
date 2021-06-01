@@ -61,12 +61,12 @@ isi_scale = 100
 isi_bin = np.arange(0, isi_win, 1 / isi_scale)
 
 # Correlogram
-corr_shuffle = {''
-                '': 5,  # in ms
+corr_shuffle = {
+                'shuffle_limit': 5,  # in ms
                 'shuffle_iter': 100  # bootstrap iterations
                 }
 
-shuffling_iter = 100  # shuffling iteration for obtaining baseline
+# shuffling_iter = 100  # shuffling iteration for obtaining baseline
 
 # Add a random spike jitter
 jitter_limit = 5  # maximum amount of jitter (in ms)

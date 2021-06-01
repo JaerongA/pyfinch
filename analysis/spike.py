@@ -553,6 +553,8 @@ class ClusterInfo:
             contexts += self.contexts[i] * len(self.syllables[i])
 
         ind = np.array(find_str(syllables, note))  # note indices
+        if not ind.any():  # note does not exist
+            return
         note_onsets = np.asarray(list(map(float, onsets[ind])))
         note_offsets = np.asarray(list(map(float, offsets[ind])))
         note_durations = np.asarray(list(map(float, durations[ind])))
