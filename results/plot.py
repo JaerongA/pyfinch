@@ -25,7 +25,7 @@ def get_nb_cluster(ax):
 def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
                         title=None, xlabel=None, ylabel=None,
                         col_order=None,
-                        x_max=0, y_max=None,
+                        x_max=-0.01, y_max=None,
                         jitter=0.1, alpha=0.5,
                         run_stats=True, stat_txt_size = 10,
                         legend_ok=False
