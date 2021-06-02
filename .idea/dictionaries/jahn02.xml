@@ -40,6 +40,7 @@
       <w>rsquare</w>
       <w>seqeunce</w>
       <w>spect</w>
+      <w>spectro</w>
       <w>spectrograms</w>
       <w>spkcorr</w>
       <w>spks</w>
@@ -54,6 +55,7 @@
       <w>xlsx</w>
       <w>xticks</w>
       <w>ylabel</w>
+      <w>ylim</w>
       <w>yloc</w>
       <w>ymax</w>
     </words>
