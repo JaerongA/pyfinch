@@ -25,18 +25,19 @@ import gc
 
 # Parameters
 save_fig = True
-save_psd = False
+save_psd = True
 update = False
 psd_update = True
-update_db = False  # save results to DB
+update_db = True  # save results to DB
 save_heatmap = True  # heatmap & csv
-context_selection= 'U'  # use undirected song only (default = None)
+context_selection = 'U'  # use undirected song only (default = None)
 fig_ext = '.png'
-num_note_crit = 10
+num_note_crit = 10  # number of notes criteria (only use notes that is greater than or equal to this criteria)
 nb_row = 6
 nb_col = 6
 font_size = 12
 alpha = 0.05
+
 
 def get_bird_list(db):
     # Select the birds to use that have both pre and post deafening songs
@@ -59,11 +60,10 @@ def get_psd_bird(db, *bird_to_use):
         # query = "select * from cluster where birdID in {}".format(tuple(bird_to_use[0]))
         # query = "select * from cluster where birdID in {}".format(tuple(bird_to_use[0]))
         query = "SELECT * FROM cluster WHERE birdID IN (?)"
-        db.cur.execute(query, tuple(bird_to_use))
+        db.cur.execute(query, tuple(bird_to_use[0]))
     else:
         query = "SELECT * FROM cluster"
         db.cur.execute(query)
-
 
     # Loop through db
     for row in db.cur.fetchall():
@@ -122,7 +122,8 @@ def get_psd_bird(db, *bird_to_use):
             # Get psd
             # This will create PSD.npy in each cluster folder
             # Note spectrograms & .npy per bird will be stored in PSD_similarity folder
-            psd_list, file_list, psd_notes, psd_context_list = get_psd_mat(path, save_path, save_psd=save_psd, update=True, fig_ext=fig_ext)
+            psd_list, file_list, psd_notes, psd_context_list = get_psd_mat(path, save_path, save_psd=save_psd,
+                                                                           update=True, fig_ext=fig_ext)
 
             # Organize data into a dictionary
             data = {
@@ -133,6 +134,7 @@ def get_psd_bird(db, *bird_to_use):
                 'cluster_name': [ci.name] * len(psd_notes)
             }
             np.save(npy_name, data)
+    # print('Done!')
 
 
 def psd_split(psd_list_pre_all, notes_pre_all, contexts_pre_all):
@@ -178,6 +180,8 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
     ----------
     psd_list_target : list
         list of target psd (pre or post-deafening)
+        len(psd_list_target) -> number of notes
+        psd_list_target[0].shape -> psd vector
     psd_list_basis : list
         list of basis psd (random selection from pre-deafening)
     notes_target : str
@@ -262,7 +266,7 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
             for ind, file in enumerate(note_file):
                 date = file.split('_')[1]
                 if prev_date and prev_date != date:
-                    date_change_ind.append(ind-0.5)
+                    date_change_ind.append(ind - 0.5)
                 prev_date = date
 
         # Plot the similarity matrix
@@ -316,7 +320,7 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
                                     'SimilarityMean': [similarity_mean_val],
                                     })
             df = df.append(temp_df, ignore_index=True)
-            csv_path = ProjectLoader().path / 'Analysis'/ 'PSD_similarity' / f'{bird_id}_{task_name}.csv'
+            csv_path = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / f'{bird_id}_{task_name}.csv'
             temp_df.to_csv(csv_path, index=True, header=True)  # save the dataframe to .cvs format
         else:
             plt.close(fig)
@@ -329,6 +333,7 @@ def get_similarity_heatmap(psd_list_target, psd_list_basis, notes_target, notes_
             similarity_info[note]['note_cluster'] = note_cluster
 
     return similarity_info
+
 
 def select_context(data, context_selection=None):
     """
@@ -366,17 +371,18 @@ def select_context(data, context_selection=None):
         data['cluster_name'] = cluster_name_arr[ind].tolist()
         return data
 
+
 # Get similarity matrix per bird
 # Load database
 db = ProjectLoader().load_db()
 bird_list, task_list, bird_to_use = get_bird_list(db)  # get bird list to analyze from db
 
-# ['b70r38', 'g35r38', 'w16w14', 'b4r64', 'b14r74', 'w21w30', 'y44r34']
+bird_to_use = ['k27o36']
+# bird_to_use = ['b70r38', 'w16w14', 'b4r64', 'b14r74', 'w21w30', 'y44r34', 'k27o36', 'o25w75']
+
 # Make PSD.npy file for each cluster
 # Make sure to delete the existing .npy before making a new one
-# get_psd_bird(db)
-
-bird_to_use = ['w21w30']
+# get_psd_bird(db, bird_to_use)
 
 # Calculate PSD similarity
 for bird_id in bird_to_use:
@@ -401,22 +407,25 @@ for bird_id in bird_to_use:
 
             # Split pre-deafening PSDs into halves
             # 1st half will be used as basis and the 2nd half as control
-            psd_list_basis, psd_list_pre, notes_basis, notes_pre = psd_split(psd_list_pre_all, notes_pre, context_list_pre)
+            psd_list_basis, psd_list_pre, notes_basis, notes_pre = psd_split(psd_list_pre_all, notes_pre,
+                                                                             context_list_pre)
             del psd_list_pre_all
 
             # Get basis psd and list of basis syllables
             db.cur.execute("SELECT songNote FROM main.cluster WHERE birdID = ?", (bird_id,))
             song_note = db.cur.fetchone()[0]
 
-            psd_list_basis, note_list_basis = get_basis_psd(psd_list_basis, notes_basis, song_note=song_note, num_note_crit_basis=num_note_crit)
+            psd_list_basis, note_list_basis = get_basis_psd(psd_list_basis, notes_basis, song_note=song_note,
+                                                            num_note_crit_basis=num_note_crit)
             # Get similarity heatmap between basis and pre-deafening control
-            get_similarity_heatmap(psd_list_pre, psd_list_basis, notes_pre, notes_basis, note_list_basis, file_list_pre, cluster_name_pre, save_results=save_heatmap)
+            get_similarity_heatmap(psd_list_pre, psd_list_basis, notes_pre, notes_basis, note_list_basis, file_list_pre,
+                                   cluster_name_pre, save_results=save_heatmap)
 
         elif task_name == 'Postdeafening':
 
             if not 'psd_list_basis' in locals(): continue
 
-            data = select_context(data, context_selection=context_selection)
+            # data = select_context(data, context_selection=context_selection)
 
             # file list info is needed for this condition to track chronological changes
             psd_list_post, notes_post, file_list_post, context_list_post, cluster_name_post = \
@@ -425,108 +434,146 @@ for bird_id in bird_to_use:
 
             # Get similarity heatmap between basis and post-deafening
             similarity_info = \
-                get_similarity_heatmap(psd_list_post, psd_list_basis, notes_post, notes_basis, note_list_basis, file_list_post, cluster_name_post, save_results=save_heatmap)
+                get_similarity_heatmap(psd_list_post, psd_list_basis, notes_post, notes_basis, note_list_basis,
+                                       file_list_post, cluster_name_post, save_results=save_heatmap)
 
+    # Get mean psd similarity per note
+    query = f"SELECT * FROM cluster WHERE birdID = {bird_id} AND analysisOK = 1"
+    db.execute(query)
 
+    # Loop through db
+    for row in db.cur.fetchall():
+        # Load cluster info from db
+        cluster_db = DBInfo(row)
+        name, path = cluster_db.load_cluster_db()
+        unit_nb = int(cluster_db.unit[-2:])
+        channel_nb = int(cluster_db.channel[-2:])
+        format = cluster_db.format
+        song_note = cluster_db.songNote
 
-#Get correlation between the number of spikes
-print('Get spk correlation')
-data_path = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / 'SpkCount'  # the folder where spike info is stored
+        # Load class object
+        ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
 
-# Load database
-# query = "SELECT * FROM cluster WHERE id = 41"
-query = "SELECT * FROM cluster WHERE birdID = 'w21w30' AND ephysOK = 1"
-# query = "SELECT * FROM cluster WHERE ephysOK = 1"
-db.execute(query)
+        for i, note in enumerate(song_note):  # loop through notes
 
-# Loop through db
-for row in db.cur.fetchall():
+            # Get correlation between number of spikes and similarity
+            ind = similarity_info[note]['note_cluster'] == ci.name
+            if not ind.sum(): continue
+            note_similarity = similarity_info[note]['similarity'][ind][:, i]
+            mean_similarity = round(note_similarity.mean(), 3)
 
-    # Load cluster info from db
-    cluster_db = DBInfo(row)
-    name, path = cluster_db.load_cluster_db()
-    unit_nb = int(cluster_db.unit[-2:])
-    channel_nb = int(cluster_db.channel[-2:])
-    format = cluster_db.format
-    song_note = cluster_db.songNote
+            if update_db:
+                db.cur.execute(f"UPDATE syllable SET psdSimilarity = ({mean_similarity}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                db.conn.commit()
 
-    # Load class object
-    ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
-
-    # Load number of spikes
-    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + 'SpkCount',
-                              add_date=False)
-
-    pre_motor_spk_dict = get_pre_motor_spk_per_note(ci, song_note, save_path, context_selection=context_selection, npy_update=True)
-    pre_motor_win = pre_motor_spk_dict['pre_motor_win']
-    del pre_motor_spk_dict['pre_motor_win']
-
-    # Plot scatter per note
-    fig = plt.figure(figsize=(12, 6))
-    plt.suptitle(ci.name, y=.95)
-
-    for i, note in enumerate(pre_motor_spk_dict):  # loop through notes
-
-        # Get correlation between number of spikes and similarity
-        ind = similarity_info[note]['note_cluster'] == ci.name
-        if not ind.sum(): continue
-        note_similarity = similarity_info[note]['similarity'][ind][:,i]
-        spk_count = pre_motor_spk_dict[note]['nb_spk']
-        pre_motor_fr = round(spk_count.sum() / (spk_count.shape[0] * (pre_motor_win / 1E3)), 3)  # firing rates during the pre-motor window
-        corr, corr_pval = pearsonr(note_similarity, spk_count)
-        r_square = corr**2
-
-        # Plot the results
-        ax = plt.subplot2grid((nb_row, len(pre_motor_spk_dict.keys())), (1, i), rowspan=2, colspan=1)
-        ax.scatter(spk_count, note_similarity, color='k', s=5)
-        ax.set_title(note, size=font_size)
-        if i == 0:
-            ax.set_ylabel('Note similarity')
-        ax.set_xlabel('Spk Count')
-        # ax.set_ylim([0, 1])
-        remove_right_top(ax)
-
-        # Print out results
-        ax_txt = plt.subplot2grid((nb_row, len(pre_motor_spk_dict.keys())), (3, i), rowspan=2, colspan=1)
-        txt_xloc = 0
-        txt_yloc = 0.5
-        txt_inc = 0.2
-        # ax_txt.set_ylim([0, 1])
-        ax_txt.text(txt_xloc, txt_yloc, f"PremotorFR = {round(pre_motor_fr, 3)} (Hz)", fontsize=font_size)
-        txt_yloc -= txt_inc
-        ax_txt.text(txt_xloc, txt_yloc, f"CorrR = {round(corr, 3)}", fontsize=font_size)
-        txt_yloc -= txt_inc
-        t = ax_txt.text(txt_xloc, txt_yloc, f"CorrR Pval = {round(corr_pval, 3)}", fontsize=font_size)
-        if corr_pval < alpha:
-            corr_sig = True
-            t.set_bbox(dict(facecolor='green', alpha=0.5))
-        else:
-            corr_sig = False
-            t.set_bbox(dict(facecolor='red', alpha=0.5))
-
-        txt_yloc -= txt_inc
-        ax_txt.text(txt_xloc, txt_yloc, f"R_square = {round(r_square, 3)}", fontsize=font_size)
-        ax_txt.axis('off')
-
-        if update_db:
-            with open('database/create_spk_corr.sql', 'r') as sql_file:
-                db.conn.executescript(sql_file.read())
-            db.cur.execute("INSERT OR IGNORE INTO spk_corr (clusterID) VALUES (?)", (row["id"],))
-            db.cur.execute("UPDATE spk_corr SET note=?, nbPremotorFR=?, corrR=?, corrPval=?, corrSig=?, rsquare=? WHERE clusterID=?",
-                           (note, round(pre_motor_fr, 3), round(corr, 3), round(corr_pval, 3), corr_sig, round(r_square, 3), row["id"]))
-            db.conn.commit()
-
-    # Save figure
-    if save_fig and 'fig' in locals():
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity')
-        save.save_fig(fig, save_path, ci.name, fig_ext=fig_ext)
-    else:
-        plt.show()
-
-
-
-gc.collect()
 if update_db:
-    db.to_csv('spk_corr')
+    db.to_csv('syllable')
     db.conn.close()
 print('Done!')
+
+
+
+
+#
+# # Get correlation between the number of spikes
+# print('Get spk correlation')
+# data_path = ProjectLoader().path / 'Analysis' / 'PSD_similarity' / 'SpkCount'  # the folder where spike info is stored
+#
+# # Load database
+# # query = "SELECT * FROM cluster WHERE ephysOK = 1"
+#
+# query = f"SELECT * FROM cluster WHERE birdID = {bird_id} AND ephysOK = 1"
+# db.execute(query)
+#
+# # Loop through db
+# for row in db.cur.fetchall():
+#
+#     # Load cluster info from db
+#     cluster_db = DBInfo(row)
+#     name, path = cluster_db.load_cluster_db()
+#     unit_nb = int(cluster_db.unit[-2:])
+#     channel_nb = int(cluster_db.channel[-2:])
+#     format = cluster_db.format
+#     song_note = cluster_db.songNote
+#
+#     # Load class object
+#     ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
+#
+#     # Load number of spikes
+#     save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + 'SpkCount',
+#                               add_date=False)
+#
+#     pre_motor_spk_dict = get_pre_motor_spk_per_note(ci, song_note, save_path, context_selection=context_selection,
+#                                                     npy_update=True)
+#     pre_motor_win = pre_motor_spk_dict['pre_motor_win']
+#     del pre_motor_spk_dict['pre_motor_win']
+#
+#     # Plot the results
+#     fig = plt.figure(figsize=(12, 6))
+#     plt.suptitle(ci.name, y=.95)
+#
+#     for i, note in enumerate(pre_motor_spk_dict):  # loop through notes
+#
+#         # Get correlation between number of spikes and similarity
+#         ind = similarity_info[note]['note_cluster'] == ci.name
+#         if not ind.sum(): continue
+#         note_similarity = similarity_info[note]['similarity'][ind][:, i]
+#         mean_similarity = round(note_similarity.mean(), 3)
+#         spk_count = pre_motor_spk_dict[note]['nb_spk']
+#         pre_motor_fr = round(spk_count.sum() / (spk_count.shape[0] * (pre_motor_win / 1E3)),
+#                              3)  # firing rates during the pre-motor window
+#         corr, corr_pval = pearsonr(note_similarity, spk_count)
+#         r_square = corr ** 2
+#
+#         ax = plt.subplot2grid((nb_row, len(pre_motor_spk_dict.keys())), (1, i), rowspan=2, colspan=1)
+#         ax.scatter(spk_count, note_similarity, color='k', s=5)
+#         ax.set_title(note, size=font_size)
+#         if i == 0:
+#             ax.set_ylabel('Note similarity')
+#         ax.set_xlabel('Spk Count')
+#         # ax.set_ylim([0, 1])
+#         remove_right_top(ax)
+#
+#         # Print out results
+#         ax_txt = plt.subplot2grid((nb_row, len(pre_motor_spk_dict.keys())), (3, i), rowspan=2, colspan=1)
+#         txt_xloc = 0
+#         txt_yloc = 0.5
+#         txt_inc = 0.2
+#         # ax_txt.set_ylim([0, 1])
+#         ax_txt.text(txt_xloc, txt_yloc, f"PremotorFR = {round(pre_motor_fr, 3)} (Hz)", fontsize=font_size)
+#         txt_yloc -= txt_inc
+#         ax_txt.text(txt_xloc, txt_yloc, f"CorrR = {round(corr, 3)}", fontsize=font_size)
+#         txt_yloc -= txt_inc
+#         t = ax_txt.text(txt_xloc, txt_yloc, f"CorrR Pval = {round(corr_pval, 3)}", fontsize=font_size)
+#         if corr_pval < alpha:
+#             corr_sig = True
+#             t.set_bbox(dict(facecolor='green', alpha=0.5))
+#         else:
+#             corr_sig = False
+#             t.set_bbox(dict(facecolor='red', alpha=0.5))
+#
+#         txt_yloc -= txt_inc
+#         ax_txt.text(txt_xloc, txt_yloc, f"R_square = {round(r_square, 3)}", fontsize=font_size)
+#         ax_txt.axis('off')
+#
+#         if update_db:
+#             with open('database/create_spk_corr.sql', 'r') as sql_file:
+#                 db.conn.executescript(sql_file.read())
+#             db.cur.execute("INSERT OR IGNORE INTO spk_corr (clusterID) VALUES (?)", (row["id"],))
+#             db.cur.execute(
+#                 "UPDATE spk_corr SET note=?, nbPremotorFR=?, corrR=?, corrPval=?, corrSig=?, rsquare=? WHERE clusterID=?",
+#                 (note, round(pre_motor_fr, 3), round(corr, 3), round(corr_pval, 3), corr_sig, round(r_square, 3),
+#                  row["id"]))
+#             db.conn.commit()
+#
+#     # Save figure
+#     if save_fig and 'ax' in locals():
+#         save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity')
+#         save.save_fig(fig, save_path, ci.name, fig_ext=fig_ext)
+#         del ax
+#
+# gc.collect()
+# if update_db:
+#     db.to_csv('spk_corr')
+#     db.conn.close()
+# print('Done!')

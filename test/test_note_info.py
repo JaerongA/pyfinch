@@ -18,10 +18,6 @@ marker_size = 0.4  # for spike count
 nb_note_crit = 10  # minimum number of notes for analysis
 
 # Gauss parameter for PETH smoothing
-gauss_std = 0.5
-# filter_width = 20  # filter length for smoothing (in ms)
-# truncate = (((filter_width - 1)/2)-0.5)/ gauss_std
-
 norm_method = None
 fig_ext = '.png'  # .png or .pdf
 update = False  # Set True for recreating a cache file
@@ -269,5 +265,8 @@ for row in db.cur.fetchall():
         remove_right_top(ax_peth)
 
         plt.show()
+
+
+
 
         break
