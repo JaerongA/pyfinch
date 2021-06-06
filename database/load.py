@@ -116,11 +116,7 @@ class DBInfo:
         return str([key for key in self.__dict__.keys()])
 
     def load_cluster_db(self):
-        """
-        Return the list of files in the current directory
-            Input: SQL object (database row)
-            Output: name of the cluster
-        """
+
         from pathlib import Path
 
         cluster_id = ''
@@ -154,4 +150,29 @@ class DBInfo:
         return cluster_name, cluster_path
 
     def load_song_db(self):
-        pass
+
+        from pathlib import Path
+
+        song_id = ''
+        if len(str(self.id)) == 1:
+            song_id = '00' + str(self.id)
+        elif len(str(self.id)) == 2:
+            song_id = '0' + str(self.id)
+        else:
+            song_id = str(self.id)
+
+        task_session = ''
+        if len(str(self.taskSession)) == 1:
+            task_session = 'D0' + str(self.taskSession)
+        elif len(str(self.taskSession)) == 2:
+            task_session = 'D' + str(self.taskSession)
+        task_session += '(' + str(self.sessionDate) + ')'
+
+        song_name = [song_id, self.birdID, self.taskName, task_session]
+        song_name = '-'.join(map(str, song_name))
+
+        # Get cluster path
+        project_path = ProjectLoader().path
+        song_path = project_path / self.birdID / self.taskName / task_session
+        song_path = Path(song_path)
+        return song_name, song_path
