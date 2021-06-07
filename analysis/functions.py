@@ -361,6 +361,7 @@ def get_basis_psd(psd_list, notes, song_note=None, num_note_crit_basis=30):
     psd_list_basis : list
     note_list_basis : list
     """
+    import numpy as np
 
     psd_dict = {}
     psd_list_basis = []

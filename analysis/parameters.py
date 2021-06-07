@@ -43,9 +43,7 @@ gauss_std = 1  # experiment with 0.5, 1, 3. Previously used 8
 filter_width = 20  # filter length for smoothing (in ms)
 # truncate = (((filter_width - 1)/2)-0.5)/ gauss_std
 
-
-spk_count_parm = {'win_size': 30  # moving window where number of spikes will be calculated (in ms)
-                  }
+spk_count_parm = {'win_size': 30}  # moving window where number of spikes will be calculated (in ms)
 
 # Raster
 tick_length = 0.8

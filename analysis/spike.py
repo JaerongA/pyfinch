@@ -496,10 +496,6 @@ class ClusterInfo:
 
         return isi_dict
 
-    @classmethod
-    def plot_isi(isi):
-        pass
-
     @property
     def nb_files(self):
 
@@ -539,7 +535,7 @@ class ClusterInfo:
         return nb_motifs
 
     def get_note_info(self, note):
-
+        """Return a class object (NoteInfo) for individual note"""
         from analysis.parameters import pre_motor_win_size
         import numpy as np
 
