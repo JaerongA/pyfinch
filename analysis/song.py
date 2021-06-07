@@ -1,56 +1,26 @@
 """
+By Jaerong
 A package for song analysis
 """
 
-from analysis.functions import *
-# from analysis.parameters import *
-from analysis.load import *
-from database.load import ProjectLoader
-from pathlib import Path
-from util.functions import *
-from util.spect import *
+# from analysis.functions import *
 
 
-# def load_song(database):
-#     """
-#     Load information about song path, names
-#     reads from the song database
-#     Args:
-#         database: SQL object (database row)
-#
-#     Returns:
-#         song path: path
-#         song name: str
-#     """
-#     song_id = ''
-#     if len(database['id']) == 1:
-#         song_id = '00' + database['id']
-#     elif len(database['id']) == 2:
-#         song_id = '0' + database['id']
-#     taskSession = ''
-#     if len(str(database['taskSession'])) == 1:
-#         taskSession = 'D0' + str(database['taskSession'])
-#     elif len(str(database['taskSession'])) == 2:
-#         taskSession = 'D' + str(database['taskSession'])
-#     taskSession += '(' + str(database['sessionDate']) + ')'
-#
-#     song_name = [song_id, database['birdID'], database['taskName'], taskSession]
-#     song_name = '-'.join(map(str, song_name))
-#
-#     # Get cluster path
-#     project_path = ProjectLoader().path
-#     song_path = project_path / database['birdID'] / database['taskName'] / taskSession
-#     song_path = Path(song_path)
-#
-#     return song_name, song_path
+# # from analysis.parameters import *
+# from analysis.load import *
+# from database.load import ProjectLoader
+# from pathlib import Path
+# from util.spect import *
 
 
 def load_song(dir, format='wav'):
     """
     Obtain event info & serialized timestamps for song & neural analysis
     """
+    from analysis.functions import  demarcate_bout, read_not_mat
     import numpy as np
     from scipy.io import wavfile
+    from util.functions import list_files
 
     # List all audio files in the dir
     audio_files = list_files(dir, format)
@@ -117,17 +87,16 @@ def load_song(dir, format='wav'):
 
 class SongInfo:
 
-    def __init__(self, path, format='wav', *name, update=False):
+    def __init__(self, path, name=None, update=False):
 
         import numpy as np
+        from util.functions import list_files
 
         self.path = path
-        self.format = format
         if name:
-            self.name = name[0]
+            self.name = name
         else:
             self.name = self.path
-
         self.print_name()
 
         # Load song
@@ -139,6 +108,10 @@ class SongInfo:
         else:
             song_info = np.load(file_name, allow_pickle=True).item()
 
+        # Set the dictionary values to class attributes
+        for key in song_info:
+            setattr(self, key, song_info[key])
+
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
@@ -146,5 +119,186 @@ class SongInfo:
         print('')
         print('Load song info {self.name}'.format(self=self))
 
-    def list_files(self, ext: str):
+    def list_files(self, ext='wav'):
+        from util.functions import list_files
         return list_files(self.path, ext)
+
+    def __len__(self):
+        return len(self.files)
+
+    @property
+    def open_folder(self):
+        from util.functions import open_folder
+        open_folder(self.path)
+
+    @property
+    def nb_files(self):
+
+        nb_files = {}
+        nb_files['U'] = len([context for context in self.contexts if context == 'U'])
+        nb_files['D'] = len([context for context in self.contexts if context == 'D'])
+        nb_files['All'] = nb_files['U'] + nb_files['D']
+
+        return nb_files
+
+    def nb_bouts(self, song_note):
+
+        from analysis.functions import get_nb_bouts
+
+        nb_bouts = {}
+        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
+        syllables = ''.join(syllable_list)
+        nb_bouts['U'] = get_nb_bouts(song_note, syllables)
+
+        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'D']
+        syllables = ''.join(syllable_list)
+        nb_bouts['D'] = get_nb_bouts(song_note, syllables)
+        nb_bouts['All'] = nb_bouts['U'] + nb_bouts['D']
+
+        return nb_bouts
+
+    def nb_motifs(self, motif):
+
+        from analysis.functions import find_str
+
+        nb_motifs = {}
+        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
+        syllables = ''.join(syllable_list)
+        nb_motifs['U'] = len(find_str(syllables, motif))
+
+        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'D']
+        syllables = ''.join(syllable_list)
+        nb_motifs['D'] = len(find_str(syllables, motif))
+        nb_motifs['All'] = nb_motifs['U'] + nb_motifs['D']
+        return nb_motifs
+
+    def mean_nb_intro(self, intro_note, song_note):
+        """Mean number of intro notes per song bout
+        Only counts from bouts having at least one song note
+        """
+        from analysis.functions import unique_nb_notes_in_bout
+        from statistics import mean
+
+        mean_nb_intro_notes = {}
+        mean_nb_intro_notes['U'] = mean_nb_intro_notes['D'] = None
+
+        for context1 in ['U', 'D']:
+            syllable_list = [syllable for syllable, context2 in zip(self.syllables, self.contexts) if
+                             context2 == context1]
+            syllables = ''.join(syllable_list)
+            bout_list = syllables.split('*')[:-1]  # eliminate demarcate marker
+            bout_list = [bout for bout in bout_list if
+                         unique_nb_notes_in_bout(song_note, bout)]  # eliminate bouts having no song note
+            mean_nb_intro_notes[context1] = round(mean(list(map(lambda x: x.count(intro_note), bout_list))), 3)
+        return mean_nb_intro_notes
+
+    def song_call_prop(self, call: str, song_note: str):
+        """Calculate the proportion of call notes per song bout
+        Get the proportion per bout and then average
+        only counts from bouts having at least one song note"""
+
+        from analysis.functions import unique_nb_notes_in_bout, total_nb_notes_in_bout
+        import numpy as np
+
+        song_call_prop = {}
+        song_call_prop['U'] = song_call_prop['D'] = None
+
+        for context1 in ['U', 'D']:
+            syllable_list = [syllable for syllable, context2 in zip(self.syllables, self.contexts) if
+                             context2 == context1]
+            syllables = ''.join(syllable_list)
+            bout_list = syllables.split('*')[:-1]  # eliminate demarcate marker
+            bout_list = [bout for bout in bout_list if
+                         unique_nb_notes_in_bout(song_note, bout)]  # eliminate bouts having no song note
+
+            nb_calls_per_bout = np.array(list(map(lambda x: total_nb_notes_in_bout(call, x), bout_list)))
+            total_nb_notes = np.array([len(bout) for bout in bout_list])
+            song_call_prop[context1] = (nb_calls_per_bout / total_nb_notes).mean()
+
+        return song_call_prop
+
+    def get_motif_info(self, motif: str):
+        """Get information about song motif for the songs recorded in the session"""
+
+        from analysis.functions import find_str
+
+        # Store values here
+        file_list = []
+        onset_list = []
+        offset_list = []
+        duration_list = []
+        context_list = []
+
+        list_zip = zip(self.files, self.onsets, self.offsets, self.syllables, self.contexts)
+
+        for file, onsets, offsets, syllables, context in list_zip:
+            onsets = onsets.tolist()
+            offsets = offsets.tolist()
+
+            # Find motifs
+            motif_ind = find_str(syllables, motif)
+
+            # Get syllable, analysis time stamps
+            for ind in motif_ind:
+                # start (first syllable) and stop (last syllable) index of a motif
+                start_ind = ind
+                stop_ind = ind + len(motif) - 1
+
+                motif_onset = float(onsets[start_ind])
+                motif_offset = float(offsets[stop_ind])
+
+                onsets_in_motif = onsets[start_ind:stop_ind + 1]  # list of motif onset timestamps
+                offsets_in_motif = offsets[start_ind:stop_ind + 1]  # list of motif offset timestamps
+
+                file_list.append(file)
+                duration_list.append(motif_offset - motif_onset)
+                onset_list.append(onsets_in_motif)
+                offset_list.append(offsets_in_motif)
+                context_list.append(context)
+
+        # Organize event-related info into a single dictionary object
+        motif_info = {
+            'files': file_list,
+            'onsets': onset_list,
+            'offsets': offset_list,
+            'durations': duration_list,  # this is motif durations
+            'contexts': context_list,
+        }
+
+        return MotifInfo(motif_info, motif)
+
+
+class MotifInfo:
+    """Child class of SongInfo"""
+
+    # def __init__(self, path, motif=None, name=None, update=False):
+
+    def __init__(self, motif_info, motif):
+
+        # Set the dictionary values to class attributes
+        for key in motif_info:
+            setattr(self, key, motif_info[key])
+
+        self.motif = motif
+
+    def get_motif_duration(self):
+        """Get mean motif duration and its cv per context"""
+        from statistics import mean
+
+        import numpy as np
+
+        motif_dur = {'mean' : {'U': None, 'D': None},
+                     'cv' : {'U': None, 'D': None}}
+
+        for context1 in ['U', 'D']:
+            duration = np.array([duration for context2, duration in zip(self.contexts, self.durations)
+                   if context2 == context1])
+            motif_dur['mean'][context1] = round(duration.mean(), 3)
+            motif_dur['cv'][context1] = round(duration.std() / duration.mean(), 3)
+        return motif_dur
+
+    def __len__(self):
+        return len(self.files)
+
+    def __repr__(self):  # print attributes
+        return str([key for key in self.__dict__.keys()])
