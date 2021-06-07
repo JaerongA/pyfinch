@@ -46,8 +46,8 @@ nb_row = 8
 nb_col = 3
 normalize = False  # normalize correlogram
 update = False
-save_fig = True
-update_db = True  # save results to DB
+save_fig = False
+update_db = False  # save results to DB
 fig_ext = '.png'  # .png or .pdf
 dpi = 600
 
@@ -57,7 +57,7 @@ with open('database/create_unit_profile.sql', 'r') as sql_file:
     db.conn.executescript(sql_file.read())
 
 # SQL statement
-query = "SELECT * FROM cluster WHERE id = 9"
+query = "SELECT * FROM cluster WHERE id = 109"
 # query = "SELECT * FROM cluster WHERE ephysOK=True"
 db.execute(query)
 

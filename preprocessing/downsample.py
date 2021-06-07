@@ -1,6 +1,5 @@
 """Downsample .wav files """
 
-
 import librosa
 from pathlib import Path
 import soundfile as sf
@@ -19,6 +18,6 @@ files = list(data_dir.glob('*.wav'))
 
 for file in files:
     print('Processing... ' + file.stem)
-    signal, _ = librosa.load(file, sr=target_sr) # Downsample to the target sample rate
+    signal, _ = librosa.load(file, sr=target_sr)  # Downsample to the target sample rate
     # sf.write(file, signal, target_sr)
     sf.write(data_dir / file, signal, target_sr)

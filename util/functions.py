@@ -56,7 +56,6 @@ def find_data_path():
 
 
 def list_files(dir: str, ext: str):
-    ##TODO: don't search the sub-folder
     """
     Return the list of files in the current directory
         Input1: directory name (path)
@@ -123,6 +122,7 @@ def normalize(array):
     import numpy as np
 
     return (np.array(array) - np.average(array)) / np.std(array)
+
 
 def exists(var):
     """
