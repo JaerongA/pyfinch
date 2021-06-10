@@ -1,73 +1,76 @@
 """Get the proportion of syllable having a significant PCC"""
 
+from collections import defaultdict
 from database.load import ProjectLoader
 import matplotlib.pyplot as plt
-from results.plot import plot_bar_comparison
 import seaborn as sns
 from util import save
-import numpy as np
+from util.draw import remove_right_top
 
+
+nb_note_crit = 10  # minimum number of notes for analysis
+fr_crit = 10  # in Hz
+task_name = ['Predeafening', 'Postdeafening']
 # Load database
 db = ProjectLoader().load_db()
 # # SQL statement
-df = db.to_dataframe("SELECT * FROM syllable")
+df = db.to_dataframe("SELECT * FROM syllable_pcc_shuffle")
 df.set_index('syllableID')
 
+# Filter through criteria
+df_undir = df[(df.nbNoteUndir >= nb_note_crit) & (df.frUndir >= fr_crit)]
+df_dir = df[(df.nbNoteDir >= nb_note_crit) & (df.frDir >= fr_crit)]
+
 # Parameters
-nb_row = 3
-nb_col = 4
 save_fig = False
 fig_ext = '.png'
+peth_shuffle = {'shuffle_limit': [1, 5, 10, 15, 20],  # in ms
+                'shuffle_iter': 100}  # bootstrap iterations
 
+sig_prop = defaultdict(lambda: defaultdict(list))
 
-sig_prop = {}  # significant syllable proportion
-sig_prop['U'] = df['pccUndirSig'].sum() / df['pccUndirSig'].count()
-sig_prop['D'] = df['pccDirSig'].sum() / df['pccDirSig'].count()
+for shuffle_limit in peth_shuffle['shuffle_limit']:
+
+    for task in df['taskName'].unique():
+
+        df_task_undir = df_undir[(df_undir.taskName == task)]
+        df_task_dir = df_dir[(df_dir.taskName == task)]
+
+        pcc_col_names_undir = f"pccUndirSig_{shuffle_limit}"
+        pcc_col_names_dir = f"pccDirSig_{shuffle_limit}"
+
+        sig_prop[task]['U'].append(df_task_undir[pcc_col_names_undir].sum() / df_task_undir[pcc_col_names_undir].count())
+        sig_prop[task]['D'].append(df_task_dir[pcc_col_names_dir].sum() / df_task_dir[pcc_col_names_dir].count())
+
 
 # Plot the results
-# fig, ax = plt.subplots(figsize=(10, 4))
-# plt.suptitle('Pairwise CC', y=.9, fontsize=20)
-#
-# # Undir
-# df['pairwiseCorrUndir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
-# ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
-# plot_bar_comparison(ax, df['pairwiseCorrUndir'], df['taskName'], hue_var=df['birdID'],
-#                     title='Undir', ylabel='PCC',
-#                     y_max=round(df['pairwiseCorrUndir'].max() * 10) / 10 + 0.1,
-#                     col_order=("Predeafening", "Postdeafening"),
-#                     )
-#
-# # Dir
-# df['pairwiseCorrDir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
-# ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
-# plot_bar_comparison(ax, df['pairwiseCorrDir'], df['taskName'], hue_var=df['birdID'],
-#                     title='Dir', y_max=round(df['pairwiseCorrDir'].max() * 10) / 10 + 0.2,
-#                     col_order=("Predeafening", "Postdeafening"),
-#                     )
-# fig.tight_layout()
-#
-#
-# # Undir (paired comparisons)
-#
-# pcc_mean_per_condition = df.groupby(['birdID','taskName'])['pairwiseCorrUndir'].mean().to_frame()
-# pcc_mean_per_condition.reset_index(inplace = True)
-#
-# ax = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=2, colspan=1)
-#
-# ax = sns.pointplot(x='taskName', y='pairwiseCorrUndir', hue = 'birdID',
-#                    data=pcc_mean_per_condition,
-#                    order=["Predeafening", "Postdeafening"],
-#                    aspect=.5, hue_order = df['birdID'].unique().tolist(), scale = 0.7)
-#
-# ax.spines['right'].set_visible(False),ax.spines['top'].set_visible(False)
-#
-# title = 'Undir (Paired Comparison)'
-# title += '\n\n\n'
-#
-# plt.title(title)
-# plt.xlabel(''), plt.ylabel('')
-# plt.ylim(0, 0.3), plt.xlim(-0.5, 1.5)
-# plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+fig, axes = plt.subplots(1, 2, figsize=(9, 4))
+
+for ax, task in zip(axes, task_name):
+    for ind, (shuffle_limit, u_prop, d_prop) in \
+            enumerate(zip(peth_shuffle['shuffle_limit'], sig_prop[task]['U'], sig_prop[task]['D'])):
+        ax.plot(shuffle_limit, u_prop, 'bo')
+        ax.plot(shuffle_limit, d_prop, 'mo')
+
+    ax.plot(peth_shuffle['shuffle_limit'], sig_prop[task]['U'], 'b')
+    ax.plot(peth_shuffle['shuffle_limit'], sig_prop[task]['D'], 'm')
+
+    ax.set_ylim([0.25, 1.05])
+    ax.set_xlim([0, peth_shuffle['shuffle_limit'][-1] + 0.5])
+    ax.set_title(task)
+    ax.set_xlabel('Jitter (ms)')
+    ax.set_xticks(peth_shuffle['shuffle_limit'])
+    ax.set_xticklabels(peth_shuffle['shuffle_limit'])
+    remove_right_top(ax)
+
+    ax.legend(['U', 'D'], loc="lower right")
+
+    if task == 'Predeafening':
+        ax.set_ylabel('Proportion of syllables')
+
+plt.show()
+
+
 
 
 # # Save results

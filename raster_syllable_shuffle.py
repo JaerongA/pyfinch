@@ -39,7 +39,7 @@ plot_hist = False
 
 # Spike shuffling parameter for peth for getting baseline PCC
 peth_shuffle = {'shuffle_limit': [1, 5, 10, 15, 20],  # in ms
-                'shuffle_iter': 10}  # bootstrap iterations
+                'shuffle_iter': 100}  # bootstrap iterations
 
 # Create & Load database
 if update_db:
@@ -49,7 +49,7 @@ if update_db:
 # SQL statement
 # Create a new database (syllable)
 db = ProjectLoader().load_db()
-query = "SELECT * FROM cluster WHERE analysisOK=1"
+query = "SELECT * FROM cluster WHERE analysisOK=1 AND id>=87"
 # query = "SELECT * FROM cluster WHERE analysisOK=1 AND id>=115"
 db.execute(query)
 
