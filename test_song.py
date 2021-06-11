@@ -25,9 +25,11 @@ db = ProjectLoader().load_db()
 with open('database/create_song_table.sql', 'r') as sql_file:
     db.conn.executescript(sql_file.read())
 
+with open('database/create_ff.sql', 'r') as sql_file:
+    db.conn.executescript(sql_file.read())
+
 # SQL statement
-query = "SELECT * FROM song WHERE id=3"
-# query = "SELECT * FROM cluster WHERE ephysOK=True"
+query = "SELECT * FROM song WHERE id=1"
 db.execute(query)
 
 # Loop through db
@@ -42,10 +44,15 @@ for row in db.cur.fetchall():
     nb_bouts = si.nb_bouts(song_db.songNote)
     nb_motifs = si.nb_motifs(song_db.motif)
 
-    mean_nb_intro_notes = si.mean_nb_intro(song_db.introNotes, song_db.songNote)
-    song_call_prop = si.song_call_prop(song_db.introNotes, song_db.songNote)
-    mi = si.get_motif_info(song_db.motif)  # Get motif info
-    motif_dur = mi.get_motif_duration()  # Get mean motif duration &  CV per context
+    # mean_nb_intro_notes = si.mean_nb_intro(song_db.introNotes, song_db.songNote)
+    # song_call_prop = si.song_call_prop(song_db.introNotes, song_db.songNote)
+    # mi = si.get_motif_info(song_db.motif)  # Get motif info
+    # motif_dur = mi.get_motif_duration()  # Get mean motif duration &  CV per context
+
+    # Fundamental Frequency analysis
+
+
+
 
     if update_db:
         db.cur.execute("UPDATE song SET nbFilesUndir=?, nbFilesDir=? WHERE id=?", (nb_files['U'], nb_files['D'], song_db.id))
@@ -55,5 +62,7 @@ for row in db.cur.fetchall():
         db.cur.execute("UPDATE song SET songCallPropUndir=?, songCallPropDir=? WHERE id=?", (song_call_prop['U'], song_call_prop['D'], song_db.id))
         db.cur.execute("UPDATE song SET motifDurationUndir=?, motifDurationDir=? WHERE id=?", (motif_dur['mean']['U'], motif_dur['mean']['D'], song_db.id))
         db.cur.execute("UPDATE song SET motifDurationCVUndir=?, motifDurationCVDir=? WHERE id=?", (motif_dur['cv']['U'], motif_dur['cv']['D'], song_db.id))
+    else:
+        print(nb_files, nb_bouts, nb_motifs, mean_nb_intro_notes, song_call_prop, motif_dur)
 
 print('Done!')

@@ -182,7 +182,7 @@ class SongInfo:
         mean_nb_intro_notes = {}
         mean_nb_intro_notes['U'] = mean_nb_intro_notes['D'] = None
 
-        for context1 in ['U', 'D']:
+        for context1 in set(self.contexts):
             syllable_list = [syllable for syllable, context2 in zip(self.syllables, self.contexts) if
                              context2 == context1]
             syllables = ''.join(syllable_list)
@@ -203,7 +203,7 @@ class SongInfo:
         song_call_prop = {}
         song_call_prop['U'] = song_call_prop['D'] = None
 
-        for context1 in ['U', 'D']:
+        for context1 in set(self.contexts):
             syllable_list = [syllable for syllable, context2 in zip(self.syllables, self.contexts) if
                              context2 == context1]
             syllables = ''.join(syllable_list)
@@ -213,7 +213,7 @@ class SongInfo:
 
             nb_calls_per_bout = np.array(list(map(lambda x: total_nb_notes_in_bout(call, x), bout_list)))
             total_nb_notes = np.array([len(bout) for bout in bout_list])
-            song_call_prop[context1] = (nb_calls_per_bout / total_nb_notes).mean()
+            song_call_prop[context1] = round((nb_calls_per_bout / total_nb_notes).mean())
 
         return song_call_prop
 
@@ -290,7 +290,7 @@ class MotifInfo:
         motif_dur = {'mean' : {'U': None, 'D': None},
                      'cv' : {'U': None, 'D': None}}
 
-        for context1 in ['U', 'D']:
+        for context1 in set(self.contexts):
             duration = np.array([duration for context2, duration in zip(self.contexts, self.durations)
                    if context2 == context1])
             motif_dur['mean'][context1] = round(duration.mean(), 3)
