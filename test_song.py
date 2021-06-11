@@ -50,6 +50,19 @@ for row in db.cur.fetchall():
     # motif_dur = mi.get_motif_duration()  # Get mean motif duration &  CV per context
 
     # Fundamental Frequency analysis
+    # Retrieve data from ff database
+    db.execute(f"SELECT ffNote, ffParameter, ffCriterion, ffLow, ffHigh, ffDuration FROM ff WHERE birdID='{song_db.birdID}'")
+    ff_data = [(data[0], data[1], data[2], data[3], data[4], data[5]) for data in db.cur.fetchall()]
+
+    for data in ff_data:
+        ff_note, ff_parameter, ff_crit, ff_low, ff_high, ff_dur = data
+
+        si.syllables
+
+
+
+
+
 
 
 
