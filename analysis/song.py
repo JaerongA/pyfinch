@@ -3,6 +3,7 @@ By Jaerong
 A package for song analysis
 """
 
+
 # from analysis.functions import *
 
 
@@ -64,7 +65,7 @@ def load_song(dir, format='wav'):
     """
     Obtain event info & serialized timestamps for song & neural analysis
     """
-    from analysis.functions import  demarcate_bout, read_not_mat
+    from analysis.functions import demarcate_bout, read_not_mat
     import numpy as np
     from scipy.io import wavfile
     from util.functions import list_files
@@ -335,12 +336,12 @@ class MotifInfo:
 
         import numpy as np
 
-        motif_dur = {'mean' : {'U': None, 'D': None},
-                     'cv' : {'U': None, 'D': None}}
+        motif_dur = {'mean': {'U': None, 'D': None},
+                     'cv': {'U': None, 'D': None}}
 
         for context1 in set(self.contexts):
             duration = np.array([duration for context2, duration in zip(self.contexts, self.durations)
-                   if context2 == context1])
+                                 if context2 == context1])
             motif_dur['mean'][context1] = round(duration.mean(), 3)
             motif_dur['cv'][context1] = round(duration.std() / duration.mean(), 3)
         return motif_dur
@@ -351,38 +352,39 @@ class MotifInfo:
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
-class AudioData:
+
+class AudioInfo:
     """
-    Create an object that has concatenated audio signal and its timestamps
-    Get all data by default; specify time range if needed
+    Create an audio object
     """
 
-    def __init__(self, path, format='.wav', update=False):
-
+    def __init__(self, filepath, format='.wav'):
         import numpy as np
+        from scipy.io import wavfile
 
-        self.path = path
+        self.path = filepath  # path object
+        self.name = filepath.stem
+        self.dir = filepath.parent
         self.format = format
+        self.sample_rate, self.data = wavfile.read(filepath)  # note that the timestamp is in second
+        length = self.data.shape[0] / self.sample_rate
+        self.timestamp = np.linspace(0., length, self.data.shape[0]) * 1E3  # start from t = 0 in ms
 
-        file_name = self.path / "AudioData.npy"
-        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
-            audio_info = load_audio(self.path, self.format)
-        else:
-            audio_info = np.load(file_name, allow_pickle=True).item()
+    def load_notmat(self):
+        """Load the .not.mat file"""
+        from analysis.functions import read_not_mat
 
-        # Set the dictionary values to class attributes
-        for key in audio_info:
-            setattr(self, key, audio_info[key])
+        notmat_file = self.path.with_suffix('.wav.not.mat')
+        self.onsets, self.offsets, self.intervals, self.durations, self.syllables, self.context \
+            = read_not_mat(notmat_file, unit='ms')
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
     @property
     def open_folder(self):
-
         from util.functions import open_folder
-
-        open_folder(self.path)
+        open_folder(self.dir)
 
     def extract(self, time_range):
         """
@@ -398,19 +400,16 @@ class AudioData:
         end = time_range[-1]
 
         ind = np.where((self.timestamp >= start) & (self.timestamp <= end))
-        self.timestamp = self.timestamp[ind]
-        self.data = self.data[ind]
+        return self.timestamp[ind], self.data[ind]
 
-        return self
-
-    def spectrogram(self, freq_range=[300, 8000]):
+    def spectrogram(self, timestamp, data, freq_range=[300, 8000]):
+        """ spect, freqbins, timebins will be added as class attributes"""
         import numpy as np
         from util.spect import spectrogram
 
-        self.spect, self.spect_freq, _ = spectrogram(self.data, self.sample_rate, freq_range=freq_range)
-        self.spect_time = np.linspace(self.timestamp[0], self.timestamp[-1],
-                                      self.spect.shape[1])  # timestamp for spectrogram
-        # print("spect, freqbins, timebins added")
+        spect, spect_freq, _ = spectrogram(data, self.sample_rate, freq_range=freq_range)
+        spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram
+        return spect_time, spect, spect_freq
 
     def get_spectral_entropy(self, normalize=True, mode=None):
         """
@@ -426,5 +425,4 @@ class AudioData:
         """
         from analysis.functions import get_spectral_entropy
 
-        return  get_spectral_entropy(self.spect, normalize=normalize, mode=mode)
-
+        return get_spectral_entropy(self.spect, normalize=normalize, mode=mode)
