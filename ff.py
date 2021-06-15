@@ -1,6 +1,6 @@
 """
 By Jaerong
-Song analysis
+FF analysis
 """
 
 import matplotlib.pyplot as plt
@@ -23,7 +23,7 @@ from util.draw import remove_right_top
 normalize = False  # normalize correlogram
 update = False
 save_fig = False
-update_db = False  # save results to DB
+update_db = True  # save results to DB
 fig_ext = '.png'  # .png or .pdf
 txt_xloc = -1.2
 txt_yloc = 0.8
@@ -40,14 +40,14 @@ with open('database/create_ff.sql', 'r') as sql_file:
     db.conn.executescript(sql_file.read())
 
 # Results will be stored here
-with open('database/create_ff_results.sql', 'r') as sql_file:
+with open('database/create_ff_result.sql', 'r') as sql_file:
     db.conn.executescript(sql_file.read())
 
 # Make save path
 save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF', add_date=False)
 
 # SQL statement
-query = "SELECT * FROM song WHERE id=1"
+query = "SELECT * FROM ff_result WHERE id=1"
 db.execute(query)
 
 # Loop through db
@@ -209,13 +209,17 @@ for row in db.cur.fetchall():
 
 
     if update_db:
-        db.cur.execute("UPDATE song SET nbFilesUndir=?, nbFilesDir=? WHERE id=?", (nb_files['U'], nb_files['D'], song_db.id))
-        db.cur.execute("UPDATE song SET nbBoutsUndir=?, nbBoutsDir=? WHERE id=?", (nb_bouts['U'], nb_bouts['D'], song_db.id))
-        db.cur.execute("UPDATE song SET nbMotifsUndir=?, nbMotifsDir=? WHERE id=?", (nb_motifs['U'], nb_motifs['D'], song_db.id))
-        db.cur.execute("UPDATE song SET meanIntroUndir=?, meanIntroDir=? WHERE id=?", (mean_nb_intro_notes['U'], mean_nb_intro_notes['D'], song_db.id))
-        db.cur.execute("UPDATE song SET songCallPropUndir=?, songCallPropDir=? WHERE id=?", (song_call_prop['U'], song_call_prop['D'], song_db.id))
-        db.cur.execute("UPDATE song SET motifDurationUndir=?, motifDurationDir=? WHERE id=?", (motif_dur['mean']['U'], motif_dur['mean']['D'], song_db.id))
-        db.cur.execute("UPDATE song SET motifDurationCVUndir=?, motifDurationCVDir=? WHERE id=?", (motif_dur['cv']['U'], motif_dur['cv']['D'], song_db.id))
+        query = "INSERT INTO ff_result(songID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, block10days) " \
+                "VALUES({}, {}, {}, {}, {}, {}, {})".format(song_db.id, song_db.birdID, song_db.taskName, song_db.taskSession, song_db.taskSessionDeafening, song_db.taskSessionPostDeafening, song_db.block10days)
+        db.cur.execute(query)
+
+        db.cur.execute("UPDATE ff_result SET nbFilesUndir=?, nbFilesDir=? WHERE id=?", (nb_files['U'], nb_files['D'], song_db.id))
+        db.cur.execute("UPDATE ff_result SET nbBoutsUndir=?, nbBoutsDir=? WHERE id=?", (nb_bouts['U'], nb_bouts['D'], song_db.id))
+        db.cur.execute("UPDATE ff_result SET nbMotifsUndir=?, nbMotifsDir=? WHERE id=?", (nb_motifs['U'], nb_motifs['D'], song_db.id))
+        db.cur.execute("UPDATE ff_result SET meanIntroUndir=?, meanIntroDir=? WHERE id=?", (mean_nb_intro_notes['U'], mean_nb_intro_notes['D'], song_db.id))
+        db.cur.execute("UPDATE ff_result SET songCallPropUndir=?, songCallPropDir=? WHERE id=?", (song_call_prop['U'], song_call_prop['D'], song_db.id))
+        db.cur.execute("UPDATE ff_result SET motifDurationUndir=?, motifDurationDir=? WHERE id=?", (motif_dur['mean']['U'], motif_dur['mean']['D'], song_db.id))
+        db.cur.execute("UPDATE ff_result SET motifDurationCVUndir=?, motifDurationCVDir=? WHERE id=?", (motif_dur['cv']['U'], motif_dur['cv']['D'], song_db.id))
     # else:
     #     print(nb_files, nb_bouts, nb_motifs, mean_nb_intro_notes, song_call_prop, motif_dur)
 
