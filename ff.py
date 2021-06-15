@@ -18,12 +18,13 @@ import numpy as np
 import statsmodels.tsa.stattools as smt
 from scipy.signal import find_peaks
 from util.draw import remove_right_top
+import pandas as pd
 
 # Parameter
 normalize = False  # normalize correlogram
 update = False
-save_fig = False
-update_db = True  # save results to DB
+save_fig = True
+update_db = False  # save results to DB
 fig_ext = '.png'  # .png or .pdf
 txt_xloc = -1.2
 txt_yloc = 0.8
@@ -47,7 +48,7 @@ with open('database/create_ff_result.sql', 'r') as sql_file:
 save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF', add_date=False)
 
 # SQL statement
-query = "SELECT * FROM ff_result WHERE id=1"
+query = "SELECT * FROM song WHERE id=1"
 db.execute(query)
 
 # Loop through db
@@ -78,12 +79,7 @@ for row in db.cur.fetchall():
                           'duration' : data[5]} for data in db.cur.fetchall()  # ff duration
                }
 
-    ff_data = {}  # Store results here
-    from collections import defaultdict
-    from functools import partial
-
-    ff_arr = defaultdict(partial(np.ndarray, 0))
-
+    df = pd.DataFrame() # Store results here
 
     for file in si.files:
 
@@ -102,15 +98,11 @@ for row in db.cur.fetchall():
             else:
                 note_ind += 1
 
-            if note is not 'b':
-                continue
-
             # Note start and end
             duration = offset - onset
 
             # Get spectrogram
             timestamp, data = ai.extract([onset, offset]) # Extract data within the range
-
             spect_time, spect, spect_freq = ai.spectrogram(timestamp, data)
 
             # Plot figure
@@ -136,7 +128,9 @@ for row in db.cur.fetchall():
             ax_spect.set_ylim(freq_range[0], freq_range[1])
             ax_spect.set_xlabel('Time (ms)', fontsize=font_size)
             ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
-            plt.yticks(freq_range, [str(freq_range[0]), str(freq_range[1])])
+            x_range = np.array([freq_range[0], 1000, 2000, 3000, 4000, 5000, 6000, 7000, freq_range[-1]])
+            plt.yticks(x_range, list(map(str, x_range)), fontsize=5)
+            plt.xticks(fontsize=5)
 
             # Get FF onset and offset based on the parameters from DB
             if ff_info[note]['crit'] == 'percent_from_start':
@@ -199,14 +193,13 @@ for row in db.cur.fetchall():
             else:
                 plt.show()
 
+            # Organize results per song session
+            # ff_arr[note][ai.context] = np.append(ff_arr[note][ai.context], ff)
+            temp_df = pd.DataFrame({'note': [note], 'context': [ai.context], 'ff': [ff]})
+            df = df.append(temp_df, ignore_index=True)
+
             break
         break
-
-    plt.show()
-
-
-    ff_arr[note] = np.append(ff_arr[note], ff)
-
 
     if update_db:
         query = "INSERT INTO ff_result(songID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, block10days) " \
@@ -214,12 +207,13 @@ for row in db.cur.fetchall():
         db.cur.execute(query)
 
         db.cur.execute("UPDATE ff_result SET nbFilesUndir=?, nbFilesDir=? WHERE id=?", (nb_files['U'], nb_files['D'], song_db.id))
+        db.cur.execute("UPDATE ff_result SET nbFilesUndir=?, nbFilesDir=? WHERE id=?", (nb_files['U'], nb_files['D'], song_db.id))
         db.cur.execute("UPDATE ff_result SET nbBoutsUndir=?, nbBoutsDir=? WHERE id=?", (nb_bouts['U'], nb_bouts['D'], song_db.id))
         db.cur.execute("UPDATE ff_result SET nbMotifsUndir=?, nbMotifsDir=? WHERE id=?", (nb_motifs['U'], nb_motifs['D'], song_db.id))
-        db.cur.execute("UPDATE ff_result SET meanIntroUndir=?, meanIntroDir=? WHERE id=?", (mean_nb_intro_notes['U'], mean_nb_intro_notes['D'], song_db.id))
-        db.cur.execute("UPDATE ff_result SET songCallPropUndir=?, songCallPropDir=? WHERE id=?", (song_call_prop['U'], song_call_prop['D'], song_db.id))
-        db.cur.execute("UPDATE ff_result SET motifDurationUndir=?, motifDurationDir=? WHERE id=?", (motif_dur['mean']['U'], motif_dur['mean']['D'], song_db.id))
-        db.cur.execute("UPDATE ff_result SET motifDurationCVUndir=?, motifDurationCVDir=? WHERE id=?", (motif_dur['cv']['U'], motif_dur['cv']['D'], song_db.id))
+        # db.cur.execute("UPDATE ff_result SET meanIntroUndir=?, meanIntroDir=? WHERE id=?", (mean_nb_intro_notes['U'], mean_nb_intro_notes['D'], song_db.id))
+        # db.cur.execute("UPDATE ff_result SET songCallPropUndir=?, songCallPropDir=? WHERE id=?", (song_call_prop['U'], song_call_prop['D'], song_db.id))
+        # db.cur.execute("UPDATE ff_result SET motifDurationUndir=?, motifDurationDir=? WHERE id=?", (motif_dur['mean']['U'], motif_dur['mean']['D'], song_db.id))
+        # db.cur.execute("UPDATE ff_result SET motifDurationCVUndir=?, motifDurationCVDir=? WHERE id=?", (motif_dur['cv']['U'], motif_dur['cv']['D'], song_db.id))
     # else:
     #     print(nb_files, nb_bouts, nb_motifs, mean_nb_intro_notes, song_call_prop, motif_dur)
 

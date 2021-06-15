@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS song(
     motifDurationCVDir       REAL
 );
 
-INSERT OR IGNORE INTO ff_result (birdID, taskName, taskSession, taskSessionDeafening,
+INSERT OR IGNORE INTO song (birdID, taskName, taskSession, taskSessionDeafening,
             taskSessionPostDeafening, dph, block10days, sessionDate,
             songNote, motif, introNotes, calls, callSeqeunce)
 SELECT DISTINCT birdID, taskName, taskSession, taskSessionDeafening,

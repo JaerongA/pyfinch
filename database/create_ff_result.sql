@@ -14,5 +14,6 @@ CREATE TABLE IF NOT EXISTS ff_result(
             ffMeanUndir              REAL,
             ffMeanDir                REAL,
             ffUndirCV                REAL,
-            ffDirCV                  REAL
+            ffDirCV                  REAL,
+            UNIQUE (songID, note)
             );
