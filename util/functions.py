@@ -138,3 +138,31 @@ def exists(var):
     """
 
     return var in globals()
+
+def para_interp(x, y):
+    """
+    Get max value by performing parabolic interpolation given three data points
+    Parameters
+    ----------
+    x : array
+    y : array
+
+    Returns
+    -------
+    x_max : float
+        max index
+    y_max : float
+        estimated max value
+    """
+    import numpy as np
+
+    x = np.vstack((x ** 2, x))
+    x = np.vstack((x, np.array([1, 1, 1]))).T
+
+    x = np.linalg.inv(x)
+    func = np.dot(x, y)
+
+    x_max = -func[1] / (2 * func[0])
+    y_max = (func[0] * x_max ** 2) + (func[1] * x_max) + func[2]
+
+    return x_max, y_max
