@@ -24,10 +24,8 @@ import pandas as pd
 normalize = False  # normalize correlogram
 update = False
 save_fig = True
-update_db = False  # save results to DB
+update_db = True  # save results to DB
 fig_ext = '.png'  # .png or .pdf
-txt_xloc = -1.2
-txt_yloc = 0.8
 txt_offset = 0.2
 font_size = 8
 
@@ -176,6 +174,8 @@ for row in db.cur.fetchall():
             ax_spect.axhline(y=ff, color='g', ls='--', lw=1)
 
             # Print out text results
+            txt_xloc = -1.2
+            txt_yloc = 0.8
 
             ax_txt = plt.subplot(gs[1:, -1])
             ax_txt.set_axis_off()  # remove all axes
@@ -184,32 +184,52 @@ for row in db.cur.fetchall():
             ax_txt.text(txt_xloc, txt_yloc, f"ff duration = {ff_info[note]['duration']} ms", fontsize=font_size)
             txt_yloc -= txt_offset
             ax_txt.text(txt_xloc, txt_yloc, f"ff = {ff} Hz", fontsize=font_size)
-            fig.tight_layout()
 
             # Save results
             if save_fig:
-                save_path = save.make_dir(save_path, si.name, add_date=False)
-                save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext)
+                save_path2 = save.make_dir(save_path, si.name, add_date=False)
+                save.save_fig(fig, save_path2, fig_name, fig_ext=fig_ext)
             else:
                 plt.show()
 
             # Organize results per song session
-            # ff_arr[note][ai.context] = np.append(ff_arr[note][ai.context], ff)
-            temp_df = pd.DataFrame({'note': [note], 'context': [ai.context], 'ff': [ff]})
-            df = df.append(temp_df, ignore_index=True)
+            # Save results to ff_results db
+            if update_db:
 
-            break
-        break
+                # Fill in song info
+                query = f"INSERT OR IGNORE INTO ff_result (songID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, block10days, note) " \
+                        f"VALUES({song_db.id}, '{song_db.birdID}', '{song_db.taskName}', {song_db.taskSession}, {song_db.taskSessionDeafening}, {song_db.taskSessionPostDeafening}, {song_db.block10days}, '{note}')"
+                db.cur.execute(query)
+                db.conn.commit()
 
-    if update_db:
-        query = "INSERT INTO ff_result(songID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, block10days) " \
-                "VALUES({}, {}, {}, {}, {}, {}, {})".format(song_db.id, song_db.birdID, song_db.taskName, song_db.taskSession, song_db.taskSessionDeafening, song_db.taskSessionPostDeafening, song_db.block10days)
-        db.cur.execute(query)
 
-        db.cur.execute("UPDATE ff_result SET nbFilesUndir=?, nbFilesDir=? WHERE id=?", (nb_files['U'], nb_files['D'], song_db.id))
-        db.cur.execute("UPDATE ff_result SET nbFilesUndir=?, nbFilesDir=? WHERE id=?", (nb_files['U'], nb_files['D'], song_db.id))
-        db.cur.execute("UPDATE ff_result SET nbBoutsUndir=?, nbBoutsDir=? WHERE id=?", (nb_bouts['U'], nb_bouts['D'], song_db.id))
-        db.cur.execute("UPDATE ff_result SET nbMotifsUndir=?, nbMotifsDir=? WHERE id=?", (nb_motifs['U'], nb_motifs['D'], song_db.id))
+                temp_df = pd.DataFrame({'note': [note], 'context': [ai.context], 'ff': [ff]})
+                df = df.append(temp_df, ignore_index=True)
+
+                for note in df['note'].unique():
+                    for context in df['context'].unique():
+                        df.query(f"note == '{note}' & context == '{context}'")
+                        if context == 'U':
+                            temp_df = df[(df['note'] ==  note) & (df['context'] == context)]
+                            db.cur.execute(f"UPDATE ff_result SET nbNoteUndir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                            db.cur.execute(f"UPDATE ff_result SET ffMeanUndir={temp_df['ff'].mean()} WHERE songID= {song_db.id} AND note= '{note}'")
+                            db.cur.execute(f"UPDATE ff_result SET ffUndirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                        elif context == 'D':
+                            db.cur.execute(f"UPDATE ff_result SET nbNoteDir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                            db.cur.execute(f"UPDATE ff_result SET ffMeanDir={temp_df['ff'].mean()} WHERE songID= {song_db.id} AND note= '{note}'")
+                            db.cur.execute(f"UPDATE ff_result SET ffDirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+
+                db.conn.commit()
+
+    # if update_db:
+    #     query = "INSERT INTO ff_result(songID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, block10days) " \
+    #             "VALUES({}, {}, {}, {}, {}, {}, {})".format(song_db.id, song_db.birdID, song_db.taskName, song_db.taskSession, song_db.taskSessionDeafening, song_db.taskSessionPostDeafening, song_db.block10days)
+    #     db.cur.execute(query)
+    #
+    #     db.cur.execute("UPDATE ff_result SET nbFilesUndir=?, nbFilesDir=? WHERE id=?", (nb_files['U'], nb_files['D'], song_db.id))
+    #     db.cur.execute("UPDATE ff_result SET nbFilesUndir=?, nbFilesDir=? WHERE id=?", (nb_files['U'], nb_files['D'], song_db.id))
+    #     db.cur.execute("UPDATE ff_result SET nbBoutsUndir=?, nbBoutsDir=? WHERE id=?", (nb_bouts['U'], nb_bouts['D'], song_db.id))
+    #     db.cur.execute("UPDATE ff_result SET nbMotifsUndir=?, nbMotifsDir=? WHERE id=?", (nb_motifs['U'], nb_motifs['D'], song_db.id))
         # db.cur.execute("UPDATE ff_result SET meanIntroUndir=?, meanIntroDir=? WHERE id=?", (mean_nb_intro_notes['U'], mean_nb_intro_notes['D'], song_db.id))
         # db.cur.execute("UPDATE ff_result SET songCallPropUndir=?, songCallPropDir=? WHERE id=?", (song_call_prop['U'], song_call_prop['D'], song_db.id))
         # db.cur.execute("UPDATE ff_result SET motifDurationUndir=?, motifDurationDir=? WHERE id=?", (motif_dur['mean']['U'], motif_dur['mean']['D'], song_db.id))
