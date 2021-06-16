@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 from scipy.io import wavfile
 
 from analysis.parameters import note_buffer, freq_range
-from analysis.song import *
+from analysis.song import AudioInfo, SongInfo
 from database.load import ProjectLoader, DBInfo
 from util import save
-from analysis.functions import find_str, read_not_mat, para_interp
+from analysis.functions import para_interp
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
@@ -21,7 +21,6 @@ from util.draw import remove_right_top
 import pandas as pd
 
 # Parameter
-normalize = False  # normalize correlogram
 update = False
 save_fig = True
 update_db = True  # save results to DB
@@ -79,12 +78,12 @@ for row in db.cur.fetchall():
 
     df = pd.DataFrame() # Store results here
 
+    note_ind1 = 0 # note index across the session
     for file in si.files:
 
         print(f'Loading... {file.name}')
-
         # Loop through the notes
-        note_ind = 0
+        note_ind2 = 0  # note index within a file
 
         # Load audio object with info from .not.mat files
         ai = AudioInfo(file)
@@ -94,7 +93,8 @@ for row in db.cur.fetchall():
 
             if note not in ff_info.keys(): continue  # skip if note has no FF portion
             else:
-                note_ind += 1
+                note_ind1 += 1
+                note_ind2 += 1
 
             # Note start and end
             duration = offset - onset
@@ -105,7 +105,7 @@ for row in db.cur.fetchall():
 
             # Plot figure
             fig = plt.figure(figsize=(4, 3), dpi=300)
-            fig_name = f"{file.name}, note#{note_ind} - {note}"
+            fig_name = f"{note_ind1 :04} - {file.name}, note#{note_ind2} - {note}"
 
             plt.suptitle(fig_name, y=.93, fontsize=font_size)
             gs = gridspec.GridSpec(4, 6)
@@ -193,33 +193,37 @@ for row in db.cur.fetchall():
                 plt.show()
 
             # Organize results per song session
-            # Save results to ff_results db
-            if update_db:
+            temp_df = pd.DataFrame({'note': [note], 'context': [ai.context], 'ff': [ff]})
+            df = df.append(temp_df, ignore_index=True)
 
+            # Update ff_results db with note info
+            if update_db:
                 # Fill in song info
                 query = f"INSERT OR IGNORE INTO ff_result (songID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, block10days, note) " \
                         f"VALUES({song_db.id}, '{song_db.birdID}', '{song_db.taskName}', {song_db.taskSession}, {song_db.taskSessionDeafening}, {song_db.taskSessionPostDeafening}, {song_db.block10days}, '{note}')"
                 db.cur.execute(query)
                 db.conn.commit()
 
+    # Save results to ff_results db
+    if update_db:
+        for note in df['note'].unique():
+            for context in df['context'].unique():
+                temp_df = df[(df['note'] ==  note) & (df['context'] == context)]
+                if context == 'U':
+                    db.cur.execute(f"UPDATE ff_result SET nbNoteUndir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                    db.cur.execute(f"UPDATE ff_result SET ffMeanUndir={temp_df['ff'].mean() :1.3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                    db.cur.execute(f"UPDATE ff_result SET ffUndirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                elif context == 'D':
+                    db.cur.execute(f"UPDATE ff_result SET nbNoteDir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                    db.cur.execute(f"UPDATE ff_result SET ffMeanDir={temp_df['ff'].mean() :1.3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                    db.cur.execute(f"UPDATE ff_result SET ffDirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
 
-                temp_df = pd.DataFrame({'note': [note], 'context': [ai.context], 'ff': [ff]})
-                df = df.append(temp_df, ignore_index=True)
+        db.conn.commit()
+    # Save df to csv
+    if "save_path2" in locals():
+        df = df.rename_axis(index='index')
+        df.to_csv(save_path2 / (save_path2.stem + '.csv'), index=True, header=True)
 
-                for note in df['note'].unique():
-                    for context in df['context'].unique():
-                        df.query(f"note == '{note}' & context == '{context}'")
-                        if context == 'U':
-                            temp_df = df[(df['note'] ==  note) & (df['context'] == context)]
-                            db.cur.execute(f"UPDATE ff_result SET nbNoteUndir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE ff_result SET ffMeanUndir={temp_df['ff'].mean()} WHERE songID= {song_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE ff_result SET ffUndirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                        elif context == 'D':
-                            db.cur.execute(f"UPDATE ff_result SET nbNoteDir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE ff_result SET ffMeanDir={temp_df['ff'].mean()} WHERE songID= {song_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE ff_result SET ffDirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-
-                db.conn.commit()
 
     # if update_db:
     #     query = "INSERT INTO ff_result(songID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, block10days) " \
