@@ -23,7 +23,7 @@ import pandas as pd
 # Parameter
 update = False
 save_fig = True
-update_db = True  # save results to DB
+update_db = False  # save results to DB
 fig_ext = '.png'  # .png or .pdf
 txt_offset = 0.2
 font_size = 8
@@ -45,7 +45,8 @@ with open('database/create_ff_result.sql', 'r') as sql_file:
 save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF', add_date=False)
 
 # SQL statement
-query = "SELECT * FROM song WHERE id=1"
+# query = "SELECT * FROM song WHERE birdID='y44r34'"
+query = "SELECT * FROM song WHERE id=18"
 db.execute(query)
 
 # Loop through db
@@ -55,15 +56,6 @@ for row in db.cur.fetchall():
     name, path = song_db.load_song_db()
 
     si = SongInfo(path, name, update=update)  # song object
-
-    nb_files = si.nb_files
-    nb_bouts = si.nb_bouts(song_db.songNote)
-    nb_motifs = si.nb_motifs(song_db.motif)
-
-    # mean_nb_intro_notes = si.mean_nb_intro(song_db.introNotes, song_db.songNote)
-    # song_call_prop = si.song_call_prop(song_db.introNotes, song_db.songNote)
-    # mi = si.get_motif_info(song_db.motif)  # Get motif info
-    # motif_dur = mi.get_motif_duration()  # Get mean motif duration &  CV per context
 
     # Fundamental Frequency analysis
     # Retrieve data from ff database
@@ -75,6 +67,20 @@ for row in db.cur.fetchall():
                           'high' :data[4],  # upper limit of frequency
                           'duration' : data[5]} for data in db.cur.fetchall()  # ff duration
                }
+
+    if not bool(ff_info):
+        print("FF note doesn't exist")
+        continue
+
+    nb_files = si.nb_files
+    nb_bouts = si.nb_bouts(song_db.songNote)
+    nb_motifs = si.nb_motifs(song_db.motif)
+
+    # mean_nb_intro_notes = si.mean_nb_intro(song_db.introNotes, song_db.songNote)
+    # song_call_prop = si.song_call_prop(song_db.introNotes, song_db.songNote)
+    # mi = si.get_motif_info(song_db.motif)  # Get motif info
+    # motif_dur = mi.get_motif_duration()  # Get mean motif duration &  CV per context
+
 
     df = pd.DataFrame() # Store results here
 
@@ -95,6 +101,9 @@ for row in db.cur.fetchall():
             else:
                 note_ind1 += 1
                 note_ind2 += 1
+
+            # if note_ind1 != 3:
+            #     continue
 
             # Note start and end
             duration = offset - onset
@@ -138,8 +147,8 @@ for row in db.cur.fetchall():
                 ff_onset = onset + (ff_info[note]['parameter'])
                 ff_offset = ff_onset + ff_info[note]['duration']
             elif ff_info[note]['crit'] == 'ms_from_end':
-                ff_offset = offset - ff_info[note]['parameter']
-                ff_onset = ff_offset - ff_info[note]['duration']
+                ff_onset = offset - ff_info[note]['parameter']
+                ff_offset = ff_onset + ff_info[note]['duration']
 
             _, data = ai.extract([ff_onset, ff_offset])  # Extract data within the range
 
@@ -158,18 +167,30 @@ for row in db.cur.fetchall():
             # plt.plot(peak_ind, corr_win[peak_ind], "x")
             # plt.show()
 
-            for ind in property['peak_heights'].argsort()[::-1][0:1]:  # first two peaks
-                if peak_ind[ind] and (peak_ind[ind] < len(corr_win)):  # if the peak is not in first and last indices
+            ff_list = []
+            ff = None
+
+            for ind in property['peak_heights'].argsort()[::-1]:  # loop through the peak until FF is found in the desired range
+                if not (peak_ind[ind]==0 or (peak_ind[ind] == len(corr_win))):  # if the peak is not in first and last indices
                     target_peak_ind = peak_ind[ind]
                     target_peak_amp = corr_win[target_peak_ind - 1: target_peak_ind + 2]  # find the peak using two neighboring values using parabolic interpolation
                     target_peak_ind = np.arange(target_peak_ind-1, target_peak_ind+2)
                     peak, _ = para_interp(target_peak_ind, target_peak_amp)
 
-                period = peak + 2
-                ff = round(ai.sample_rate / period, 3)
+                    period = peak + 3
+                    temp_ff = round(ai.sample_rate / period, 3)
+                    ff_list.append(temp_ff)
 
-                if (ff > ff_info[note]['low']) and (ff < ff_info[note]['high']):
-                    break
+            ff = [ff for ff in ff_list if ff_info[note]['low'] < ff < ff_info[note]['high']][0]
+
+                # if ff_info[note]['low'] < temp_ff < ff_info[note]['high']:
+                #     ff = temp_ff
+                #     break
+
+            # if (ff < ff_info[note]['low']) or (ff > ff_info[note]['high']):  # skip the note if the ff is out of the expected range
+            #     plt.close(fig)
+            #     continue
+
             # Mark estimated FF
             ax_spect.axhline(y=ff, color='g', ls='--', lw=1)
 
@@ -222,7 +243,7 @@ for row in db.cur.fetchall():
     # Save df to csv
     if "save_path2" in locals():
         df = df.rename_axis(index='index')
-        df.to_csv(save_path2 / (save_path2.stem + '.csv'), index=True, header=True)
+        df.to_csv(save_path2 / ('-'.join(save_path2.stem.split('-')[1:]) + '.csv'), index=True, header=True)
 
 
     # if update_db:

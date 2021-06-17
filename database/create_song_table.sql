@@ -35,7 +35,8 @@ CREATE TABLE IF NOT EXISTS song(
     motifDurationUndir       REAL,
     motifDurationDir         REAL,
     motifDurationCVUndir     REAL,
-    motifDurationCVDir       REAL
+    motifDurationCVDir       REAL,
+    UNIQUE (birdID, taskName, taskSession)
 );
 
 INSERT OR IGNORE INTO song (birdID, taskName, taskSession, taskSessionDeafening,
