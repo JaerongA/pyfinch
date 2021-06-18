@@ -4,16 +4,6 @@ A package for song analysis
 """
 
 
-# from analysis.functions import *
-
-
-# # from analysis.parameters import *
-# from analysis.load import *
-# from database.load import ProjectLoader
-# from pathlib import Path
-# from util.spect import *
-
-
 def load_audio(dir, format='wav'):
     """
     Load and concatenate all audio files (e.g., .wav) in the input dir (path)
@@ -39,7 +29,6 @@ def load_audio(dir, format='wav'):
         sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
 
         # Add timestamp info
-        length = data.shape[0] / sample_rate
         data_concat = np.append(data_concat, data)
 
         # Store results
