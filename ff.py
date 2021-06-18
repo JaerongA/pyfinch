@@ -46,7 +46,7 @@ save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF', add_date=Fals
 
 # SQL statement
 # query = "SELECT * FROM song WHERE birdID='y44r34'"
-query = "SELECT * FROM song WHERE id=18"
+query = "SELECT * FROM song WHERE id=27"
 db.execute(query)
 
 # Loop through db
@@ -81,15 +81,14 @@ for row in db.cur.fetchall():
     # mi = si.get_motif_info(song_db.motif)  # Get motif info
     # motif_dur = mi.get_motif_duration()  # Get mean motif duration &  CV per context
 
-
     df = pd.DataFrame() # Store results here
 
-    note_ind1 = 0 # note index across the session
+    note_ind1 = -1 # note index across the session
     for file in si.files:
 
         print(f'Loading... {file.name}')
         # Loop through the notes
-        note_ind2 = 0  # note index within a file
+        note_ind2 = -1  # note index within a file
 
         # Load audio object with info from .not.mat files
         ai = AudioInfo(file)
@@ -97,149 +96,155 @@ for row in db.cur.fetchall():
 
         for note, onset, offset in zip(ai.syllables, ai.onsets, ai.offsets):
 
-            if note not in ff_info.keys(): continue  # skip if note has no FF portion
-            else:
-                note_ind1 += 1
-                note_ind2 += 1
+            if note not in set([note[0] for note in ff_info.keys()]): continue  # skip if note has no FF portion
 
-            # if note_ind1 != 3:
-            #     continue
+            for i in range(0, [note[0] for note in ff_info.keys()].count(note)):  # if more than one FF can be detected in a single note
 
-            # Note start and end
-            duration = offset - onset
+                # if note_ind1 != 3:
+                #     continue
 
-            # Get spectrogram
-            timestamp, data = ai.extract([onset, offset]) # Extract data within the range
-            spect_time, spect, spect_freq = ai.spectrogram(timestamp, data)
+                # Note start and end
+                note_ind1 += 1  # note index across the session
+                note_ind2 += 1  # note index within a file
+                if [note[0] for note in ff_info.keys()].count(note) >= 2:
+                    ff_note = f'{note}{i+1}'
+                else:
+                    ff_note = note
 
-            # Plot figure
-            fig = plt.figure(figsize=(4, 3), dpi=300)
-            fig_name = f"{note_ind1 :04} - {file.name}, note#{note_ind2} - {note}"
+                duration = offset - onset
 
-            plt.suptitle(fig_name, y=.93, fontsize=font_size)
-            gs = gridspec.GridSpec(4, 6)
+                # Get spectrogram
+                timestamp, data = ai.extract([onset, offset]) # Extract data within the range
+                spect_time, spect, spect_freq = ai.spectrogram(timestamp, data)
 
-            # Plot spectrogram
-            ax_spect = plt.subplot(gs[1:3, 0:4])
-            spect_time = spect_time - spect_time[0] # starts from zero
-            ax_spect.pcolormesh(spect_time, spect_freq, spect,  # data
-                                cmap='hot_r',
-                                norm=colors.SymLogNorm(linthresh=0.05,
-                                                       linscale=0.03,
-                                                       vmin=0.5,
-                                                       vmax=100
-                                                       ))
+                # Plot figure
+                fig = plt.figure(figsize=(4, 3), dpi=300)
+                fig_name = f"{note_ind1 :04} - {file.name}, note#{note_ind2} - {ff_note}"
 
-            remove_right_top(ax_spect)
-            ax_spect.set_xlim(-note_buffer, duration + note_buffer)
-            ax_spect.set_ylim(freq_range[0], freq_range[1])
-            ax_spect.set_xlabel('Time (ms)', fontsize=font_size)
-            ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
-            x_range = np.array([freq_range[0], 1000, 2000, 3000, 4000, 5000, 6000, 7000, freq_range[-1]])
-            plt.yticks(x_range, list(map(str, x_range)), fontsize=5)
-            plt.xticks(fontsize=5)
+                plt.suptitle(fig_name, y=.93, fontsize=font_size)
+                gs = gridspec.GridSpec(4, 6)
 
-            # Get FF onset and offset based on the parameters from DB
-            if ff_info[note]['crit'] == 'percent_from_start':
-                ff_onset = onset + (duration * (ff_info[note]['parameter'] / 100))
-                ff_offset = ff_onset + ff_info[note]['duration']
-            elif ff_info[note]['crit'] == 'ms_from_start':
-                ff_onset = onset + (ff_info[note]['parameter'])
-                ff_offset = ff_onset + ff_info[note]['duration']
-            elif ff_info[note]['crit'] == 'ms_from_end':
-                ff_onset = offset - ff_info[note]['parameter']
-                ff_offset = ff_onset + ff_info[note]['duration']
+                # Plot spectrogram
+                ax_spect = plt.subplot(gs[1:3, 0:4])
+                spect_time = spect_time - spect_time[0] # starts from zero
+                ax_spect.pcolormesh(spect_time, spect_freq, spect,  # data
+                                    cmap='hot_r',
+                                    norm=colors.SymLogNorm(linthresh=0.05,
+                                                           linscale=0.03,
+                                                           vmin=0.5,
+                                                           vmax=100
+                                                           ))
 
-            _, data = ai.extract([ff_onset, ff_offset])  # Extract data within the range
+                remove_right_top(ax_spect)
+                ax_spect.set_xlim(-note_buffer, duration + note_buffer)
+                ax_spect.set_ylim(freq_range[0], freq_range[1])
+                ax_spect.set_xlabel('Time (ms)', fontsize=font_size)
+                ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
+                x_range = np.array([freq_range[0], 1000, 2000, 3000, 4000, 5000, 6000, 7000, freq_range[-1]])
+                plt.yticks(x_range, list(map(str, x_range)), fontsize=5)
+                plt.xticks(fontsize=5)
 
-            # Mark FF
-            ax_spect.axvline(x=ff_onset - onset, color='b', linewidth=0.5)
-            ax_spect.axvline(x=ff_offset - onset, color='b', linewidth=0.5)
+                # Get FF onset and offset based on the parameters from DB
+                if ff_info[ff_note]['crit'] == 'percent_from_start':
+                    ff_onset = onset + (duration * (ff_info[ff_note]['parameter'] / 100))
+                    ff_offset = ff_onset + ff_info[ff_note]['duration']
+                elif ff_info[ff_note]['crit'] == 'ms_from_start':
+                    ff_onset = onset + (ff_info[ff_note]['parameter'])
+                    ff_offset = ff_onset + ff_info[ff_note]['duration']
+                elif ff_info[ff_note]['crit'] == 'ms_from_end':
+                    ff_onset = offset - ff_info[ff_note]['parameter']
+                    ff_offset = ff_onset + ff_info[ff_note]['duration']
 
-            # Get FF from the FF segment
-            corr = smt.ccf(data, data, adjusted=False)
-            corr_win = corr[3: round(ai.sample_rate / ff_info[note]['low'])]
+                _, data = ai.extract([ff_onset, ff_offset])  # Extract data within the range
 
-            peak_ind, property = find_peaks(corr_win, height=0)
+                # Mark FF
+                ax_spect.axvline(x=ff_onset - onset, color='b', linewidth=0.5)
+                ax_spect.axvline(x=ff_offset - onset, color='b', linewidth=0.5)
 
-            # Plot auto-correlation (for debugging)
-            # plt.plot(corr_win)
-            # plt.plot(peak_ind, corr_win[peak_ind], "x")
-            # plt.show()
+                # Get FF from the FF segment
+                corr = smt.ccf(data, data, adjusted=False)
+                corr_win = corr[3: round(ai.sample_rate / ff_info[ff_note]['low'])]
 
-            ff_list = []
-            ff = None
+                peak_ind, property = find_peaks(corr_win, height=0)
 
-            for ind in property['peak_heights'].argsort()[::-1]:  # loop through the peak until FF is found in the desired range
-                if not (peak_ind[ind]==0 or (peak_ind[ind] == len(corr_win))):  # if the peak is not in first and last indices
-                    target_peak_ind = peak_ind[ind]
-                    target_peak_amp = corr_win[target_peak_ind - 1: target_peak_ind + 2]  # find the peak using two neighboring values using parabolic interpolation
-                    target_peak_ind = np.arange(target_peak_ind-1, target_peak_ind+2)
-                    peak, _ = para_interp(target_peak_ind, target_peak_amp)
+                # Plot auto-correlation (for debugging)
+                # plt.plot(corr_win)
+                # plt.plot(peak_ind, corr_win[peak_ind], "x")
+                # plt.show()
 
-                    period = peak + 3
-                    temp_ff = round(ai.sample_rate / period, 3)
-                    ff_list.append(temp_ff)
+                ff_list = []
+                ff = None
 
-            ff = [ff for ff in ff_list if ff_info[note]['low'] < ff < ff_info[note]['high']][0]
+                for ind in property['peak_heights'].argsort()[::-1]:  # loop through the peak until FF is found in the desired range
+                    if not (peak_ind[ind]==0 or (peak_ind[ind] == len(corr_win))):  # if the peak is not in first and last indices
+                        target_peak_ind = peak_ind[ind]
+                        target_peak_amp = corr_win[target_peak_ind - 1: target_peak_ind + 2]  # find the peak using two neighboring values using parabolic interpolation
+                        target_peak_ind = np.arange(target_peak_ind-1, target_peak_ind+2)
+                        peak, _ = para_interp(target_peak_ind, target_peak_amp)
 
-                # if ff_info[note]['low'] < temp_ff < ff_info[note]['high']:
-                #     ff = temp_ff
-                #     break
+                        period = peak + 3
+                        temp_ff = round(ai.sample_rate / period, 3)
+                        ff_list.append(temp_ff)
 
-            # if (ff < ff_info[note]['low']) or (ff > ff_info[note]['high']):  # skip the note if the ff is out of the expected range
-            #     plt.close(fig)
-            #     continue
+                ff = [ff for ff in ff_list if ff_info[ff_note]['low'] < ff < ff_info[ff_note]['high']][0]
 
-            # Mark estimated FF
-            ax_spect.axhline(y=ff, color='g', ls='--', lw=1)
+                    # if ff_info[note]['low'] < temp_ff < ff_info[note]['high']:
+                    #     ff = temp_ff
+                    #     break
 
-            # Print out text results
-            txt_xloc = -1.2
-            txt_yloc = 0.8
+                # if (ff < ff_info[note]['low']) or (ff > ff_info[note]['high']):  # skip the note if the ff is out of the expected range
+                #     plt.close(fig)
+                #     continue
 
-            ax_txt = plt.subplot(gs[1:, -1])
-            ax_txt.set_axis_off()  # remove all axes
-            ax_txt.text(txt_xloc, txt_yloc, f"{ff_info[note]['parameter']} {ff_info[note]['crit']}", fontsize=font_size)
-            txt_yloc -= txt_offset
-            ax_txt.text(txt_xloc, txt_yloc, f"ff duration = {ff_info[note]['duration']} ms", fontsize=font_size)
-            txt_yloc -= txt_offset
-            ax_txt.text(txt_xloc, txt_yloc, f"ff = {ff} Hz", fontsize=font_size)
+                # Mark estimated FF
+                ax_spect.axhline(y=ff, color='g', ls='--', lw=0.8)
 
-            # Save results
-            if save_fig:
-                save_path2 = save.make_dir(save_path, si.name, add_date=False)
-                save.save_fig(fig, save_path2, fig_name, fig_ext=fig_ext)
-            else:
-                plt.show()
+                # Print out text results
+                txt_xloc = -1.2
+                txt_yloc = 0.8
 
-            # Organize results per song session
-            temp_df = pd.DataFrame({'note': [note], 'context': [ai.context], 'ff': [ff]})
-            df = df.append(temp_df, ignore_index=True)
+                ax_txt = plt.subplot(gs[1:, -1])
+                ax_txt.set_axis_off()  # remove all axes
+                ax_txt.text(txt_xloc, txt_yloc, f"{ff_info[ff_note]['parameter']} {ff_info[ff_note]['crit']}", fontsize=font_size)
+                txt_yloc -= txt_offset
+                ax_txt.text(txt_xloc, txt_yloc, f"ff duration = {ff_info[ff_note]['duration']} ms", fontsize=font_size)
+                txt_yloc -= txt_offset
+                ax_txt.text(txt_xloc, txt_yloc, f"ff = {ff} Hz", fontsize=font_size)
 
-            # Update ff_results db with note info
-            if update_db:
-                # Fill in song info
-                query = f"INSERT OR IGNORE INTO ff_result (songID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, block10days, note) " \
-                        f"VALUES({song_db.id}, '{song_db.birdID}', '{song_db.taskName}', {song_db.taskSession}, {song_db.taskSessionDeafening}, {song_db.taskSessionPostDeafening}, {song_db.block10days}, '{note}')"
-                db.cur.execute(query)
-                db.conn.commit()
+                # Save results
+                if save_fig:
+                    save_path2 = save.make_dir(save_path, si.name, add_date=False)
+                    save.save_fig(fig, save_path2, fig_name, fig_ext=fig_ext)
+                else:
+                    plt.show()
 
-    # Save results to ff_results db
-    if update_db:
-        for note in df['note'].unique():
-            for context in df['context'].unique():
-                temp_df = df[(df['note'] ==  note) & (df['context'] == context)]
-                if context == 'U':
-                    db.cur.execute(f"UPDATE ff_result SET nbNoteUndir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
-                    db.cur.execute(f"UPDATE ff_result SET ffMeanUndir={temp_df['ff'].mean() :1.3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                    db.cur.execute(f"UPDATE ff_result SET ffUndirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                elif context == 'D':
-                    db.cur.execute(f"UPDATE ff_result SET nbNoteDir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
-                    db.cur.execute(f"UPDATE ff_result SET ffMeanDir={temp_df['ff'].mean() :1.3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                    db.cur.execute(f"UPDATE ff_result SET ffDirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                # Organize results per song session
+                temp_df = pd.DataFrame({'note': [ff_note], 'context': [ai.context], 'ff': [ff]})
+                df = df.append(temp_df, ignore_index=True)
 
-        db.conn.commit()
+                # Update ff_results db with note info
+                if update_db:
+                    # Fill in song info
+                    query = f"INSERT OR IGNORE INTO ff_result (songID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, block10days, note) " \
+                            f"VALUES({song_db.id}, '{song_db.birdID}', '{song_db.taskName}', {song_db.taskSession}, {song_db.taskSessionDeafening}, {song_db.taskSessionPostDeafening}, {song_db.block10days}, '{note}')"
+                    db.cur.execute(query)
+                    db.conn.commit()
+
+        # Save results to ff_results db
+        if update_db:
+            for note in df['note'].unique():
+                for context in df['context'].unique():
+                    temp_df = df[(df['note'] ==  note) & (df['context'] == context)]
+                    if context == 'U':
+                        db.cur.execute(f"UPDATE ff_result SET nbNoteUndir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                        db.cur.execute(f"UPDATE ff_result SET ffMeanUndir={temp_df['ff'].mean() :1.3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                        db.cur.execute(f"UPDATE ff_result SET ffUndirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                    elif context == 'D':
+                        db.cur.execute(f"UPDATE ff_result SET nbNoteDir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                        db.cur.execute(f"UPDATE ff_result SET ffMeanDir={temp_df['ff'].mean() :1.3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                        db.cur.execute(f"UPDATE ff_result SET ffDirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+
+            db.conn.commit()
     # Save df to csv
     if "save_path2" in locals():
         df = df.rename_axis(index='index')
