@@ -44,7 +44,8 @@ def make_dir(parent_path, *dir_name, add_date=True):
     return save_path
 
 
-def save_fig(fig, save_path, title, fig_ext='.png', open_folder=False, dpi=None):
+def save_fig(fig, save_path, title, fig_ext='.png', view_folder=False, dpi=None):
+
     import matplotlib.pyplot as plt
     import matplotlib
     from util.functions import open_folder
@@ -62,7 +63,7 @@ def save_fig(fig, save_path, title, fig_ext='.png', open_folder=False, dpi=None)
     plt.savefig(fig_name, transparent=True, dpi=dpi)
     plt.close(fig)
 
-    if open_folder:  # open folder after saving figures
+    if view_folder:  # open folder after saving figures
         open_folder(save_path)
 
 

@@ -23,7 +23,8 @@ import pandas as pd
 # Parameter
 update = False
 save_fig = True
-update_db = False  # save results to DB
+view_folder = False  # view the folder where figures are stored
+update_db = True  # save results to DB
 fig_ext = '.png'  # .png or .pdf
 txt_offset = 0.2
 font_size = 8
@@ -46,7 +47,8 @@ save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF', add_date=Fals
 
 # SQL statement
 # query = "SELECT * FROM song WHERE birdID='y44r34'"
-query = "SELECT * FROM song WHERE id=27"
+# query = "SELECT * FROM song WHERE id=27"
+query = "SELECT * FROM song"
 db.execute(query)
 
 # Loop through db
@@ -214,7 +216,7 @@ for row in db.cur.fetchall():
                 # Save results
                 if save_fig:
                     save_path2 = save.make_dir(save_path, si.name, add_date=False)
-                    save.save_fig(fig, save_path2, fig_name, fig_ext=fig_ext)
+                    save.save_fig(fig, save_path2, fig_name, view_folder=view_folder, fig_ext=fig_ext)
                 else:
                     plt.show()
 
