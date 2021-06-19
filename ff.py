@@ -21,7 +21,7 @@ from util.draw import remove_right_top
 import pandas as pd
 
 # Parameter
-update = False
+update = False  # update or make a new cache file
 save_fig = True
 view_folder = False  # view the folder where figures are stored
 update_db = True  # save results to DB
@@ -232,17 +232,19 @@ for row in db.cur.fetchall():
                     db.cur.execute(query)
                     db.conn.commit()
 
-        # Save results to ff_results db
-        if update_db:
-            for note in df['note'].unique():
-                for context in df['context'].unique():
-                    temp_df = df[(df['note'] ==  note) & (df['context'] == context)]
-                    if context == 'U':
-                        db.cur.execute(f"UPDATE ff_result SET nbNoteUndir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+    # Save results to ff_results db
+    if update_db:
+        for note in df['note'].unique():
+            for context in df['context'].unique():
+                temp_df = df[(df['note'] ==  note) & (df['context'] == context)]
+                if context == 'U':
+                    db.cur.execute(f"UPDATE ff_result SET nbNoteUndir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                    if len(temp_df):
                         db.cur.execute(f"UPDATE ff_result SET ffMeanUndir={temp_df['ff'].mean() :1.3f} WHERE songID= {song_db.id} AND note= '{note}'")
                         db.cur.execute(f"UPDATE ff_result SET ffUndirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                    elif context == 'D':
-                        db.cur.execute(f"UPDATE ff_result SET nbNoteDir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                elif context == 'D':
+                    db.cur.execute(f"UPDATE ff_result SET nbNoteDir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                    if len(temp_df):
                         db.cur.execute(f"UPDATE ff_result SET ffMeanDir={temp_df['ff'].mean() :1.3f} WHERE songID= {song_db.id} AND note= '{note}'")
                         db.cur.execute(f"UPDATE ff_result SET ffDirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
 
