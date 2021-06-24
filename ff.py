@@ -5,8 +5,7 @@ FF analysis
 
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
-
-from analysis.parameters import note_buffer, freq_range
+from analysis.parameters import note_buffer, freq_range, nb_note_crit
 from analysis.song import AudioInfo, SongInfo
 from database.load import ProjectLoader, DBInfo
 from util import save
@@ -23,7 +22,7 @@ import pandas as pd
 # Parameter
 update = False  # update or make a new cache file
 save_fig = True
-view_folder = False  # view the folder where figures are stored
+view_folder = True  # view the folder where figures are stored
 update_db = True  # save results to DB
 fig_ext = '.png'  # .png or .pdf
 txt_offset = 0.2
@@ -47,8 +46,8 @@ save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF', add_date=Fals
 
 # SQL statement
 # query = "SELECT * FROM song WHERE birdID='y44r34'"
-# query = "SELECT * FROM song WHERE id=27"
-query = "SELECT * FROM song"
+query = "SELECT * FROM song WHERE id=22"
+# query = "SELECT * FROM song"
 db.execute(query)
 
 # Loop through db
@@ -224,35 +223,41 @@ for row in db.cur.fetchall():
                 temp_df = pd.DataFrame({'note': [ff_note], 'context': [ai.context], 'ff': [ff]})
                 df = df.append(temp_df, ignore_index=True)
 
-                # Update ff_results db with note info
-                if update_db:
-                    # Fill in song info
-                    query = f"INSERT OR IGNORE INTO ff_result (songID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, block10days, note) " \
-                            f"VALUES({song_db.id}, '{song_db.birdID}', '{song_db.taskName}', {song_db.taskSession}, {song_db.taskSessionDeafening}, {song_db.taskSessionPostDeafening}, {song_db.block10days}, '{note}')"
-                    db.cur.execute(query)
-                    db.conn.commit()
+            # Update ff_results db with note info
+            if update_db:
+                # Fill in song info
+                query = f"INSERT OR IGNORE INTO ff_result (songID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, block10days, note) " \
+                        f"VALUES({song_db.id}, '{song_db.birdID}', '{song_db.taskName}', {song_db.taskSession}, {song_db.taskSessionDeafening}, {song_db.taskSessionPostDeafening}, {song_db.block10days}, '{note}')"
+                db.cur.execute(query)
+                db.conn.commit()
 
     # Save results to ff_results db
-    if update_db:
-        for note in df['note'].unique():
-            for context in df['context'].unique():
-                temp_df = df[(df['note'] ==  note) & (df['context'] == context)]
-                if context == 'U':
-                    db.cur.execute(f"UPDATE ff_result SET nbNoteUndir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
-                    if len(temp_df):
-                        db.cur.execute(f"UPDATE ff_result SET ffMeanUndir={temp_df['ff'].mean() :1.3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                        db.cur.execute(f"UPDATE ff_result SET ffUndirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                elif context == 'D':
-                    db.cur.execute(f"UPDATE ff_result SET nbNoteDir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
-                    if len(temp_df):
-                        db.cur.execute(f"UPDATE ff_result SET ffMeanDir={temp_df['ff'].mean() :1.3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                        db.cur.execute(f"UPDATE ff_result SET ffDirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+    if not df.empty:
+        if update_db:
+            for note in df['note'].unique():
+                for context in df['context'].unique():
+                    temp_df = df[(df['note'] ==  note) & (df['context'] == context)]
+                    if len(temp_df) >= nb_note_crit:
+                        if context == 'U':
+                            db.cur.execute(f"UPDATE ff_result SET nbNoteUndir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                            db.cur.execute(f"UPDATE ff_result SET ffMeanUndir={temp_df['ff'].mean() :1.3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                            db.cur.execute(f"UPDATE ff_result SET ffUndirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                        elif context == 'D':
+                            db.cur.execute(f"UPDATE ff_result SET nbNoteDir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                            db.cur.execute(f"UPDATE ff_result SET ffMeanDir={temp_df['ff'].mean() :1.3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                            db.cur.execute(f"UPDATE ff_result SET ffDirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
 
-            db.conn.commit()
-    # Save df to csv
-    if "save_path2" in locals():
-        df = df.rename_axis(index='index')
-        df.to_csv(save_path2 / ('-'.join(save_path2.stem.split('-')[1:]) + '.csv'), index=True, header=True)
+                # If neither condition meets the number of notes criteria
+                db.cur.execute(f"SELECT nbNoteUndir, nbNoteDir FROM ff_result WHERE songID={song_db.id} AND note= '{note}'")
+                if not (bool(db.cur.fetchone()[0]) or bool(db.cur.fetchone()[1])):
+                    db.cur.execute(f"DELETE FROM ff_result WHERE songID= {song_db.id} AND note= '{note}'")
+                else:
+                    db.conn.commit()
+
+        # Save df to csv
+        if "save_path2" in locals():
+            df = df.rename_axis(index='index')
+            df.to_csv(save_path2 / ('-'.join(save_path2.stem.split('-')[1:]) + '.csv'), index=True, header=True)
 
 
     # if update_db:
