@@ -46,7 +46,7 @@ save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF', add_date=Fals
 
 # SQL statement
 # query = "SELECT * FROM song WHERE birdID='y44r34'"
-query = "SELECT * FROM song WHERE id=22"
+query = "SELECT * FROM song WHERE id=25"
 # query = "SELECT * FROM song"
 db.execute(query)
 
@@ -249,10 +249,10 @@ for row in db.cur.fetchall():
 
                 # If neither condition meets the number of notes criteria
                 db.cur.execute(f"SELECT nbNoteUndir, nbNoteDir FROM ff_result WHERE songID={song_db.id} AND note= '{note}'")
-                if not (bool(db.cur.fetchone()[0]) or bool(db.cur.fetchone()[1])):
+                nb_notes = [{'U': data[0], 'D': data[1]} for data in db.cur.fetchall()][0]
+                if not (bool(nb_notes['U']) or bool(nb_notes['D'])):
                     db.cur.execute(f"DELETE FROM ff_result WHERE songID= {song_db.id} AND note= '{note}'")
-                else:
-                    db.conn.commit()
+                db.conn.commit()
 
         # Save df to csv
         if "save_path2" in locals():
@@ -277,3 +277,4 @@ for row in db.cur.fetchall():
     #     print(nb_files, nb_bouts, nb_motifs, mean_nb_intro_notes, song_call_prop, motif_dur)
 
 print('Done!')
+
