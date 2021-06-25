@@ -22,7 +22,7 @@ import pandas as pd
 # Parameter
 update = False  # update or make a new cache file
 save_fig = True
-view_folder = True  # view the folder where figures are stored
+view_folder = False  # view the folder where figures are stored
 update_db = True  # save results to DB
 fig_ext = '.png'  # .png or .pdf
 txt_offset = 0.2
@@ -45,8 +45,8 @@ with open('database/create_ff_result.sql', 'r') as sql_file:
 save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF', add_date=False)
 
 # SQL statement
-# query = "SELECT * FROM song WHERE birdID='y44r34'"
-query = "SELECT * FROM song WHERE id=25"
+# query = "SELECT * FROM song WHERE birdID='w21w30'"
+query = "SELECT * FROM song WHERE id=2"
 # query = "SELECT * FROM song"
 db.execute(query)
 
@@ -101,9 +101,6 @@ for row in db.cur.fetchall():
 
             for i in range(0, [note[0] for note in ff_info.keys()].count(note)):  # if more than one FF can be detected in a single note
 
-                # if note_ind1 != 3:
-                #     continue
-
                 # Note start and end
                 note_ind1 += 1  # note index across the session
                 note_ind2 += 1  # note index within a file
@@ -111,6 +108,9 @@ for row in db.cur.fetchall():
                     ff_note = f'{note}{i+1}'
                 else:
                     ff_note = note
+
+                # if note_ind1 != 1:
+                #     continue
 
                 duration = offset - onset
 
@@ -168,7 +168,7 @@ for row in db.cur.fetchall():
 
                 peak_ind, property = find_peaks(corr_win, height=0)
 
-                # Plot auto-correlation (for debugging)
+                # # Plot auto-correlation (for debugging)
                 # plt.plot(corr_win)
                 # plt.plot(peak_ind, corr_win[peak_ind], "x")
                 # plt.show()
@@ -183,19 +183,17 @@ for row in db.cur.fetchall():
                         target_peak_ind = np.arange(target_peak_ind-1, target_peak_ind+2)
                         peak, _ = para_interp(target_peak_ind, target_peak_amp)
 
+                        # period = peak + (len(property['peak_heights'])-1)
                         period = peak + 3
                         temp_ff = round(ai.sample_rate / period, 3)
                         ff_list.append(temp_ff)
 
-                ff = [ff for ff in ff_list if ff_info[ff_note]['low'] < ff < ff_info[ff_note]['high']][0]
-
-                    # if ff_info[note]['low'] < temp_ff < ff_info[note]['high']:
-                    #     ff = temp_ff
-                    #     break
-
-                # if (ff < ff_info[note]['low']) or (ff > ff_info[note]['high']):  # skip the note if the ff is out of the expected range
-                #     plt.close(fig)
-                #     continue
+                ff = [ff for ff in ff_list if ff_info[ff_note]['low'] < ff < ff_info[ff_note]['high']]
+                if not bool(ff):  # skip the note if the ff is out of the expected range
+                    plt.close(fig)
+                    continue
+                else:
+                    ff = ff[0]
 
                 # Mark estimated FF
                 ax_spect.axhline(y=ff, color='g', ls='--', lw=0.8)
@@ -223,13 +221,13 @@ for row in db.cur.fetchall():
                 temp_df = pd.DataFrame({'note': [ff_note], 'context': [ai.context], 'ff': [ff]})
                 df = df.append(temp_df, ignore_index=True)
 
-            # Update ff_results db with note info
-            if update_db:
-                # Fill in song info
-                query = f"INSERT OR IGNORE INTO ff_result (songID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, block10days, note) " \
-                        f"VALUES({song_db.id}, '{song_db.birdID}', '{song_db.taskName}', {song_db.taskSession}, {song_db.taskSessionDeafening}, {song_db.taskSessionPostDeafening}, {song_db.block10days}, '{note}')"
-                db.cur.execute(query)
-                db.conn.commit()
+                # Update ff_results db with note info
+                if update_db:
+                    # Fill in song info
+                    query = f"INSERT OR IGNORE INTO ff_result (songID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, block10days, note) " \
+                            f"VALUES({song_db.id}, '{song_db.birdID}', '{song_db.taskName}', {song_db.taskSession}, {song_db.taskSessionDeafening}, {song_db.taskSessionPostDeafening}, {song_db.block10days}, '{ff_note}')"
+                    db.cur.execute(query)
+                    db.conn.commit()
 
     # Save results to ff_results db
     if not df.empty:
@@ -258,23 +256,6 @@ for row in db.cur.fetchall():
         if "save_path2" in locals():
             df = df.rename_axis(index='index')
             df.to_csv(save_path2 / ('-'.join(save_path2.stem.split('-')[1:]) + '.csv'), index=True, header=True)
-
-
-    # if update_db:
-    #     query = "INSERT INTO ff_result(songID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, block10days) " \
-    #             "VALUES({}, {}, {}, {}, {}, {}, {})".format(song_db.id, song_db.birdID, song_db.taskName, song_db.taskSession, song_db.taskSessionDeafening, song_db.taskSessionPostDeafening, song_db.block10days)
-    #     db.cur.execute(query)
-    #
-    #     db.cur.execute("UPDATE ff_result SET nbFilesUndir=?, nbFilesDir=? WHERE id=?", (nb_files['U'], nb_files['D'], song_db.id))
-    #     db.cur.execute("UPDATE ff_result SET nbFilesUndir=?, nbFilesDir=? WHERE id=?", (nb_files['U'], nb_files['D'], song_db.id))
-    #     db.cur.execute("UPDATE ff_result SET nbBoutsUndir=?, nbBoutsDir=? WHERE id=?", (nb_bouts['U'], nb_bouts['D'], song_db.id))
-    #     db.cur.execute("UPDATE ff_result SET nbMotifsUndir=?, nbMotifsDir=? WHERE id=?", (nb_motifs['U'], nb_motifs['D'], song_db.id))
-        # db.cur.execute("UPDATE ff_result SET meanIntroUndir=?, meanIntroDir=? WHERE id=?", (mean_nb_intro_notes['U'], mean_nb_intro_notes['D'], song_db.id))
-        # db.cur.execute("UPDATE ff_result SET songCallPropUndir=?, songCallPropDir=? WHERE id=?", (song_call_prop['U'], song_call_prop['D'], song_db.id))
-        # db.cur.execute("UPDATE ff_result SET motifDurationUndir=?, motifDurationDir=? WHERE id=?", (motif_dur['mean']['U'], motif_dur['mean']['D'], song_db.id))
-        # db.cur.execute("UPDATE ff_result SET motifDurationCVUndir=?, motifDurationCVDir=? WHERE id=?", (motif_dur['cv']['U'], motif_dur['cv']['D'], song_db.id))
-    # else:
-    #     print(nb_files, nb_bouts, nb_motifs, mean_nb_intro_notes, song_call_prop, motif_dur)
 
 print('Done!')
 

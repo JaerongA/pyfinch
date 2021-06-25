@@ -60,7 +60,11 @@ def load_song(dir, format='wav'):
     from util.functions import list_files
 
     # List all audio files in the dir
-    audio_files = list_files(dir, format)
+    song_dir = [folder for folder in dir.rglob('Songs')]  # find the folder that has song data (not calls)
+
+    audio_files = []
+    for data_dir in song_dir:
+        audio_files += (list_files(data_dir, format))
 
     # Initialize
     timestamp_serialized = np.array([], dtype=np.float32)
