@@ -1,6 +1,6 @@
 """
 By Jaerong
-FF analysis
+Get correlation between fundamental frequency and spike number
 """
 
 from analysis.parameters import note_buffer, freq_range, nb_note_crit
@@ -29,7 +29,6 @@ font_size = 8
 # Load database
 db = ProjectLoader().load_db()
 
-# Make database
 with open('database/create_song_table.sql', 'r') as sql_file:
     db.conn.executescript(sql_file.read())
 
@@ -52,6 +51,7 @@ db.execute(query)
 
 # Loop through db
 for row in db.cur.fetchall():
+
     # Load song info from db
     song_db = DBInfo(row)
     name, path = song_db.load_song_db()
