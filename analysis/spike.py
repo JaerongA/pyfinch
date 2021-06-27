@@ -3,9 +3,53 @@ By Jaerong
 main package for neural analysis
 """
 
-# from analysis.functions import *
-# from util.functions import *
-# from util.spect import *
+
+def load_audio(dir, format='wav'):
+    """
+    Load and concatenate all audio files (e.g., .wav) in the input dir (path)
+    """
+    import numpy as np
+    from scipy.io import wavfile
+    from util.functions import list_files
+
+    # List all audio files in the dir
+    files = list_files(dir, format)
+
+    # Initialize
+    timestamp_concat = np.array([], dtype=np.float64)
+    data_concat = np.array([], dtype=np.float64)
+
+    # Store values in these lists
+    file_list = []
+
+    # Loop through audio files
+    for file in files:
+        # Load data file
+        print('Loading... ' + file.stem)
+        sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
+
+        # Add timestamp info
+        length = data.shape[0] / sample_rate
+        data_concat = np.append(data_concat, data)
+
+        # Store results
+        file_list.append(file)
+
+    # Create timestamps
+    timestamp_concat = np.arange(0, data_concat.shape[0] / sample_rate, (1 / sample_rate)) * 1E3
+
+    # Organize data into a dictionary
+    audio_info = {
+        'files': file_list,
+        'timestamp': timestamp_concat,
+        'data': data_concat,
+        'sample_rate': sample_rate
+    }
+    file_name = dir / "AudioData.npy"
+    np.save(file_name, audio_info)
+
+    return audio_info
+
 
 def get_isi(spk_ts: list):
     """
@@ -279,6 +323,7 @@ class ClusterInfo:
         """
         Perform waveform analysis
         """
+        from analysis.functions import get_half_width
         from analysis.parameters import sample_rate, interp_factor
         import numpy as np
 
@@ -567,7 +612,6 @@ class NoteInfo():
         Two versions : spectro-temporal entropy & spectral entropy
         """
         from analysis.parameters import nb_note_crit
-        from analysis.song import AudioData
         from analysis.functions import find_str
         import numpy as np
 
@@ -680,6 +724,7 @@ class NoteInfo():
         """Get mean firing rates for the note (includes pre-motor window) per context"""
         from analysis.parameters import nb_note_crit, pre_motor_win_size
         import numpy as np
+        from util.functions import find_str
 
         note_spk = {}
         note_fr = {}
@@ -723,6 +768,7 @@ class MotifInfo(ClusterInfo):
 
         from analysis.parameters import peth_parm
         import numpy as np
+        from util.functions import find_str
 
         # Store values here
         file_list = []
@@ -805,6 +851,7 @@ class MotifInfo(ClusterInfo):
 
     @property
     def open_folder(self):
+        from util.functions import open_folder
         open_folder(self.path)
 
     def get_note_duration(self):
@@ -842,6 +889,7 @@ class MotifInfo(ClusterInfo):
         """
         import copy
         import numpy as np
+        from util.functions import extract_ind
 
         spk_ts_warped_list = []
         list_zip = zip(self.note_durations, self.onsets, self.offsets, self.spk_ts)
@@ -888,7 +936,7 @@ class MotifInfo(ClusterInfo):
             offset = np.asarray(list(map(float, offset)))
             motif_spk_list.append(spks[np.where((spks >= onset[0]) & (spks <= offset[-1]))])
 
-        for context1 in unique(self.contexts):
+        for context1 in set(self.contexts):
             nb_spk = sum([len(spk) for spk, context2 in zip(motif_spk_list, self.contexts) if context2 == context1])
             total_duration = sum(
                 [duration for duration, context2 in zip(self.durations, self.contexts) if context2 == context1])
@@ -967,7 +1015,7 @@ class PethInfo():
         # Get conditional peth, fr, spike counts
         peth_dict = {}
         peth_dict['All'] = self.peth
-        for context in unique(self.contexts):
+        for context in set(self.contexts):
             if type(self.contexts) == str:
                 self.contexts = list(self.contexts)
             ind = np.array(self.contexts) == context
@@ -1115,6 +1163,7 @@ class BoutInfo(ClusterInfo):
     def load_bouts(self):
         # Store values here
         import numpy as np
+        from util.functions import find_str
 
         file_list = []
         spk_list = []
@@ -1173,6 +1222,7 @@ class BaselineInfo(ClusterInfo):
 
         from analysis.parameters import baseline
         import numpy as np
+        from util.functions import find_str
 
         if name:
             self.name = name[0]
@@ -1300,6 +1350,82 @@ class BaselineInfo(ClusterInfo):
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
+
+
+class AudioData:
+    """
+    Create an object that has concatenated audio signal and its timestamps
+    Get all data by default; specify time range if needed
+    """
+    import numpy as np
+
+    def __init__(self, path, format='.wav', update=False):
+
+        import numpy as np
+
+        self.path = path
+        self.format = format
+
+        file_name = self.path / "AudioData.npy"
+        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+            audio_info = load_audio(self.path, self.format)
+        else:
+            audio_info = np.load(file_name, allow_pickle=True).item()
+
+        # Set the dictionary values to class attributes
+        for key in audio_info:
+            setattr(self, key, audio_info[key])
+
+    def __repr__(self):  # print attributes
+        return str([key for key in self.__dict__.keys()])
+
+    @property
+    def open_folder(self):
+        from util.functions import open_folder
+        open_folder(self.path)
+
+    def extract(self, time_range):
+        """
+        Extracts data from the specified range
+        Args:
+            time_range: list
+
+        Returns:
+        """
+        import numpy as np
+
+        start = time_range[0]
+        end = time_range[-1]
+
+        ind = np.where((self.timestamp >= start) & (self.timestamp <= end))
+        return self.timestamp[ind], self.data[ind]
+
+
+    def spectrogram(self, timestamp, data, freq_range=[300, 8000]):
+        """Calculate spectrogram"""
+        import numpy as np
+        from util.spect import spectrogram
+
+        spect, spect_freq, _ = spectrogram(data, self.sample_rate, freq_range=freq_range)
+        spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram
+        return spect_time, spect, spect_freq
+
+
+    def get_spectral_entropy(self, normalize=True, mode=None):
+        """
+        Calculate spectral entropy
+        Parameters
+        ----------
+        normalize : bool
+            Get normalized spectral entropy
+
+        Returns
+        -------
+        array of spectral entropy
+        """
+        from analysis.functions import get_spectral_entropy
+
+        return  get_spectral_entropy(self.spect, normalize=normalize, mode=mode)
 
 
 class NeuralData:
@@ -1484,6 +1610,7 @@ class Correlogram():
         import matplotlib.pyplot as plt
         import numpy as np
         from util.draw import remove_right_top
+        from util.functions import myround
 
         if correlogram.sum():
             ax.bar(time_bin, correlogram, color='k')

@@ -4,52 +4,6 @@ A package for song analysis
 """
 
 
-def load_audio(dir, format='wav'):
-    """
-    Load and concatenate all audio files (e.g., .wav) in the input dir (path)
-    """
-    import numpy as np
-    from scipy.io import wavfile
-    from util.functions import list_files
-
-    # List all audio files in the dir
-    files = list_files(dir, format)
-
-    # Initialize
-    timestamp_concat = np.array([], dtype=np.float64)
-    data_concat = np.array([], dtype=np.float64)
-
-    # Store values in these lists
-    file_list = []
-
-    # Loop through audio files
-    for file in files:
-        # Load data file
-        print('Loading... ' + file.stem)
-        sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
-
-        # Add timestamp info
-        data_concat = np.append(data_concat, data)
-
-        # Store results
-        file_list.append(file)
-
-    # Create timestamps
-    timestamp_concat = np.arange(0, data_concat.shape[0] / sample_rate, (1 / sample_rate)) * 1E3
-
-    # Organize data into a dictionary
-    audio_info = {
-        'files': file_list,
-        'timestamp': timestamp_concat,
-        'data': data_concat,
-        'sample_rate': sample_rate
-    }
-    file_name = dir / "AudioData.npy"
-    np.save(file_name, audio_info)
-
-    return audio_info
-
-
 def load_song(dir, format='wav'):
     """
     Obtain event info & serialized timestamps for song & neural analysis
@@ -348,7 +302,7 @@ class MotifInfo:
 
 class AudioInfo:
     """
-    Create an audio object
+    Create an audio object from a single audio file (e.g., .wav)
     """
 
     def __init__(self, filepath, format='.wav'):
@@ -396,7 +350,7 @@ class AudioInfo:
         return self.timestamp[ind], self.data[ind]
 
     def spectrogram(self, timestamp, data, freq_range=[300, 8000]):
-        """ spect, freqbins, timebins will be added as class attributes"""
+        """Calculate spectrogram"""
         import numpy as np
         from util.spect import spectrogram
 
