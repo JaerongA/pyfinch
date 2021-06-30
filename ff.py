@@ -111,6 +111,7 @@ for row in db.cur.fetchall():
 
                 # if note_ind1 != 1:
                 #     continue
+                #     continue
 
                 duration = offset - onset
 
