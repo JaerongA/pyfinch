@@ -13,9 +13,10 @@ CREATE TABLE IF NOT EXISTS ff_spk_corr(
             ffMeanDir                REAL,
             ffUndirCV                REAL,
             ffDirCV                  REAL,
-            premotorSpkUndir         REAL,
-            nbSpkUndir               INT,   -- number of spikes in the pre-motor window
+            premotorFRUndir          REAL,
+            premotorFRDir            REAL,
             spkCorrRUndir            REAL,   -- correlation between number of spikes and FF
+            spkCorrRDir              REAL,   -- correlation between number of spikes and FF
             spkCorrPvalSigUndir      BOOL,   -- significance of correlation
             spkCorrPvalSigDir        BOOL,   -- significance of correlation
             polarityUndir            STRING,  -- positive vs. negative
