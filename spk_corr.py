@@ -37,7 +37,7 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path, npy_update=Fal
 
     # Create a new database (song_syllable)
     db = ProjectLoader().load_db()
-    with open('database/create_syllable.sql', 'r') as sql_file:
+    with open('database/create_syllable_pcc.sql', 'r') as sql_file:
         db.conn.executescript(sql_file.read())
 
     cluster_id = int(ClusterInfo.name.split('-')[0])
@@ -110,7 +110,7 @@ npy_update = True
 
 # Create a new database (syllable)
 db = ProjectLoader().load_db()
-with open('database/create_syllable.sql', 'r') as sql_file:
+with open('database/create_syllable_pcc.sql', 'r') as sql_file:
     db.conn.executescript(sql_file.read())
 
 # Load database
@@ -130,7 +130,6 @@ for row in db.cur.fetchall():
     channel_nb = int(cluster_db.channel[-2:])
     format = cluster_db.format
     song_note = cluster_db.songNote
-
 
     # Load class object
     ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
