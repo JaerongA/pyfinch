@@ -358,18 +358,18 @@ class AudioInfo:
         spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram
         return spect_time, spect, spect_freq
 
-    def get_spectral_entropy(self, normalize=True, mode=None):
+    def get_spectral_entropy(self, spect, normalize=True, mode=None):
         """
         Calculate spectral entropy
         Parameters
         ----------
         normalize : bool
             Get normalized spectral entropy
-
+        mode : {'spectral', ''spectro_temporal'}
         Returns
         -------
         array of spectral entropy
         """
         from analysis.functions import get_spectral_entropy
 
-        return get_spectral_entropy(self.spect, normalize=normalize, mode=mode)
+        return get_spectral_entropy(spect, normalize=normalize, mode=mode)

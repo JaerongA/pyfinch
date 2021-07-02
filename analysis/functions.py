@@ -511,7 +511,9 @@ def get_spectral_entropy(psd_array, normalize=None, mode=None):
             se_array = np.append(se_array, se)
         se_dict['array'] = se_array
         se_dict['mean'] = se_array.mean()
-        se_dict['var'] = 1 / -np.log(se_array.var())
+        se_dict['var'] = se_array.var()
+        # se_dict['var'] = 1 / -np.log(se_array.var())
+        # se_dict['var'] = se_array.std() / se_array.mean()  # calculate cv
 
         return se_dict
 

@@ -89,6 +89,7 @@ peth_shuffle = {'shuffle_limit': 10,  # in ms (50 for motif, 10 for syllable)
                 'shuffle_iter': 100  # bootstrap iterations
                 }
 
+alpha = 0.05  # for stat significance
 
 # def get_syl_color():
 #     # color for each syllable
