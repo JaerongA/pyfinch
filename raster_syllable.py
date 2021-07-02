@@ -6,7 +6,7 @@ def create_db():
     from database.load import ProjectLoader
 
     db = ProjectLoader().load_db()
-    with open('database/create_syllable.sql', 'r') as sql_file:
+    with open('database/create_syllable_pcc.sql', 'r') as sql_file:
         db.conn.executescript(sql_file.read())
 
 
@@ -66,6 +66,7 @@ for row in db.cur.fetchall():
     # Loop through note
     for note in cluster_db.songNote:
 
+        # Load note object
         ni = ci.get_note_info(note)
         if not ni:  # the target note does not exist
             continue

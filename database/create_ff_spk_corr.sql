@@ -23,5 +23,7 @@ CREATE TABLE IF NOT EXISTS ff_spk_corr(
             polarityDir              STRING,  -- positive vs. negative
             spkCorrRsquareUndir      REAL,
             spkCorrRsquareDir        REAL,
+            shuffledSigPropUndir     REAL,
+            shuffledSigPropDir       REAL,
             UNIQUE (clusterID, note)
             );

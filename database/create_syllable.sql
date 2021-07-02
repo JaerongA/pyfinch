@@ -1,38 +1,26 @@
--- Store results from raster_syllable
-CREATE TABLE IF NOT EXISTS syllable(
-            syllableID      INTEGER PRIMARY KEY,
-            clusterID       INTEGER NOT NULL,
-            birdID          STRING,
-            taskName       STRING,
-            taskSession              INT,
-            taskSessionDeafening     INT,
-            taskSessionPostDeafening INT,
-            dph                      INT,
-            block10days              INT,
-            note                     STRING,
+-- Information about individual syllables per sessions
 
-            nbNoteUndir              INT,
-            nbNoteDir                INT,
+CREATE TABLE IF NOT EXISTS syllable
+(
+    syllableID               INTEGER PRIMARY KEY,
+    songID                   INTEGER NOT NULL,
+    birdID                   STRING,
+    taskName                 STRING,
+    note                     STRING,
 
-            frUndir                  REAL,
-            frDir                    REAL,
+    nbNoteUndir              INT,
+    nbNoteDir                INT,
 
-            pccUndir                 REAL,
-            pccDir                   REAL,
+    entropyUndir             REAL,
+    entropyDir               REAL,
 
-            pccUndirSig              BOOLEAN,
-            pccDirSig                BOOLEAN,
+    spectroTemporalEntropyUndir  REAL,
+    spectroTemporalEntropyDir   REAL,
 
-            corrContext              REAL,
+    entropyVarUndir          REAL,
+    entropyVarDir            REAL,
 
-            psdSimilarity            REAL,
-
-            entropyUndir             REAL,
-            entropyDir               REAL,
-            entropyVarUndir          REAL,
-            entropyVarDir            REAL,
-
-            FOREIGN KEY(clusterID) REFERENCES cluster(id),
-            UNIQUE (clusterID, note)
-                                   )
+    FOREIGN KEY (songID) REFERENCES song (id),
+    UNIQUE (songID, note)
+)
 
