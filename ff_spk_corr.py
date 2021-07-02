@@ -24,7 +24,7 @@ save_spectrogram = False
 save_result_fig = True  # correlation figure
 view_folder = False  # view the folder where figures are stored
 update_db = True  # save results to DB
-save_csv = False
+save_csv = True
 fig_ext = '.png'  # .png or .pdf
 txt_offset = 0.2
 
@@ -40,9 +40,9 @@ save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF_SpkCorr', add_d
 
 # SQL statement
 # query = "SELECT * FROM cluster WHERE birdID='b70r38'"
-query = "SELECT * FROM cluster WHERE id=9"
-# query = "SELECT * FROM cluster WHERE id=96"
-# query = "SELECT * FROM cluster WHERE analysisOK"
+# query = "SELECT * FROM cluster WHERE id=9"
+# query = "SELECT * FROM cluster WHERE id>116"
+query = "SELECT * FROM cluster WHERE analysisOK AND id=109"
 db.execute(query)
 
 # Loop through db
@@ -94,15 +94,15 @@ for row in db.cur.fetchall():
 
             # Load note object
             ni = ci.get_note_info(note)
-            if not ni:  # if the note does not exist
+            if not ni or (np.prod([nb[1] < nb_note_crit for nb in ni.nb_note.items()])):  # if the note does not exist
                 db.cur.execute(f"DELETE FROM ff_spk_corr WHERE clusterID= {cluster_db.id} AND note= '{note}'")  # delete the row from db
                 db.conn.commit()
                 continue
 
-            # Skip if there are not enough motifs per condition
-            if np.prod([nb[1] < nb_note_crit for nb in ni.nb_note.items()]):
-                print("Not enough notes")
-                continue
+            # # Skip if there are not enough motifs per condition
+            # if np.prod([nb[1] < nb_note_crit for nb in ni.nb_note.items()]):
+            #     # print("Not enough notes")
+            #     continue
 
             zipped_lists = zip(ni.onsets, ni.offsets, ni.contexts, ni.spk_ts)
             for note_ind, (onset, offset, context, spk_ts) in enumerate(zipped_lists):
@@ -263,6 +263,19 @@ for row in db.cur.fetchall():
                     r_square = corr ** 2
                     polarity = 'positive' if corr > 0 else 'negative'
 
+                    def get_shuffled_sig_prop():
+                        shuffle_iter = 100
+                        sig_array = np.array([], dtype=np.int)
+
+                        for i in range(shuffle_iter):
+                            temp_df['ff'].sample(frac=1)
+                            corr, corr_pval = pearsonr(temp_df['nb_spk'], temp_df['ff'].sample(frac=1))
+                            pval_sig = True if corr_pval < alpha else False
+                            sig_array = np.append(sig_array, pval_sig)
+                        return sig_array.mean() * 100
+
+                    shuffled_sig_prop = get_shuffled_sig_prop()
+
                     if len(df['context'].unique()) ==2 and context == 'U':
                         ax = plt.subplot2grid((13, len(set(df['note'])) + 1), (1, i), rowspan=3, colspan=1)
                     elif len(df['context'].unique()) ==2 and context == 'D':
@@ -320,6 +333,7 @@ for row in db.cur.fetchall():
                             db.cur.execute(f"UPDATE ff_spk_corr SET spkCorrPvalSigUndir={pval_sig} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                             db.cur.execute(f"UPDATE ff_spk_corr SET polarityUndir='{polarity}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                             db.cur.execute(f"UPDATE ff_spk_corr SET spkCorrRsquareUndir='{round(r_square, 3)}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(f"UPDATE ff_spk_corr SET shuffledSigPropUndir='{round(shuffled_sig_prop, 3)}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                     elif context == 'D':
                         db.cur.execute(f"UPDATE ff_spk_corr SET nbNoteDir={len(temp_df)} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                         if len(temp_df) >= nb_note_crit:
@@ -330,6 +344,7 @@ for row in db.cur.fetchall():
                             db.cur.execute(f"UPDATE ff_spk_corr SET spkCorrPvalSigDir={pval_sig} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                             db.cur.execute(f"UPDATE ff_spk_corr SET polarityDir='{polarity}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                             db.cur.execute(f"UPDATE ff_spk_corr SET spkCorrRsquareDir='{round(r_square, 3)}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(f"UPDATE ff_spk_corr SET shuffledSigPropDir='{round(shuffled_sig_prop, 3)}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
 
             if update_db:
                 # If neither condition meets the number of notes criteria
@@ -347,5 +362,4 @@ if update_db:
     db.to_csv('ff_spk_corr')
 
 print('Done!')
-
 
