@@ -612,7 +612,7 @@ class NoteInfo():
         Two versions : spectro-temporal entropy & spectral entropy
         """
         from analysis.parameters import nb_note_crit
-        from analysis.functions import find_str
+        from analysis.functions import find_str, get_spectral_entropy
         import numpy as np
 
         entropy_mean = {}
@@ -1411,21 +1411,21 @@ class AudioData:
         return spect_time, spect, spect_freq
 
 
-    def get_spectral_entropy(self, normalize=True, mode=None):
+    def get_spectral_entropy(self, spect, normalize=True, mode=None):
         """
         Calculate spectral entropy
         Parameters
         ----------
         normalize : bool
             Get normalized spectral entropy
-
+        mode : {'spectral', ''spectro_temporal'}
         Returns
         -------
         array of spectral entropy
         """
         from analysis.functions import get_spectral_entropy
 
-        return  get_spectral_entropy(self.spect, normalize=normalize, mode=mode)
+        return  get_spectral_entropy(spect, normalize=normalize, mode=mode)
 
 
 class NeuralData:
