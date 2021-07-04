@@ -242,9 +242,7 @@ for row in db.cur.fetchall():
 
     # Draw correlation scatter between spk count and FF
     if not df.empty:
-
         font_size = 15
-
         for i, note in enumerate(sorted(df['note'].unique())):
             for context in sorted(df['context'].unique(), reverse=True):
                 temp_df = df[(df['note'] ==  note) & (df['context'] == context)]
@@ -345,6 +343,7 @@ for row in db.cur.fetchall():
                             db.cur.execute(f"UPDATE ff_spk_corr SET polarityDir='{polarity}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                             db.cur.execute(f"UPDATE ff_spk_corr SET spkCorrRsquareDir='{round(r_square, 3)}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                             db.cur.execute(f"UPDATE ff_spk_corr SET shuffledSigPropDir='{round(shuffled_sig_prop, 3)}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                    db.conn.commit()
 
             if update_db:
                 # If neither condition meets the number of notes criteria
