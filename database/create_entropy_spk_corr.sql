@@ -24,14 +24,15 @@ CREATE TABLE IF NOT EXISTS entropy_spk_corr
     entropyVarUndir          REAL,
     entropyVarDir            REAL,
 
-    spkCorrREntropyUndir     REAL,   -- correlation between number of spikes and entropy
-    spkCorrREntropyDir       REAL,
+    spkCorrUndir             REAL,
+    spkCorrDir               REAL,
 
-    spkCorrEntropySigUndir   BOOL,   -- significance of correlation
-    spkCorrEntropySigDir     BOOL,
+    spkCorrSigUndir          BOOL,   -- significance of correlation
+    spkCorrSigDir            BOOL,
 
     spkCorrRsquareUndir      REAL,
     spkCorrRsquareDir        REAL,
+
     FOREIGN KEY (clusterID) REFERENCES song (id),
     UNIQUE (clusterID, note)
 )
