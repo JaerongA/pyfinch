@@ -17,13 +17,14 @@ import pandas as pd
 
 # Parameter
 update = False  # update or make a new cache file
-save_spectrogram = True
+save_spectrogram = False
 save_result_fig = True  # correlation figure
 view_folder = False  # view the folder where figures are stored
 update_db = True  # save results to DB
 save_csv = True
 fig_ext = '.png'  # .png or .pdf
 txt_offset = 0.2
+correlation_parm = 'ev'  # {'spectral_entropy' : 'spectro_temporal_entropy' : 'ev'}
 
 # Load database
 db = ProjectLoader().load_db()
@@ -37,7 +38,7 @@ save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'EntropySpkCorr', a
 
 # SQL statement
 # query = "SELECT * FROM cluster WHERE birdID='b70r38'"
-# query = "SELECT * FROM cluster WHERE id=9"
+# query = "SELECT * FROM cluster WHERE id=115"
 # query = "SELECT * FROM cluster WHERE id>116"
 query = "SELECT * FROM cluster WHERE analysisOK"
 db.execute(query)
@@ -76,6 +77,11 @@ for row in db.cur.fetchall():
         for note in cluster_db.songNote:
             # Load note object
             ni = ci.get_note_info(note)
+
+            if not ni or (np.prod([nb[1] < nb_note_crit for nb in ni.nb_note.items()])):  # if the note does not exist
+                db.cur.execute(f"DELETE FROM entropy_spk_corr WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                db.conn.commit()
+                continue
 
             zipped_lists = zip(ni.onsets, ni.offsets, ni.contexts, ni.spk_ts)
             for note_ind, (onset, offset, context, spk_ts) in enumerate(zipped_lists):
@@ -145,6 +151,7 @@ for row in db.cur.fetchall():
 
                     # Save figure
                     save_path2 = save.make_dir(save_path / ci.name, note, add_date=False)
+                    save_path3 = save.make_dir(save_path, correlation_parm, add_date=False)  # save .csv and result figures
                     save.save_fig(fig, save_path2, fig_name, view_folder=view_folder, fig_ext=fig_ext)
 
                 # Get number of spikes from pre-motor window
@@ -157,7 +164,7 @@ for row in db.cur.fetchall():
                                         'spectral_entropy': [round(spectral_entropy, 3)],
                                         'spectro_temporal_entropy': [round(se_dict['mean'], 3)],
                                         'ev': [round(se_dict['var'], 4)],
-                                        'nb_spk' : [nb_spk]
+                                        'nb_spk': [nb_spk]
                                         })
                 df = df.append(temp_df, ignore_index=True)
 
@@ -165,26 +172,27 @@ for row in db.cur.fetchall():
         if save_csv:
             df.index.name = 'Index'
             csv_name = ci.name + '.csv'
-            df.to_csv(save_path / csv_name, index=True, header=True)  # save the dataframe to .cvs format
+            df.to_csv(save_path3 / csv_name, index=True, header=True)  # save the dataframe to .cvs format
 
     # Draw correlation scatter between spk count and FF
     if not df.empty:
         font_size = 15
         for i, note in enumerate(sorted(df['note'].unique())):
             for context in sorted(df['context'].unique(), reverse=True):
-                temp_df = df[(df['note'] ==  note) & (df['context'] == context)]
+                temp_df = df[(df['note'] == note) & (df['context'] == context)]
 
                 # Go ahead with calculation only if it meets the number of notes criteria
                 if len(temp_df) >= nb_note_crit:
 
                     if 'fig2' not in locals():
-                        fig2 = plt.figure(figsize=(len(set(df['note']))*6, len(set(df['context'].unique()))*6))
+                        fig2 = plt.figure(figsize=(len(set(df['note'])) * 6, len(set(df['context'].unique())) * 6))
                         plt.suptitle(ci.name, y=.9, fontsize=font_size)
 
                     # Calculate values
-                    pre_motor_fr = round(temp_df['nb_spk'].sum() / (len(temp_df['nb_spk']) * (pre_motor_win_size / 1E3)), 3)  # firing rates during the pre-motor window
-                    corr, corr_pval = pearsonr(temp_df['nb_spk'], temp_df['spectral_entropy'])
-                    # corr, corr_pval = pearsonr(temp_df['nb_spk'], temp_df['spectro_temporal_entropy'])
+                    pre_motor_fr = round(
+                        temp_df['nb_spk'].sum() / (len(temp_df['nb_spk']) * (pre_motor_win_size / 1E3)),
+                        3)  # firing rates during the pre-motor window
+                    corr, corr_pval = pearsonr(temp_df['nb_spk'], temp_df[correlation_parm])
                     pval_sig = True if corr_pval < alpha else False
                     r_square = corr ** 2
                     polarity = 'positive' if corr > 0 else 'negative'
@@ -202,24 +210,30 @@ for row in db.cur.fetchall():
                     #
                     # shuffled_sig_prop = get_shuffled_sig_prop()
 
-                    if len(df['context'].unique()) ==2 and context == 'U':
+                    if len(df['context'].unique()) == 2 and context == 'U':
                         ax = plt.subplot2grid((13, len(set(df['note'])) + 1), (1, i), rowspan=3, colspan=1)
-                    elif len(df['context'].unique()) ==2 and context == 'D':
+                    elif len(df['context'].unique()) == 2 and context == 'D':
                         ax = plt.subplot2grid((13, len(set(df['note'])) + 1), (8, i), rowspan=3, colspan=1)
                     else:
                         ax = plt.subplot2grid((7, len(set(df['note'])) + 1), (1, i), rowspan=3, colspan=1)
 
-                    ax.scatter(temp_df['nb_spk'], temp_df['spectral_entropy'], color='k', s=5)
+                    ax.scatter(temp_df['nb_spk'], temp_df[correlation_parm], color='k', s=5)
                     # ax.scatter(temp_df['nb_spk'], temp_df['spectro_temporal_entropy'], color='k', s=5)
                     ax.set_title(f"Note ({note}) - {context}", size=font_size)
                     if i == 0:
-                        ax.set_ylabel('Entropy')
+                        if correlation_parm == 'spectro_temporal_entropy':
+                            ax.set_ylabel('Spectrotemporal Entropy')
+                        elif correlation_parm == 'spectral_entropy':
+                            ax.set_ylabel('Spectral Entropy')
+                        elif correlation_parm == 'ev':
+                            ax.set_ylabel('Entropy Variance')
+
                     ax.set_xlabel('Spk Count')
-                    ax.set_xlim([-0.5, temp_df['nb_spk'].max()+1])
+                    ax.set_xlim([-0.5, temp_df['nb_spk'].max() + 1])
                     remove_right_top(ax)
 
                     # Print out results
-                    if len(df['context'].unique()) ==2 and context == 'U':
+                    if len(df['context'].unique()) == 2 and context == 'U':
                         ax_txt = plt.subplot2grid((13, len(set(df['note'])) + 1), (4, i), rowspan=1, colspan=1)
                     elif len(df['context'].unique()) == 2 and context == 'D':
                         ax_txt = plt.subplot2grid((13, len(set(df['note'])) + 1), (11, i), rowspan=1, colspan=1)
@@ -250,41 +264,58 @@ for row in db.cur.fetchall():
 
                 if update_db:
                     if context == 'U':
-                        db.cur.execute(f"UPDATE entropy_spk_corr SET nbNoteUndir={len(temp_df)} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                        db.cur.execute(
+                            f"UPDATE entropy_spk_corr SET nbNoteUndir={len(temp_df)} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                         if len(temp_df) >= nb_note_crit:
-                            db.cur.execute(f"UPDATE entropy_spk_corr SET premotorFRUndir={pre_motor_fr} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE entropy_spk_corr SET entropyUndir={temp_df['spectral_entropy'].mean() : .3f} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE entropy_spk_corr SET spectroTemporalEntropyUndir={temp_df['spectro_temporal_entropy'].mean(): .3f} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE entropy_spk_corr SET entropyVarUndir={temp_df['ev'].mean(): .4f} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE entropy_spk_corr SET spkCorrREntropyUndir={round(corr, 3)} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE entropy_spk_corr SET spkCorrEntropySigUndir={pval_sig} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE entropy_spk_corr SET spkCorrRsquareUndir='{round(r_square, 5)}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE entropy_spk_corr SET premotorFRUndir={pre_motor_fr} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE entropy_spk_corr SET entropyUndir={temp_df['spectral_entropy'].mean() : .3f} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE entropy_spk_corr SET spectroTemporalEntropyUndir={temp_df['spectro_temporal_entropy'].mean(): .3f} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE entropy_spk_corr SET entropyVarUndir={temp_df['ev'].mean(): .4f} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE entropy_spk_corr SET spkCorrREntropyUndir={round(corr, 3)} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE entropy_spk_corr SET spkCorrEntropySigUndir={pval_sig} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE entropy_spk_corr SET spkCorrRsquareUndir='{round(r_square, 5)}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                     elif context == 'D':
-                        db.cur.execute(f"UPDATE entropy_spk_corr SET nbNoteDir={len(temp_df)} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                        db.cur.execute(
+                            f"UPDATE entropy_spk_corr SET nbNoteDir={len(temp_df)} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                         if len(temp_df) >= nb_note_crit:
-                            db.cur.execute(f"UPDATE entropy_spk_corr SET premotorFRDir={pre_motor_fr} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE entropy_spk_corr SET entropyDir={temp_df['spectral_entropy'].mean() : .3f} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE entropy_spk_corr SET spectroTemporalEntropyDir={temp_df['spectro_temporal_entropy'].mean(): .3f} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE entropy_spk_corr SET entropyVarDir={temp_df['ev'].mean(): .4f} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE entropy_spk_corr SET spkCorrREntropyDir={round(corr, 3)} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE entropy_spk_corr SET spkCorrEntropySigDir={pval_sig} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE entropy_spk_corr SET spkCorrRsquareDir='{round(r_square, 5)}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                db.conn.commit()
+                            db.cur.execute(
+                                f"UPDATE entropy_spk_corr SET premotorFRDir={pre_motor_fr} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE entropy_spk_corr SET entropyDir={temp_df['spectral_entropy'].mean() : .3f} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE entropy_spk_corr SET spectroTemporalEntropyDir={temp_df['spectro_temporal_entropy'].mean(): .3f} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE entropy_spk_corr SET entropyVarDir={temp_df['ev'].mean(): .4f} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE entropy_spk_corr SET spkCorrREntropyDir={round(corr, 3)} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE entropy_spk_corr SET spkCorrEntropySigDir={pval_sig} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE entropy_spk_corr SET spkCorrRsquareDir='{round(r_square, 5)}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                    db.conn.commit()
 
             if update_db:
                 # If neither condition meets the number of notes criteria
-                db.cur.execute(f"SELECT nbNoteUndir, nbNoteDir FROM entropy_spk_corr WHERE clusterID={cluster_db.id} AND note= '{note}'")
+                db.cur.execute(
+                    f"SELECT nbNoteUndir, nbNoteDir FROM entropy_spk_corr WHERE clusterID={cluster_db.id} AND note= '{note}'")
                 nb_notes = [{'U': data[0], 'D': data[1]} for data in db.cur.fetchall()][0]
                 if not (bool(nb_notes['U']) or bool(nb_notes['D'])):
                     db.cur.execute(f"DELETE FROM entropy_spk_corr WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                 db.conn.commit()
 
     if save_result_fig:
-        save.save_fig(fig2, save_path, ci.name, view_folder=True, fig_ext=fig_ext)
+        save_path3 = save.make_dir(save_path, correlation_parm, add_date=False)  # save .csv and result figures
+        save.save_fig(fig2, save_path3, ci.name, view_folder=True, fig_ext=fig_ext)
     del fig2
 
 if update_db:
-    db.to_csv('entropy_spk_corr')
+    db.to_csv(f'entropy_spk_corr')
 
 print('Done!')
-
