@@ -25,7 +25,7 @@ def get_nb_cluster(ax):
 def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
                         title=None, xlabel=None, ylabel=None,
                         col_order=None,
-                        x_max=-0.01, y_max=None,
+                        y_lim=None,
                         jitter=0.1, alpha=0.5,
                         run_stats=True, stat_txt_size = 10,
                         legend_ok=False
@@ -83,10 +83,10 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
         msg = ('t({:.0f})'.format(degree_of_freedom) + ' = {:.2f}'.format(tval))
         plt.text((x1 + x2) * .5, y * 1.2, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
 
-    if y_max:
-        plt.ylim(x_max, y_max)
-    else:
-        ax.set_ylim([0, myround(math.ceil(y), base=10)])
+    if y_lim:
+        plt.ylim(y_lim[0], y_lim[1])
+    # else:
+    #     ax.set_ylim([0, myround(math.ceil(y), base=10)])
     ax.spines['right'].set_visible(False), ax.spines['top'].set_visible(False)
 
     if legend_ok and hue_var is not None:
