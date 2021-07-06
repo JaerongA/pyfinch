@@ -7,17 +7,18 @@ import seaborn as sns
 from util import save
 import numpy as np
 
+# Parameters
+nb_row = 3
+nb_col = 4
+save_fig = True
+fig_ext = '.png'
+
 # Load database
 db = ProjectLoader().load_db()
 # # SQL statement
 df = db.to_dataframe("SELECT * FROM cluster WHERE analysisOK=TRUE")
 df.set_index('id')
 
-# Parameters
-nb_row = 3
-nb_col = 4
-save_fig = True
-fig_ext = '.png'
 
 # Plot the results
 fig, ax = plt.subplots(figsize=(10, 4))
