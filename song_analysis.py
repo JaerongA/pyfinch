@@ -3,220 +3,242 @@ By Jaerong
 Song analysis
 """
 
-import matplotlib.pyplot as plt
-from scipy.io import wavfile
+def analyze_song(query, update_cache=False, update_db=True):
 
-from analysis.parameters import note_buffer, freq_range
-from analysis.song import *
-from database.load import ProjectLoader, DBInfo
-from util import save
-from analysis.functions import find_str, read_not_mat, para_interp
-import matplotlib.colors as colors
-import matplotlib.gridspec as gridspec
-import matplotlib.pyplot as plt
-import numpy as np
-import statsmodels.tsa.stattools as smt
-from scipy.signal import find_peaks
-from util.draw import remove_right_top
+    from analysis.song import SongInfo
+    from database.load import ProjectLoader, DBInfo
 
-# Parameter
-normalize = False  # normalize correlogram
-update = False
-save_fig = False
-update_db = False  # save results to DB
-fig_ext = '.png'  # .png or .pdf
-txt_xloc = -1.2
-txt_yloc = 0.8
-txt_offset = 0.2
-font_size = 8
+    # Load database
+    db = ProjectLoader().load_db()
+    with open('database/create_song_table.sql', 'r') as sql_file:
+        db.conn.executescript(sql_file.read())
 
-# Load database
-db = ProjectLoader().load_db()
-with open('database/create_song_table.sql', 'r') as sql_file:
-    db.conn.executescript(sql_file.read())
+    db.execute(query)
 
-# Parameter values should have been filled already
-with open('database/create_ff.sql', 'r') as sql_file:
-    db.conn.executescript(sql_file.read())
+    # Loop through db
+    for row in db.cur.fetchall():
+        # Load song info from db
+        song_db = DBInfo(row)
+        name, path = song_db.load_song_db()
 
-# Results will be stored here
-with open('database/create_ff_results.sql', 'r') as sql_file:
-    db.conn.executescript(sql_file.read())
+        si = SongInfo(path, name, update=update_cache)  # song object
 
-# Make save path
-save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF', add_date=False)
+        nb_files = si.nb_files
+        nb_bouts = si.nb_bouts(song_db.songNote)
+        nb_motifs = si.nb_motifs(song_db.motif)
 
-# SQL statement
-query = "SELECT * FROM song WHERE id=1"
-db.execute(query)
+        mean_nb_intro_notes = si.mean_nb_intro(song_db.introNotes, song_db.songNote)
+        song_call_prop = si.song_call_prop(song_db.calls, song_db.songNote)
+        mi = si.get_motif_info(song_db.motif)  # Get motif info
+        motif_dur = mi.get_motif_duration()  # Get mean motif duration &  CV per context
 
-# Loop through db
-for row in db.cur.fetchall():
-    # Load song info from db
-    song_db = DBInfo(row)
-    name, path = song_db.load_song_db()
+        if update_db:
+            db.cur.execute("UPDATE song SET nbFilesUndir=?, nbFilesDir=? WHERE id=?", (nb_files['U'], nb_files['D'], song_db.id))
+            db.cur.execute("UPDATE song SET nbBoutsUndir=?, nbBoutsDir=? WHERE id=?", (nb_bouts['U'], nb_bouts['D'], song_db.id))
+            db.cur.execute("UPDATE song SET nbMotifsUndir=?, nbMotifsDir=? WHERE id=?", (nb_motifs['U'], nb_motifs['D'], song_db.id))
+            db.cur.execute("UPDATE song SET meanIntroUndir=?, meanIntroDir=? WHERE id=?", (mean_nb_intro_notes['U'], mean_nb_intro_notes['D'], song_db.id))
+            db.cur.execute("UPDATE song SET songCallPropUndir=?, songCallPropDir=? WHERE id=?", (song_call_prop['U'], song_call_prop['D'], song_db.id))
+            db.cur.execute("UPDATE song SET motifDurationUndir=?, motifDurationDir=? WHERE id=?", (motif_dur['mean']['U'], motif_dur['mean']['D'], song_db.id))
+            db.cur.execute("UPDATE song SET motifDurationCVUndir=?, motifDurationCVDir=? WHERE id=?", (motif_dur['cv']['U'], motif_dur['cv']['D'], song_db.id))
+            db.conn.commit()
+        else:
+            print(nb_files, nb_bouts, nb_motifs, mean_nb_intro_notes, song_call_prop, motif_dur)
 
-    si = SongInfo(path, name, update=update)  # song object
-
-    nb_files = si.nb_files
-    nb_bouts = si.nb_bouts(song_db.songNote)
-    nb_motifs = si.nb_motifs(song_db.motif)
-
-    # mean_nb_intro_notes = si.mean_nb_intro(song_db.introNotes, song_db.songNote)
-    # song_call_prop = si.song_call_prop(song_db.introNotes, song_db.songNote)
-    # mi = si.get_motif_info(song_db.motif)  # Get motif info
-    # motif_dur = mi.get_motif_duration()  # Get mean motif duration &  CV per context
-
-    # Fundamental Frequency analysis
-    # Retrieve data from ff database
-    db.execute(f"SELECT ffNote, ffParameter, ffCriterion, ffLow, ffHigh, ffDuration FROM ff WHERE birdID='{song_db.birdID}'")
-
-    ff_info = {data[0] : {'parameter' :data[1],
-                          'crit' : data[2],
-                          'low' : data[3],  # lower limit of frequency
-                          'high' :data[4],  # upper limit of frequency
-                          'duration' : data[5]} for data in db.cur.fetchall()  # ff duration
-               }
-
-    ff_data = {}  # Store results here
-    from collections import defaultdict
-    from functools import partial
-
-    ff_arr = defaultdict(partial(np.ndarray, 0))
+    if update_db:
+        db.to_csv(f'song')
+    print('Done!')
 
 
-    for file in si.files:
+def plot_across_days(x, y,
+                     context,
+                     nb_bout_crit=10,
+                     title=None,
+                     x_lim=None,
+                     y_lim=None,
+                     fig_ext='.png',
+                     save_fig=False):
 
-        print(f'Loading... {file.name}')
+    from database.load import ProjectLoader
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    from util import save
+    from util.draw import remove_right_top
 
-        # Loop through the notes
-        note_ind = 0
+    # Load database
+    db = ProjectLoader().load_db()
+    # SQL statement
+    df = db.to_dataframe(f"SELECT * FROM song WHERE nbBoutsUndir >= {nb_bout_crit}")
+    df.set_index('id')
 
-        # Load audio object with info from .not.mat files
-        ai = AudioInfo(file)
-        ai.load_notmat()
+    # Plot the results
+    circ_size = 0.5
+    bird_list = df['birdID'].unique()
+    fig, axes = plt.subplots(2, 5, figsize=(21, 8))
+    fig.subplots_adjust(hspace=.3, wspace=.2, top=0.9)
+    if title:
+        fig.get_axes()[0].annotate(f"{title} (nb of bouts >= {nb_bout_crit}) {context}", (0.5, 0.97),
+                                   xycoords='figure fraction',
+                                   ha='center',
+                                   fontsize=16)
+        axes = axes.ravel()
 
-        for note, onset, offset in zip(ai.syllables, ai.onsets, ai.offsets):
+    for bird, ax_ind in zip(bird_list, range(len(bird_list))):
 
-            if note not in ff_info.keys(): continue  # skip if note has no FF portion
-            else:
-                note_ind += 1
+        temp_df = df.loc[df['birdID'] == bird]
+        sns.lineplot(x=x, y=y,
+                     data=temp_df, marker='o', color='k', mew=circ_size, ax=axes[ax_ind])
+        remove_right_top(axes[ax_ind])
+        axes[ax_ind].set_title(bird)
+        if ax_ind >= 5:
+            axes[ax_ind].set_xlabel('Days from deafening')
+        else:
+            axes[ax_ind].set_xlabel('')
 
-            if note is not 'b':
-                continue
+        if (ax_ind == 0) or (ax_ind == 5):
+            axes[ax_ind].set_ylabel(title)
+        else:
+            axes[ax_ind].set_ylabel('')
 
-            # Note start and end
-            duration = offset - onset
+        axes[ax_ind].set_xlim(x_lim)
+        axes[ax_ind].set_ylim(y_lim)
+        axes[ax_ind].axvline(x=0, color='k', linestyle='dashed', linewidth=0.5)
 
-            # Get spectrogram
-            timestamp, data = ai.extract([onset, offset]) # Extract data within the range
+    # Save figure
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
+        save.save_fig(fig, save_path, title, fig_ext=fig_ext, view_folder=False)
+    else:
+        plt.show()
 
-            spect_time, spect, spect_freq = ai.spectrogram(timestamp, data)
 
-            # Plot figure
-            fig = plt.figure(figsize=(4, 3), dpi=300)
-            fig_name = f"{file.name}, note#{note_ind} - {note}"
+def pre_post_comparison(x, y1, y2,
+                        nb_bout_crit=10,
+                        title=None,
+                        run_stats=True,
+                        y_lim=None,
+                        fig_ext='.png',
+                        save_fig=False,
+                        update_cache=False):
 
-            plt.suptitle(fig_name, y=.93, fontsize=font_size)
-            gs = gridspec.GridSpec(4, 6)
+    from database.load import ProjectLoader
+    import matplotlib.pyplot as plt
+    from results.plot import plot_bar_comparison
 
-            # Plot spectrogram
-            ax_spect = plt.subplot(gs[1:3, 0:4])
-            spect_time = spect_time - spect_time[0] # starts from zero
-            ax_spect.pcolormesh(spect_time, spect_freq, spect,  # data
-                                cmap='hot_r',
-                                norm=colors.SymLogNorm(linthresh=0.05,
-                                                       linscale=0.03,
-                                                       vmin=0.5,
-                                                       vmax=100
-                                                       ))
+    # Parameters
+    nb_row = 3
+    nb_col = 2
 
-            remove_right_top(ax_spect)
-            ax_spect.set_xlim(-note_buffer, duration + note_buffer)
-            ax_spect.set_ylim(freq_range[0], freq_range[1])
-            ax_spect.set_xlabel('Time (ms)', fontsize=font_size)
-            ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
-            plt.yticks(freq_range, [str(freq_range[0]), str(freq_range[1])])
+    # Load database
+    db = ProjectLoader().load_db()
+    # # SQL statement
+    df = db.to_dataframe(f"SELECT * FROM song WHERE nbBoutsUndir >= {nb_bout_crit}")
+    df.set_index('id')
 
-            # Get FF onset and offset based on the parameters from DB
-            if ff_info[note]['crit'] == 'percent_from_start':
-                ff_onset = onset + (duration * (ff_info[note]['parameter'] / 100))
-                ff_offset = ff_onset + ff_info[note]['duration']
-            elif ff_info[note]['crit'] == 'ms_from_start':
-                ff_onset = onset + (ff_info[note]['parameter'])
-                ff_offset = ff_onset + ff_info[note]['duration']
-            elif ff_info[note]['crit'] == 'ms_from_end':
-                ff_offset = offset - ff_info[note]['parameter']
-                ff_onset = ff_offset - ff_info[note]['duration']
+    # Plot the results
+    fig, ax = plt.subplots(figsize=(7, 4))
+    plt.suptitle(title, y=.9, fontsize=20)
 
-            _, data = ai.extract([ff_onset, ff_offset])  # Extract data within the range
-
-            # Mark FF
-            ax_spect.axvline(x=ff_onset - onset, color='b', linewidth=0.5)
-            ax_spect.axvline(x=ff_offset - onset, color='b', linewidth=0.5)
-
-            # Get FF from the FF segment
-            corr = smt.ccf(data, data, adjusted=False)
-            corr_win = corr[3: round(ai.sample_rate / ff_info[note]['low'])]
-
-            peak_ind, property = find_peaks(corr_win, height=0)
-
-            # Plot auto-correlation (for debugging)
-            # plt.plot(corr_win)
-            # plt.plot(peak_ind, corr_win[peak_ind], "x")
-            # plt.show()
-
-            for ind in property['peak_heights'].argsort()[::-1][0:1]:  # first two peaks
-                if peak_ind[ind] and (peak_ind[ind] < len(corr_win)):  # if the peak is not in first and last indices
-                    target_peak_ind = peak_ind[ind]
-                    target_peak_amp = corr_win[target_peak_ind - 1: target_peak_ind + 2]  # find the peak using two neighboring values using parabolic interpolation
-                    target_peak_ind = np.arange(target_peak_ind-1, target_peak_ind+2)
-                    peak, _ = para_interp(target_peak_ind, target_peak_amp)
-
-                period = peak + 2
-                ff = round(ai.sample_rate / period, 3)
-
-                if (ff > ff_info[note]['low']) and (ff < ff_info[note]['high']):
-                    break
-            # Mark estimated FF
-            ax_spect.axhline(y=ff, color='g', ls='--', lw=1)
-
-            # Print out text results
-
-            ax_txt = plt.subplot(gs[1:, -1])
-            ax_txt.set_axis_off()  # remove all axes
-            ax_txt.text(txt_xloc, txt_yloc, f"{ff_info[note]['parameter']} {ff_info[note]['crit']}", fontsize=font_size)
-            txt_yloc -= txt_offset
-            ax_txt.text(txt_xloc, txt_yloc, f"ff duration = {ff_info[note]['duration']} ms", fontsize=font_size)
-            txt_yloc -= txt_offset
-            ax_txt.text(txt_xloc, txt_yloc, f"ff = {ff} Hz", fontsize=font_size)
-            fig.tight_layout()
-
-            # Save results
-            if save_fig:
-                save_path = save.make_dir(save_path, si.name, add_date=False)
-                save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext)
-            else:
-                plt.show()
-
-            break
-        break
-
+    # Undir
+    ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
+    plot_bar_comparison(ax, df[y1], df[x], hue_var=df['birdID'],
+                        title='Undir', ylabel=y1,
+                        col_order=("Predeafening", "Postdeafening"),
+                        y_lim=y_lim,
+                        run_stats=run_stats
+                        )
+    # Dir
+    ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
+    plot_bar_comparison(ax, df[y2], df[x], hue_var=df['birdID'],
+                        title='Dir', ylabel=y2,
+                        col_order=("Predeafening", "Postdeafening"),
+                        y_lim=y_lim,
+                        run_stats=run_stats,
+                        legend_ok=True
+                        )
+    fig.tight_layout()
     plt.show()
 
 
-    ff_arr[note] = np.append(ff_arr[note], ff)
+# Parameters
+fig_ext = '.png'
+save_fig = False
+update_db = True
+update_cache = False
+nb_bout_crit = 10
+
+# SQL statement
+# query = "SELECT * FROM song WHERE id<=13"
+# query = "SELECT * FROM song"
+# analyze_song(query, update_cache = update_cache, update_db = update_db )
+
+# plot_across_days('taskSessionDeafening', 'meanIntroUndir', 'Undir',
+#                  nb_bout_crit=nb_bout_crit,
+#                  title='Mean_nb_intro_notes',
+#                  x_lim=[-30, 70],
+#                  y_lim=[0, 8],
+#                  fig_ext=fig_ext,
+#                  save_fig=save_fig)
+
+# plot_across_days('taskSessionDeafening', 'songCallPropUndir', 'Undir',
+#                  nb_bout_crit=nb_bout_crit,
+#                  title='Song_Call_Proportions',
+#                  x_lim=[-30, 70],
+#                  y_lim=[0, 0.6],
+#                  fig_ext=fig_ext,
+#                  save_fig=save_fig)
+#
+# plot_across_days('taskSessionDeafening', 'motifDurationUndir', 'Undir',
+#                  nb_bout_crit=nb_bout_crit,
+#                  title='Motif Duration (ms)',
+#                  x_lim=[-30, 70],
+#                  fig_ext=fig_ext,
+#                  save_fig=save_fig)
+
+# plot_across_days('taskSessionDeafening', 'motifDurationCVUndir', 'Undir',
+#                  nb_bout_crit=nb_bout_crit,
+#                  title='CV of Motif',
+#                  x_lim=[-30, 70],
+#                  y_lim=[0, 0.04],
+#                  fig_ext=fig_ext,
+#                  save_fig=save_fig)
+
+# pre_post_comparison('taskName',
+#                     'meanIntroUndir',
+#                     'meanIntroDir',
+#                     nb_bout_crit=nb_bout_crit,
+#                     title="Mean # of intro notes",
+#                     run_stats=True,
+#                     fig_ext=fig_ext,
+#                     save_fig=save_fig)
+
+# pre_post_comparison('taskName',
+#                     'songCallPropUndir',
+#                     'songCallPropDir',
+#                     nb_bout_crit=nb_bout_crit,
+#                     title="Song Call Proportion",
+#                     # run_stats=True,
+#                     y_lim=[-0.05, 0.75],
+#                     fig_ext=fig_ext,
+#                     save_fig=save_fig)
+
+pre_post_comparison('taskName',
+                    'motifDurationUndir',
+                    'motifDurationDir',
+                    nb_bout_crit=nb_bout_crit,
+                    title="Motif Duration (ms)",
+                    run_stats=True,
+                    y_lim=[0, 800],
+                    fig_ext=fig_ext,
+                    save_fig=save_fig)
+
+# pre_post_comparison('taskName',
+#                     'motifDurationCVUndir',
+#                     'motifDurationCVDir',
+#                     nb_bout_crit=nb_bout_crit,
+#                     title="CV of Motif",
+#                     run_stats=True,
+#                     # y_lim=[-0.005, 0.05],
+#                     fig_ext=fig_ext,
+#                     save_fig=save_fig)
 
 
-    if update_db:
-        db.cur.execute("UPDATE song SET nbFilesUndir=?, nbFilesDir=? WHERE id=?", (nb_files['U'], nb_files['D'], song_db.id))
-        db.cur.execute("UPDATE song SET nbBoutsUndir=?, nbBoutsDir=? WHERE id=?", (nb_bouts['U'], nb_bouts['D'], song_db.id))
-        db.cur.execute("UPDATE song SET nbMotifsUndir=?, nbMotifsDir=? WHERE id=?", (nb_motifs['U'], nb_motifs['D'], song_db.id))
-        db.cur.execute("UPDATE song SET meanIntroUndir=?, meanIntroDir=? WHERE id=?", (mean_nb_intro_notes['U'], mean_nb_intro_notes['D'], song_db.id))
-        db.cur.execute("UPDATE song SET songCallPropUndir=?, songCallPropDir=? WHERE id=?", (song_call_prop['U'], song_call_prop['D'], song_db.id))
-        db.cur.execute("UPDATE song SET motifDurationUndir=?, motifDurationDir=? WHERE id=?", (motif_dur['mean']['U'], motif_dur['mean']['D'], song_db.id))
-        db.cur.execute("UPDATE song SET motifDurationCVUndir=?, motifDurationCVDir=? WHERE id=?", (motif_dur['cv']['U'], motif_dur['cv']['D'], song_db.id))
-    # else:
-    #     print(nb_files, nb_bouts, nb_motifs, mean_nb_intro_notes, song_call_prop, motif_dur)
-
-print('Done!')
