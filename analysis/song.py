@@ -185,7 +185,8 @@ class SongInfo:
             bout_list = syllables.split('*')[:-1]  # eliminate demarcate marker
             bout_list = [bout for bout in bout_list if
                          unique_nb_notes_in_bout(song_note, bout)]  # eliminate bouts having no song note
-            mean_nb_intro_notes[context1] = round(mean(list(map(lambda x: x.count(intro_note), bout_list))), 3)
+            if bout_list:
+                mean_nb_intro_notes[context1] = round(mean(list(map(lambda x: x.count(intro_note), bout_list))), 3)
         return mean_nb_intro_notes
 
     def song_call_prop(self, call: str, song_note: str):
@@ -206,10 +207,10 @@ class SongInfo:
             bout_list = syllables.split('*')[:-1]  # eliminate demarcate marker
             bout_list = [bout for bout in bout_list if
                          unique_nb_notes_in_bout(song_note, bout)]  # eliminate bouts having no song note
-
-            nb_calls_per_bout = np.array(list(map(lambda x: total_nb_notes_in_bout(call, x), bout_list)))
-            total_nb_notes = np.array([len(bout) for bout in bout_list])
-            song_call_prop[context1] = round((nb_calls_per_bout / total_nb_notes).mean())
+            if bout_list:
+                nb_calls_per_bout = np.array(list(map(lambda x: total_nb_notes_in_bout(call, x), bout_list)))
+                total_nb_notes = np.array([len(bout) for bout in bout_list])
+                song_call_prop[context1] = round((nb_calls_per_bout / total_nb_notes).mean(), 4)
 
         return song_call_prop
 
@@ -279,7 +280,6 @@ class MotifInfo:
 
     def get_motif_duration(self):
         """Get mean motif duration and its cv per context"""
-        from statistics import mean
 
         import numpy as np
 
