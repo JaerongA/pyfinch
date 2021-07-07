@@ -264,10 +264,9 @@ for row in db.cur.fetchall():
                     def get_shuffled_sig_prop():
                         shuffle_iter = 100
                         sig_array = np.array([], dtype=np.int)
-
                         for i in range(shuffle_iter):
-                            temp_df['ff'].sample(frac=1)
-                            corr, corr_pval = pearsonr(temp_df['nb_spk'], temp_df['ff'].sample(frac=1))
+                            shuffle_df = temp_df
+                            corr, corr_pval = pearsonr(temp_df['nb_spk'], shuffle_df['ff'].sample(frac=1))
                             pval_sig = True if corr_pval < alpha else False
                             sig_array = np.append(sig_array, pval_sig)
                         return sig_array.mean() * 100
@@ -331,7 +330,7 @@ for row in db.cur.fetchall():
                             db.cur.execute(f"UPDATE ff_spk_corr SET spkCorrPvalSigUndir={pval_sig} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                             db.cur.execute(f"UPDATE ff_spk_corr SET polarityUndir='{polarity}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                             db.cur.execute(f"UPDATE ff_spk_corr SET spkCorrRsquareUndir='{round(r_square, 3)}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE ff_spk_corr SET shuffledSigPropUndir='{round(shuffled_sig_prop, 3)}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(f"UPDATE ff_spk_corr SET shuffledSigPropUndir='{shuffled_sig_prop}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                     elif context == 'D':
                         db.cur.execute(f"UPDATE ff_spk_corr SET nbNoteDir={len(temp_df)} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                         if len(temp_df) >= nb_note_crit:
@@ -342,11 +341,11 @@ for row in db.cur.fetchall():
                             db.cur.execute(f"UPDATE ff_spk_corr SET spkCorrPvalSigDir={pval_sig} WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                             db.cur.execute(f"UPDATE ff_spk_corr SET polarityDir='{polarity}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                             db.cur.execute(f"UPDATE ff_spk_corr SET spkCorrRsquareDir='{round(r_square, 3)}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE ff_spk_corr SET shuffledSigPropDir='{round(shuffled_sig_prop, 3)}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
+                            db.cur.execute(f"UPDATE ff_spk_corr SET shuffledSigPropDir='{shuffled_sig_prop}' WHERE clusterID= {cluster_db.id} AND note= '{note}'")
                     db.conn.commit()
 
             if update_db:
-                # If neither condition meets the number of notes criteria
+               # If neither condition meets the number of notes criteria
                 db.cur.execute(f"SELECT nbNoteUndir, nbNoteDir FROM ff_spk_corr WHERE clusterID={cluster_db.id} AND note= '{note}'")
                 nb_notes = [{'U': data[0], 'D': data[1]} for data in db.cur.fetchall()][0]
                 if not (bool(nb_notes['U']) or bool(nb_notes['D'])):
