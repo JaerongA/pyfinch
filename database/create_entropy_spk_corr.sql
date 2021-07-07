@@ -24,14 +24,17 @@ CREATE TABLE IF NOT EXISTS entropy_spk_corr
     entropyVarUndir          REAL,
     entropyVarDir            REAL,
 
-    spkCorrUndir             REAL,
-    spkCorrDir               REAL,
-
     spkCorrSigUndir          BOOL,   -- significance of correlation
     spkCorrSigDir            BOOL,
 
+    spkCorrUndir             REAL,
+    spkCorrDir               REAL,
+
     spkCorrRsquareUndir      REAL,
     spkCorrRsquareDir        REAL,
+
+    shuffledSigPropUndir     INT,
+    shuffledSigPropDir       INT,
 
     FOREIGN KEY (clusterID) REFERENCES song (id),
     UNIQUE (clusterID, note)
