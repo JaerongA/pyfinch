@@ -111,8 +111,8 @@ def plot_across_days(x, y,
         plt.show()
 
 
-def pre_post_comparison(x, y1, y2,
-                        nb_bout_crit=10,
+def pre_post_comparison(query,
+                        x, y1, y2,
                         title=None,
                         run_stats=True,
                         y_lim=None,
@@ -131,8 +131,9 @@ def pre_post_comparison(x, y1, y2,
     # Load database
     db = ProjectLoader().load_db()
     # # SQL statement
-    df = db.to_dataframe(f"SELECT * FROM song WHERE nbBoutsUndir >= {nb_bout_crit}")
-    df.set_index('id')
+
+    df = db.to_dataframe(query)
+    # df.set_index('id')
 
     # Plot the results
     fig, ax = plt.subplots(figsize=(7, 4))
@@ -164,11 +165,14 @@ fig_ext = '.png'
 save_fig = False
 update_db = True
 update_cache = False
+nb_note_crit = 10
 nb_bout_crit = 10
 
 # SQL statement
 # query = "SELECT * FROM song WHERE id<=13"
 # query = "SELECT * FROM song"
+query = f"SELECT * FROM song WHERE nbBoutsUndir >= {nb_bout_crit}"
+
 # analyze_song(query, update_cache = update_cache, update_db = update_db )
 
 # plot_across_days('taskSessionDeafening', 'meanIntroUndir', 'Undir',
@@ -202,7 +206,7 @@ nb_bout_crit = 10
 #                  fig_ext=fig_ext,
 #                  save_fig=save_fig)
 
-# pre_post_comparison('taskName',
+# pre_post_comparison(query, 'taskName',
 #                     'meanIntroUndir',
 #                     'meanIntroDir',
 #                     nb_bout_crit=nb_bout_crit,
@@ -211,7 +215,7 @@ nb_bout_crit = 10
 #                     fig_ext=fig_ext,
 #                     save_fig=save_fig)
 
-# pre_post_comparison('taskName',
+# pre_post_comparison(query, 'taskName',
 #                     'songCallPropUndir',
 #                     'songCallPropDir',
 #                     nb_bout_crit=nb_bout_crit,
@@ -221,23 +225,57 @@ nb_bout_crit = 10
 #                     fig_ext=fig_ext,
 #                     save_fig=save_fig)
 
-pre_post_comparison('taskName',
-                    'motifDurationUndir',
-                    'motifDurationDir',
-                    nb_bout_crit=nb_bout_crit,
-                    title="Motif Duration (ms)",
-                    run_stats=True,
-                    y_lim=[0, 800],
-                    fig_ext=fig_ext,
-                    save_fig=save_fig)
+# pre_post_comparison(query, 'taskName',
+#                     'motifDurationUndir',
+#                     'motifDurationDir',
+#                     nb_bout_crit=nb_bout_crit,
+#                     title="Motif Duration (ms)",
+#                     run_stats=True,
+#                     y_lim=[0, 800],
+#                     fig_ext=fig_ext,
+#                     save_fig=save_fig)
 
-# pre_post_comparison('taskName',
+# pre_post_comparison(query, 'taskName',
 #                     'motifDurationCVUndir',
 #                     'motifDurationCVDir',
 #                     nb_bout_crit=nb_bout_crit,
 #                     title="CV of Motif",
 #                     run_stats=True,
 #                     # y_lim=[-0.005, 0.05],
+#                     fig_ext=fig_ext,
+#                     save_fig=save_fig)
+
+
+# Analyze Entropy & EV
+# query = f"SELECT * FROM syllable WHERE nbNoteUndir >= {nb_note_crit}"
+
+# Spectro-Temporal Entropy
+# pre_post_comparison(query, 'taskName',
+#                     'spectroTemporalEntropyUndir',
+#                     'spectroTemporalEntropyDir',
+#                     title="Spectro-Temporal Entropy",
+#                     run_stats=True,
+#                     y_lim=[0, 1],
+#                     fig_ext=fig_ext,
+#                     save_fig=save_fig)
+#
+# # Spectral Entropy
+# pre_post_comparison(query, 'taskName',
+#                     'entropyUndir',
+#                     'entropyDir',
+#                     title="Spectral Entropy",
+#                     run_stats=True,
+#                     y_lim=[0, 1],
+#                     fig_ext=fig_ext,
+#                     save_fig=save_fig)
+
+# EV
+# pre_post_comparison(query, 'taskName',
+#                     'entropyVarUndir',
+#                     'entropyVarDir',
+#                     title="EV",
+#                     run_stats=True,
+#                     y_lim=[0, 0.05],
 #                     fig_ext=fig_ext,
 #                     save_fig=save_fig)
 
