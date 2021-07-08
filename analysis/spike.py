@@ -1278,11 +1278,8 @@ class BaselineInfo(ClusterInfo):
                     spk_list.append(baseline_spk)
                     nb_spk_list.append(len(baseline_spk))
                     duration_list.append(
-                        (baseline_offset - baseline_onset) / 1E3)  # convert to seconds for calculating in Hz
+                        (baseline_offset - baseline_onset))  # convert to seconds for calculating in Hz
                     context_list.append(context)
-
-            # set values into the database
-            self.baselineFR = sum(nb_spk_list) / sum(duration_list)
 
             baseline_info = {
                 'files': file_list,
@@ -1345,7 +1342,7 @@ class BaselineInfo(ClusterInfo):
         """Mean firing rates"""
         nb_spk = sum([len(spk_ts) for spk_ts in self.spk_ts])
         total_duration = sum(self.durations)
-        mean_fr = nb_spk / total_duration
+        mean_fr = nb_spk / (total_duration / 1E3)
         return mean_fr
 
     def __repr__(self):  # print attributes
@@ -1543,8 +1540,8 @@ class Correlogram():
         if self.data.sum():
             self.peak_ind = np.min(
                 np.abs(
-                    np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center  # index of the peak
-            self.peak_latency = self.time_bin[self.peak_ind]
+                    np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center   # index of the peak
+            self.peak_latency = self.time_bin[self.peak_ind] - 1
             self.peak_value = self.data[self.peak_ind]
             burst_range = np.arange(corr_center - (1000 / burst_hz) - 1, corr_center + (1000 / burst_hz),
                                     dtype='int')  # burst range in the correlogram
@@ -1697,7 +1694,6 @@ class BurstingInfo:
 
             # Need to add the subsequent spike time stamp since it is not included (burst is the difference between successive spike time stamps)
             burst_offset_ind = np.append(burst_offset_ind, bursts[bursts.size - 1] + 1)
-
             burst_onset = spks[burst_onset_ind]
             burst_offset = spks[burst_offset_ind]
             burst_spk_list.append(spks[burst_onset_ind[0]: burst_offset_ind[0] + 1])
@@ -1729,7 +1725,7 @@ class BurstingInfo:
             self.nb_burst_spk = sum(nb_burst_spk_list)
             self.fraction = (round(sum(nb_burst_spk_list) / sum([len(spks) for spks in spk_list]), 3)) * 100
             self.duration = round((burst_duration_arr).sum(), 3)  # total duration
-            self.freq = round(nb_bursts.sum() / sum(duration_list), 3)
+            self.freq = round(nb_bursts.sum() / (sum(duration_list) / 1E3), 3)
             self.mean_nb_spk = round(np.array(nb_burst_spk_list).mean(), 3)
             self.mean_duration = round(burst_duration_arr.mean(), 3)  # mean duration
         else:  # no burst spike detected
