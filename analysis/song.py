@@ -265,6 +265,97 @@ class SongInfo:
         return MotifInfo(motif_info, motif)
 
 
+class BoutInfo(SongInfo):
+    """
+    Get song & spike information for a song bout
+    Child clas
+    s of SongInfo
+    """
+
+    def __init__(self, path, song_note, name=None, update=False):
+        super().__init__(path, song_note, name, update=False)
+
+        import numpy as np
+
+        self.song_note = song_note
+
+        if name:
+            self.name = name[0]
+        else:
+            self.name = str(self.path)
+
+        # Load bout info
+        file_name = self.path / "BoutInfo.npy"
+        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+            bout_info = self.load_bouts()
+            # Save info dict as a numpy object
+            np.save(file_name, bout_info)
+        else:
+            bout_info = np.load(file_name, allow_pickle=True).item()
+
+        # Set the dictionary values to class attributes
+        for key in bout_info:
+            setattr(self, key, bout_info[key])
+
+    def print_name(self):
+        print('')
+        print('Load bout {self.name}'.format(self=self))
+
+    def __len__(self):
+        return len(self.files)
+
+    def load_bouts(self):
+        # Store values here
+        from util.functions import find_str
+
+        file_list = []
+        spk_list = []
+        onset_list = []
+        offset_list = []
+        syllable_list = []
+        duration_list = []
+        context_list = []
+
+        list_zip = zip(self.files, self.spk_ts, self.onsets, self.offsets, self.syllables, self.contexts)
+
+        for file, spks, onsets, offsets, syllables, context in list_zip:
+
+            bout_ind = find_str(syllables, '*')
+
+            for ind in range(len(bout_ind)):
+                if ind == 0:
+                    start_ind = 0
+                else:
+                    start_ind = bout_ind[ind - 1] + 1
+                stop_ind = bout_ind[ind] - 1
+
+                bout_onset = float(onsets[start_ind])
+                bout_offset = float(offsets[stop_ind])
+
+                onsets_in_bout = onsets[start_ind:stop_ind + 1]  # list of bout onset timestamps
+                offsets_in_bout = offsets[start_ind:stop_ind + 1]  # list of bout offset timestamps
+
+                file_list.append(file)
+                duration_list.append(bout_offset - bout_onset)
+                onset_list.append(onsets_in_bout)
+                offset_list.append(offsets_in_bout)
+                syllable_list.append(syllables[start_ind:stop_ind + 1])
+                context_list.append(context)
+
+        # Organize event-related info into a single dictionary object
+        bout_info = {
+            'files': file_list,
+            'spk_ts': spk_list,
+            'onsets': onset_list,
+            'offsets': offset_list,
+            'durations': duration_list,  # this is bout durations
+            'syllables': syllable_list,
+            'contexts': context_list,
+        }
+
+        return bout_info
+
+
 class MotifInfo:
     """Child class of SongInfo"""
 
