@@ -119,7 +119,7 @@ alpha = 0.05  # for stat significance
 
 # Sequence analysis
 cmap_list = ["YlGnBu", "PiYG",  ]
-sequence_color = {'motif': ['r', 'b', 'lime', 'm', 'darkorange', 'purple', 'saddlebrown'],
+sequence_color = {'song_note': ['r', 'b', 'lime', 'm', 'darkorange', 'purple', 'saddlebrown'],
                   'intro': ['k', 'gray', 'darkseagreen', 'olive'],
                   'call': ['teal', 'darklategray', 'darkgray','indigo']
                   }

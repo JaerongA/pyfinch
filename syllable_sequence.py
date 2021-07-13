@@ -16,11 +16,55 @@ def nb_song_note_in_bout(song_notes, bout):
     return nb_song_note_in_bout
 
 
-def save_bout(filename, data):
-    # save the song bout & number of bouts in .json
-    import json
-    with open(filename, 'w') as f:
-        json.dump(data, f)
+def get_syl_color(bird_id : str):
+    """Map colors to each syllable"""
+    from analysis.parameters import cmap_list, sequence_color
+    from database.load import ProjectLoader, DBInfo
+
+    # Load database
+    db = ProjectLoader().load_db()
+    # db.execute(f"SELECT introNotes, motif, calls FROM bird WHERE birdID='{bird_id}'")
+    df = db.to_dataframe(f"SELECT introNotes, songNote, calls FROM bird WHERE birdID='{bird_id}'")
+    intro_notes = df['introNotes'][0]
+    song_notes = df['songNote'][0]
+    calls = df['calls'][0]
+
+    note_seq = intro_notes + song_notes + calls + '*'
+
+    syl_color = []
+
+    for i, note in enumerate(note_seq[:-1]):
+        if note in song_notes:
+            syl_color.append(sequence_color['song_note'].pop(0))
+        elif note in intro_notes:
+            syl_color.append(sequence_color['intro'].pop(0))
+        elif note in calls:
+            syl_color.append(sequence_color['call'].pop(0))
+        else:
+            syl_color.append(sequence_color['intro'].pop(0))
+    syl_color.append('y')  # for stop at the end
+    return syl_color
+
+
+def get_trans_matrix(syllables, note_seq, norm=False):
+    """Build a syllable transition matrix"""
+    trans_matrix = np.zeros((len(note_seq), len(note_seq)))  # initialize the matrix
+    normalize = 0
+
+    for i, note in enumerate(syllables):
+
+        if i < len(syllables) - 1:
+            # print(syllables[i] + '->' + syllables[i + 1])
+            ind1 = note_seq.index(syllables[i])
+            ind2 = note_seq.index(syllables[i + 1])
+            if ind1 < len(note_seq) - 1:
+                # trans_matrix[ind1, ind2] = trans_matrix[ind1, ind2] + 1
+                trans_matrix[ind1, ind2] += 1
+
+    if norm:
+        print("normalize")
+        trans_matrix = trans_matrix / trans_matrix.sum()
+    return trans_matrix
 
 
 # Parameters
@@ -36,14 +80,15 @@ db.execute(query)
 
 # Loop through db
 for row in db.cur.fetchall():
+
     # Load song info from db
     song_db = DBInfo(row)
     name, path = song_db.load_song_db()
 
-    db.execute(f"SELECT introNotes, motif, calls FROM bird WHERE birdID='{song_db.birdID}'")
-    song_seq = [data[0] + data[1] + data[2] for data in db.cur.fetchall()][0]  # e.g., ('iabcdelmn')
-
     si = SongInfo(path, name, update=update_cache)  # song object
+
+    # Get syllable color
+    syl_color = get_syl_color(song_db.birdID)
 
     # Get song bout strings and number of bouts per context
     song_bouts = dict()
@@ -59,3 +104,5 @@ for row in db.cur.fetchall():
         song_bouts[context] = '*'.join(bout_list) + '*'
         nb_bouts[context] = len(song_bouts[context].split('*')[:-1])
 
+        trans_matrix = get_trans_matrix(song_bouts, note_seq)
+        print(trans_matrix)
