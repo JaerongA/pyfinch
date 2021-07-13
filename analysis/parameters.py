@@ -116,3 +116,10 @@ alpha = 0.05  # for stat significance
 #         note_color.append(intro_color.pop(0))
 #
 # note_color.append('y')  # for stop at the end
+
+# Sequence analysis
+cmap_list = ["YlGnBu", "PiYG",  ]
+sequence_color = {'motif': ['r', 'b', 'lime', 'm', 'darkorange', 'purple', 'saddlebrown'],
+                  'intro': ['k', 'gray', 'darkseagreen', 'olive'],
+                  'call': ['teal', 'darklategray', 'darkgray','indigo']
+                  }
