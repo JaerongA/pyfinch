@@ -1,7 +1,6 @@
-DROP TABLE IF EXISTS unit_profile;
-
 -- Create unit_profile table
 -- Take values from cluster db
+
 CREATE TABLE IF NOT EXISTS unit_profile(
             clusterID     INTEGER NOT NULL UNIQUE,
             birdID         STRING,
@@ -42,17 +41,17 @@ CREATE TABLE IF NOT EXISTS unit_profile(
             burstFractionDir         REAL,
             burstIndexDir            REAL,
 
-            withinRefPropBaseline    REAL,
-            isiPeakLatencyBaseline   REAL,
-            isiCVBaseline            REAL,
-
-            withinRefPropUndir       REAL,
-            isiPeakLatencyUndir      REAL,
-            isiCVUndir               REAL,
-
-            withinRefPropDir         REAL,
-            isiPeakLatencyDir        REAL,
-            isiCVDir                 REAL,
+--             withinRefPropBaseline    REAL,
+--             isiPeakLatencyBaseline   REAL,
+--             isiCVBaseline            REAL,
+--
+--             withinRefPropUndir       REAL,
+--             isiPeakLatencyUndir      REAL,
+--             isiCVUndir               REAL,
+--
+--             withinRefPropDir         REAL,
+--             isiPeakLatencyDir        REAL,
+--             isiCVDir                 REAL,
 
             FOREIGN KEY(clusterID) REFERENCES cluster(id));
 
