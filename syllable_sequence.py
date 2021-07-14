@@ -43,26 +43,23 @@ def get_syl_color(bird_id : str):
         else:
             syl_color.append(sequence_color['intro'].pop(0))
     syl_color.append('y')  # for stop at the end
-    return syl_color
+    return note_seq, syl_color
 
 
-def get_trans_matrix(syllables, note_seq, norm=False):
+def get_trans_matrix(syllables, note_seq, normalize=False):
     """Build a syllable transition matrix"""
+
     trans_matrix = np.zeros((len(note_seq), len(note_seq)))  # initialize the matrix
-    normalize = 0
 
     for i, note in enumerate(syllables):
-
         if i < len(syllables) - 1:
-            # print(syllables[i] + '->' + syllables[i + 1])
+            print(syllables[i] + '->' + syllables[i + 1])
             ind1 = note_seq.index(syllables[i])
             ind2 = note_seq.index(syllables[i + 1])
             if ind1 < len(note_seq) - 1:
                 # trans_matrix[ind1, ind2] = trans_matrix[ind1, ind2] + 1
                 trans_matrix[ind1, ind2] += 1
-
-    if norm:
-        print("normalize")
+    if normalize:
         trans_matrix = trans_matrix / trans_matrix.sum()
     return trans_matrix
 
@@ -88,7 +85,7 @@ for row in db.cur.fetchall():
     si = SongInfo(path, name, update=update_cache)  # song object
 
     # Get syllable color
-    syl_color = get_syl_color(song_db.birdID)
+    note_seq, syl_color = get_syl_color(song_db.birdID)
 
     # Get song bout strings and number of bouts per context
     song_bouts = dict()
@@ -104,5 +101,6 @@ for row in db.cur.fetchall():
         song_bouts[context] = '*'.join(bout_list) + '*'
         nb_bouts[context] = len(song_bouts[context].split('*')[:-1])
 
-        trans_matrix = get_trans_matrix(song_bouts, note_seq)
+        # Get transition matrix
+        trans_matrix = get_trans_matrix(song_bouts[context], note_seq)
         print(trans_matrix)
