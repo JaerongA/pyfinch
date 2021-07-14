@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from results.plot import get_nb_cluster
 from util import save
 
-
 # Parameters
 save_fig = False
 fig_ext = '.png'

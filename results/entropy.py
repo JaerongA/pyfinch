@@ -159,12 +159,12 @@ import pandas as pd
 
 # Plot significance scatter plot
 # Map note to numbers
-factor = 'Spectro-temporal Entropy'
+factor = 'EV'
 nb_note_crit = 10
 fr_crit = 10
-csv_path = r'H:\Box\Data\Deafening Project\Analysis\EntropySpkCorr\spectro_temporal_entropy\spectro_temporal_entropy.csv'
+# csv_path = r'H:\Box\Data\Deafening Project\Analysis\EntropySpkCorr\spectro_temporal_entropy\spectro_temporal_entropy.csv'
 # # csv_path = r'H:\Box\Data\Deafening Project\Analysis\EntropySpkCorr\spectral_entropy\spectral_entropy.csv'
-# # csv_path = r'H:\Box\Data\Deafening Project\Analysis\EntropySpkCorr\ev\ev.csv'
+csv_path = r'H:\Box\Data\Deafening Project\Analysis\EntropySpkCorr\ev\ev.csv'
 df = pd.read_csv(csv_path, index_col='syllableID')
 df = df.query(f"nbNoteUndir >= {nb_note_crit} and premotorFRUndir >= {fr_crit}" )
 

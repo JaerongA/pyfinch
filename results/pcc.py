@@ -44,7 +44,6 @@ fig.tight_layout()
 
 
 # Undir (paired comparisons)
-
 pcc_mean_per_condition = df.groupby(['birdID','taskName'])['pairwiseCorrUndir'].mean().to_frame()
 pcc_mean_per_condition.reset_index(inplace = True)
 
