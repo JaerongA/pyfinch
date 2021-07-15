@@ -199,7 +199,7 @@ fig_ext = '.png'
 
 # # SQL statement
 # query = "SELECT * FROM song WHERE id = 17"
-query = "SELECT * FROM song WHERE id = 13"
+query = "SELECT * FROM song WHERE id >= 13"
 # query = "SELECT * FROM song"
 db.execute(query)
 
@@ -230,19 +230,21 @@ for row in db.cur.fetchall():
             bout = [bout for bout in syllables.split('*') if nb_song_note_in_bout(song_db.songNote, bout)]
             if bout:
                 bout_list.append(bout[0])
-        song_bouts[context] = '*'.join(bout_list) + '*'
-        nb_bouts[context] = len(song_bouts[context].split('*')[:-1])
+        if bout_list:
+            song_bouts[context] = '*'.join(bout_list) + '*'
+            nb_bouts[context] = len(song_bouts[context].split('*')[:-1])
 
+    for i, context in enumerate(song_bouts.keys()):
         # Get transition matrix
         trans_matrix = []
         trans_matrix = get_trans_matrix(song_bouts[context], note_seq)
 
         # Plot transition matrix
         if not 'fig' in locals():
-            fig = plt.figure(figsize=(len(set(si.contexts)) * 4, 10), dpi=350)
+            fig = plt.figure(figsize=(len(song_bouts.keys()) * 4, 10), dpi=350)
             plt.suptitle(si.name, y=.98, fontsize=font_size)
 
-        ax = plt.subplot2grid((nb_row, len(set(si.contexts))), (1, i), rowspan=3, colspan=1)
+        ax = plt.subplot2grid((nb_row, len(song_bouts.keys())), (1, i), rowspan=3, colspan=1)
         y_max = trans_matrix.max() + (10 - trans_matrix.max() % 10)
         ax = sns.heatmap(trans_matrix, cmap=cmap, annot=True, vmin=0, vmax=y_max,
                          linewidth=0.2, linecolor='k',
@@ -271,10 +273,10 @@ for row in db.cur.fetchall():
 
         song_stereotypy[context] = get_song_stereotypy(sequence_linearity[context], sequence_consistency[context])
 
-        ax = plt.subplot2grid((nb_row, len(set(si.contexts))), (4, i), rowspan=3, colspan=1)
+        ax = plt.subplot2grid((nb_row, len(set(song_bouts.keys()))), (4, i), rowspan=3, colspan=1)
         plot_transition_diag(ax, note_seq, syl_network, syl_color)
 
-        ax_txt = plt.subplot2grid((nb_row, len(set(si.contexts))), (9, i), rowspan=1, colspan=1)
+        ax_txt = plt.subplot2grid((nb_row, len(set(song_bouts.keys()))), (9, i), rowspan=1, colspan=1)
 
         txt_xloc = 0.1
         txt_yloc = -0.5
@@ -328,4 +330,11 @@ for row in db.cur.fetchall():
         db.conn.commit()
 
     del fig
-plt.show()
+
+# Convert db to csv
+if update_db:
+    db.to_csv('song_sequence')
+    print('Done!')
+
+# Analyze song transition metrics
+df = db.to_dataframe("""SELECT * FROM song_sequence""")
