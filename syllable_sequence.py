@@ -199,7 +199,7 @@ fig_ext = '.png'
 
 # # SQL statement
 # query = "SELECT * FROM song WHERE id = 17"
-query = "SELECT * FROM song WHERE id >= 13"
+query = "SELECT * FROM song WHERE id >= 104"
 # query = "SELECT * FROM song"
 db.execute(query)
 
@@ -336,5 +336,82 @@ if update_db:
     db.to_csv('song_sequence')
     print('Done!')
 
+def plot_across_days(df, x, y,
+                     context,
+                     nb_bout_crit=0,
+                     title=None,
+                     x_lim=None,
+                     y_lim=None,
+                     fig_ext='.png',
+                     save_fig=False):
+
+    from database.load import ProjectLoader
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    from util import save
+    from util.draw import remove_right_top
+
+    # # Load database
+    # db = ProjectLoader().load_db()
+    # # SQL statement
+    # df = db.to_dataframe(f"SELECT * FROM song WHERE nbBoutsUndir >= {nb_bout_crit}")
+    # df.set_index('id')
+
+    # Plot the results
+    circ_size = 0.5
+    bird_list = df['birdID'].unique()
+    fig, axes = plt.subplots(2, 5, figsize=(21, 8))
+    fig.subplots_adjust(hspace=.3, wspace=.2, top=0.9)
+    if title:
+        fig.get_axes()[0].annotate(f"{title} (nb of bouts >= {nb_bout_crit}) {context}", (0.5, 0.97),
+                                   xycoords='figure fraction',
+                                   ha='center',
+                                   fontsize=16)
+        axes = axes.ravel()
+
+    for bird, ax_ind in zip(bird_list, range(len(bird_list))):
+
+        temp_df = df.loc[df['birdID'] == bird]
+        sns.lineplot(x=x, y=y,
+                     data=temp_df, marker='o', color='k', mew=circ_size, ax=axes[ax_ind])
+        remove_right_top(axes[ax_ind])
+        axes[ax_ind].set_title(bird)
+        if ax_ind >= 5:
+            axes[ax_ind].set_xlabel('Days from deafening')
+        else:
+            axes[ax_ind].set_xlabel('')
+
+        if (ax_ind == 0) or (ax_ind == 5):
+            axes[ax_ind].set_ylabel(title)
+        else:
+            axes[ax_ind].set_ylabel('')
+
+        axes[ax_ind].set_xlim(x_lim)
+        axes[ax_ind].set_ylim(y_lim)
+        axes[ax_ind].axvline(x=0, color='k', linestyle='dashed', linewidth=0.5)
+
+    # Save figure
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
+        save.save_fig(fig, save_path, title, fig_ext=fig_ext, view_folder=False)
+    else:
+        plt.show()
+
+
+
+from database.load import ProjectLoader
+
 # Analyze song transition metrics
-df = db.to_dataframe("""SELECT * FROM song_sequence""")
+# Load database
+db = ProjectLoader().load_db()
+df = db.to_dataframe("""SELECT song_sequence.*, song.taskSessionDeafening  
+                FROM song_sequence INNER JOIN song ON song.id = song_sequence.songID""")
+
+dependent_var = 'songStereotypyDir'
+context = 'Dir'
+plot_across_days(df, 'taskSessionDeafening', dependent_var, context,
+                 title='Song stereotypy',
+                 x_lim=[-30, 70],
+                 y_lim=[0.1, 1],
+                 fig_ext=fig_ext,
+                 save_fig=False)
