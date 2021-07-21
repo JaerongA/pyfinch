@@ -108,63 +108,9 @@ def plot_pcc_syllable_by_day(fr_criteria=0, save_fig=True):
         plt.show()
 
 
-def plot_pcc_regression(fr_criteria=fr_criteria, save_fig=save_fig, regression_fit=True):
-
-    from sklearn.linear_model import LinearRegression
-    from scipy.stats import pearsonr
-
-    # # SQL statement
-    # query = f"SELECT * FROM syllable WHERE frUndir >= {fr_criteria} AND taskSessionDeafening > 0 AND taskSessionDeafening < 40"
-    query = f"SELECT * FROM syllable WHERE frUndir >= {fr_criteria} AND taskSessionDeafening <= 0"
-    # query = f"SELECT * FROM syllable WHERE frUndir >= {fr_criteria} AND taskSessionDeafening < 40"
-    # query = f"SELECT * FROM syllable WHERE frUndir >= {fr_criteria}"
-
-    df = db.to_dataframe(query)
-    df.set_index('syllableID')
-
-    fig, ax = plt.subplots(figsize=(5, 4))
-
-    # x = df['taskSessionDeafening'].values.reshape(-1, 1)
-    x = df['dph'].values.reshape(-1, 1)
-    y = df['pccUndir'].values.reshape(-1, 1)
-    ax.scatter(x, y, color='k')
-    ax.set_title(f"Undir FR over {fr_criteria}")
-    ax.set_xlabel('dph before deafening')
-    ax.set_xlabel('Days from deafening')
-    ax.set_ylabel('Syllable PCC')
-    ax.set_ylim([-0.1, 0.5])
-
-    if regression_fit:
-        # Regression analysis
-        model = LinearRegression().fit(x, y).predict(x)
-        ax.plot(x, model, color='r')
-        x = df['dph']
-        # x = df['taskSessionDeafening']
-        y = df['pccUndir']
-        corr, corr_pval = pearsonr(x, y)
-
-        txt_xloc = 0.7
-        txt_yloc = 0.85
-        txt_inc = 0.05
-        fig.text(txt_xloc, txt_yloc, f"CorrR = {round(corr, 3)}", fontsize=10)
-        txt_yloc -= txt_inc
-        t = fig.text(txt_xloc, txt_yloc, f"CorrR Pval = {round(corr_pval, 3)}", fontsize=10)
-
-    remove_right_top(ax)
-
-    # Save figure
-    if save_fig:
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
-        save.save_fig(fig, save_path, f'pcc_syllable_reg(fr_over_{fr_criteria})', fig_ext=fig_ext)
-    else:
-        plt.show()
-
-
 # plot_fr_hist(save_fig=save_fig)
 
 plot_pcc_syllable_by_day(fr_criteria=fr_criteria, save_fig=save_fig)
-
-# plot_pcc_regression(fr_criteria=fr_criteria, save_fig=False, regression_fit=True)
 
 
 
