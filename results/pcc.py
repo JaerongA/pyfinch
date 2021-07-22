@@ -7,9 +7,7 @@ from util import save
 import numpy as np
 
 from database.load import ProjectLoader
-from sklearn.linear_model import LinearRegression
-from scipy.stats import pearsonr
-from util.draw import remove_right_top
+
 
 # Parameters
 nb_row = 3
@@ -20,47 +18,10 @@ fr_criteria = 10
 
 
 
-def plot_pcc_regression(x, y,
-                        x_label, y_label,
-                        fr_criteria=fr_criteria, save_fig=save_fig, regression_fit=True):
-
-    fig, ax = plt.subplots(figsize=(5, 4))
-
-    x = x.values.reshape(-1, 1)
-    y = y.values.reshape(-1, 1)
-
-    ax.scatter(x, y, color='k')
-    ax.set_title(f"Undir FR over {fr_criteria}")
-    ax.set_xlabel('dph before deafening')
-    ax.set_xlabel('Days from deafening')
-    ax.set_ylabel('Syllable PCC')
-    ax.set_ylim([-0.1, 0.5])
-
-    if regression_fit:
-        # Regression analysis
-        model = LinearRegression().fit(x, y).predict(x)
-        ax.plot(x, model, color='r')
-        x = df['dph']
-        # x = df['taskSessionDeafening']
-        y = df['pccUndir']
-        corr, corr_pval = pearsonr(x, y)
-
-        txt_xloc = 0.7
-        txt_yloc = 0.85
-        txt_inc = 0.05
-        fig.text(txt_xloc, txt_yloc, f"CorrR = {round(corr, 3)}", fontsize=10)
-        txt_yloc -= txt_inc
-        t = fig.text(txt_xloc, txt_yloc, f"CorrR Pval = {round(corr_pval, 3)}", fontsize=10)
-
-    remove_right_top(ax)
-
-    # Save figure
-    if save_fig:
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
-        save.save_fig(fig, save_path, f'pcc_syllable_reg(fr_over_{fr_criteria})', fig_ext=fig_ext)
-    else:
-        plt.show()
-
+# def plot_pcc_regression(x, y,
+#                         x_label, y_label, title,
+#                         x_lim=None, y_lim=None,
+#                         fr_criteria=fr_criteria, save_fig=save_fig, regression_fit=True):
 
 # # Load database
 # db = ProjectLoader().load_db()
@@ -120,17 +81,136 @@ def plot_pcc_regression(x, y,
 
 ## Syllable PCC plot across days (with regression)
 ## SQL statement
-# query = f"SELECT * FROM syllable WHERE frUndir >= {fr_criteria} AND taskSessionDeafening > 0 AND taskSessionDeafening < 40"
-query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskSessionDeafening <= 0"
+
+def plot_regression(x, y, **kwargs):
+    """Plot scatter plot between two continuous variables with its regression fit """
+
+    from sklearn.linear_model import LinearRegression
+    from sklearn.preprocessing import PolynomialFeatures
+    from scipy.stats import pearsonr
+    from util.draw import remove_right_top
+
+    def get_aic(x, y):
+        from statsmodels.regression.linear_model import OLS
+        from statsmodels.tools import add_constant
+
+        regr = OLS(y, add_constant(x)).fit()
+        return regr.aic
+
+    fig, ax = plt.subplots(figsize=(5, 4))
+
+    x = x.values.reshape(-1, 1)
+    y = y.values.reshape(-1, 1)
+
+    ax.scatter(x, y, color='k')
+    remove_right_top(ax)
+
+    if 'title' in kwargs:
+        ax.set_title(kwargs['title'])
+    if 'x_label' in kwargs:
+        ax.set_xlabel(kwargs['x_label'])
+    if 'y_label' in kwargs:
+        ax.set_ylabel(kwargs['y_label'])
+
+    txt_xloc = 0.6
+    txt_yloc = 0.85
+    txt_inc = 0.05
+
+    # Regression analysis
+    if 'regression_fit' in kwargs:
+        for fit in  kwargs['regression_fit']:
+            if fit == 'linear':
+                # Linear regression
+                model = LinearRegression().fit(x, y).predict(x)
+                ax.plot(x, model, color='r')
+                corr, corr_pval = pearsonr(x.T[0], y.T[0])
+                aic_lin = get_aic(x, y)
+                fig.text(txt_xloc, txt_yloc, f"CorrR = {round(corr, 4)}", fontsize=10)
+                txt_yloc -= txt_inc
+                fig.text(txt_xloc, txt_yloc, f"CorrR Pval = {round(corr_pval, 4)}", fontsize=10)
+                txt_yloc -= txt_inc
+                fig.text(txt_xloc, txt_yloc, f"aic (linear) = {round(aic_lin, 3)}", fontsize=10)
+
+            if fit == 'quadratic':
+                # Polynomial regression
+                poly = PolynomialFeatures(degree=2)
+                x_transformed = poly.fit_transform(x)
+                poly_model = LinearRegression().fit(x_transformed, y).predict(x_transformed)
+                ax.plot(x, poly_model, color='cyan')
+                aic_quad = get_aic(x, poly_model)
+                txt_yloc -= txt_inc
+                fig.text(txt_xloc, txt_yloc, f"aic (quad) = {round(aic_quad, 3)}", fontsize=10)
+
+
+            # import math
+            # resid = y - model
+            # k = 3
+            # sse = sum(resid**2)
+            # aic = (2*k) - 2*np.log(sse)
+            #
+            # resid = y - poly_model
+            # k = 4
+            # sse = sum(resid**2)
+            # aic = 2*k - 2*np.log(sse)
+
+    if 'x_lim' in kwargs:
+        ax.set_xlim(kwargs['x_lim'])
+    if 'y_lim' in kwargs:
+        ax.set_ylim(kwargs['y_lim'])
+
+    # Save figure
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
+        save.save_fig(fig, save_path, f'pcc_syllable_reg(fr_over_{fr_criteria})', fig_ext=fig_ext)
+    else:
+        plt.show()
 
 # Load database
 db = ProjectLoader().load_db()
+# query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria}"
+# query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskSessionDeafening <= 0"
+# query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskName='Postdeafening'"
+query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskName='Postdeafening' AND taskSessionDeafening <= 40"
 df = db.to_dataframe(query)
 df.set_index('syllableID')
-# x = df['taskSessionDeafening'].values.reshape(-1, 1)
-x = df['dph'].values.reshape(-1, 1)
-y = df['pccUndir'].values.reshape(-1, 1)
+
+# # DPH
+# x = df['dph']
+# y = df['pccUndir']
+#
+# title = f'Undir FR over {fr_criteria} Postdeafening'
+# x_label = 'Age (dph)'
+# y_label = 'PCC'
+# # x_lim = [90, 130]
+# y_lim = [-0.05, 0.3]
+#
+# plot_regression(x, y,
+#                     title=title,
+#                     x_label=x_label, y_label=y_label,
+#                     # x_lim=x_lim,
+#                     y_lim=y_lim,
+#                     fr_criteria=fr_criteria,
+#                     save_fig=save_fig,
+#                     regression_fit=True
+#                     )
 
 
-plot_pcc_regression('dph',
-    fr_criteria=fr_criteria, save_fig=save_fig, regression_fit=True)
+# Days from deafening
+x = df['taskSessionDeafening']
+y = df['pccUndir']
+
+title = f'Undir FR over {fr_criteria}'
+x_label = 'Days from deafening'
+y_label = 'PCC'
+# x_lim = [0, 35]
+y_lim = [-0.05, 0.25]
+
+plot_regression(x, y,
+                    title=title,
+                    x_label=x_label, y_label=y_label,
+                    # x_lim=x_lim,
+                    y_lim=y_lim,
+                    fr_criteria=fr_criteria,
+                    save_fig=save_fig,
+                    regression_fit={'linear', 'quadratic'}
+                    )
