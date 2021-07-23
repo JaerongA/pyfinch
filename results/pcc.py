@@ -89,6 +89,7 @@ def plot_regression(x, y, **kwargs):
     from sklearn.preprocessing import PolynomialFeatures
     from scipy.stats import pearsonr
     from util.draw import remove_right_top
+    import statsmodels.api as sm
 
     def get_aic(x, y):
         from statsmodels.regression.linear_model import OLS
@@ -99,8 +100,12 @@ def plot_regression(x, y, **kwargs):
 
     fig, ax = plt.subplots(figsize=(5, 4))
 
-    x = x.values.reshape(-1, 1)
-    y = y.values.reshape(-1, 1)
+    x = x.values.T
+    y = y.values.T
+
+    x_ind = x.argsort()
+    x = x[x_ind]
+    y = y[x_ind]
 
     ax.scatter(x, y, color='k')
     remove_right_top(ax)
@@ -119,12 +124,17 @@ def plot_regression(x, y, **kwargs):
     # Regression analysis
     if 'regression_fit' in kwargs:
         for fit in  kwargs['regression_fit']:
+
+            x = x.reshape(-1, 1)
+            y = y.reshape(-1, 1)
+
             if fit == 'linear':
                 # Linear regression
-                model = LinearRegression().fit(x, y).predict(x)
-                ax.plot(x, model, color='r')
+
                 corr, corr_pval = pearsonr(x.T[0], y.T[0])
-                aic_lin = get_aic(x, y)
+                y_pred = LinearRegression().fit(x, y).predict(x)
+                ax.plot(x, y_pred, color='r')
+                aic_lin = get_aic(x, y_pred)
                 fig.text(txt_xloc, txt_yloc, f"CorrR = {round(corr, 4)}", fontsize=10)
                 txt_yloc -= txt_inc
                 fig.text(txt_xloc, txt_yloc, f"CorrR Pval = {round(corr_pval, 4)}", fontsize=10)
@@ -135,9 +145,10 @@ def plot_regression(x, y, **kwargs):
                 # Polynomial regression
                 poly = PolynomialFeatures(degree=2)
                 x_transformed = poly.fit_transform(x)
-                poly_model = LinearRegression().fit(x_transformed, y).predict(x_transformed)
-                ax.plot(x, poly_model, color='cyan')
-                aic_quad = get_aic(x, poly_model)
+                model = sm.OLS(y, x_transformed).fit()
+                y_pred = model.predict(x_transformed)
+                aic_quad = get_aic(x, y_pred)
+                ax.plot(x, y_pred, color='cyan')
                 txt_yloc -= txt_inc
                 fig.text(txt_xloc, txt_yloc, f"aic (quad) = {round(aic_quad, 3)}", fontsize=10)
 
@@ -164,6 +175,7 @@ def plot_regression(x, y, **kwargs):
         save.save_fig(fig, save_path, f'pcc_syllable_reg(fr_over_{fr_criteria})', fig_ext=fig_ext)
     else:
         plt.show()
+
 
 # Load database
 db = ProjectLoader().load_db()
@@ -204,6 +216,7 @@ x_label = 'Days from deafening'
 y_label = 'PCC'
 # x_lim = [0, 35]
 y_lim = [-0.05, 0.25]
+
 
 plot_regression(x, y,
                     title=title,
