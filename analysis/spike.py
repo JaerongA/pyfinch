@@ -133,6 +133,7 @@ def get_pcc(fr_array):
     pcc_dict['mean'] = round(pcc_arr.mean(), 3)
     return pcc_dict
 
+
 def jitter_spk_ts(spk_ts_list, shuffle_limit, reproducible=True):
     """
     Add a random temporal jitter to the spike
@@ -157,6 +158,7 @@ def jitter_spk_ts(spk_ts_list, shuffle_limit, reproducible=True):
         jitter = np.random.uniform(-shuffle_limit, shuffle_limit, nb_spk)
         spk_ts_jittered_list.append(spk_ts + jitter)
     return spk_ts_jittered_list
+
 
 def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
     """
@@ -203,7 +205,7 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
     if plot_hist:
         from util.draw import remove_right_top
 
-        fig, axes = plt.subplots(1,2, figsize=(6, 3))
+        fig, axes = plt.subplots(1, 2, figsize=(6, 3))
         plt.suptitle('PCC shuffle distribution', y=.98, fontsize=10)
         for axis, context in zip(axes, pcc_shuffle.keys()):
             axis.set_title(context)
@@ -334,10 +336,10 @@ class ClusterInfo:
             spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
             if interpolate:
                 spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
-                            (1 / sample_rate[self.format]) / interp_factor) * 1E6  # in microseconds
+                        (1 / sample_rate[self.format]) / interp_factor) * 1E6  # in microseconds
             else:
                 spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
-                            1 / sample_rate[self.format]) * 1E6  # in microseconds
+                        1 / sample_rate[self.format]) * 1E6  # in microseconds
             deflection_range, half_width = get_half_width(wf_ts, avg_wf)  # get the half width from the peak deflection
             return spk_height, spk_width, half_width, deflection_range
 
@@ -491,7 +493,8 @@ class ClusterInfo:
             if not add_premotor_spk:
                 spk_list_context = [spk_ts for spk_ts, context2 in zip(spk_list, self.contexts) if context2 == context1]
             else:
-                spk_list_context = [spk_ts for spk_ts, context2 in zip(self.spk_ts, self.contexts) if context2 == context1]
+                spk_list_context = [spk_ts for spk_ts, context2 in zip(self.spk_ts, self.contexts) if
+                                    context2 == context1]
             isi_dict[context1] = get_isi(spk_list_context)
 
         return isi_dict
@@ -703,7 +706,7 @@ class NoteInfo():
                     jitter = np.random.uniform(-shuffle_limit, shuffle_limit, 1)
                     new_spk = spk + jitter
                     if onset < new_spk < offset:
-                        jittered_spk = np.append(jittered_spk , spk + jitter)
+                        jittered_spk = np.append(jittered_spk, spk + jitter)
                         break
 
             spk_ts_jittered_list.append(jittered_spk)
@@ -730,8 +733,10 @@ class NoteInfo():
         note_fr = {}
         for context1 in ['U', 'D']:
             if self.nb_note[context1] >= nb_note_crit:
-                note_spk[context1] = sum([len(spk) for context2, spk in zip(self.contexts, self.spk_ts) if context2==context1])
-                note_fr[context1] = round(note_spk[context1] / ((self.durations[find_str(self.contexts, context1)] + pre_motor_win_size).sum() / 1E3), 3)
+                note_spk[context1] = sum(
+                    [len(spk) for context2, spk in zip(self.contexts, self.spk_ts) if context2 == context1])
+                note_fr[context1] = round(note_spk[context1] / (
+                            (self.durations[find_str(self.contexts, context1)] + pre_motor_win_size).sum() / 1E3), 3)
             else:
                 note_fr[context1] = np.nan
         return note_fr
@@ -969,7 +974,7 @@ class MotifInfo(ClusterInfo):
                     jitter = np.random.uniform(-shuffle_limit, shuffle_limit, 1)
                     new_spk = spk + jitter
                     if onset < new_spk < offset:
-                        jittered_spk = np.append(jittered_spk , spk + jitter)
+                        jittered_spk = np.append(jittered_spk, spk + jitter)
                         break
 
             spk_ts_jittered_list.append(jittered_spk)
@@ -1106,7 +1111,8 @@ class PethInfo():
                 spk_arr = spk_arr[:, :ind.shape[0]]
 
                 spk_count = spk_arr.sum(axis=0)
-                fano_factor = spk_arr.var(axis=0) / spk_arr.mean(axis=0)  # per time window (across renditions) (renditions x time window)
+                fano_factor = spk_arr.var(axis=0) / spk_arr.mean(
+                    axis=0)  # per time window (across renditions) (renditions x time window)
                 spk_count_cv = spk_count.std(axis=0) / spk_count.mean(axis=0)  # cv across time (single value)
 
                 # store values in a dictionary
@@ -1397,7 +1403,6 @@ class AudioData:
         ind = np.where((self.timestamp >= start) & (self.timestamp <= end))
         return self.timestamp[ind], self.data[ind]
 
-
     def spectrogram(self, timestamp, data, freq_range=[300, 8000]):
         """Calculate spectrogram"""
         import numpy as np
@@ -1406,7 +1411,6 @@ class AudioData:
         spect, spect_freq, _ = spectrogram(data, self.sample_rate, freq_range=freq_range)
         spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram
         return spect_time, spect, spect_freq
-
 
     def get_spectral_entropy(self, spect, normalize=True, mode=None):
         """
@@ -1422,7 +1426,64 @@ class AudioData:
         """
         from analysis.functions import get_spectral_entropy
 
-        return  get_spectral_entropy(spect, normalize=normalize, mode=mode)
+        return get_spectral_entropy(spect, normalize=normalize, mode=mode)
+
+    def get_ff(self, data, ff_low, ff_high, ff_harmonic=1):
+        """
+        Calculate fundamental frequency (FF) from the FF segment
+        Parameters
+        ----------
+        data : array
+        ff_low : int
+            Lower limit
+        ff_high : int
+            Upper limit
+        ff_harmonic :  int (1 by default)
+            harmonic detection
+        Returns
+        -------
+        ff : float
+        """
+        from analysis.functions import para_interp
+        from scipy.signal import find_peaks
+        import statsmodels.tsa.stattools as smt
+        import matplotlib.pyplot as plt
+        import numpy as np
+
+        # Get peak of the auto-correlogram
+        corr = smt.ccf(data, data, adjusted=False)
+        corr_win = corr[3: round(self.sample_rate / ff_low)]
+        peak_ind, property = find_peaks(corr_win, height=0)
+
+        # Plot auto-correlation (for debugging)
+        # plt.plot(corr_win)
+        # plt.plot(peak_ind, corr_win[peak_ind], "x")
+        # plt.show()
+
+        # Find FF
+        ff_list = []
+        ff = None
+        # loop through the peak until FF is found in the desired range
+        for ind in property['peak_heights'].argsort()[::-1]:
+            if not (peak_ind[ind] == 0 or (
+                    peak_ind[ind] == len(corr_win))):  # if the peak is not in first and last indices
+                target_peak_ind = peak_ind[ind]
+                target_peak_amp = corr_win[
+                                  target_peak_ind - 1: target_peak_ind + 2]  # find the peak using two neighboring values using parabolic interpolation
+                target_peak_ind = np.arange(target_peak_ind - 1, target_peak_ind + 2)
+                peak, _ = para_interp(target_peak_ind, target_peak_amp)
+
+                # period = peak + 3
+                period = peak + (3 * ff_harmonic)
+                temp_ff = round(self.sample_rate / period, 3)
+                ff_list.append(temp_ff)
+
+            ff = [ff for ff in ff_list if ff_low < ff < ff_high]
+            if not bool(ff):  # skip the note if the ff is out of the expected range
+                continue
+            else:
+                ff = ff[0] / ff_harmonic
+        return ff
 
 
 class NeuralData:
@@ -1540,7 +1601,7 @@ class Correlogram():
         if self.data.sum():
             self.peak_ind = np.min(
                 np.abs(
-                    np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center   # index of the peak
+                    np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center  # index of the peak
             self.peak_latency = self.time_bin[self.peak_ind] - 1
             self.peak_value = self.data[self.peak_ind]
             burst_range = np.arange(corr_center - (1000 / burst_hz) - 1, corr_center + (1000 / burst_hz),
@@ -1740,6 +1801,7 @@ class ISI:
     """
     Class object for inter-spike interval analysis
     """
+
     def __init__(self, isi):
         """
 
@@ -1755,7 +1817,7 @@ class ISI:
         self.hist, self.time_bin = np.histogram(np.log10(isi), bins=isi_bin)
         self.time_bin = self.time_bin[:-1]
         # Peak latency of the ISI distribution
-        self.time_bin = 10**self.time_bin
+        self.time_bin = 10 ** self.time_bin
         self.peak_latency = self.time_bin[np.min(np.where(self.hist == np.min(self.hist.max())))]  # in ms
         # Proportion of within-refractory period spikes
         self.within_ref_prop = (np.sum(self.data < 1) / self.data.shape[0]) * 100
@@ -1764,8 +1826,7 @@ class ISI:
 
     def plot(self, ax,
              *title,
-             font_size = 10):
-
+             font_size=10):
         import matplotlib.pyplot as plt
         from util.draw import remove_right_top
         import math
