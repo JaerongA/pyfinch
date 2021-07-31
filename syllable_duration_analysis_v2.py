@@ -3,77 +3,98 @@ By Jaerong (2020/06/04)
 Syllable duration for all syllables regardless of it type
 Calculation based on EventInfo.m
 """
-from database import load
-import pandas as pd
-from song.analysis import *
-from util import save
 
+
+def get_note_type(syllables, song_db):
+    """
+    Function to determine the category of the syllable
+    Parameters
+    ----------
+    syllables : str
+    song_db : db
+
+    Returns
+    -------
+    type_str : str
+    """
+    type_str = []
+    for syllable in syllables:
+        if syllable in song_db.motif:
+            type_str.append('M')  # motif
+        elif syllable in song_db.calls:
+            type_str.append('C')  # call
+        elif syllable in song_db.introNotes:
+            type_str.append('I')  # intro notes
+        else:
+            type_str.append(None)  # intro notes
+    return type_str
 
 def get_data(query):
     """
     Input: SQL query
     calculate the syllable duration from .not.mat and store the data in .csv
     """
-    global save_dir
+    # global save_dir
 
-    # Create save dir
-    dir_name = 'SyllableDuration'
-    save_dir = save.make_save_dir(dir_name, add_date=False)
+    from analysis.song import SongInfo
+    from database.load import ProjectLoader, DBInfo
+    import pandas as pd
+    from util import save
 
-    # Store results in the dataframe
-    df = pd.DataFrame()
+    # Create save path
+    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'SyllableDuration')
 
     # Load song database
-    cur, conn, col_names = load.database(query)
+    db = ProjectLoader().load_db()
+    db.execute(query)
 
-    for song_info in cur.fetchall():
-        song_name, song_path = load.song_info(song_info)
-        print('\nAccessing... ' + song_name)
+    # Loop through db
+    for row in db.cur.fetchall():
+        # Load song info from db
+        song_db = DBInfo(row)
+        name, path = song_db.load_song_db()
 
-        for site in [x for x in song_path.iterdir() if x.is_dir()]:  # loop through different sites on the same day
+        # Load song object
+        si = SongInfo(path, name)
+        print('\nAccessing... ' + si.name)
 
-            mat_files = [file for file in site.rglob('*.not.mat')]
+        # Store results in the dataframe
+        df = pd.DataFrame()
 
-            for file in mat_files:
-                # Load variables from .not.mat
-                print(file.name)
-                # print(file)
-                onsets, offsets, intervals, duration, syllables, context = \
-                    read_not_mat(file)
+        # Organize results
+        note_types = get_note_type(''.join(si.syllables).replace('*',''), song_db) # Type of the syllables
+        nb_notes = len(''.join(si.syllables).replace('*',''))
+        durations = []
+        for duration in [list(map(float, duration[duration != '*'])) for duration in si.durations]:
+            durations += duration[0]
 
-                # Type of the syllables
-                syl_type = syl_type_(syllables, song_info)
+        # Save results to a dataframe
+        temp_df = []
+        temp_df = pd.DataFrame({'SongID': [song_db.id] * nb_notes,
+                                'BirdID': [song_db.birdID] * nb_notes,
+                                'TaskName': [song_db.taskName] * nb_notes,
+                                'TaskSession': [song_db.taskSession] * nb_notes,
+                                'TaskSessionDeafening': [song_db.taskSessionDeafening] * nb_notes,
+                                'TaskSessionPostdeafening': [song_db.taskSessionPostDeafening] * nb_notes,
+                                'Context': ''.join([len(syllable.replace('*', '')) * context for syllable, context
+                                                    in zip(si.syllables, si.contexts)]),
+                                'SyllableType': note_types,
+                                'Syllable': list(''.join(si.syllables).replace('*','')),
+                                'Duration': durations,
+                                })
+        df = df.append(temp_df, ignore_index=True)
 
-                nb_syllable = len(syllables)
-
-                # Save results to a dataframe
-                temp_df = []
-                temp_df = pd.DataFrame({'SongID': [song_info['id']] * nb_syllable,
-                                        'BirdID': [song_info['birdID']] * nb_syllable,
-                                        'TaskName': [song_info['taskName']] * nb_syllable,
-                                        'TaskSession': [song_info['taskSession']] * nb_syllable,
-                                        'TaskSessionDeafening': [song_info['taskSessionDeafening']] * nb_syllable,
-                                        'TaskSessionPostdeafening': [song_info[
-                                                                         'taskSessionPostDeafening']] * nb_syllable,
-                                        'DPH': [song_info['dph']] * nb_syllable,
-                                        'Block10days': [song_info['block10days']] * nb_syllable,
-                                        'FileID': [file.name] * nb_syllable,
-                                        'Context': [context] * nb_syllable,
-                                        'SyllableType': syl_type,
-                                        'Syllable': list(syllables),
-                                        'Duration': duration,
-                                        })
-                df = df.append(temp_df, ignore_index=True)
-
-
-    # Save to a file
-    df.index.name = 'Index'
-    outputfile = save_dir / 'SyllableDuration.csv'
-    df.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
-    print('Done!')
+        # Save to a file
+        df.index.name = 'Index'
+        outputfile = save_path / 'SyllableDuration.csv'
+        df.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
+        print('Done!')
 
 def load_data(data_file, context='ALL', syl_type='ALL'):
 
+    import pandas as pd
+
+    # Load syllable duration .csv data
     df = pd.read_csv(data_file)
 
     # Select syllables based on social context
@@ -95,17 +116,17 @@ def load_data(data_file, context='ALL', syl_type='ALL'):
 if __name__ == '__main__':
 
     # Check if the data .csv exists
-    project_path = load.project()
-    data_file = project_path / 'Analysis' / 'SyllableDuration' / 'SyllableDuration.csv'
+    from database.load import ProjectLoader
+    data_file = ProjectLoader().path / 'Analysis' / 'SyllableDuration' / 'SyllableDuration.csv'
 
     if not data_file.exists():
-
-        # Get the syllable duration data
-        query = "SELECT * FROM song"
+        # Get the syllable duration data if it already exists
+        # Load song database
+        query = "SELECT * FROM song WHERE id=1"
         # query = "SELECT * FROM song WHERE id BETWEEN 1 AND 16"
         get_data(query)
         df = load_data(data_file, context='ALL', syl_type='ALL')
-    else:
+    else: # Get the syllable duration data if it already exists
         df = load_data(data_file, context='ALL', syl_type='ALL')
 
 
@@ -115,7 +136,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import IPython
 from util.functions import unique
-
+from util import save
+from database.load import ProjectLoader
+fig_ext = '.png'
 
 bird_list = unique(df['BirdID'].tolist())
 task_list = unique(df['TaskName'].tolist())
@@ -164,9 +187,8 @@ for bird in bird_list:
         # print('Prcessing... {} from Bird {}'.format(task, bird))
 
         # Save results
-        save_dir = project_path / 'Analysis' / 'SyllableDuration'
-        save.save_fig(fig, save_dir, title, ext='.png')
-    # IPython.embed()
-    #     break
-    # break
-print('Done!')
+        # save_dir = project_path / 'Analysis' / 'SyllableDuration'
+
+        # Create save path
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'SyllableDuration')
+        save.save_fig(fig, save_path, title, fig_ext=fig_ext)
