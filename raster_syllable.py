@@ -2,6 +2,9 @@
 By Jaerong
 plot raster & peth per syllable
 """
+from util.functions import find_str, myround
+
+
 def create_db():
     from database.load import ProjectLoader
 
@@ -30,10 +33,10 @@ norm_method = None
 fig_ext = '.png'  # .png or .pdf
 update = False  # Set True for recreating a cache file
 save_fig = True
-update_db = True  # save results to DB
+update_db = False  # save results to DB
 time_warp = True  # spike time warping
-entropy = True  # calculate entropy & entropy variance
-entropy_mode = 'spectral'   # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
+entropy = False  # calculate entropy & entropy variance
+entropy_mode = 'spectral'  # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
 shuffled_baseline = False
 plot_hist = False
 
@@ -45,7 +48,7 @@ if update_db:
 # SQL statement
 # Create a new database (syllable)
 db = ProjectLoader().load_db()
-query = "SELECT * FROM cluster WHERE analysisOK=1"
+query = "SELECT * FROM cluster WHERE analysisOK=1 AND id=96"
 # query = "SELECT * FROM cluster WHERE analysisOK=1 AND id>=115"
 db.execute(query)
 
@@ -62,6 +65,7 @@ for row in db.cur.fetchall():
 
     # Load class object
     ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
+    audio = AudioData(path, update=update)  # audio object
 
     # Loop through note
     for note in cluster_db.songNote:
@@ -83,11 +87,12 @@ for row in db.cur.fetchall():
         duration = ni.durations[0]
 
         # Get spectrogram
-        audio = AudioData(path, update=update).extract([start, end])  # audio object
-        audio.spectrogram(freq_range=freq_range)
+        # Load audio object with info from .not.mat files
+        timestamp, data = audio.extract([start, end])
+        spect_time, spect, spect_freq = audio.spectrogram(timestamp, data)
 
         # Plot figure
-        fig = plt.figure(figsize=(7,10), dpi=500)
+        fig = plt.figure(figsize=(7, 10), dpi=500)
         fig.set_tight_layout(False)
         note_name = ci.name + '-' + note
         if time_warp:
@@ -100,8 +105,8 @@ for row in db.cur.fetchall():
 
         # Plot spectrogram
         ax_spect = plt.subplot(gs[1:3, 0:5])
-        audio.spect_time = audio.spect_time - audio.spect_time[0] - peth_parm['buffer']  # starts from zero
-        ax_spect.pcolormesh(audio.spect_time , audio.spect_freq, audio.spect,  # data
+        spect_time = spect_time - spect_time[0] - peth_parm['buffer']  # starts from zero
+        ax_spect.pcolormesh(spect_time, spect_freq, spect,  # data
                             cmap='hot_r',
                             norm=colors.SymLogNorm(linthresh=0.05,
                                                    linscale=0.03,
@@ -143,7 +148,8 @@ for row in db.cur.fetchall():
 
         # Mark syllables
         rectangle = plt.Rectangle((onset, rec_yloc), duration, 0.2,
-                                  linewidth=1, alpha=0.5, edgecolor='k', facecolor=note_color['Motif'][find_str(cluster_db.songNote, note)[0]])
+                                  linewidth=1, alpha=0.5, edgecolor='k',
+                                  facecolor=note_color['Motif'][find_str(cluster_db.songNote, note)[0]])
         ax_syl.add_patch(rectangle)
         ax_syl.text((onset + (offset - onset) / 2), text_yloc, note, size=font_size)
         ax_syl.axis('off')
@@ -185,7 +191,7 @@ for row in db.cur.fetchall():
             # Demarcate song block (undir vs dir) with a horizontal line
             if pre_context != context:
                 ax_raster.axhline(y=note_ind, color='k', ls='-', lw=0.3)
-                context_change = np.append(context_change, (note_ind))
+                context_change = np.append(context_change, note_ind)
                 if pre_context:
                     ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
                                    ((context_change[-1] - context_change[-2]) / 3) + context_change[-2],
@@ -251,7 +257,7 @@ for row in db.cur.fetchall():
             # Demarcate song block (undir vs dir) with a horizontal line
             if pre_context != context:
                 ax_raster.axhline(y=note_ind, color='k', ls='-', lw=0.3)
-                context_change = np.append(context_change, (note_ind))
+                context_change = np.append(context_change, note_ind)
                 if pre_context:
                     ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
                                    ((context_change[-1] - context_change[-2]) / 3) + context_change[-2],
@@ -309,8 +315,11 @@ for row in db.cur.fetchall():
         if shuffled_baseline:
             p_sig = pcc_shuffle_test(ni, pi, plot_hist=plot_hist)
 
+        # Calculate sparseness index
+        sparseness = pi.get_sparseness()
+
         # Print out results on the figure
-        txt_xloc = -1.5
+        txt_xloc = -2
         txt_yloc = 0.8
         txt_inc = 0.2  # y-distance between texts within the same section
 
@@ -351,57 +360,91 @@ for row in db.cur.fetchall():
         if 'U' in pi.mean_fr.keys() and 'D' in pi.mean_fr.keys():
             corr_context = round(np.corrcoef(pi.mean_fr['U'], pi.mean_fr['D'])[0, 1], 3)
         ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
+        txt_yloc -= txt_inc
+
+        # Sparseness index
+        txt_xloc = 1
+        txt_yloc = 0.8
+
+        if "U" in sparseness and ni.nb_note['U'] >= nb_note_crit:
+            ax_txt.text(txt_xloc, txt_yloc, f"Sparseness (U) = {sparseness['U']}", fontsize=font_size)
+        txt_yloc -= txt_inc
+        if "D" in sparseness and ni.nb_note['D'] >= nb_note_crit:
+            ax_txt.text(txt_xloc, txt_yloc, f"Sparseness (D) = {sparseness['D']}", fontsize=font_size)
+        txt_yloc -= txt_inc
 
         # Syllable entropy (if exists)
         if entropy:
             txt_xloc = 1
-            txt_yloc = 0.8
-            txt_inc = 0.2
 
             for context, value in entropy_mean.items():
                 ax_txt.text(txt_xloc, txt_yloc, f"Entropy ({context}) = {value}", fontsize=font_size)
                 txt_yloc -= txt_inc
 
         # Save results to database
-        if update_db:   # only use values from time-warped data
+        if update_db:  # only use values from time-warped data
             query = "INSERT OR IGNORE INTO " \
-                    "syllable(clusterID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, dph, block10days, note)" \
-                    "VALUES({}, '{}', '{}', {}, {}, {}, {}, {}, '{}')".format(cluster_db.id, cluster_db.birdID, cluster_db.taskName, cluster_db.taskSession,
-                                                                              cluster_db.taskSessionDeafening, cluster_db.taskSessionPostDeafening,
-                                                                              cluster_db.dph, cluster_db.block10days, note)
+                    "syllable_pcc (clusterID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, dph, block10days, note)" \
+                    "VALUES({}, '{}', '{}', {}, {}, {}, {}, {}, '{}')".format(cluster_db.id, cluster_db.birdID,
+                                                                              cluster_db.taskName,
+                                                                              cluster_db.taskSession,
+                                                                              cluster_db.taskSessionDeafening,
+                                                                              cluster_db.taskSessionPostDeafening,
+                                                                              cluster_db.dph, cluster_db.block10days,
+                                                                              note)
             db.cur.execute(query)
 
             if 'U' in ni.nb_note:
-                db.cur.execute(f"UPDATE syllable SET nbNoteUndir = ({ni.nb_note['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                db.cur.execute(
+                    f"UPDATE syllable_pcc SET nbNoteUndir = ({ni.nb_note['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             if 'D' in ni.nb_note:
-                db.cur.execute(f"UPDATE syllable SET nbNoteDir = ({ni.nb_note['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                db.cur.execute(
+                    f"UPDATE syllable_pcc SET nbNoteDir = ({ni.nb_note['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             if 'U' in ni.mean_fr and ni.nb_note['U'] >= nb_note_crit:
-                db.cur.execute(f"UPDATE syllable SET frUndir = ({ni.mean_fr['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                db.cur.execute(
+                    f"UPDATE syllable_pcc SET frUndir = ({ni.mean_fr['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
             if 'D' in ni.mean_fr and ni.nb_note['D'] >= nb_note_crit:
-                db.cur.execute(f"UPDATE syllable SET frDir = ({ni.mean_fr['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                db.cur.execute(
+                    f"UPDATE syllable_pcc SET frDir = ({ni.mean_fr['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             if 'U' in pi.pcc and ni.nb_note['U'] >= nb_note_crit:
-                db.cur.execute(f"UPDATE syllable SET pccUndir = ({pi.pcc['U']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                db.cur.execute(
+                    f"UPDATE syllable_pcc SET pccUndir = ({pi.pcc['U']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             if 'D' in pi.pcc and ni.nb_note['D'] >= nb_note_crit:
-                db.cur.execute(f"UPDATE syllable SET pccDir = ({pi.pcc['D']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                db.cur.execute(
+                    f"UPDATE syllable_pcc SET pccDir = ({pi.pcc['D']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             if corr_context:
-                db.cur.execute(f"UPDATE syllable SET corrContext = ({corr_context}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                db.cur.execute(
+                    f"UPDATE syllable_pcc SET corrContext = ({corr_context}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
+            # Add sparseness index
+            db.cur.execute(f"""ALTER TABLE syllable_pcc ADD COLUMN sparsenessUndir REAL""")
+            db.cur.execute(f"""ALTER TABLE syllable_pcc ADD COLUMN sparsenessDir REAL""")
+
+            if 'U' in sparseness and ni.nb_note['U'] >= nb_note_crit:
+                db.cur.execute(
+                    f"UPDATE syllable_pcc SET sparsenessUndir = ({sparseness['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
+            if 'D' in sparseness and ni.nb_note['D'] >= nb_note_crit:
+                db.cur.execute(
+                    f"UPDATE syllable_pcc SET sparsenessDir = ({sparseness['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             if shuffled_baseline:
                 if 'U' in p_sig and ni.nb_note['U'] >= nb_note_crit:
-                    db.cur.execute(f"UPDATE syllable SET pccUndirSig = ({p_sig['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                    db.cur.execute(
+                        f"UPDATE syllable_pcc SET pccUndirSig = ({p_sig['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
                 if 'D' in p_sig and ni.nb_note['D'] >= nb_note_crit:
-                    db.cur.execute(f"UPDATE syllable SET pccDirSig = ({p_sig['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                    db.cur.execute(
+                        f"UPDATE syllable_pcc SET pccDirSig = ({p_sig['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             if entropy:
                 if 'U' in entropy_mean and ni.nb_note['U'] >= nb_note_crit:
                     db.cur.execute(
                         f"UPDATE syllable SET entropyUndir = ({entropy_mean['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
-
                 if 'D' in entropy_mean and ni.nb_note['D'] >= nb_note_crit:
                     db.cur.execute(
                         f"UPDATE syllable SET entropyDir = ({entropy_mean['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
@@ -410,7 +453,6 @@ for row in db.cur.fetchall():
                     if 'U' in entropy_var and ni.nb_note['U'] >= nb_note_crit:
                         db.cur.execute(
                             f"UPDATE syllable SET entropyVarUndir = ({entropy_var['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
-
                     if 'D' in entropy_var and ni.nb_note['D'] >= nb_note_crit:
                         db.cur.execute(
                             f"UPDATE syllable SET entropyVarDir = ({entropy_var['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
@@ -419,7 +461,7 @@ for row in db.cur.fetchall():
         # Save results
         if save_fig:
             save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'RasterSyllable')
-            save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext)
+            save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, view_folder=True)
         else:
             plt.show()
 

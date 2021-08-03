@@ -1027,16 +1027,12 @@ class PethInfo():
             peth_dict[context] = self.peth[ind, :]
         self.peth = peth_dict
 
-    def get_fr(self, smoothing=True, norm_method=None, norm_factor=None):
+    def get_fr(self, smoothing=True):
         """
         Get trials-by-trial firing rates by default
         Args:
             smoothing: bool
                 performs gaussian smoothing on the firing rates
-            norm_method: str ['sum', 'factor']
-                normalization by the sum (default)
-            norm_factor:  float
-                (e.g., baseline firing rates), only when norm_method is set to True
         """
         # if duration:
         #     ind = (((0 - peth_parm['buffer']) <= time_bin) & (time_bin <= duration))
@@ -1067,10 +1063,6 @@ class PethInfo():
         mean_fr_dict = {}
         for context, fr in self.fr.items():
             fr = np.mean(fr, axis=0)
-            if norm_method == 'sum':  # normalize by the total sum
-                fr = fr / sum(fr)
-            elif norm_method == 'factor':  # normalize by a normalization factor (e.g., baseline firing rates)
-                fr = fr / norm_factor
             mean_fr_dict[context] = fr
         mean_fr_dict['gauss_std'] = gauss_std
         self.mean_fr = mean_fr_dict
@@ -1086,6 +1078,23 @@ class PethInfo():
                     pcc = get_pcc(v)
                     pcc_dict[k] = pcc
         self.pcc = pcc_dict
+
+    def get_sparseness(self):
+        "Get sparseness index"
+        from analysis.parameters import nb_note_crit
+        import numpy as np
+
+        # Get firing rates if not exists
+        if not self.mean_fr:
+            self.get_fr()
+
+        sparseness = {}
+        for context, fr in self.mean_fr.items():  # loop through different conditions in peth dict
+            if context in ['U', 'D']:
+                # Convert to spike density (division by sum)
+                norm_fr = fr / np.sum(fr)
+                sparseness[context] = round(1 + (np.nansum(norm_fr * np.log10(norm_fr)) / np.log10(len(norm_fr))), 3)
+        return sparseness
 
     def get_spk_count(self):
 
@@ -1479,8 +1488,8 @@ class AudioData:
                 ff_list.append(temp_ff)
 
             ff = [ff for ff in ff_list if ff_low < ff < ff_high]
-            if not bool(ff):  # skip the note if the ff is out of the expected range
-                continue
+            if not bool(ff):  # return nan if ff is outside the range
+                ff = None
             else:
                 ff = ff[0] / ff_harmonic
         return ff
