@@ -51,12 +51,12 @@ def load_audio(dir, format='wav'):
     return audio_info
 
 
-def get_isi(spk_ts: list):
+def get_isi(spk_ts_list: list):
     """
     Get inter-analysis interval of spikes
     Parameters
     ----------
-    spk_ts : list
+    spk_ts_list : list
 
     Returns
     -------
@@ -66,14 +66,14 @@ def get_isi(spk_ts: list):
     import numpy as np
 
     isi = np.array([], dtype=np.float64)
-    for spk in spk_ts:
+    for spk in spk_ts_list:
         isi = np.append(isi, np.diff(spk))
 
     isi = ISI(isi)  # return the class object
     return isi
 
 
-def get_peth(evt_ts: list, spk_ts: list, *duration: float):
+def get_peth(evt_ts_list: list, spk_ts_list: list, *duration: float):
     """Get peri-event histogram & firing rates
 
     for song peth event_ts indicates syllable onset
@@ -82,9 +82,9 @@ def get_peth(evt_ts: list, spk_ts: list, *duration: float):
     import math
     import numpy as np
 
-    peth = np.zeros((len(evt_ts), peth_parm['bin_size'] * peth_parm['nb_bins']))  # nb of trials x nb of time bins
+    peth = np.zeros((len(evt_ts_list), peth_parm['bin_size'] * peth_parm['nb_bins']))  # nb of trials x nb of time bins
 
-    for trial_ind, (evt_ts, spk_ts) in enumerate(zip(evt_ts, spk_ts)):
+    for trial_ind, (evt_ts, spk_ts) in enumerate(zip(evt_ts_list, spk_ts_list)):
 
         if not isinstance(evt_ts, np.float64):
             evt_ts = np.asarray(list(map(float, evt_ts))) - peth_parm['buffer']
@@ -615,7 +615,7 @@ class NoteInfo():
         Two versions : spectro-temporal entropy & spectral entropy
         """
         from analysis.parameters import nb_note_crit
-        from analysis.functions import find_str, get_spectral_entropy
+        from analysis.functions import find_str
         import numpy as np
 
         entropy_mean = {}
@@ -1064,7 +1064,8 @@ class PethInfo():
         for context, fr in self.fr.items():
             fr = np.mean(fr, axis=0)
             mean_fr_dict[context] = fr
-        mean_fr_dict['gauss_std'] = gauss_std
+        if smoothing:
+            mean_fr_dict['gauss_std'] = gauss_std
         self.mean_fr = mean_fr_dict
 
     def get_pcc(self):
@@ -1079,14 +1080,27 @@ class PethInfo():
                     pcc_dict[k] = pcc
         self.pcc = pcc_dict
 
-    def get_sparseness(self):
-        "Get sparseness index"
-        from analysis.parameters import nb_note_crit
-        import numpy as np
 
-        # Get firing rates if not exists
+    def get_fr_cv(self):
+        """Get CV of firing rates"""
         if not self.mean_fr:
             self.get_fr()
+
+        fr_cv = {}
+        for context, fr in self.mean_fr.items():  # loop through different conditions in peth dict
+            if context in ['U', 'D']:
+
+                fr_cv[context] = round(fr.std(axis=0) / fr.mean(axis=0), 3)
+        return fr_cv
+
+
+    def get_sparseness(self, bin_size):
+        """Get sparseness index"""
+        import numpy as np
+
+        # Get firing rates (no convolution)
+        if not self.mean_fr:
+            self.get_fr(smoothing=False)
 
         sparseness = {}
         for context, fr in self.mean_fr.items():  # loop through different conditions in peth dict
@@ -1120,8 +1134,7 @@ class PethInfo():
                 spk_arr = spk_arr[:, :ind.shape[0]]
 
                 spk_count = spk_arr.sum(axis=0)
-                fano_factor = spk_arr.var(axis=0) / spk_arr.mean(
-                    axis=0)  # per time window (across renditions) (renditions x time window)
+                fano_factor = spk_arr.var(axis=0) / spk_arr.mean(axis=0)  # per time window (across renditions) (renditions x time window)
                 spk_count_cv = spk_count.std(axis=0) / spk_count.mean(axis=0)  # cv across time (single value)
 
                 # store values in a dictionary
