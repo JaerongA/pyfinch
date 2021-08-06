@@ -73,7 +73,7 @@ def get_isi(spk_ts_list: list):
     return isi
 
 
-def get_peth(evt_ts_list: list, spk_ts_list: list, *duration: float):
+def get_peth(evt_ts_list: list, spk_ts_list: list, duration=None):
     """Get peri-event histogram & firing rates
 
     for song peth event_ts indicates syllable onset
@@ -105,7 +105,7 @@ def get_peth(evt_ts_list: list, spk_ts_list: list, *duration: float):
         peth = peth[:, ind]
         time_bin = time_bin[ind]
 
-    return peth, time_bin
+    return peth, time_bin, peth_parm
 
 
 def get_pcc(fr_array):
@@ -592,7 +592,7 @@ class ClusterInfo:
         open_folder(self.path)
 
 
-class NoteInfo():
+class NoteInfo:
     """
     Contains information about a single note syllable and its associated spikes
     """
@@ -664,21 +664,22 @@ class NoteInfo():
             note_spk_ts_warp_list.append(spk_ts_new)
         return note_spk_ts_warp_list
 
-    def get_peth(self, time_warp=True, shuffle=False):
+    def get_peth(self, time_warp=True, shuffle=False, duration=None):
         """Get peri-event time histograms & rasters during song motif"""
         peth_dict = {}
 
         if shuffle:
-            peth, time_bin = get_peth(self.onsets, self.spk_ts_jittered)
+            peth, time_bin, peth_parm = get_peth(self.onsets, self.spk_ts_jittered, duration=duration)
         else:
             if time_warp:  # peth calculated from time-warped spikes by default
                 # peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
-                peth, time_bin = get_peth(self.onsets, self.spk_ts_warp)
+                peth, time_bin, peth_parm = get_peth(self.onsets, self.spk_ts_warp, duration=duration)
             else:
-                peth, time_bin = get_peth(self.onsets, self.spk_ts)
+                peth, time_bin, peth_parm = get_peth(self.onsets, self.spk_ts, duration=duration)
 
         peth_dict['peth'] = peth
         peth_dict['time_bin'] = time_bin
+        peth_dict['parameters'] = peth_parm
         peth_dict['contexts'] = self.contexts
         peth_dict['median_duration'] = self.median_dur
         return PethInfo(peth_dict)  # return peth class object for further analysis
@@ -736,7 +737,7 @@ class NoteInfo():
                 note_spk[context1] = sum(
                     [len(spk) for context2, spk in zip(self.contexts, self.spk_ts) if context2 == context1])
                 note_fr[context1] = round(note_spk[context1] / (
-                            (self.durations[find_str(self.contexts, context1)] + pre_motor_win_size).sum() / 1E3), 3)
+                        (self.durations[find_str(self.contexts, context1)] + pre_motor_win_size).sum() / 1E3), 3)
             else:
                 note_fr[context1] = np.nan
         return note_fr
@@ -985,16 +986,17 @@ class MotifInfo(ClusterInfo):
         peth_dict = {}
 
         if shuffle:  # Get peth with shuffled (jittered) spikes
-            peth, time_bin = get_peth(self.onsets, self.spk_ts_jittered)
+            peth, time_bin, peth_parm = get_peth(self.onsets, self.spk_ts_jittered)
         else:
             if time_warp:  # peth calculated from time-warped spikes by default
                 # peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
-                peth, time_bin = get_peth(self.onsets, self.spk_ts_warp)
+                peth, time_bin, peth_parm = get_peth(self.onsets, self.spk_ts_warp)
             else:
-                peth, time_bin = get_peth(self.onsets, self.spk_ts)
+                peth, time_bin, peth_parm = get_peth(self.onsets, self.spk_ts)
 
         peth_dict['peth'] = peth
         peth_dict['time_bin'] = time_bin
+        peth_dict['parameters'] = peth_parm
         peth_dict['contexts'] = self.contexts
         peth_dict['median_duration'] = self.median_durations.sum()
         return PethInfo(peth_dict)  # return peth class object for further analysis
@@ -1080,7 +1082,6 @@ class PethInfo():
                     pcc_dict[k] = pcc
         self.pcc = pcc_dict
 
-
     def get_fr_cv(self):
         """Get CV of firing rates"""
         if not self.mean_fr:
@@ -1089,25 +1090,60 @@ class PethInfo():
         fr_cv = {}
         for context, fr in self.mean_fr.items():  # loop through different conditions in peth dict
             if context in ['U', 'D']:
-
                 fr_cv[context] = round(fr.std(axis=0) / fr.mean(axis=0), 3)
         return fr_cv
 
+    def get_sparseness(self, bin_size=None):
+        """
+        Get sparseness index
+        Parameters
+        ----------
+        bin_size : int
+            By default, it uses the same time bin size used in peth calculation
 
-    def get_sparseness(self, bin_size):
-        """Get sparseness index"""
+        Returns
+        -------
+        sparseness : dict
+        """
+
+        import math
         import numpy as np
 
-        # Get firing rates (no convolution)
-        if not self.mean_fr:
-            self.get_fr(smoothing=False)
+        mean_fr = dict()
+        sparseness = dict()
 
-        sparseness = {}
-        for context, fr in self.mean_fr.items():  # loop through different conditions in peth dict
-            if context in ['U', 'D']:
-                # Convert to spike density (division by sum)
-                norm_fr = fr / np.sum(fr)
-                sparseness[context] = round(1 + (np.nansum(norm_fr * np.log10(norm_fr)) / np.log10(len(norm_fr))), 3)
+        if bin_size != self.parameters['bin_size']:
+            for context, peth in self.peth.items():
+
+                if context == 'All': continue
+                new_peth = np.empty([peth.shape[0], 0])
+                nb_bins = math.ceil(peth.shape[1] / bin_size)
+                bin_ind = 0
+                start_ind = 0
+                end_ind = 0 + bin_size
+
+                while bin_ind < nb_bins:
+                    if end_ind > peth.shape[1]:
+                        end_ind = peth.shape[1]
+                    # print(start_ind, end_ind)
+                    peth_bin = peth[:, start_ind : end_ind].sum(axis=1).reshape(peth.shape[0], 1)
+                    new_peth = np.append(new_peth, peth_bin, axis=1)
+                    start_ind += bin_size
+                    end_ind += bin_size
+                    bin_ind += 1
+
+                fr = new_peth / (bin_size / 1E3)  # in Hz
+                mean_fr[context] = np.mean(fr, axis=0)
+
+        else:
+            mean_fr = self.mean_fr
+
+        # Calculate sparseness
+        for context, fr in mean_fr.items():
+            if context not in ['U','D']: continue
+            norm_fr = fr / np.sum(fr)
+            sparseness[context] = round(1 + (np.nansum(norm_fr * np.log10(norm_fr)) / np.log10(len(norm_fr))), 3)
+
         return sparseness
 
     def get_spk_count(self):
@@ -1134,7 +1170,8 @@ class PethInfo():
                 spk_arr = spk_arr[:, :ind.shape[0]]
 
                 spk_count = spk_arr.sum(axis=0)
-                fano_factor = spk_arr.var(axis=0) / spk_arr.mean(axis=0)  # per time window (across renditions) (renditions x time window)
+                fano_factor = spk_arr.var(axis=0) / spk_arr.mean(
+                    axis=0)  # per time window (across renditions) (renditions x time window)
                 spk_count_cv = spk_count.std(axis=0) / spk_count.mean(axis=0)  # cv across time (single value)
 
                 # store values in a dictionary

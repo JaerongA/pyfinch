@@ -27,6 +27,8 @@
       <w>ndarray</w>
       <w>nerual</w>
       <w>nfft</w>
+      <w>nodex</w>
+      <w>nodey</w>
       <w>nonbursting</w>
       <w>notestat</w>
       <w>notmat</w>
@@ -54,6 +56,7 @@
       <w>undir</w>
       <w>unwarped</w>
       <w>xlabel</w>
+      <w>xlim</w>
       <w>xloc</w>
       <w>xlsx</w>
       <w>xticks</w>
