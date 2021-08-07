@@ -20,6 +20,9 @@ from analysis.spike import *
 from database.load import DBInfo, ProjectLoader
 from util import save
 from util.draw import *
+import warnings
+
+warnings.filterwarnings('ignore')
 
 # parameters
 rec_yloc = 0.05
@@ -33,7 +36,7 @@ norm_method = None
 fig_ext = '.png'  # .png or .pdf
 update = False  # Set True for recreating a cache file
 save_fig = True
-update_db = False  # save results to DB
+update_db = True  # save results to DB
 time_warp = True  # spike time warping
 entropy = False  # calculate entropy & entropy variance
 entropy_mode = 'spectral'  # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
@@ -48,7 +51,7 @@ if update_db:
 # SQL statement
 # Create a new database (syllable)
 db = ProjectLoader().load_db()
-query = "SELECT * FROM cluster WHERE analysisOK=1 AND id=96"
+query = "SELECT * FROM cluster WHERE analysisOK=1"
 # query = "SELECT * FROM cluster WHERE analysisOK=1 AND id>=115"
 db.execute(query)
 
@@ -69,6 +72,9 @@ for row in db.cur.fetchall():
 
     # Loop through note
     for note in cluster_db.songNote:
+
+        # if note is not 'a':
+        #     continue
 
         # Load note object
         ni = ci.get_note_info(note)
@@ -275,12 +281,12 @@ for row in db.cur.fetchall():
         ax_raster.set_yticklabels([0, sum(ni.nb_note.values())])
         ax_raster.set_ylim([0, sum(ni.nb_note.values())])
         ax_raster.set_ylabel('Trial #', fontsize=font_size)
-        ax_raster.set_title('sorted raster', size=font_size)
+        ax_raster.set_title('Sorted raster', size=font_size)
         plt.setp(ax_raster.get_xticklabels(), visible=False)
         remove_right_top(ax_raster)
 
         # Draw peri-event histogram (PETH)
-        pi = ni.get_peth()
+        pi = ni.get_peth(duration=note_duration)  # PETH object (PethInfo)
         pi.get_fr()  # get firing rates
 
         # Plot mean firing rates
@@ -316,10 +322,16 @@ for row in db.cur.fetchall():
             p_sig = pcc_shuffle_test(ni, pi, plot_hist=plot_hist)
 
         # Calculate sparseness index
-        sparseness = pi.get_sparseness()
+        sparseness = pi.get_sparseness(bin_size=3)
+
+        # CV of firing rates (over time)
+        fr_cv = pi.get_fr_cv()
+
+        # Get spike count fano factor
+        pi.get_spk_count()  # pi.spk_count, pi.fano_factor, pi.spk_count_cv added
 
         # Print out results on the figure
-        txt_xloc = -2
+        txt_xloc = -1.8
         txt_yloc = 0.8
         txt_inc = 0.2  # y-distance between texts within the same section
 
@@ -333,8 +345,10 @@ for row in db.cur.fetchall():
 
         # Firing rates (includes the pre-motor window)
         for i, (k, v) in enumerate(ni.mean_fr.items()):
-            ax_txt.text(txt_xloc, txt_yloc, f"FR ({k}) = {v}", fontsize=font_size)
-            txt_yloc -= txt_inc
+            if v is not np.nan:
+                ax_txt.text(txt_xloc, txt_yloc, f"FR ({k}) = {v}", fontsize=font_size)
+                txt_yloc -= txt_inc
+        txt_yloc -= txt_inc
 
         # PCC
         if "U" in pi.pcc and ni.nb_note['U'] >= nb_note_crit:
@@ -362,21 +376,34 @@ for row in db.cur.fetchall():
         ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
         txt_yloc -= txt_inc
 
-        # Sparseness index
         txt_xloc = 1
         txt_yloc = 0.8
 
-        if "U" in sparseness and ni.nb_note['U'] >= nb_note_crit:
-            ax_txt.text(txt_xloc, txt_yloc, f"Sparseness (U) = {sparseness['U']}", fontsize=font_size)
+        # Sparseness index
+        for context, value in sorted(sparseness.items(), reverse=True):
+            if ni.nb_note[context] >= nb_note_crit:
+                ax_txt.text(txt_xloc, txt_yloc, f"Sparseness ({context}) = {value}", fontsize=font_size)
+            txt_yloc -= txt_inc
         txt_yloc -= txt_inc
-        if "D" in sparseness and ni.nb_note['D'] >= nb_note_crit:
-            ax_txt.text(txt_xloc, txt_yloc, f"Sparseness (D) = {sparseness['D']}", fontsize=font_size)
+
+        # CV of firing rates (over time)
+        for context, cv in sorted(fr_cv.items(), reverse=True):
+            if ni.nb_note[context] >= nb_note_crit:
+                ax_txt.text(txt_xloc, txt_yloc, f"CV of FR ({context}) = {cv}", fontsize=font_size)
+            txt_yloc -= txt_inc
+        txt_yloc -= txt_inc
+
+        # Fano factor (spike counts)
+        for context, fano_factor in sorted(pi.fano_factor.items(), reverse=True):
+            if ni.nb_note[context] >= nb_note_crit:
+                fano_factor = round(np.nanmean(pi.fano_factor[context]), 3)
+                ax_txt.text(txt_xloc, txt_yloc, f"Fano Factor ({context}) = {fano_factor}", fontsize=font_size)
+            txt_yloc -= txt_inc
         txt_yloc -= txt_inc
 
         # Syllable entropy (if exists)
         if entropy:
             txt_xloc = 1
-
             for context, value in entropy_mean.items():
                 ax_txt.text(txt_xloc, txt_yloc, f"Entropy ({context}) = {value}", fontsize=font_size)
                 txt_yloc -= txt_inc
@@ -422,16 +449,38 @@ for row in db.cur.fetchall():
                     f"UPDATE syllable_pcc SET corrContext = ({corr_context}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             # Add sparseness index
-            db.cur.execute(f"""ALTER TABLE syllable_pcc ADD COLUMN sparsenessUndir REAL""")
-            db.cur.execute(f"""ALTER TABLE syllable_pcc ADD COLUMN sparsenessDir REAL""")
+            db.create_col('syllable_pcc', 'sparsenessUndir', 'REAL')
+            db.create_col('syllable_pcc', 'sparsenessDir', 'REAL')
+            db.conn.commit()
 
-            if 'U' in sparseness and ni.nb_note['U'] >= nb_note_crit:
-                db.cur.execute(
-                    f"UPDATE syllable_pcc SET sparsenessUndir = ({sparseness['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+            for context in sparseness.keys():
+                if ni.nb_note[context] >= nb_note_crit:
+                    col_name = 'sparsenessUndir' if context == 'U' else 'sparsenessDir'
+                    db.cur.execute(
+                        f"UPDATE syllable_pcc SET {col_name} = ({sparseness[context]}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
-            if 'D' in sparseness and ni.nb_note['D'] >= nb_note_crit:
-                db.cur.execute(
-                    f"UPDATE syllable_pcc SET sparsenessDir = ({sparseness['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+            # Add CV of firing rates index
+            db.create_col('syllable_pcc', 'cvFRUndir', 'REAL')
+            db.create_col('syllable_pcc', 'cvFRDir', 'REAL')
+            db.conn.commit()
+
+            for context in fr_cv.keys():
+                if ni.nb_note[context] >= nb_note_crit:
+                    col_name = 'cvFRUndir' if context == 'U' else 'cvFRDir'
+                    db.cur.execute(
+                        f"UPDATE syllable_pcc SET {col_name} = ({fr_cv[context]}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
+            # Add Fano Factor of firing rates index
+            db.create_col('syllable_pcc', 'fanoFactorUndir', 'REAL')
+            db.create_col('syllable_pcc', 'fanoFactorDir', 'REAL')
+            db.conn.commit()
+
+            for context, fano_factor in pi.fano_factor.items():
+                if ni.nb_note[context] >= nb_note_crit:
+                    col_name = 'fanoFactorUndir' if context == 'U' else 'fanoFactorDir'
+                    fano_factor = round(np.nanmean(fano_factor), 3)
+                    db.cur.execute(
+                        f"UPDATE syllable_pcc SET {col_name} = ({fano_factor}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             if shuffled_baseline:
                 if 'U' in p_sig and ni.nb_note['U'] >= nb_note_crit:
@@ -467,5 +516,5 @@ for row in db.cur.fetchall():
 
 # Convert db to csv
 if update_db:
-    db.to_csv('syllable')
+    db.to_csv('syllable_pcc')
 print('Done!')
