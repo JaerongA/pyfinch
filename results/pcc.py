@@ -1,13 +1,11 @@
 """Compare pairwise cross-correlation (pcc) between different conditions"""
 
+from database.load import ProjectLoader
 import matplotlib.pyplot as plt
 from results.plot import plot_bar_comparison
 import seaborn as sns
 from util import save
 import numpy as np
-
-from database.load import ProjectLoader
-
 
 # Parameters
 nb_row = 3
@@ -15,7 +13,6 @@ nb_col = 4
 save_fig = False
 fig_ext = '.png'
 fr_criteria = 10
-
 
 
 # def plot_pcc_regression(x, y,
@@ -123,7 +120,7 @@ def plot_regression(x, y, **kwargs):
 
     # Regression analysis
     if 'regression_fit' in kwargs:
-        for fit in  kwargs['regression_fit']:
+        for fit in kwargs['regression_fit']:
 
             x = x.reshape(-1, 1)
             y = y.reshape(-1, 1)
@@ -151,18 +148,6 @@ def plot_regression(x, y, **kwargs):
                 ax.plot(x, y_pred, color='cyan')
                 txt_yloc -= txt_inc
                 fig.text(txt_xloc, txt_yloc, f"aic (quad) = {round(aic_quad, 3)}", fontsize=10)
-
-
-            # import math
-            # resid = y - model
-            # k = 3
-            # sse = sum(resid**2)
-            # aic = (2*k) - 2*np.log(sse)
-            #
-            # resid = y - poly_model
-            # k = 4
-            # sse = sum(resid**2)
-            # aic = 2*k - 2*np.log(sse)
 
     if 'x_lim' in kwargs:
         ax.set_xlim(kwargs['x_lim'])
@@ -217,13 +202,12 @@ y_label = 'PCC'
 # x_lim = [0, 35]
 y_lim = [-0.05, 0.25]
 
-
 plot_regression(x, y,
-                    title=title,
-                    x_label=x_label, y_label=y_label,
-                    # x_lim=x_lim,
-                    y_lim=y_lim,
-                    fr_criteria=fr_criteria,
-                    save_fig=save_fig,
-                    regression_fit={'linear', 'quadratic'}
-                    )
+                title=title,
+                x_label=x_label, y_label=y_label,
+                # x_lim=x_lim,
+                y_lim=y_lim,
+                fr_criteria=fr_criteria,
+                save_fig=save_fig,
+                regression_fit={'linear', 'quadratic'}
+                )
