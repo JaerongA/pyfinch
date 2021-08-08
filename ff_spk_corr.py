@@ -18,9 +18,9 @@ import pandas as pd
 # Parameter
 update = False  # update or make a new cache file
 save_spectrogram = True
-save_result_fig = False  # correlation figure
-view_folder = True  # view the folder where figures are stored
-update_db = False  # save results to DB
+save_result_fig = True  # correlation figure
+view_folder = False  # view the folder where figures are stored
+update_db = True  # save results to DB
 save_csv = True
 fig_ext = '.png'  # .png or .pdf
 txt_offset = 0.2
@@ -39,7 +39,7 @@ save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF_SpkCorr', add_d
 # query = "SELECT * FROM cluster WHERE birdID='b70r38'"
 # query = "SELECT * FROM cluster WHERE id=9"
 # query = "SELECT * FROM cluster WHERE id>116"
-query = "SELECT * FROM cluster WHERE analysisOK AND id=91"
+query = "SELECT * FROM cluster WHERE analysisOK"
 db.execute(query)
 
 # Loop through db
@@ -106,8 +106,9 @@ for row in db.cur.fetchall():
             zipped_lists = zip(ni.onsets, ni.offsets, ni.contexts, ni.spk_ts)
             for note_ind, (onset, offset, context, spk_ts) in enumerate(zipped_lists):
 
-                if note_ind != 6:
-                    continue
+                # Process only one particular note
+                # if note_ind != 6:
+                #     continue
 
                 # Loop through the notes
                 for i in range(0, [note[0] for note in ff_info.keys()].count(note)):  # if more than one FF can be detected in a single note
@@ -117,8 +118,8 @@ for row in db.cur.fetchall():
                     else:
                         ff_note = note
 
-                    if not ff_note == 'c':
-                        continue
+                    # if not ff_note == 'c':
+                    #     continue
 
                     duration = offset - onset
                     # Get spectrogram
@@ -143,6 +144,9 @@ for row in db.cur.fetchall():
                     ff = audio.get_ff(data,
                                       ff_info[ff_note]['low'], ff_info[ff_note]['high'],
                                       ff_harmonic=ff_info[ff_note]['harmonic'])
+
+                    if not ff: # skip the note if the ff is out of the expected range
+                        continue
 
                     if save_spectrogram:
                         # Plot figure
@@ -243,7 +247,7 @@ for row in db.cur.fetchall():
                             corr, corr_pval = pearsonr(temp_df['nb_spk'], shuffle_df['ff'].sample(frac=1))
                             pval_sig = True if corr_pval < alpha else False
                             sig_array = np.append(sig_array, pval_sig)
-                        return sig_array.mean() * 100
+                        return sig_array.mean()
 
                     shuffled_sig_prop = get_shuffled_sig_prop()
 
