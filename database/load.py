@@ -65,11 +65,12 @@ class Database:
     def update(self, table, col_name, condition_col=None, condition_value=None, value=None):
 
         if condition_col is not None:
-            self.cur.execute("UPDATE {} SET {} = ? WHERE {} = ?".format(table, col_name, condition_col), (value, condition_value))
+            self.cur.execute("UPDATE {} SET {} = ? WHERE {} = ?".format(table, col_name, condition_col),
+                             (value, condition_value))
         else:
-            self.cur.execute("UPDATE {} SET {} = ? WHERE {} = ?".format(table, col_name, condition_col), (value, condition_value))
+            self.cur.execute("UPDATE {} SET {} = ? WHERE {} = ?".format(table, col_name, condition_col),
+                             (value, condition_value))
         self.conn.commit()
-
 
     def to_csv(self, table, add_date=True, open_folder=True):
         """
@@ -101,6 +102,7 @@ class Database:
         import pandas as pd
         df = pd.read_sql_query(query, self.conn)
         return df
+
 
 class DBInfo:
     def __init__(self, db):
@@ -144,7 +146,7 @@ class DBInfo:
 
         # Get cluster path
         project_path = ProjectLoader().path
-        cluster_path = project_path / self.birdID / self.taskName /\
+        cluster_path = project_path / self.birdID / self.taskName / \
                        cluster_taskSession / self.site[-2:] / 'Songs'
         cluster_path = Path(cluster_path)
         return cluster_name, cluster_path
@@ -176,3 +178,19 @@ class DBInfo:
         song_path = project_path / self.birdID / self.taskName / task_session
         song_path = Path(song_path)
         return song_name, song_path
+
+def create_db(sql_file_name: str):
+    """
+    Create a new sql table from .slq file in /database
+    Parameters
+    ----------
+    sql_file_name : str
+        name of the sql file to create
+
+    """
+    # from database.load import ProjectLoader
+    # Load database
+    db = ProjectLoader().load_db()
+    # Make database
+    with open(f"database/{sql_file_name}", 'r') as sql_file:
+        db.conn.executescript(sql_file.read())
