@@ -5,18 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="incorporate s">
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/jahn02.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/jahn02.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/correlogram.py" beforeDir="false" afterPath="$PROJECT_DIR$/correlogram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/load.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/load.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/entropy_spk_corr.py" beforeDir="false" afterPath="$PROJECT_DIR$/entropy_spk_corr.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/entropy_spk_corr_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/entropy_spk_corr_v2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ff_spk_corr.py" beforeDir="false" afterPath="$PROJECT_DIR$/ff_spk_corr.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/motif_syllable_duration_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_duration.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/practice.py" beforeDir="false" afterPath="$PROJECT_DIR$/practice.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/raster_syllable.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster_syllable.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/raster.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/results/entropy.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/entropy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/pcc.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/pcc.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/song_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/song_analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/syllable_sequence.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_sequence.py" afterDir="false" />
     </list>
@@ -137,7 +134,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\utilities" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.raster_syllable">
+  <component name="RunManager" selected="Python.ff_spk_corr">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -186,9 +183,6 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -230,6 +224,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -299,10 +296,10 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.ff_spk_corr" />
         <item itemvalue="Python.raster_syllable" />
         <item itemvalue="Python.spike" />
         <item itemvalue="Python.syllable_duration_analysis_v2" />
-        <item itemvalue="Python.ff_spk_corr" />
         <item itemvalue="Python.pcc" />
       </list>
     </recent_temporary>
@@ -765,35 +762,9 @@
       <workItem from="1628186281979" duration="10485000" />
       <workItem from="1628199736356" duration="2588000" />
       <workItem from="1628296625567" duration="502000" />
-      <workItem from="1628297141994" duration="6783000" />
-    </task>
-    <task id="LOCAL-00413" summary="analyze syllable entropy">
-      <created>1625199420231</created>
-      <option name="number" value="00413" />
-      <option name="presentableId" value="LOCAL-00413" />
-      <option name="project" value="LOCAL" />
-      <updated>1625199420231</updated>
-    </task>
-    <task id="LOCAL-00414" summary="change result db name">
-      <created>1625199452464</created>
-      <option name="number" value="00414" />
-      <option name="presentableId" value="LOCAL-00414" />
-      <option name="project" value="LOCAL" />
-      <updated>1625199452464</updated>
-    </task>
-    <task id="LOCAL-00415" summary="db update">
-      <created>1625199479890</created>
-      <option name="number" value="00415" />
-      <option name="presentableId" value="LOCAL-00415" />
-      <option name="project" value="LOCAL" />
-      <updated>1625199479890</updated>
-    </task>
-    <task id="LOCAL-00416" summary="added shuffling analysis">
-      <created>1625199509707</created>
-      <option name="number" value="00416" />
-      <option name="presentableId" value="LOCAL-00416" />
-      <option name="project" value="LOCAL" />
-      <updated>1625199509707</updated>
+      <workItem from="1628297141994" duration="9061000" />
+      <workItem from="1628477111235" duration="605000" />
+      <workItem from="1628559002472" duration="7203000" />
     </task>
     <task id="LOCAL-00417" summary="revised spectral_entropy function">
       <created>1625350822184</created>
@@ -1110,7 +1081,35 @@
       <option name="project" value="LOCAL" />
       <updated>1628221772105</updated>
     </task>
-    <option name="localTasksCounter" value="462" />
+    <task id="LOCAL-00462" summary="added sparseness, fano factor, cv of firing rates">
+      <created>1628306035040</created>
+      <option name="number" value="00462" />
+      <option name="presentableId" value="LOCAL-00462" />
+      <option name="project" value="LOCAL" />
+      <updated>1628306035041</updated>
+    </task>
+    <task id="LOCAL-00463" summary="pairwise cc - regression fit (quadratic)">
+      <created>1628395099439</created>
+      <option name="number" value="00463" />
+      <option name="presentableId" value="LOCAL-00463" />
+      <option name="project" value="LOCAL" />
+      <updated>1628395099439</updated>
+    </task>
+    <task id="LOCAL-00464" summary="update">
+      <created>1628395128043</created>
+      <option name="number" value="00464" />
+      <option name="presentableId" value="LOCAL-00464" />
+      <option name="project" value="LOCAL" />
+      <updated>1628395128043</updated>
+    </task>
+    <task id="LOCAL-00465" summary="added create db function">
+      <created>1628565648896</created>
+      <option name="number" value="00465" />
+      <option name="presentableId" value="LOCAL-00465" />
+      <option name="project" value="LOCAL" />
+      <updated>1628565648897</updated>
+    </task>
+    <option name="localTasksCounter" value="466" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1144,9 +1143,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="significance proportion" />
-    <MESSAGE value="db update" />
-    <MESSAGE value="get shuffled proportion" />
     <MESSAGE value="revised baseline FR calculation (s -&gt; ms)" />
     <MESSAGE value="added significance map" />
     <MESSAGE value="bursting analysis" />
@@ -1160,7 +1156,6 @@
     <MESSAGE value="sequence analysis update" />
     <MESSAGE value="skip if no song bout exists" />
     <MESSAGE value="plot results over days" />
-    <MESSAGE value="update" />
     <MESSAGE value="using a new time window" />
     <MESSAGE value="linear vs. quadratic regression" />
     <MESSAGE value="linear vs. quadratic regression (aic calculation added)" />
@@ -1169,34 +1164,26 @@
     <MESSAGE value="added sparseness index" />
     <MESSAGE value="sparseness" />
     <MESSAGE value="update sparseness calculation" />
-    <option name="LAST_COMMIT_MESSAGE" value="update sparseness calculation" />
+    <MESSAGE value="added sparseness, fano factor, cv of firing rates" />
+    <MESSAGE value="pairwise cc - regression fit (quadratic)" />
+    <MESSAGE value="update" />
+    <MESSAGE value="added create db function" />
+    <option name="LAST_COMMIT_MESSAGE" value="added create db function" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="773" y="276" key="#Inspections" timestamp="1619898247653">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="773" y="276" key="#Inspections/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1619898247653" />
-    <state x="-3260" y="583" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1619746129339">
-      <screen x="-3840" y="262" width="2560" height="1400" />
-    </state>
-    <state x="-3260" y="583" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1619746129339" />
     <state x="-2845" y="748" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1625374965873">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2845" y="748" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1625374965873" />
-    <state x="-2983" y="676" key="#com.intellij.ide.fileTemplates.ui.ConfigureTemplatesDialog" timestamp="1619900059337">
-      <screen x="-3840" y="262" width="2560" height="1400" />
-    </state>
-    <state x="-2983" y="676" key="#com.intellij.ide.fileTemplates.ui.ConfigureTemplatesDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1619900059337" />
     <state x="-2899" y="615" width="1159" height="758" key="#xdebugger.evaluate" timestamp="1620239907633">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-2899" y="615" width="1159" height="758" key="#xdebugger.evaluate/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1620239907633" />
-    <state x="485" y="124" width="2099" height="1163" key="CommitChangelistDialog2" timestamp="1628221770215">
+    <state x="339" y="108" width="2099" height="1163" key="CommitChangelistDialog2" timestamp="1628565646975">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="339" y="108" width="2099" height="1163" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1628135737521" />
-    <state x="485" y="124" width="1925" height="1145" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1628221770215" />
+    <state x="339" y="108" width="2099" height="1163" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1628565646975" />
+    <state x="485" y="124" width="1925" height="1145" key="CommitChangelistDialog2/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1628395126589" />
     <state x="-2791" y="605" key="ExecutionTargetDialog" timestamp="1622832856033">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -1250,10 +1237,11 @@
     </state>
     <state width="2505" height="602" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1628187241626" />
     <state width="2505" height="481" key="GridCell.Tab.1.right/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1628297129917" />
-    <state x="-2756" y="607" key="RollbackChangesDialog" timestamp="1623732520001">
-      <screen x="-3840" y="262" width="2560" height="1400" />
+    <state x="1084" y="345" key="RollbackChangesDialog" timestamp="1628305993787">
+      <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="-2756" y="607" key="RollbackChangesDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1623732520001" />
+    <state x="1084" y="345" key="RollbackChangesDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1628305993787" />
     <state x="-3017" y="521" width="1819" height="1326" key="SettingsEditor" timestamp="1626298130126">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -1301,11 +1289,11 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="183" y="83" width="2375" height="1224" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1627933163362" />
-    <state x="336" y="617" width="1543" height="433" key="com.intellij.ide.util.TipDialog" timestamp="1628297159650">
+    <state x="336" y="617" width="1543" height="433" key="com.intellij.ide.util.TipDialog" timestamp="1628559005047">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="336" y="617" width="1543" height="433" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1628186389678" />
-    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1628297159650" />
+    <state x="336" y="617" width="1047" height="543" key="com.intellij.ide.util.TipDialog/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1628559005047" />
     <state x="-2783" y="860" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1628139657698">
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
@@ -1314,33 +1302,33 @@
       <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
     <state x="-3095" y="638" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1626327471860" />
-    <state x="-3411" y="235" width="1220" height="835" maximized="true" key="dock-window-1" timestamp="1628297130082">
-      <screen x="-3840" y="262" width="2560" height="1400" />
+    <state x="-8" y="-21" width="1293" height="1044" maximized="true" key="dock-window-1" timestamp="1628560539143">
+      <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1198" y="-7" width="699" height="1028" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1628186391078" />
+    <state x="-8" y="-21" width="1293" height="1044" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1628560539143" />
     <state x="-3411" y="235" width="1220" height="835" maximized="true" key="dock-window-1/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1628297130082" />
-    <state x="-3065" y="262" width="1799" height="880" key="dock-window-2" timestamp="1626147661069">
-      <screen x="-3840" y="262" width="2560" height="1400" />
+    <state x="549" y="-21" width="713" height="1044" maximized="true" key="dock-window-2" timestamp="1628560564356">
+      <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="-3065" y="262" width="1799" height="880" key="dock-window-2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1626147661069" />
+    <state x="549" y="-21" width="713" height="1044" maximized="true" key="dock-window-2/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1628560564356" />
     <state x="493" y="660" width="1809" height="932" key="dock-window-3" timestamp="1626914605108">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="217" y="-23" width="1809" height="932" maximized="true" key="dock-window-3/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1626913223711" />
     <state x="493" y="660" width="1809" height="932" key="dock-window-3/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1626914605108" />
-    <state x="673" y="308" width="778" height="971" key="find.popup" timestamp="1628296938923">
+    <state x="281" y="199" width="1741" height="1011" key="find.popup" timestamp="1628560797341">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="-3021" y="651" width="1741" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1628139209987" />
+    <state x="281" y="199" width="1741" height="1011" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1628560797341" />
     <state x="673" y="308" width="778" height="971" key="find.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1628296938923" />
     <state x="963" y="277" key="refactoring.ChangeSignatureDialog" timestamp="1625292218650">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="963" y="277" key="refactoring.ChangeSignatureDialog/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1625292218650" />
-    <state x="220" y="337" width="840" height="1034" key="search.everywhere.popup" timestamp="1628200679697">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup" timestamp="1628565521718">
+      <screen x="-3840" y="262" width="2560" height="1400" />
     </state>
-    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1627933021621" />
+    <state x="-2981" y="569" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@-3840.262.2560.1400" timestamp="1628565521718" />
     <state x="220" y="337" width="840" height="1034" key="search.everywhere.popup/0.0.2560.1400/-3840.262.2560.1400@0.0.2560.1400" timestamp="1628200679697" />
   </component>
   <component name="XDebuggerManager">
