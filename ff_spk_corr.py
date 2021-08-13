@@ -3,6 +3,7 @@ By Jaerong
 Get correlation between fundamental frequency and spike number
 """
 
+
 def get_ff_spk_corr(query,
                     update=False,
                     save_spectrogram=None,
@@ -11,9 +12,10 @@ def get_ff_spk_corr(query,
                     update_db=None,
                     save_csv=None,
                     fig_ext='.png'):
+
     from analysis.parameters import note_buffer, freq_range, nb_note_crit, pre_motor_win_size, alpha
     from analysis.spike import ClusterInfo, AudioData
-    from database.load import ProjectLoader, DBInfo
+    from analysis.functions import get_ff
     from util import save
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
@@ -116,10 +118,6 @@ def get_ff_spk_corr(query,
                         #     continue
 
                         duration = offset - onset
-                        # Get spectrogram
-                        # Load audio object with info from .not.mat files
-                        timestamp, data = audio.extract([onset, offset])
-                        spect_time, spect, spect_freq = audio.spectrogram(timestamp, data)
 
                         # Get FF onset and offset based on the parameters from DB
                         if ff_info[ff_note]['crit'] == 'percent_from_start':
@@ -132,18 +130,22 @@ def get_ff_spk_corr(query,
                             ff_onset = offset - ff_info[ff_note]['parameter']
                             ff_offset = ff_onset + ff_info[ff_note]['duration']
 
-                        _, data = AudioData(path).extract(
-                            [ff_onset, ff_offset])  # Extract audio data within the FF range
+                        _, data = audio.extract([ff_onset, ff_offset])  # Extract audio data within the FF range
 
                         # Calculate fundamental frequency
-                        ff = audio.get_ff(data,
-                                          ff_info[ff_note]['low'], ff_info[ff_note]['high'],
-                                          ff_harmonic=ff_info[ff_note]['harmonic'])
+                        ff = get_ff(data, audio.sample_rate,
+                                    ff_info[ff_note]['low'], ff_info[ff_note]['high'],
+                                    ff_harmonic=ff_info[ff_note]['harmonic'])
 
                         if not ff:  # skip the note if the ff is out of the expected range
                             continue
 
                         if save_spectrogram:
+                            # Get spectrogram
+                            # Load audio object with info from .not.mat files
+                            timestamp, data = audio.extract([onset, offset])
+                            spect_time, spect, spect_freq = audio.spectrogram(timestamp, data)
+
                             # Plot figure
                             font_size = 8
                             fig = plt.figure(figsize=(4, 3), dpi=300)
@@ -362,9 +364,76 @@ def get_ff_spk_corr(query,
     print('Done!')
 
 
+def proportion_comparison(save_fig=True):
+
+    from analysis.stats import z_test
+    from scipy.stats import fisher_exact
+
+    # Print out results
+    # Proportion Z-test
+    fig = plt.figure(figsize=(4, 3))
+    ax_txt = plt.subplot2grid((6, 2), (4, 0), rowspan=1, colspan=1)
+
+    stat, pval_z = z_test(sig_neurons['Predeafening'], total_neurons['Predeafening']
+                          , sig_neurons['Postdeafening'], total_neurons['Postdeafening'])
+
+    odds_ratio, pval_fisher = fisher_exact([[sig_neurons['Predeafening'], total_neurons['Predeafening']]
+                                               , [sig_neurons['Postdeafening'], total_neurons['Postdeafening']]])
+
+    font_size = 9
+    txt_xloc = 0
+    txt_yloc = 0.2
+    txt_inc = 0.5
+
+    ax_txt.set_ylim([0, 1])
+    ax_txt.text(txt_xloc, txt_yloc, f"Z = {round(stat, 3)}", fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax_txt.text(txt_xloc, txt_yloc, f"p_val (z-test) = {round(pval_z, 3)}", fontsize=font_size)
+    txt_yloc -= txt_inc
+
+    ax_txt.text(txt_xloc, txt_yloc, "Fisher's exact test", fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax_txt.text(txt_xloc, txt_yloc, f"Odds ratio = {round(odds_ratio, 3)} ", fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax_txt.text(txt_xloc, txt_yloc, f"p_val (Fisher's) = {round(pval_fisher, 3)} ", fontsize=font_size)
+    ax_txt.axis('off')
+
+    # Fisher's exact test
+    ax_txt = plt.subplot2grid((6, 2), (4, 1), rowspan=1, colspan=1)
+
+    stat, pval_z = z_test(sig_syllables['Predeafening'], total_syllables['Predeafening']
+                          , sig_syllables['Postdeafening'], total_syllables['Postdeafening'])
+
+    odds_ratio, pval = fisher_exact([[sig_syllables['Predeafening'], total_syllables['Predeafening']]
+                                        , [sig_syllables['Postdeafening'], total_syllables['Postdeafening']]])
+
+    font_size = 9
+    txt_xloc = 0.2
+    txt_yloc = 0.2
+
+    ax_txt.set_ylim([0, 1])
+    ax_txt.text(txt_xloc, txt_yloc, f"Z = {round(stat, 3)}", fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax_txt.text(txt_xloc, txt_yloc, f"p_val (z-test) = {round(pval_z, 3)}", fontsize=font_size)
+    txt_yloc -= txt_inc
+
+    ax_txt.text(txt_xloc, txt_yloc, "Fisher's exact test", fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax_txt.text(txt_xloc, txt_yloc, f"Odds ratio = {round(odds_ratio, 3)} ", fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax_txt.text(txt_xloc, txt_yloc, f"p_val (Fisher's) = {round(pval, 3)} ", fontsize=font_size)
+    ax_txt.axis('off')
+    plt.tight_layout()
+
+    if save_fig:
+        save.save_fig(fig, save_path, 'ff_spk_corr', view_folder=True, fig_ext=fig_ext)
+    else:
+        plt.show()
+
 if __name__ == '__main__':
 
-    from database.load import create_db
+    from database.load import  create_db, DBInfo, ProjectLoader
+    from util import save
 
     # Parameter
     save_spectrogram = False
@@ -374,38 +443,34 @@ if __name__ == '__main__':
     save_csv = True  # save results to csv per neuron
     fig_ext = '.png'  # .png or .pdf
     nb_note_crit = 10
-    fr_crit = 0
-
+    fr_crit = 10
 
     # Create & Load database
     if update_db:
         db = create_db('create_ff_spk_corr.sql')
 
     # SQL statement
-    # query = "SELECT * FROM cluster WHERE birdID='b70r38'"
-    # query = "SELECT * FROM cluster WHERE id>116"
     # query = "SELECT * FROM cluster WHERE analysisOK"
     query = "SELECT * FROM cluster WHERE id=90"
 
+    # Make save path
+    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF_SpkCorr', add_date=False)
+
     # Calculate results
-    # get_ff_spk_corr(query,
-    #                 save_spectrogram=save_spectrogram,
-    #                 save_result_fig=save_result_fig,
-    #                 view_folder=view_folder,
-    #                 update_db=update_db,
-    #                 save_csv=save_csv,
-    #                 fig_ext=fig_ext)
+    get_ff_spk_corr(query,
+                    save_spectrogram=save_spectrogram,
+                    save_result_fig=save_result_fig,
+                    view_folder=view_folder,
+                    update_db=update_db,
+                    save_csv=save_csv,
+                    fig_ext=fig_ext)
+
 
 # Plot significant proportions of neurons / FF syllables
 from database.load import ProjectLoader
 import matplotlib.pyplot as plt
 from util.draw import remove_right_top
 import pandas as pd
-
-
-from analysis.stats import z_test
-from scipy.stats import fisher_exact
-
 
 csv_path = ProjectLoader().path / 'Analysis/Database/ff_spk_corr.csv'
 df = pd.read_csv(csv_path, index_col='id')
@@ -481,63 +546,6 @@ for ind, task in enumerate(tasks):
                    color='r', ls='--', lw=1)
     remove_right_top(ax)
 
-# Print out results
 
-# Proportion Z-test
-ax_txt = plt.subplot2grid((6, 2), (4, 0), rowspan=1, colspan=1)
-
-stat, pval_z = z_test(sig_neurons['Predeafening'], total_neurons['Predeafening']
-                    ,sig_neurons['Postdeafening'], total_neurons['Postdeafening'])
-
-odds_ratio, pval_fisher = fisher_exact([[sig_neurons['Predeafening'], total_neurons['Predeafening']]
-                    ,[sig_neurons['Postdeafening'], total_neurons['Postdeafening']]])
-
-font_size = 9
-txt_xloc = 0
-txt_yloc = 0.2
-txt_inc = 0.5
-
-ax_txt.set_ylim([0, 1])
-ax_txt.text(txt_xloc, txt_yloc, f"Z = {round(stat, 3)}", fontsize=font_size)
-txt_yloc -= txt_inc
-ax_txt.text(txt_xloc, txt_yloc, f"p_val (z-test) = {round(pval_z, 3)}", fontsize=font_size)
-txt_yloc -= txt_inc
-
-ax_txt.text(txt_xloc, txt_yloc, "Fisher's exact test", fontsize=font_size)
-txt_yloc -= txt_inc
-ax_txt.text(txt_xloc, txt_yloc, f"Odds ratio = {round(odds_ratio, 3)} ", fontsize=font_size)
-txt_yloc -= txt_inc
-ax_txt.text(txt_xloc, txt_yloc, f"p_val (Fisher's) = {round(pval_fisher, 3)} ", fontsize=font_size)
-ax_txt.axis('off')
-
-# Fisher's exact test
-ax_txt = plt.subplot2grid((6, 2), (4, 1), rowspan=1, colspan=1)
-
-stat, pval_z = z_test(sig_syllables['Predeafening'], total_syllables['Predeafening']
-                    ,sig_syllables['Postdeafening'], total_syllables['Postdeafening'])
-
-odds_ratio, pval = fisher_exact([[sig_syllables['Predeafening'], total_syllables['Predeafening']]
-                    ,[sig_syllables['Postdeafening'], total_syllables['Postdeafening']]])
-
-font_size = 9
-txt_xloc = 0.2
-txt_yloc = 0.2
-txt_inc = 0.5
-
-ax_txt.set_ylim([0, 1])
-ax_txt.text(txt_xloc, txt_yloc, f"Z = {round(stat, 3)}", fontsize=font_size)
-txt_yloc -= txt_inc
-ax_txt.text(txt_xloc, txt_yloc, f"p_val (z-test) = {round(pval_z, 3)}", fontsize=font_size)
-txt_yloc -= txt_inc
-
-ax_txt.text(txt_xloc, txt_yloc, "Fisher's exact test", fontsize=font_size)
-txt_yloc -= txt_inc
-ax_txt.text(txt_xloc, txt_yloc, f"Odds ratio = {round(odds_ratio, 3)} ", fontsize=font_size)
-txt_yloc -= txt_inc
-ax_txt.text(txt_xloc, txt_yloc, f"p_val (Fisher's) = {round(pval, 3)} ", fontsize=font_size)
-ax_txt.axis('off')
-plt.tight_layout()
-plt.show()
-
-
+    proportion_comparison(save_fig=True)
 
