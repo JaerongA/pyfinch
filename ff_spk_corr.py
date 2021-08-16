@@ -12,7 +12,6 @@ def get_ff_spk_corr(query,
                     update_db=None,
                     save_csv=None,
                     fig_ext='.png'):
-
     from analysis.parameters import note_buffer, freq_range, nb_note_crit, pre_motor_win_size, alpha
     from analysis.spike import ClusterInfo, AudioData
     from analysis.functions import get_ff
@@ -86,7 +85,7 @@ def get_ff_spk_corr(query,
                 # Load note object
                 ni = ci.get_note_info(note)
                 if not ni or (
-                np.prod([nb[1] < nb_note_crit for nb in ni.nb_note.items()])):  # if the note does not exist
+                        np.prod([nb[1] < nb_note_crit for nb in ni.nb_note.items()])):  # if the note does not exist
                     db.cur.execute(
                         f"DELETE FROM ff_spk_corr WHERE clusterID= {cluster_db.id} AND note= '{note}'")  # delete the row from db
                     db.conn.commit()
@@ -364,15 +363,66 @@ def get_ff_spk_corr(query,
     print('Done!')
 
 
-def proportion_comparison(save_fig=True):
+def draw_sig_prop(sig_neurons, total_neurons, baseline_neuron_prop, sig_neuron_prop,
+                  sig_syllables, total_syllables, baseline_syllable_prop, sig_syllable_prop,
+                  title, y_lim=None, save_fig=True,
+                  fig_name=None, fig_ext='.png'):
 
+    # Plot significant proportions of neurons / FF syllables
     from analysis.stats import z_test
+    from util.draw import remove_right_top
     from scipy.stats import fisher_exact
+
+    # Plot the results
+    fig = plt.figure(figsize=(7, 5))
+    plt.suptitle(title, y=.9, fontsize=15)
+    ax = plt.subplot2grid((6, 5), (1, 0), rowspan=3, colspan=2)
+
+    for ind, task in enumerate(tasks):
+
+        ax.bar(ind, sig_neuron_prop[task], color='k')
+        ax.set_ylabel('% of sig neurons')
+        if y_lim:
+            ax.set_ylim(y_lim)
+        ax.set_xticks([0, 1])
+        ax.set_xticklabels(tasks)
+        ax.text(ind - 0.20, ax.get_ylim()[-1], f'({sig_neurons[task]} / {total_neurons[task]})', c='k')
+        # Mark baseline proportion
+        if ind == 0:
+            ax.axhline(y=baseline_neuron_prop[task],
+                       xmin=ind + 0.05, xmax=ind + 0.45,
+                       color='r', ls='--', lw=1)
+        else:
+            ax.axhline(y=baseline_neuron_prop[task],
+                       xmin=ind - 0.05, xmax=ind - 0.45,
+                       color='r', ls='--', lw=1)
+        remove_right_top(ax)
+
+    ax = plt.subplot2grid((6, 5), (1, 3), rowspan=3, colspan=2)
+
+    for ind, task in enumerate(tasks):
+
+        ax.bar(ind, sig_syllable_prop[task], color='k')
+        ax.set_ylabel('% of sig syllables')
+        if y_lim:
+            ax.set_ylim(y_lim)
+        ax.set_xticks([0, 1])
+        ax.set_xticklabels(tasks)
+        ax.text(ind - 0.2, ax.get_ylim()[-1], f'({sig_syllables[task]} / {total_syllables[task]})', c='k')
+        # Mark baseline proportion
+        if ind == 0:
+            ax.axhline(y=baseline_syllable_prop[task],
+                       xmin=ind + 0.05, xmax=ind + 0.45,
+                       color='r', ls='--', lw=1)
+        else:
+            ax.axhline(y=baseline_syllable_prop[task],
+                       xmin=ind - 0.05, xmax=ind - 0.45,
+                       color='r', ls='--', lw=1)
+        remove_right_top(ax)
 
     # Print out results
     # Proportion Z-test
-    fig = plt.figure(figsize=(4, 3))
-    ax_txt = plt.subplot2grid((6, 2), (4, 0), rowspan=1, colspan=1)
+    ax_txt = plt.subplot2grid((6, 5), (4, 0), rowspan=1, colspan=1)
 
     stat, pval_z = z_test(sig_neurons['Predeafening'], total_neurons['Predeafening']
                           , sig_neurons['Postdeafening'], total_neurons['Postdeafening'])
@@ -399,7 +449,7 @@ def proportion_comparison(save_fig=True):
     ax_txt.axis('off')
 
     # Fisher's exact test
-    ax_txt = plt.subplot2grid((6, 2), (4, 1), rowspan=1, colspan=1)
+    ax_txt = plt.subplot2grid((6, 5), (4, 3), rowspan=1, colspan=1)
 
     stat, pval_z = z_test(sig_syllables['Predeafening'], total_syllables['Predeafening']
                           , sig_syllables['Postdeafening'], total_syllables['Postdeafening'])
@@ -426,13 +476,16 @@ def proportion_comparison(save_fig=True):
     plt.tight_layout()
 
     if save_fig:
-        save.save_fig(fig, save_path, 'ff_spk_corr', view_folder=True, fig_ext=fig_ext)
+        save.save_fig(fig, save_path, fig_name, view_folder=True, fig_ext=fig_ext)
     else:
         plt.show()
 
+
 if __name__ == '__main__':
 
-    from database.load import  create_db, DBInfo, ProjectLoader
+    from database.load import create_db, DBInfo, ProjectLoader
+    import matplotlib.pyplot as plt
+    import pandas as pd
     from util import save
 
     # Parameter
@@ -457,95 +510,54 @@ if __name__ == '__main__':
     save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF_SpkCorr', add_date=False)
 
     # Calculate results
-    get_ff_spk_corr(query,
-                    save_spectrogram=save_spectrogram,
-                    save_result_fig=save_result_fig,
-                    view_folder=view_folder,
-                    update_db=update_db,
-                    save_csv=save_csv,
-                    fig_ext=fig_ext)
+    # get_ff_spk_corr(query,
+    #                 save_spectrogram=save_spectrogram,
+    #                 save_result_fig=save_result_fig,
+    #                 view_folder=view_folder,
+    #                 update_db=update_db,
+    #                 save_csv=save_csv,
+    #                 fig_ext=fig_ext)
 
+    csv_path = ProjectLoader().path / 'Analysis/Database/ff_spk_corr.csv'
+    df = pd.read_csv(csv_path, index_col='id')
+    df = df.query(f"nbNoteUndir >= {nb_note_crit} and premotorFRUndir >= {fr_crit}")
 
-# Plot significant proportions of neurons / FF syllables
-from database.load import ProjectLoader
-import matplotlib.pyplot as plt
-from util.draw import remove_right_top
-import pandas as pd
+    # Calculate sig neurons
+    total_neurons = {}
+    sig_neurons = {}
+    sig_neuron_prop = {}
+    baseline_neuron_prop = {}
 
-csv_path = ProjectLoader().path / 'Analysis/Database/ff_spk_corr.csv'
-df = pd.read_csv(csv_path, index_col='id')
-df = df.query(f"nbNoteUndir >= {nb_note_crit} and premotorFRUndir >= {fr_crit}" )
+    # Calculate sig syllables
+    total_syllables = {}
+    sig_syllables = {}
+    sig_syllable_prop = {}
+    baseline_syllable_prop = {}
 
-# Get proportion of neurons showing significant correlation per task
-title = 'Fundamental Frequency'
-total_neurons = {}
-sig_neurons = {}
-sig_prop = {}
+    # Calculate sig neuronal proportion
+    df_corr_sig = df.groupby(['clusterID', 'taskName'])['spkCorrPvalSigUndir'].sum().reset_index()
+    df_shuffled_sig = df.groupby(['clusterID', 'taskName'])['shuffledSigPropUndir'].mean().reset_index()
+    tasks = sorted(set(df['taskName']), reverse=True)
+    for ind, task in enumerate(tasks):
+        sig_array = df_corr_sig[(df_corr_sig['taskName'] == task)]['spkCorrPvalSigUndir']
+        shuffled_sig_array = df_shuffled_sig[(df_shuffled_sig['taskName'] == task)]['shuffledSigPropUndir']
+        baseline_neuron_prop[task] = shuffled_sig_array.mean() + (2 * shuffled_sig_array.std())
+        total_neurons[task] = len(sig_array)
+        sig_neurons[task] = (sig_array >= 1).sum()
+        sig_neuron_prop[task] = (sig_array >= 1).sum() / len(sig_array)
 
-# Plot the results
-fig, ax = plt.subplots(figsize=(7, 5))
-plt.suptitle(f'{title} FR >= {fr_crit} (Undir) ', y=.9, fontsize=15)
-ax = plt.subplot2grid((6, 5), (1, 0), rowspan=3, colspan=2)
+    for ind, task in enumerate(tasks):
+        sig_array = df[(df['taskName'] == task)]['spkCorrPvalSigUndir']
+        shuffled_sig_array = df[(df['taskName'] == task)]['shuffledSigPropUndir']
+        baseline_syllable_prop[task] = shuffled_sig_array.mean() + (2 * shuffled_sig_array.std())
+        total_syllables[task] = len(sig_array)
+        sig_syllables[task] = (sig_array >= 1).sum()
+        sig_syllable_prop[task] = (sig_array >= 1).sum() / len(sig_array)
 
-# Calculate sig neuronal proportion
-df_corr_sig = df.groupby(['clusterID','taskName'])['spkCorrPvalSigUndir'].sum().reset_index()
-df_shuffled_sig = df.groupby(['clusterID','taskName'])['shuffledSigPropUndir'].mean().reset_index()
-tasks = sorted(set(df['taskName']), reverse=True)
-for ind, task in enumerate(tasks):
-    sig_array = df_corr_sig[(df_corr_sig['taskName'] == task)]['spkCorrPvalSigUndir']
-    shuffled_sig_array = df_shuffled_sig[(df_shuffled_sig['taskName'] == task)]['shuffledSigPropUndir']
-    baseline_prop = shuffled_sig_array.mean() + (2*shuffled_sig_array.std())
-    total_neurons[task] = len(sig_array)
-    sig_neurons[task] = (sig_array >= 1).sum()
-    sig_prop[task] = (sig_array >= 1).sum() / len(sig_array)
-    ax.bar(ind, sig_prop[task], color='k')
-    ax.set_ylabel('% of sig neurons')
-    ax.set_ylim([0, 0.2])
-    ax.set_xticks([0, 1])
-    ax.set_xticklabels(tasks)
-    ax.text(ind-0.20, ax.get_ylim()[-1], f'({sig_neurons[task]} / {total_neurons[task]})', c='k')
-    # Mark baseline proportion
-    if ind == 0:
-        ax.axhline(y=baseline_prop,
-                   xmin=ind+0.05, xmax=ind+0.45,
-                   color='r', ls='--', lw=1)
-    else:
-        ax.axhline(y=baseline_prop,
-                   xmin=ind-0.05, xmax=ind-0.45,
-                   color='r', ls='--', lw=1)
-    remove_right_top(ax)
+    # Get proportion of neurons showing significant correlation per task
+    title = f"{'Fundamental Frequency'} FR >= {fr_crit} (Undir)"
 
-# Calculate sig syllables
-total_syllables = {}
-sig_syllables = {}
-sig_prop = {}
-
-ax = plt.subplot2grid((6, 5), (1, 3), rowspan=3, colspan=2)
-for ind, task in enumerate(tasks):
-    sig_array = df[(df['taskName'] == task)]['spkCorrPvalSigUndir']
-    shuffled_sig_array = df[(df['taskName'] == task)]['shuffledSigPropUndir']
-    baseline_prop = shuffled_sig_array.mean() + (2*shuffled_sig_array.std())
-    # print(baseline_prop)
-    total_syllables[task] = len(sig_array)
-    sig_syllables[task] = (sig_array >= 1).sum()
-    sig_prop[task] = (sig_array >= 1).sum() / len(sig_array)
-    ax.bar(ind, sig_prop[task], color='k')
-    ax.set_ylabel('% of sig syllables')
-    ax.set_ylim([0, 0.15])
-    ax.set_xticks([0, 1])
-    ax.set_xticklabels(tasks)
-    ax.text(ind-0.2, ax.get_ylim()[-1], f'({sig_syllables[task]} / {total_syllables[task]})', c='k')
-    # Mark baseline proportion
-    if ind == 0:
-        ax.axhline(y=baseline_prop,
-                   xmin=ind+0.05, xmax=ind+0.45,
-                   color='r', ls='--', lw=1)
-    else:
-        ax.axhline(y=baseline_prop,
-                   xmin=ind-0.05, xmax=ind-0.45,
-                   color='r', ls='--', lw=1)
-    remove_right_top(ax)
-
-
-    proportion_comparison(save_fig=True)
-
+    draw_sig_prop(sig_neurons, total_neurons, baseline_neuron_prop, sig_neuron_prop,
+                  sig_syllables, total_syllables, baseline_syllable_prop, sig_syllable_prop,
+                  title, y_lim=[0, 0.2], save_fig=True,
+                  fig_name='ff_spk_corr')
