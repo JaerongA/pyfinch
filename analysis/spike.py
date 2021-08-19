@@ -1487,63 +1487,6 @@ class AudioData:
 
         return get_spectral_entropy(spect, normalize=normalize, mode=mode)
 
-    def get_ff(self, data, ff_low, ff_high, ff_harmonic=1):
-        """
-        Calculate fundamental frequency (FF) from the FF segment
-        Parameters
-        ----------
-        data : array
-        ff_low : int
-            Lower limit
-        ff_high : int
-            Upper limit
-        ff_harmonic :  int (1 by default)
-            harmonic detection
-        Returns
-        -------
-        ff : float
-        """
-        from analysis.functions import para_interp
-        from scipy.signal import find_peaks
-        import statsmodels.tsa.stattools as smt
-        import matplotlib.pyplot as plt
-        import numpy as np
-
-        # Get peak of the auto-correlogram
-        corr = smt.ccf(data, data, adjusted=False)
-        corr_win = corr[3: round(self.sample_rate / ff_low)]
-        peak_ind, property = find_peaks(corr_win, height=0)
-
-        # Plot auto-correlation (for debugging)
-        # plt.plot(corr_win)
-        # plt.plot(peak_ind, corr_win[peak_ind], "x")
-        # plt.show()
-
-        # Find FF
-        ff_list = []
-        ff = None
-        # loop through the peak until FF is found in the desired range
-        for ind in property['peak_heights'].argsort()[::-1]:
-            if not (peak_ind[ind] == 0 or (
-                    peak_ind[ind] == len(corr_win))):  # if the peak is not in first and last indices
-                target_peak_ind = peak_ind[ind]
-                target_peak_amp = corr_win[
-                                  target_peak_ind - 1: target_peak_ind + 2]  # find the peak using two neighboring values using parabolic interpolation
-                target_peak_ind = np.arange(target_peak_ind - 1, target_peak_ind + 2)
-                peak, _ = para_interp(target_peak_ind, target_peak_amp)
-
-                # period = peak + 3
-                period = peak + (3 * ff_harmonic)
-                temp_ff = round(self.sample_rate / period, 3)
-                ff_list.append(temp_ff)
-
-            ff = [ff for ff in ff_list if ff_low < ff < ff_high]
-            if not bool(ff):  # return nan if ff is outside the range
-                ff = None
-            else:
-                ff = ff[0] / ff_harmonic
-        return ff
-
 
 class NeuralData:
     def __init__(self, path, channel_nb, format='rhd', update=False):

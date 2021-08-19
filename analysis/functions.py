@@ -97,10 +97,10 @@ def demarcate_bout(target, intervals):
     if isinstance(target, str):
         if len(ind):
             for i, item in enumerate(ind):
-                if i is 0:
-                    bout_labeling = target[:item + 1]
-                else:
+                if i is not 0:
                     bout_labeling += '*' + target[ind[i - 1] + 1:ind[i] + 1]
+                else:
+                    bout_labeling = target[:item + 1]
             bout_labeling += '*' + target[ind[i] + 1:]
 
         bout_labeling += '*'  # end with an asterisk
@@ -147,15 +147,6 @@ def get_nb_bouts(song_note: str, bout_labeling: str):
     nb_bouts = len([bout for bout in bout_labeling.split('*')[:-1] if
                     unique_nb_notes_in_bout(song_note, bout)])
     return nb_bouts
-
-
-def get_dur():
-    """
-    Get note & interval duration (mean or median)
-    Returns:
-
-    """
-    pass
 
 
 def get_snr(avg_wf, raw_neural_trace):
@@ -489,7 +480,6 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
 
 
 def get_spectral_entropy(psd_array, normalize=None, mode=None):
-
     import numpy as np
 
     if mode == 'spectral':
@@ -517,3 +507,62 @@ def get_spectral_entropy(psd_array, normalize=None, mode=None):
 
         return se_dict
 
+
+def get_ff(data, sample_rate, ff_low, ff_high, ff_harmonic=1):
+    """
+    Calculate fundamental frequency (FF) from the FF segment
+    Parameters
+    ----------
+    data : array
+    sample_rate : int
+        data sampling rate
+    ff_low : int
+        Lower limit
+    ff_high : int
+        Upper limit
+    ff_harmonic :  int (1 by default)
+        harmonic detection
+    Returns
+    -------
+    ff : float
+    """
+    from analysis.functions import para_interp
+    from scipy.signal import find_peaks
+    import statsmodels.tsa.stattools as smt
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    # Get peak of the auto-correlogram
+    corr = smt.ccf(data, data, adjusted=False)
+    corr_win = corr[3: round(sample_rate / ff_low)]
+    peak_ind, property = find_peaks(corr_win, height=0)
+
+    # Plot auto-correlation (for debugging)
+    # plt.plot(corr_win)
+    # plt.plot(peak_ind, corr_win[peak_ind], "x")
+    # plt.show()
+
+    # Find FF
+    ff_list = []
+    ff = None
+    # loop through the peak until FF is found in the desired range
+    for ind in property['peak_heights'].argsort()[::-1]:
+        if not (peak_ind[ind] == 0 or (
+                peak_ind[ind] == len(corr_win))):  # if the peak is not in first and last indices
+            target_peak_ind = peak_ind[ind]
+            target_peak_amp = corr_win[
+                              target_peak_ind - 1: target_peak_ind + 2]  # find the peak using two neighboring values using parabolic interpolation
+            target_peak_ind = np.arange(target_peak_ind - 1, target_peak_ind + 2)
+            peak, _ = para_interp(target_peak_ind, target_peak_amp)
+
+            # period = peak + 3
+            period = peak + (3 * ff_harmonic)
+            temp_ff = round(sample_rate / period, 3)
+            ff_list.append(temp_ff)
+
+        ff = [ff for ff in ff_list if ff_low < ff < ff_high]
+        if not bool(ff):  # return nan if ff is outside the range
+            ff = None
+        else:
+            ff = ff[0] / ff_harmonic
+    return ff
