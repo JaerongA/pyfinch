@@ -6,6 +6,7 @@ FF analysis
 
 def get_syllable_ff(query,
                     update=False,
+                    nb_note_crit=None,
                     save_fig=None,
                     view_folder=False,
                     update_db=False,
@@ -18,7 +19,7 @@ def get_syllable_ff(query,
     import pandas as pd
 
     from analysis.functions import get_ff
-    from analysis.parameters import note_buffer, freq_range, nb_note_crit
+    from analysis.parameters import note_buffer, freq_range
     from analysis.song import AudioInfo, SongInfo
     from util import save
     from util.draw import remove_right_top
@@ -195,6 +196,9 @@ def get_syllable_ff(query,
                 for note in df['note'].unique():
                     for context in df['context'].unique():
                         temp_df = df[(df['note'] == note) & (df['context'] == context)]
+
+                        # eliminate outliers
+
                         if len(temp_df) >= nb_note_crit:
                             if context == 'U':
                                 db.cur.execute(
@@ -271,17 +275,29 @@ def plot_across_days():
     else:
         plt.show()
 
+
+def normalize_from_pre(df, var_name: str, note: str):
+    """Normalize post-deafening values using pre-deafening values"""
+    pre_val = df.loc[(df['note'] == note) & (df['taskName'] == 'Predeafening')][var_name]
+    pre_val = pre_val.mean()
+
+    post_val = df.loc[(df['note'] == note) & (df['taskName'] == 'Postdeafening')][var_name]
+    norm_val = post_val / pre_val
+
+    return norm_val
+
+
 if __name__ == '__main__':
 
     from database.load import create_db, DBInfo, ProjectLoader
     from util import save
 
     # Parameter
-    update = False  # update or make a new cache file
-    save_fig = True  # save spectrograms with FF
+    save_fig = False  # save spectrograms with FF
     view_folder = False  # view the folder where figures are stored
     update_db = True  # save results to DB
     fig_ext = '.png'  # .png or .pdf
+    nb_note_crit = 10
 
     # Make save path
     save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF', add_date=False)
@@ -292,15 +308,14 @@ if __name__ == '__main__':
         db = create_db('create_ff_result.sql')
 
     # SQL statement
-    query = "SELECT * FROM song WHERE id>=17"
+    query = "SELECT * FROM song"
 
-
-    # get_syllable_ff(query,
-    #                 update=update,
-    #                 save_fig=save_fig,
-    #                 view_folder=view_folder,
-    #                 update_db=update_db,
-    #                 fig_ext=fig_ext)
+    get_syllable_ff(query,
+                    nb_note_crit=nb_note_crit,
+                    save_fig=save_fig,
+                    view_folder=view_folder,
+                    update_db=update_db,
+                    fig_ext=fig_ext)
 
     # Plot FF per day
     import matplotlib.pyplot as plt
@@ -322,4 +337,30 @@ if __name__ == '__main__':
     # Load database
     df = ProjectLoader().load_db().to_dataframe(f"SELECT * FROM ff_result")
 
-    plot_across_days()
+    # plot_across_days()
+
+    # Normalize relative to pre-deafening mean
+    import numpy as np
+
+    df['ffUndirCVNorm'] = np.nan
+    df['ffDirCVNorm'] = np.nan
+
+    bird_list = sorted(set(df['birdID'].to_list()))
+    for bird in bird_list:
+
+        temp_df = df.loc[df['birdID'] == bird]
+        note_list = temp_df['note'].unique()
+
+        for note in note_list:
+
+            norm_val = normalize_from_pre(temp_df, 'ffUndirCV', note)
+            add_ind = temp_df.loc[(temp_df['note'] == note) & (temp_df['taskName'] == 'Postdeafening')].index
+            df.loc[add_ind, 'ffUndirCVNorm'] = norm_val
+
+            norm_val = normalize_from_pre(temp_df, 'ffDirCV', note)
+            df.loc[add_ind, 'ffDirCVNorm'] = norm_val
+
+    df.to_csv(save_path / 'ff_results.csv', index=True, header=True)
+
+
+
