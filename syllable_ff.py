@@ -71,7 +71,7 @@ def get_syllable_ff(query,
         note_ind1 = -1  # note index across the session
         for file in si.files:
 
-            print(f'Loading... {file.name}')
+            # print(f'Loading... {file.name}')
             # Loop through the notes
             note_ind2 = -1  # note index within a file
 
@@ -118,6 +118,10 @@ def get_syllable_ff(query,
 
                     if not ff:  # skip the note if the ff is out of the expected range
                         continue
+
+                    # Organize results per song session
+                    temp_df = pd.DataFrame({'note': [ff_note], 'context': [ai.context], 'ff': [ff]})
+                    df = df.append(temp_df, ignore_index=True)
 
                     if save_fig:
                         # Parameters
@@ -178,10 +182,6 @@ def get_syllable_ff(query,
                         save_path2 = save.make_dir(save_path, si.name, add_date=False)
                         save.save_fig(fig, save_path2, fig_name, view_folder=view_folder, fig_ext=fig_ext)
 
-                    # Organize results per song session
-                    temp_df = pd.DataFrame({'note': [ff_note], 'context': [ai.context], 'ff': [ff]})
-                    df = df.append(temp_df, ignore_index=True)
-
                     # Update ff_results db with note info
                     if update_db:
                         # Fill in song info
@@ -190,14 +190,17 @@ def get_syllable_ff(query,
                         db.cur.execute(query)
                         db.conn.commit()
 
+        # Save df to csv
+        if "save_path2" in locals():
+            df = df.rename_axis(index='index')
+            df.to_csv(save_path2 / ('-'.join(save_path2.stem.split('-')[1:]) + '.csv'), index=True, header=True)
+
         # Save results to ff_results db
         if not df.empty:
             if update_db:
                 for note in df['note'].unique():
                     for context in df['context'].unique():
                         temp_df = df[(df['note'] == note) & (df['context'] == context)]
-
-                        # eliminate outliers
 
                         if len(temp_df) >= nb_note_crit:
                             if context == 'U':
@@ -222,12 +225,9 @@ def get_syllable_ff(query,
                     if not (bool(nb_notes['U']) or bool(nb_notes['D'])):
                         db.cur.execute(f"DELETE FROM ff_result WHERE songID= {song_db.id} AND note= '{note}'")
                     db.conn.commit()
-                db.to_csv('ff_result')
 
-            # Save df to csv
-            if "save_path2" in locals():
-                df = df.rename_axis(index='index')
-                df.to_csv(save_path2 / ('-'.join(save_path2.stem.split('-')[1:]) + '.csv'), index=True, header=True)
+    if update_db:
+        db.to_csv('ff_result')
 
     print('Done!')
 
@@ -236,6 +236,8 @@ def plot_across_days():
 
     # Load database
     import seaborn as sns
+    import matplotlib.pyplot as plt
+    from util.draw import remove_right_top
 
     # Plot the results
     circ_size = 1
@@ -329,38 +331,37 @@ if __name__ == '__main__':
         # Assumes that song, ff database have been created
         db = create_db('create_ff_result.sql')
 
-    # SQL statement
-    query = "SELECT * FROM song"
+    # # SQL statement
+    # query = "SELECT * FROM song WHERE id>10"
+    #
+    # get_syllable_ff(query,
+    #                 nb_note_crit=nb_note_crit,
+    #                 save_fig=save_fig,
+    #                 view_folder=view_folder,
+    #                 update_db=update_db,
+    #                 fig_ext=fig_ext)
+    #
+    # # Load database
+    # df = ProjectLoader().load_db().to_dataframe(f"SELECT * FROM ff_result")
+    # df = add_pre_normalized_col(df, 'ffUndirCV', 'ffUndirCVNorm')
+    # df = add_pre_normalized_col(df, 'ffDirCV', 'ffDirCVNorm', csv_name='ff_results.csv', save_csv=True)
 
-    get_syllable_ff(query,
-                    nb_note_crit=nb_note_crit,
-                    save_fig=save_fig,
-                    view_folder=view_folder,
-                    update_db=update_db,
-                    fig_ext=fig_ext)
-
-    # Plot FF per day
-    import matplotlib.pyplot as plt
-    from util.draw import remove_right_top
-
-    # Parameters
-    save_fig = False
-    view_folder = False
-    fr_criteria = 10
-    fig_name = 'FF_across_days'
-    xlim = [-20, 40]
-    ylim = [0, 6]
-    x_label = 'Days from deafening'
-    y_label = 'FF'
-    x = 'taskSessionDeafening'
-    y = 'ffUndirCV'
-    title = 'CV of FF (Undir)'
-
-    # Load database
-    df = ProjectLoader().load_db().to_dataframe(f"SELECT * FROM ff_result")
-
-    df = add_pre_normalized_col(df, 'ffUndirCV', 'ffUndirCVNorm')
-    df = add_pre_normalized_col(df, 'ffDirCV', 'ffDirCVNorm', csv_name='ff_results.csv', save_csv=True)
-
+    # # Plot FF per day
+    #
+    # # Parameters
+    # save_fig = False
+    # view_folder = False
+    # fr_criteria = 10
+    # fig_name = 'FF_across_days'
+    # xlim = [-20, 40]
+    # ylim = [0, 6]
+    # x_label = 'Days from deafening'
+    # y_label = 'FF'
+    # x = 'taskSessionDeafening'
+    # y = 'ffUndirCV'
+    # title = 'CV of FF (Undir)'
+    #
+    #
+    #
     # plot_across_days()
 
