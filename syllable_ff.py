@@ -287,6 +287,28 @@ def normalize_from_pre(df, var_name: str, note: str):
     return norm_val
 
 
+def add_pre_normalized_col(df, col_name_to_normalize, col_name_to_add, csv_name=None, save_csv=False):
+    """Normalize relative to pre-deafening mean"""
+    import numpy as np
+
+    df[col_name_to_add] = np.nan
+
+    bird_list = sorted(set(df['birdID'].to_list()))
+    for bird in bird_list:
+
+        temp_df = df.loc[df['birdID'] == bird]
+        note_list = temp_df['note'].unique()
+
+        for note in note_list:
+            norm_val = normalize_from_pre(temp_df, col_name_to_normalize, note)
+            add_ind = temp_df.loc[(temp_df['note'] == note) & (temp_df['taskName'] == 'Postdeafening')].index
+            df.loc[add_ind, col_name_to_add] = norm_val
+
+    if save_csv:
+        df.to_csv(save_path / csv_name, index=False, header=True)
+
+    return df
+
 if __name__ == '__main__':
 
     from database.load import create_db, DBInfo, ProjectLoader
@@ -337,30 +359,8 @@ if __name__ == '__main__':
     # Load database
     df = ProjectLoader().load_db().to_dataframe(f"SELECT * FROM ff_result")
 
+    df = add_pre_normalized_col(df, 'ffUndirCV', 'ffUndirCVNorm')
+    df = add_pre_normalized_col(df, 'ffDirCV', 'ffDirCVNorm', csv_name='ff_results.csv', save_csv=True)
+
     # plot_across_days()
-
-    # Normalize relative to pre-deafening mean
-    import numpy as np
-
-    df['ffUndirCVNorm'] = np.nan
-    df['ffDirCVNorm'] = np.nan
-
-    bird_list = sorted(set(df['birdID'].to_list()))
-    for bird in bird_list:
-
-        temp_df = df.loc[df['birdID'] == bird]
-        note_list = temp_df['note'].unique()
-
-        for note in note_list:
-
-            norm_val = normalize_from_pre(temp_df, 'ffUndirCV', note)
-            add_ind = temp_df.loc[(temp_df['note'] == note) & (temp_df['taskName'] == 'Postdeafening')].index
-            df.loc[add_ind, 'ffUndirCVNorm'] = norm_val
-
-            norm_val = normalize_from_pre(temp_df, 'ffDirCV', note)
-            df.loc[add_ind, 'ffDirCVNorm'] = norm_val
-
-    df.to_csv(save_path / 'ff_results.csv', index=True, header=True)
-
-
 
