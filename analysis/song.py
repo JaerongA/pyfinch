@@ -464,3 +464,42 @@ class AudioInfo:
         from analysis.functions import get_spectral_entropy
 
         return get_spectral_entropy(spect, normalize=normalize, mode=mode)
+
+    class FundamentalFreq:
+        def __init__self(self, note):
+
+            from database.load import ProjectLoader
+            self.note = note
+            self.crit = None
+            self.parameter = None  # {'percent_from_start', 'ms_from_start', 'ms_from_end'}
+            self.onset = None
+            self.offset = None
+            self.low = None
+            self.high = None
+            self.harmonic = None
+            self.value = None  # Fundamental Frequency (FF) value
+
+        def load_from_db(self, birdID, ff_note):
+            """Load info from the database if exists"""
+            from database.load import ProjectLoader
+            query = f"SELECT ffNote, ffParameter, ffCriterion, ffLow, ffHigh, ffDuration, harmonic " \
+                    f"FROM ff " \
+                    f"WHERE birdID='{birdID}' AND ffNote='{ff_note}'"
+            db = ProjectLoader().load_db().execute(query)
+
+            ff_info = {data[0]: {'parameter': data[1],
+                                 'crit': data[2],
+                                 'low': data[3],  # lower limit of frequency
+                                 'high': data[4],  # upper limit of frequency
+                                 'duration': data[5],
+                                 'harmonic': data[6]  # 1st or 2nd harmonic detection
+                                 } for data in db.cur.fetchall()  # ff duration
+                       }
+
+            # Set the dictionary values to class attributes
+            for key in ff_info:
+                setattr(self, key, ff_info[key])
+
+        def get_ts(self, note_onset, note_offset):
+            """Get onset and offset timestamp of FF portion based on note onset & offset"""
+            pass
