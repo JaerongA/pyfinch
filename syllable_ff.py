@@ -232,7 +232,16 @@ def get_syllable_ff(query,
     print('Done!')
 
 
-def plot_across_days():
+def plot_across_days(df, x, y,
+                     x_label=None,
+                     y_label=None,
+                     title=None, fig_name=None,
+                     xlim=None, ylim=None,
+                     plot_baseline=False,
+                     view_folder=True,
+                     save_fig=True,
+                     fig_ext='.png'
+                     ):
 
     # Load database
     import seaborn as sns
@@ -269,8 +278,13 @@ def plot_across_days():
         else:
             axes[ax_ind].set_ylabel('')
 
-        axes[ax_ind].set_xlim(xlim)
-        axes[ax_ind].set_ylim(ylim)
+        if xlim:
+            axes[ax_ind].set_xlim(xlim)
+        if ylim:
+            axes[ax_ind].set_ylim(ylim)
+
+        if plot_baseline:
+            axes[ax_ind].axhline(y=1, color='k', ls='--', lw=0.5)
 
     if save_fig:
         save.save_fig(fig, save_path, fig_name, view_folder=view_folder, fig_ext=fig_ext)
@@ -340,15 +354,14 @@ if __name__ == '__main__':
     #                 view_folder=view_folder,
     #                 update_db=update_db,
     #                 fig_ext=fig_ext)
-    #
-    # # Load database
-    # df = ProjectLoader().load_db().to_dataframe(f"SELECT * FROM ff_result")
-    # df = add_pre_normalized_col(df, 'ffUndirCV', 'ffUndirCVNorm')
-    # df = add_pre_normalized_col(df, 'ffDirCV', 'ffDirCVNorm', csv_name='ff_results.csv', save_csv=True)
 
-    # # Plot FF per day
-    #
-    # # Parameters
+    # Load database
+    df = ProjectLoader().load_db().to_dataframe(f"SELECT * FROM ff_result")
+    df_norm = add_pre_normalized_col(df, 'ffUndirCV', 'ffUndirCVNorm')
+    df_norm = add_pre_normalized_col(df_norm, 'ffDirCV', 'ffDirCVNorm', csv_name='ff_results.csv', save_csv=True)
+
+    # Plot FF per day
+    # Parameters
     # save_fig = False
     # view_folder = False
     # fr_criteria = 10
@@ -360,8 +373,23 @@ if __name__ == '__main__':
     # x = 'taskSessionDeafening'
     # y = 'ffUndirCV'
     # title = 'CV of FF (Undir)'
-    #
-    #
-    #
-    # plot_across_days()
 
+    # plot_across_days(df_norm, x='taskSessionDeafening', y='ffUndirCV',
+    #                  x_label='Days from deafening',
+    #                  y_label='FF',
+    #                  title='CV of FF (Undir)', fig_name='FF_across_days',
+    #                  xlim=[-20, 40], ylim=[0, 6],
+    #                  view_folder=True,
+    #                  save_fig=False,
+    #                  )
+
+    plot_across_days(df_norm, x='taskSessionDeafening', y='ffUndirCVNorm',
+                     x_label='Days from deafening',
+                     y_label='Norm. FF',
+                     title='CV of FF (Undir)', fig_name='FF_across_days',
+                     xlim=[0, 31],
+                     ylim=[0, 3],
+                     plot_baseline=True,
+                     view_folder=True,
+                     save_fig=False,
+                     )
