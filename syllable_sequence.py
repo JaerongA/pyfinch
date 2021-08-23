@@ -4,7 +4,6 @@ Syllable sequence analysis and calculates transition entropy
 """
 
 from analysis.song import SongInfo
-from analysis.parameters import cmap_list
 from database.load import ProjectLoader, DBInfo
 import matplotlib.pyplot as plt
 import numpy as np
@@ -399,10 +398,9 @@ def plot_across_days(df, x, y,
 
 
 
-from database.load import ProjectLoader
-
 # Analyze song transition metrics
 # Load database
+from database.load import ProjectLoader
 db = ProjectLoader().load_db()
 df = db.to_dataframe("""SELECT song_sequence.*, song.taskSessionDeafening  
                 FROM song_sequence INNER JOIN song ON song.id = song_sequence.songID""")
