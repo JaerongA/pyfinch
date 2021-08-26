@@ -202,6 +202,8 @@ def get_syllable_ff(query,
                     for context in df['context'].unique():
                         temp_df = df[(df['note'] == note) & (df['context'] == context)]
 
+                        ff_cv = temp_df['ff'].std() / temp_df['ff'].mean() * 100
+
                         if len(temp_df) >= nb_note_crit:
                             if context == 'U':
                                 db.cur.execute(
@@ -209,14 +211,14 @@ def get_syllable_ff(query,
                                 db.cur.execute(
                                     f"UPDATE ff_result SET ffMeanUndir={temp_df['ff'].mean() :1.3f} WHERE songID= {song_db.id} AND note= '{note}'")
                                 db.cur.execute(
-                                    f"UPDATE ff_result SET ffUndirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                                    f"UPDATE ff_result SET ffUndirCV={ff_cv : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
                             elif context == 'D':
                                 db.cur.execute(
                                     f"UPDATE ff_result SET nbNoteDir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
                                 db.cur.execute(
                                     f"UPDATE ff_result SET ffMeanDir={temp_df['ff'].mean() :1.3f} WHERE songID= {song_db.id} AND note= '{note}'")
                                 db.cur.execute(
-                                    f"UPDATE ff_result SET ffDirCV={temp_df['ff'].std() / temp_df['ff'].mean() * 100 : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                                    f"UPDATE ff_result SET ffDirCV={ff_cv : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
 
                     # If neither condition meets the number of notes criteria
                     db.cur.execute(
@@ -331,7 +333,7 @@ if __name__ == '__main__':
     from util import save
 
     # Parameter
-    save_fig = False  # save spectrograms with FF
+    save_fig = True  # save spectrograms with FF
     view_folder = False  # view the folder where figures are stored
     update_db = True  # save results to DB
     fig_ext = '.png'  # .png or .pdf
@@ -345,8 +347,8 @@ if __name__ == '__main__':
         # Assumes that song, ff database have been created
         db = create_db('create_ff_result.sql')
 
-    # # SQL statement
-    # query = "SELECT * FROM song WHERE id>10"
+    # SQL statement
+    # query = "SELECT * FROM song WHERE id>=80"
     #
     # get_syllable_ff(query,
     #                 nb_note_crit=nb_note_crit,
@@ -362,23 +364,13 @@ if __name__ == '__main__':
 
     # Plot FF per day
     # Parameters
-    # save_fig = False
-    # view_folder = False
-    # fr_criteria = 10
-    # fig_name = 'FF_across_days'
-    # xlim = [-20, 40]
-    # ylim = [0, 6]
-    # x_label = 'Days from deafening'
-    # y_label = 'FF'
-    # x = 'taskSessionDeafening'
-    # y = 'ffUndirCV'
-    # title = 'CV of FF (Undir)'
+    fr_criteria = 10
 
     # plot_across_days(df_norm, x='taskSessionDeafening', y='ffUndirCV',
     #                  x_label='Days from deafening',
     #                  y_label='FF',
     #                  title='CV of FF (Undir)', fig_name='FF_across_days',
-    #                  xlim=[-20, 40], ylim=[0, 6],
+    #                  xlim=[-20, 40], ylim=[0, 5],
     #                  view_folder=True,
     #                  save_fig=False,
     #                  )
