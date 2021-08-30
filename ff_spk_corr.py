@@ -6,12 +6,13 @@ Get correlation between fundamental frequency and spike number
 
 def get_ff_spk_corr(query,
                     update=False,
-                    save_spectrogram=None,
-                    save_result_fig=None,
-                    view_folder=None,
-                    update_db=None,
-                    save_csv=None,
+                    save_spectrogram=False,
+                    save_result_fig=False,
+                    view_folder=False,
+                    update_db=False,
+                    save_csv=False,
                     fig_ext='.png'):
+
     from analysis.parameters import note_buffer, freq_range, nb_note_crit, pre_motor_win_size, alpha
     from analysis.spike import ClusterInfo, AudioData
     from analysis.functions import get_ff
@@ -49,6 +50,8 @@ def get_ff_spk_corr(query,
 
         # Fundamental Frequency analysis
         # Retrieve data from ff database
+
+
         db.execute(
             f"SELECT ffNote, ffParameter, ffCriterion, ffLow, ffHigh, ffDuration, harmonic FROM ff WHERE birdID='{cluster_db.birdID}'")
         ff_info = {data[0]: {'parameter': data[1],
