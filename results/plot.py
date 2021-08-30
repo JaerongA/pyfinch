@@ -35,7 +35,6 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
     import matplotlib.pyplot as plt
     from scipy import stats
     import seaborn as sns
-    from util.functions import myround
 
     dependent_var.replace('', np.nan,
                           inplace=True)  # replace empty cells with np.nans (to prevent the var to be recognized as non-numeric)
@@ -99,6 +98,70 @@ def plot_cluster_pie_chart(axis, colors, category_column_name):
     pass
 
 
+def plot_across_days_per_note(df, x, y,
+                              x_label=None,
+                              y_label=None,
+                              title=None, fig_name=None,
+                              xlim=None, ylim=None,
+                              vline=None,
+                              hline=None,
+                              view_folder=True,
+                              save_fig=True,
+                              save_path=None,
+                              fig_ext='.png'
+                              ):
+
+    # Load database
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    from util.draw import remove_right_top
+    from util import save
+
+    # Plot the results
+    circ_size = 1
+
+    # bird_list = sorted(set(df['birdID'].to_list()))
+    bird_list = df['birdID'].unique()
+    fig, axes = plt.subplots(2, 5, figsize=(20, 8))
+    fig.subplots_adjust(hspace=.3, wspace=.2, top=0.9)
+
+    fig.get_axes()[0].annotate(f"{title}", (0.5, 0.97),
+                               xycoords='figure fraction',
+                               ha='center',
+                               fontsize=16)
+    axes = axes.ravel()
+
+    for bird, ax_ind in zip(bird_list, range(len(bird_list))):
+
+        temp_df = df.loc[df['birdID'] == bird]
+        sns.lineplot(x=x, y=y, hue='note',
+                     data=temp_df, ci=None, marker='o', mew=circ_size, ax=axes[ax_ind])
+        remove_right_top(axes[ax_ind])
+        axes[ax_ind].set_title(bird)
+        if ax_ind >= 5:
+            axes[ax_ind].set_xlabel(x_label)
+        else:
+            axes[ax_ind].set_xlabel('')
+
+        if (ax_ind == 0) or (ax_ind == 5):
+            axes[ax_ind].set_ylabel(y_label)
+        else:
+            axes[ax_ind].set_ylabel('')
+
+        if xlim:
+            axes[ax_ind].set_xlim(xlim)
+        if ylim:
+            axes[ax_ind].set_ylim(ylim)
+
+        if isinstance(vline, int): # Plot vertical line
+            axes[ax_ind].axvline(x=vline, color='k', ls='--', lw=0.5)
+        if isinstance(hline, int): # Plot horizontal line (e.g., baseline)
+            axes[ax_ind].axhline(y=hline, color='k', ls='--', lw=0.5)
+
+    if save_fig:
+        save.save_fig(fig, save_path, fig_name, view_folder=view_folder, fig_ext=fig_ext)
+    else:
+        plt.show()
 
 
 # from database.load import ProjectLoader
@@ -123,3 +186,5 @@ def plot_cluster_pie_chart(axis, colors, category_column_name):
 # plt.title('Unit Category (Undir)')
 # ax.axis('equal')
 # plt.show()
+
+
