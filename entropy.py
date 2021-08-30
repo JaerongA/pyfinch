@@ -1,192 +1,413 @@
 """
 By Jaerong
-Calculate entropy per syllable
+Calculate entropy, entropy variance per syllable
 """
 
-from analysis.parameters import note_buffer, freq_range, nb_note_crit
-from analysis.song import AudioInfo, SongInfo
-from database.load import ProjectLoader, DBInfo
-from util import save
-from analysis.functions import para_interp
-import matplotlib.colors as colors
-import matplotlib.gridspec as gridspec
-import matplotlib.pyplot as plt
-import numpy as np
-import statsmodels.tsa.stattools as smt
-from scipy.signal import find_peaks
-from util.draw import remove_right_top
-import pandas as pd
+def get_entropy(query,
+                update=False,
+                nb_note_crit=None,
+                save_fig=None,
+                view_folder=False,
+                update_db=False,
+                fig_ext='.png'):
 
-# Parameter
-update = False  # update or make a new cache file
-save_fig = True
-view_folder = False  # view the folder where figures are stored
-update_db = True  # save results to DB
-fig_ext = '.png'  # .png or .pdf
-txt_offset = 0.2
-font_size = 6
+    from analysis.parameters import note_buffer, freq_range
+    from analysis.song import AudioInfo, SongInfo
+    from database.load import ProjectLoader, DBInfo
+    from util import save
+    import matplotlib.colors as colors
+    import matplotlib.gridspec as gridspec
+    import matplotlib.pyplot as plt
+    from util.draw import remove_right_top
+    import pandas as pd
 
-# Load database
-db = ProjectLoader().load_db()
 
-# Make database
-# Parameter values should have been filled already
-with open('database/create_syllable.sql', 'r') as sql_file:
-    db.conn.executescript(sql_file.read())
+    # Load database
+    db = ProjectLoader().load_db()
+    # SQL statement
+    db.execute(query)
 
-# Make save path
-save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Entropy', add_date=False)
+    # Loop through db
+    for row in db.cur.fetchall():
+        # Load song info from db
+        song_db = DBInfo(row)
+        name, path = song_db.load_song_db()
+        song_note = song_db.songNote
 
-# SQL statement
-# query = "SELECT * FROM song WHERE birdID='b70r38'"
-# query = "SELECT * FROM song WHERE id=2"
-query = "SELECT * FROM song"
-db.execute(query)
+        si = SongInfo(path, name, update=update)  # song object
 
-# Loop through db
-for row in db.cur.fetchall():
-    # Load song info from db
-    song_db = DBInfo(row)
-    name, path = song_db.load_song_db()
-    song_note = song_db.songNote
+        df = pd.DataFrame()  # Store results here
 
-    si = SongInfo(path, name, update=update)  # song object
+        note_ind1 = -1  # note index across the session
 
-    df = pd.DataFrame()  # Store results here
+        for file in si.files:
 
-    note_ind1 = -1  # note index across the session
+            print(f'Loading... {file.name}')
+            # Loop through the notes
+            note_ind2 = -1  # note index within a file
 
-    for file in si.files:
+            # Load audio object with info from .not.mat files
+            ai = AudioInfo(file)
+            ai.load_notmat()
 
-        print(f'Loading... {file.name}')
-        # Loop through the notes
-        note_ind2 = -1  # note index within a file
+            for note, onset, offset in zip(ai.syllables, ai.onsets, ai.offsets):
 
-        # Load audio object with info from .not.mat files
-        ai = AudioInfo(file)
-        ai.load_notmat()
+                if note not in song_db.songNote: continue  # skip if not a song note
 
-        for note, onset, offset in zip(ai.syllables, ai.onsets, ai.offsets):
+                # Update db with note info
+                if update_db and note in song_note:
+                    # Fill in song info
+                    query = f"INSERT OR IGNORE INTO syllable (songID, birdID, taskName, note)" \
+                            f"VALUES({song_db.id}, '{song_db.birdID}', '{song_db.taskName}', '{note}')"
+                    db.cur.execute(query)
+                    db.conn.commit()
+                    song_note = song_note.replace(note, '')
 
-            if note not in song_db.songNote: continue  # skip if not a song note
+                # Note start and end
+                note_ind1 += 1  # note index across the session
+                note_ind2 += 1  # note index within a file
 
-            # Update db with note info
-            if update_db and note in song_note:
-                # Fill in song info
-                query = f"INSERT OR IGNORE INTO syllable (songID, birdID, taskName, note)" \
-                        f"VALUES({song_db.id}, '{song_db.birdID}', '{song_db.taskName}', '{note}')"
-                db.cur.execute(query)
-                db.conn.commit()
-                song_note = song_note.replace(note, '')
+                # if note_ind1 != 1:
+                #     continue
 
-            # Note start and end
-            note_ind1 += 1  # note index across the session
-            note_ind2 += 1  # note index within a file
+                duration = offset - onset
 
-            # if note_ind1 != 1:
-            #     continue
+                # Get spectrogram
+                timestamp, data = ai.extract([onset, offset])  # Extract data within the range
+                spect_time, spect, spect_freq = ai.spectrogram(timestamp, data)
+                spectral_entropy = ai.get_spectral_entropy(spect, mode='spectral')
+                se_dict = ai.get_spectral_entropy(spect, mode='spectro_temporal')
 
-            duration = offset - onset
+                # Organize results per song session
+                temp_df = pd.DataFrame({'note': [note], 'context': [ai.context],
+                                        'spectral_entropy': [round(spectral_entropy, 3)],
+                                        'spectro_temporal_entropy': [round(se_dict['mean'], 3)],
+                                        'entropy_var': [round(se_dict['var'], 4)]
+                                        })
+                df = df.append(temp_df, ignore_index=True)
 
-            # Get spectrogram
-            timestamp, data = ai.extract([onset, offset])  # Extract data within the range
-            spect_time, spect, spect_freq = ai.spectrogram(timestamp, data)
-            spectral_entropy = ai.get_spectral_entropy(spect, mode='spectral')
-            se_dict = ai.get_spectral_entropy(spect, mode='spectro_temporal')
+                if save_fig:
+                    # Parameters
+                    txt_offset = 0.2
+                    font_size = 6
 
-            # Plot figure
-            fig = plt.figure(figsize=(4, 2), dpi=250)
-            fig_name = f"{note_ind1 :03} - {file.name}, note#{note_ind2} - {note}"
+                    # Plot figure
+                    fig = plt.figure(figsize=(4, 2), dpi=250)
+                    fig_name = f"{note_ind1 :03} - {file.name}, note#{note_ind2} - {note}"
 
-            plt.suptitle(fig_name, y=.90, fontsize=font_size)
-            gs = gridspec.GridSpec(4, 6)
+                    plt.suptitle(fig_name, y=.90, fontsize=font_size)
+                    gs = gridspec.GridSpec(4, 6)
 
-            # Plot spectrogram
-            ax_spect = plt.subplot(gs[1:3, 0:3])
-            spect_time = spect_time - spect_time[0]  # starts from zero
-            ax_spect.pcolormesh(spect_time, spect_freq, spect,  # data
-                                cmap='hot_r',
-                                norm=colors.SymLogNorm(linthresh=0.05,
-                                                       linscale=0.03,
-                                                       vmin=0.5,
-                                                       vmax=100
-                                                       ))
+                    # Plot spectrogram
+                    ax_spect = plt.subplot(gs[1:3, 0:3])
+                    spect_time = spect_time - spect_time[0]  # starts from zero
+                    ax_spect.pcolormesh(spect_time, spect_freq, spect,  # data
+                                        cmap='hot_r',
+                                        norm=colors.SymLogNorm(linthresh=0.05,
+                                                               linscale=0.03,
+                                                               vmin=0.5,
+                                                               vmax=100
+                                                               ))
 
-            remove_right_top(ax_spect)
-            ax_spect.set_xlim(-note_buffer, duration + note_buffer)
-            ax_spect.set_ylim(freq_range[0], freq_range[1])
-            ax_spect.set_xlabel('Time (ms)', fontsize=font_size)
-            ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
-            plt.yticks(freq_range, list(map(str, freq_range)), fontsize=5)
-            plt.xticks(fontsize=5), plt.yticks(fontsize=5)
+                    remove_right_top(ax_spect)
+                    ax_spect.set_xlim(-note_buffer, duration + note_buffer)
+                    ax_spect.set_ylim(freq_range[0], freq_range[1])
+                    ax_spect.set_xlabel('Time (ms)', fontsize=font_size)
+                    ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
+                    plt.yticks(freq_range, list(map(str, freq_range)), fontsize=5)
+                    plt.xticks(fontsize=5), plt.yticks(fontsize=5)
 
-            # Calculate spectral entropy per time bin
-            # Plot syllable entropy
-            ax_se = ax_spect.twinx()
-            ax_se.plot(spect_time, se_dict['array'], 'k')
-            ax_se.set_ylim(0, 1)
-            ax_se.spines['top'].set_visible(False)
-            ax_se.set_ylabel('Entropy', fontsize=font_size)
-            plt.xticks(fontsize=5), plt.yticks(fontsize=5)
+                    # Calculate spectral entropy per time bin
+                    # Plot syllable entropy
+                    ax_se = ax_spect.twinx()
+                    ax_se.plot(spect_time, se_dict['array'], 'k')
+                    ax_se.set_ylim(0, 1)
+                    ax_se.spines['top'].set_visible(False)
+                    ax_se.set_ylabel('Entropy', fontsize=font_size)
+                    plt.xticks(fontsize=5), plt.yticks(fontsize=5)
 
-            # Print out text results
-            txt_xloc = -1.5
-            txt_yloc = 0.8
-            ax_txt = plt.subplot(gs[1:, -1])
-            ax_txt.set_axis_off()  # remove all axes
-            ax_txt.text(txt_xloc, txt_yloc, f"Spectral Entropy = {round(spectral_entropy, 3)}", fontsize=font_size)
-            txt_yloc -= txt_offset
-            ax_txt.text(txt_xloc, txt_yloc, f"Spectrotemporal Entropy = {round(se_dict['mean'], 3)}",
-                        fontsize=font_size)
-            txt_yloc -= txt_offset
-            ax_txt.text(txt_xloc, txt_yloc, f"Entropy Variance = {round(se_dict['var'], 4)}", fontsize=font_size)
+                    # Print out text results
+                    txt_xloc = -1.5
+                    txt_yloc = 0.8
+                    ax_txt = plt.subplot(gs[1:, -1])
+                    ax_txt.set_axis_off()  # remove all axes
+                    ax_txt.text(txt_xloc, txt_yloc, f"Spectral Entropy = {round(spectral_entropy, 3)}", fontsize=font_size)
+                    txt_yloc -= txt_offset
+                    ax_txt.text(txt_xloc, txt_yloc, f"Spectrotemporal Entropy = {round(se_dict['mean'], 3)}",
+                                fontsize=font_size)
+                    txt_yloc -= txt_offset
+                    ax_txt.text(txt_xloc, txt_yloc, f"Entropy Variance = {round(se_dict['var'], 4)}", fontsize=font_size)
 
-            # Save results
-            if save_fig:
-                save_path2 = save.make_dir(save_path, si.name, add_date=False)
-                save.save_fig(fig, save_path2, fig_name, view_folder=view_folder, fig_ext=fig_ext)
+                    # Save results
+                    save_path2 = save.make_dir(save_path, si.name, add_date=False)
+                    save.save_fig(fig, save_path2, fig_name, view_folder=view_folder, fig_ext=fig_ext)
 
-            # Organize results per song session
-            temp_df = pd.DataFrame({'note': [note], 'context': [ai.context],
-                                    'spectral_entropy': [round(spectral_entropy, 3)],
-                                    'spectro_temporal_entropy': [round(se_dict['mean'], 3)],
-                                    'entropy_var': [round(se_dict['var'], 4)]
-                                    })
-            df = df.append(temp_df, ignore_index=True)
+        # Save results to ff_results db
+        if not df.empty:
+            if update_db:
+                for note in df['note'].unique():
+                    for context in df['context'].unique():
+                        temp_df = df[(df['note'] == note) & (df['context'] == context)]
+                        if context == 'U':
+                            db.cur.execute(f"UPDATE syllable SET nbNoteUndir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                            if len(temp_df) >= nb_note_crit:
+                                db.cur.execute(f"UPDATE syllable SET entropyUndir={temp_df['spectral_entropy'].mean() : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                                db.cur.execute(f"UPDATE syllable SET spectroTemporalEntropyUndir={temp_df['spectro_temporal_entropy'].mean(): .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                                db.cur.execute(f"UPDATE syllable SET entropyVarUndir={temp_df['entropy_var'].mean(): .4f} WHERE songID= {song_db.id} AND note= '{note}'")
+                        elif context == 'D':
+                            db.cur.execute(f"UPDATE syllable SET nbNoteDir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                            if len(temp_df) >= nb_note_crit:
+                                db.cur.execute(f"UPDATE syllable SET entropyDir={temp_df['spectral_entropy'].mean() : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                                db.cur.execute(f"UPDATE syllable SET spectroTemporalEntropyDir={temp_df['spectro_temporal_entropy'].mean() : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                                db.cur.execute(f"UPDATE syllable SET entropyVarDir={temp_df['entropy_var'].mean() : .4f} WHERE songID= {song_db.id} AND note= '{note}'")
+                    db.conn.commit()
 
-    # Save results to ff_results db
-    if not df.empty:
-        if update_db:
-            for note in df['note'].unique():
-                for context in df['context'].unique():
-                    temp_df = df[(df['note'] == note) & (df['context'] == context)]
-                    if context == 'U':
-                        db.cur.execute(f"UPDATE syllable SET nbNoteUndir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
-                        if len(temp_df) >= nb_note_crit:
-                            db.cur.execute(f"UPDATE syllable SET entropyUndir={temp_df['spectral_entropy'].mean() : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE syllable SET spectroTemporalEntropyUndir={temp_df['spectro_temporal_entropy'].mean(): .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE syllable SET entropyVarUndir={temp_df['entropy_var'].mean(): .4f} WHERE songID= {song_db.id} AND note= '{note}'")
-                    elif context == 'D':
-                        db.cur.execute(f"UPDATE syllable SET nbNoteDir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
-                        if len(temp_df) >= nb_note_crit:
-                            db.cur.execute(f"UPDATE syllable SET entropyDir={temp_df['spectral_entropy'].mean() : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE syllable SET spectroTemporalEntropyDir={temp_df['spectro_temporal_entropy'].mean() : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                            db.cur.execute(f"UPDATE syllable SET entropyVarDir={temp_df['entropy_var'].mean() : .4f} WHERE songID= {song_db.id} AND note= '{note}'")
-                db.conn.commit()
+                    # If neither condition meets the number of notes criteria
+                    db.cur.execute(f"SELECT nbNoteUndir, nbNoteDir FROM syllable WHERE songID={song_db.id} AND note= '{note}'")
+                    nb_notes = [{'U': data[0], 'D': data[1]} for data in db.cur.fetchall()][0]
+                    if not (bool(nb_notes['U']) or bool(nb_notes['D'])):
+                        db.cur.execute(f"DELETE FROM syllable WHERE songID= {song_db.id} AND note= '{note}'")
+                    db.conn.commit()
 
-                # If neither condition meets the number of notes criteria
-                db.cur.execute(f"SELECT nbNoteUndir, nbNoteDir FROM syllable WHERE songID={song_db.id} AND note= '{note}'")
-                nb_notes = [{'U': data[0], 'D': data[1]} for data in db.cur.fetchall()][0]
-                if not (bool(nb_notes['U']) or bool(nb_notes['D'])):
-                    db.cur.execute(f"DELETE FROM syllable WHERE songID= {song_db.id} AND note= '{note}'")
-                db.conn.commit()
+            # Save df to csv
+            if "save_path2" in locals():
+                df = df.rename_axis(index='index')
+                df.to_csv(save_path2 / ('-'.join(save_path2.stem.split('-')[1:]) + '.csv'), index=True, header=True)
 
-        # Save df to csv
-        if "save_path2" in locals():
-            df = df.rename_axis(index='index')
-            df.to_csv(save_path2 / ('-'.join(save_path2.stem.split('-')[1:]) + '.csv'), index=True, header=True)
+    if update_db:
+        db.to_csv('syllable')
 
-if update_db:
-    db.to_csv('syllable')
+    print('Done!')
 
-print('Done!')
+
+if __name__ =='__main__':
+
+    from database.load import create_db, DBInfo, ProjectLoader
+    from util import save
+
+    # Parameter
+    update = False  # update or make a new cache file
+    save_fig = True
+    view_folder = False  # view the folder where figures are stored
+    update_db = True  # save results to DB
+    fig_ext = '.png'  # .png or .pdf
+    nb_note_crit = 10
+
+    # Make save path
+    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Entropy', add_date=False)
+
+    # # Create & Load database
+    # if update_db:
+    #     # Assumes that song, ff database have been created
+    #     db = create_db('create_syllable.sql')
+
+    # SQL statement
+    # query = "SELECT * FROM song WHERE birdID='b70r38'"
+    # query = "SELECT * FROM song WHERE id=2"
+    # query = "SELECT * FROM song WHERE id=1"
+    #
+    # get_entropy(query,
+    #                 nb_note_crit=nb_note_crit,
+    #                 save_fig=save_fig,
+    #                 view_folder=view_folder,
+    #                 update_db=update_db,
+    #                 fig_ext=fig_ext)
+
+    # Plot values across days
+    from results.plot import plot_across_days_per_note
+
+    # Load database
+    query=f"""SELECT syl.*, song.taskSession, song.taskSessionDeafening, song.taskSessionPostDeafening, song.dph, song.block10days 
+    FROM syllable syl INNER JOIN song ON syl.songID = song.id WHERE syl.nbNoteUndir >= {nb_note_crit}"""
+
+    df = ProjectLoader().load_db().to_dataframe(query)
+    df.set_index('syllableID')
+
+    # # Spectral Entropy
+    # plot_across_days_per_note(df, x='taskSessionDeafening', y='entropyUndir',
+    #                           x_label='Days from deafening',
+    #                           y_label='Spectral Entropy',
+    #                           title=f"Spectral Entropy (nb of notes >= {nb_note_crit}) Undir",
+    #                           fig_name='Spectral_entropy_across_days',
+    #                           xlim=[-40, 80], ylim=[0.2, 1],
+    #                           vline=0,
+    #                           view_folder=True,
+    #                           save_fig=False,
+    #                           save_path=save_path
+    #                           )
+    #
+    # # Spectro-temporal Entropy
+    # plot_across_days_per_note(df, x='taskSessionDeafening', y='spectroTemporalEntropyUndir',
+    #                           x_label='Days from deafening',
+    #                           y_label='Spectro temporal Entropy',
+    #                           title=f"Spectrotemporal Entropy (nb of notes >= {nb_note_crit}) Undir",
+    #                           fig_name='Spectro_temporal_entropy_across_days',
+    #                           xlim=[-40, 80], ylim=[0.2, 1],
+    #                           vline=0,
+    #                           view_folder=True,
+    #                           save_fig=False,
+    #                           save_path=save_path
+    #                           )
+    #
+    # # Entropy variance
+    # plot_across_days_per_note(df, x='taskSessionDeafening', y='entropyVarUndir',
+    #                           x_label='Days from deafening',
+    #                           y_label='Entropy variance',
+    #                           title=f"Entropy variance (nb of notes >= {nb_note_crit}) Undir",
+    #                           fig_name='EV_across_days',
+    #                           xlim=[-40, 80], ylim=[0, 0.04],
+    #                           vline=0,
+    #                           view_folder=True,
+    #                           save_fig=False,
+    #                           save_path=save_path
+    #                           )
+
+    # # Plot normalized values
+    from analysis.functions import add_pre_normalized_col
+
+    df_norm = add_pre_normalized_col(df, 'entropyUndir', 'entropyUndirNorm')
+    df_norm = add_pre_normalized_col(df_norm, 'entropyDir', 'entropyDirNorm')
+
+    df_norm = add_pre_normalized_col(df_norm, 'spectroTemporalEntropyUndir', 'spectroTemporalEntropyUndirNorm')
+    df_norm = add_pre_normalized_col(df_norm, 'spectroTemporalEntropyDir', 'spectroTemporalEntropyDirNorm')
+
+    df_norm = add_pre_normalized_col(df_norm, 'entropyVarUndir', 'entropyVarUndirNorm')
+    df_norm = add_pre_normalized_col(df_norm, 'entropyVarDir', 'entropyVarDirNorm')
+
+    # plot_across_days_per_note(df_norm, x='taskSessionDeafening', y='entropyUndirNorm',
+    #                           x_label='Days from deafening',
+    #                           y_label='Norm. Spectral Entropy',
+    #                           title=f"Norm. Entropy variance (nb of notes >= {nb_note_crit}) Undir",
+    #                           fig_name='Spectral_entropy_norm_across_days',
+    #                           xlim=[0, 75], ylim=[0.5, 1.5],
+    #                           hline=1,
+    #                           view_folder=True,
+    #                           save_fig=False,
+    #                           save_path=save_path
+    #                           )
+    #
+    # plot_across_days_per_note(df_norm, x='taskSessionDeafening', y='spectroTemporalEntropyUndirNorm',
+    #                           x_label='Days from deafening',
+    #                           y_label='Norm. Spectro temporal Entropy',
+    #                           title=f"Norm. Spectro temporal Entropy (nb of notes >= {nb_note_crit}) Undir",
+    #                           fig_name='Spectral_entropy_norm_across_days',
+    #                           xlim=[0, 75], ylim=[0.5, 1.5],
+    #                           hline=1,
+    #                           view_folder=True,
+    #                           save_fig=False,
+    #                           save_path=save_path
+    #                           )
+    #
+    # plot_across_days_per_note(df_norm, x='taskSessionDeafening', y='entropyVarUndirNorm',
+    #                           x_label='Days from deafening',
+    #                           y_label='Norm. Entropy variance',
+    #                           title=f"Norm. Entropy variance (nb of notes >= {nb_note_crit}) Undir",
+    #                           fig_name='Entropy_variance_norm_across_days',
+    #                           xlim=[0, 75], ylim=[0, 2.5],
+    #                           hline=1,
+    #                           view_folder=True,
+    #                           save_fig=False,
+    #                           save_path=save_path
+    #                           )
+
+
+
+    # Compare conditional means of CV of FF
+
+    def plot_paired_data(df, x, y,
+                         x_label=None, y_label=None,
+                         y_lim=None,
+                         view_folder=True,
+                         fig_name=None,
+                         save_fig=True,
+                         save_path=None,
+                         fig_ext='.png'
+                         ):
+
+
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        from scipy import stats
+        from util.draw import remove_right_top
+
+        df_mean = df.groupby(['birdID', 'note', 'taskName']).mean()[y].reset_index()
+
+        # Make paired-comparisons
+        fig, ax = plt.subplots(1, 1, figsize=(5, 6))
+        current_palette = sns.color_palette()
+        inc = 0
+
+        for bird in df_mean['birdID'].unique():
+            for note in df_mean['note'].unique():
+                temp_df = df_mean.loc[(df_mean['birdID'] == bird) & (df_mean['note'] == note)]
+                if len(temp_df[x].unique()) == 2:  # paired value exists
+                    ax = sns.pointplot(x=x, y=y,
+                                       data=temp_df,
+                                       order=["Predeafening", "Postdeafening"],
+                                       aspect=.5, scale=0.7, color=current_palette[inc])
+                elif len(temp_df[x].unique()) == 1:  # paired value doesn't exist
+                    if temp_df[x].values == 'Predeafening':
+                        ax.scatter(-0.2, temp_df[y].values, color=current_palette[inc])
+                    if temp_df[x].values == 'Postdeafening':
+                        ax.scatter(1.2, temp_df[y].values, color=current_palette[inc])
+            inc += 1
+        #     ax.get_legend().remove()
+        if y_lim:
+            ax.set_ylim([0, 1.2])
+        ax.set_xlabel(x_label), ax.set_ylabel(y_label)
+        remove_right_top(ax)
+
+        # t-test
+        group_var = df_mean[x]
+        dependent_var = df_mean[y]
+        group1 = dependent_var[group_var == list(set(group_var))[0]].dropna()
+        group2 = dependent_var[group_var == list(set(group_var))[1]].dropna()
+        tval, pval = stats.ttest_ind(group2, group1, nan_policy='omit')
+        degree_of_freedom = len(group1) + len(group2) - 2
+        msg1 = ('t({:.0f})'.format(degree_of_freedom) + ' = {:.2f}'.format(tval))
+        if pval < 0.001:  # mark significance
+            msg2 = ('p < 0.001')
+        else:
+            msg2 = ('p = {:.3f}'.format(pval))
+        msg = msg1 + ', ' + msg2
+
+        # rank-sum
+        # group1, group2 = [], []
+        # group1 = df_mean.query('taskName == "Predeafening"')['entropyUndir']
+        # group2 = df_mean.query('taskName == "Postdeafening"')['entropyUndir']
+        # stat, pval = stats.ranksums(group1, group2)
+        # degree_of_freedom = len(group1) + len(group2) - 2
+        # msg = f"ranksum p-val = {pval : .3f}"
+
+        if pval < 0.001:
+            sig = '***'
+        elif pval < 0.01:
+            sig = '**'
+        elif pval < 0.05:
+            sig = '*'
+        else:
+            sig = 'ns'
+
+        x1, x2 = 0, 1
+        y_loc, h, col = df_mean[y].max() + 0.2, 0.05, 'k'
+
+        ax.plot([x1, x1, x2, x2], [y_loc, y_loc + h, y_loc + h, y_loc], lw=1.5, c=col)
+        ax.text((x1 + x2) * .5, y_loc + h * 1.5, sig, ha='center', va='bottom', color=col, size=10)
+        plt.title(msg, size=10)
+
+        if save_fig:
+            save.save_fig(fig, save_path, fig_name, view_folder=view_folder, fig_ext=fig_ext)
+        else:
+            plt.show()
+
+
+    plot_paired_data(df_norm, x='taskName', y='entropyUndir',
+                         x_label=None, y_label="Spectral Entropy (Undir)",
+                         y_lim=[0, 1.2],
+                         view_folder=True,
+                         fig_name='Spectral_entropy_comparison',
+                         save_fig=False,
+                         save_path=save_path,
+                         fig_ext='.png'
+                         )
+
