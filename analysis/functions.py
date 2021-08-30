@@ -566,3 +566,37 @@ def get_ff(data, sample_rate, ff_low, ff_high, ff_harmonic=1):
         else:
             ff = ff[0] / ff_harmonic
     return ff
+
+
+def normalize_from_pre(df, var_name: str, note: str):
+    """Normalize post-deafening values using pre-deafening values"""
+    pre_val = df.loc[(df['note'] == note) & (df['taskName'] == 'Predeafening')][var_name]
+    pre_val = pre_val.mean()
+
+    post_val = df.loc[(df['note'] == note) & (df['taskName'] == 'Postdeafening')][var_name]
+    norm_val = post_val / pre_val
+
+    return norm_val
+
+
+def add_pre_normalized_col(df, col_name_to_normalize, col_name_to_add, save_path=None, csv_name=None, save_csv=False):
+    """Normalize relative to pre-deafening mean"""
+    import numpy as np
+
+    df[col_name_to_add] = np.nan
+
+    bird_list = sorted(set(df['birdID'].to_list()))
+    for bird in bird_list:
+
+        temp_df = df.loc[df['birdID'] == bird]
+        note_list = temp_df['note'].unique()
+
+        for note in note_list:
+            norm_val = normalize_from_pre(temp_df, col_name_to_normalize, note)
+            add_ind = temp_df.loc[(temp_df['note'] == note) & (temp_df['taskName'] == 'Postdeafening')].index
+            df.loc[add_ind, col_name_to_add] = norm_val
+
+    if save_csv:
+        df.to_csv(save_path / csv_name, index=False, header=True)
+
+    return df
