@@ -4,13 +4,6 @@ plot raster & peth
 """
 
 
-def create_db():
-    from database.load import ProjectLoader
-
-    db = ProjectLoader().load_db()
-    with open('database/create_pcc.sql', 'r') as sql_file:
-        db.conn.executescript(sql_file.read())
-
 def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
     from analysis.parameters import peth_shuffle
     # from analysis.spike import MotifInfo
@@ -44,7 +37,7 @@ def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
     if plot_hist:
         from util.draw import remove_right_top
 
-        fig, axes = plt.subplots(1,2, figsize=(6, 3))
+        fig, axes = plt.subplots(1, 2, figsize=(6, 3))
         plt.suptitle('PCC shuffle distribution', y=.98, fontsize=10)
         for axis, context in zip(axes, pcc_shuffle.keys()):
             axis.set_title(context)
@@ -60,6 +53,7 @@ def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
         plt.show()
 
     return p_sig
+
 
 def get_raster(query,
                shuffled_baseline=False,
@@ -541,6 +535,8 @@ def get_raster(query,
 
 if __name__ == '__main__':
 
+    from database.load import create_db
+
     # Parameters
     shuffled_baseline = True
     fig_ext = '.png'
@@ -549,13 +545,13 @@ if __name__ == '__main__':
     save_fig = False
     update_db = False
 
-    # Select from cluster db
-    # query = "SELECT * FROM cluster WHERE analysisOK = 1"
-    query = "SELECT * FROM cluster WHERE  analysisOK = 1 AND id = 17"
-
     # Create & Load database
     if update_db:
-        db = create_db()
+        db = create_db('create_pcc.sql')
+
+    # SQL statement
+    # query = "SELECT * FROM cluster WHERE analysisOK = 1"
+    query = "SELECT * FROM cluster WHERE  analysisOK = 1 AND id = 17"
 
     get_raster(query, shuffled_baseline=shuffled_baseline, fig_ext=fig_ext, time_warp=time_warp,
                update=update,

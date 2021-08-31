@@ -25,7 +25,7 @@ update_db = True  # save results to DB
 save_csv = True
 fig_ext = '.png'  # .png or .pdf
 txt_offset = 0.2
-correlation_parm = 'spectral_entropy'  # {'spectral_entropy' : 'spectro_temporal_entropy' : 'ev'}
+correlation_parm = 'ev'  # {'spectral_entropy' : 'spectro_temporal_entropy' : 'ev'}
 
 # Load database
 db = ProjectLoader().load_db()

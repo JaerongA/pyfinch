@@ -111,53 +111,53 @@ def plot_across_days(x, y,
         plt.show()
 
 
-def pre_post_comparison(query,
-                        x, y1, y2,
-                        title=None,
-                        run_stats=True,
-                        y_lim=None,
-                        fig_ext='.png',
-                        save_fig=False,
-                        update_cache=False):
-
-    from database.load import ProjectLoader
-    import matplotlib.pyplot as plt
-    from results.plot import plot_bar_comparison
-
-    # Parameters
-    nb_row = 3
-    nb_col = 2
-
-    # Load database
-    db = ProjectLoader().load_db()
-    # # SQL statement
-
-    df = db.to_dataframe(query)
-    # df.set_index('id')
-
-    # Plot the results
-    fig, ax = plt.subplots(figsize=(7, 4))
-    plt.suptitle(title, y=.9, fontsize=20)
-
-    # Undir
-    ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
-    plot_bar_comparison(ax, df[y1], df[x], hue_var=df['birdID'],
-                        title='Undir', ylabel=y1,
-                        col_order=("Predeafening", "Postdeafening"),
-                        y_lim=y_lim,
-                        run_stats=run_stats
-                        )
-    # Dir
-    ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
-    plot_bar_comparison(ax, df[y2], df[x], hue_var=df['birdID'],
-                        title='Dir', ylabel=y2,
-                        col_order=("Predeafening", "Postdeafening"),
-                        y_lim=y_lim,
-                        run_stats=run_stats,
-                        legend_ok=True
-                        )
-    fig.tight_layout()
-    plt.show()
+# def pre_post_comparison(query,
+#                         x, y1, y2,
+#                         title=None,
+#                         run_stats=True,
+#                         y_lim=None,
+#                         fig_ext='.png',
+#                         save_fig=False,
+#                         update_cache=False):
+#
+#     from database.load import ProjectLoader
+#     import matplotlib.pyplot as plt
+#     from results.plot import plot_bar_comparison
+#
+#     # Parameters
+#     nb_row = 3
+#     nb_col = 2
+#
+#     # Load database
+#     db = ProjectLoader().load_db()
+#     # # SQL statement
+#
+#     df = db.to_dataframe(query)
+#     # df.set_index('id')
+#
+#     # Plot the results
+#     fig, ax = plt.subplots(figsize=(7, 4))
+#     plt.suptitle(title, y=.9, fontsize=20)
+#
+#     # Undir
+#     ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
+#     plot_bar_comparison(ax, df[y1], df[x], hue_var=df['birdID'],
+#                         title='Undir', ylabel=y1,
+#                         col_order=("Predeafening", "Postdeafening"),
+#                         y_lim=y_lim,
+#                         run_stats=run_stats
+#                         )
+#     # Dir
+#     ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
+#     plot_bar_comparison(ax, df[y2], df[x], hue_var=df['birdID'],
+#                         title='Dir', ylabel=y2,
+#                         col_order=("Predeafening", "Postdeafening"),
+#                         y_lim=y_lim,
+#                         run_stats=run_stats,
+#                         legend_ok=True
+#                         )
+#     fig.tight_layout()
+#     plt.show()
 
 
 # Parameters
@@ -165,7 +165,6 @@ fig_ext = '.png'
 save_fig = False
 update_db = True
 update_cache = False
-nb_note_crit = 10
 nb_bout_crit = 10
 
 # SQL statement
@@ -175,7 +174,7 @@ query = f"SELECT * FROM song WHERE nbBoutsUndir >= {nb_bout_crit}"
 
 # analyze_song(query, update_cache = update_cache, update_db = update_db )
 
-# plot_across_days('taskSessionDeafening', 'meanIntroUndir', 'Undir',
+# plot_across_days_per_note('taskSessionDeafening', 'meanIntroUndir', 'Undir',
 #                  nb_bout_crit=nb_bout_crit,
 #                  title='Mean_nb_intro_notes',
 #                  x_lim=[-30, 70],
@@ -183,7 +182,7 @@ query = f"SELECT * FROM song WHERE nbBoutsUndir >= {nb_bout_crit}"
 #                  fig_ext=fig_ext,
 #                  save_fig=save_fig)
 
-# plot_across_days('taskSessionDeafening', 'songCallPropUndir', 'Undir',
+# plot_across_days_per_note('taskSessionDeafening', 'songCallPropUndir', 'Undir',
 #                  nb_bout_crit=nb_bout_crit,
 #                  title='Song_Call_Proportions',
 #                  x_lim=[-30, 70],
@@ -191,14 +190,14 @@ query = f"SELECT * FROM song WHERE nbBoutsUndir >= {nb_bout_crit}"
 #                  fig_ext=fig_ext,
 #                  save_fig=save_fig)
 #
-# plot_across_days('taskSessionDeafening', 'motifDurationUndir', 'Undir',
+# plot_across_days_per_note('taskSessionDeafening', 'motifDurationUndir', 'Undir',
 #                  nb_bout_crit=nb_bout_crit,
 #                  title='Motif Duration (ms)',
 #                  x_lim=[-30, 70],
 #                  fig_ext=fig_ext,
 #                  save_fig=save_fig)
 
-# plot_across_days('taskSessionDeafening', 'motifDurationCVUndir', 'Undir',
+# plot_across_days_per_note('taskSessionDeafening', 'motifDurationCVUndir', 'Undir',
 #                  nb_bout_crit=nb_bout_crit,
 #                  title='CV of Motif',
 #                  x_lim=[-30, 70],

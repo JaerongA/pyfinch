@@ -4,13 +4,10 @@ Runs PCA analysis on SAP features
 """
 import os
 import pandas as pd
-import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from scipy import stats
 from sklearn.decomposition import PCA
-from sklearn import datasets
 from sklearn.preprocessing import StandardScaler
 from summary.read_config import parser
 from summary import load

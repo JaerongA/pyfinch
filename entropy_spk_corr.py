@@ -37,9 +37,9 @@ with open('database/create_entropy_spk_corr.sql', 'r') as sql_file:
 save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'EntropySpkCorr', add_date=False)
 
 # SQL statement
-# query = "SELECT * FROM cluster WHERE id=115"
+query = "SELECT * FROM cluster WHERE id=96"
 # query = "SELECT * FROM cluster WHERE analysisOK AND id=96"
-query = "SELECT * FROM cluster WHERE analysisOK"
+# query = "SELECT * FROM cluster WHERE analysisOK"
 db.execute(query)
 
 # Loop through db
@@ -70,9 +70,8 @@ for row in db.cur.fetchall():
     if csv_path.exists() and not save_spectrogram:
         df = pd.read_csv(csv_path)
     else:
-        # Calculate FF
+        # Calculate entropy
         df = pd.DataFrame()  # Store results here
-
         for note in cluster_db.songNote:
             # Load note object
             ni = ci.get_note_info(note)

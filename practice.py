@@ -1,40 +1,21 @@
-from database.load import ProjectLoader
-import matplotlib.pyplot as plt
-from util import save
-import pandas as pd
+blueShirtSpeeds = [3, 4, 4, 1, 1, 8, 9]
+redShirtSpeeds = [9, 8, 2, 2, 3, 5, 6]
+fastest =  False
 
-# Load database
-db = ProjectLoader().load_db()
-# SQL statement
-# query = "SELECT * FROM pcc"
-# db.execute(query)
+def tandemBicycle(redShirtSpeeds, blueShirtSpeeds, fastest):
 
-df = db.to_dataframe(query = "SELECT * FROM pcc")
-pcc_undir_sig = df['pccUndirSig']
-pcc_dir_sig = df['pccDirSig']
-task_list = pd.unique(df.taskName).tolist()
-explode = (0.1, 0)
-colors = ['#66b3ff', '#ff9999']
-values = [55, 6]
+    if fastest:
+        redShirtSpeeds.sort()
+        blueShirtSpeeds.sort()
+    else:
+        redShirtSpeeds.sort(reverse=True)
+        blueShirtSpeeds.sort(reverse=True)
 
-fig, axes = plt.subplots(1, 2, figsize=(6, 3))
+    total_speed = 0
 
-axes[0].pie(values, explode=explode, colors=colors,
-        shadow=True,
-        labels=['sig', 'non-sig'],
-        startangle=90,
-        autopct=lambda p: '{:.2f}%  ({:,.0f})'.format(p, p * sum(values) / 100))
-axes[0].set_title('PCC sig (Undir)')
+    while redShirtSpeeds:
+        total_speed += (max(redShirtSpeeds.pop(0), blueShirtSpeeds.pop()))
 
-values = [55, 6]
-axes[1].pie(values, explode=explode, colors=colors,
-        shadow=True,
-        labels=['sig', 'non-sig'],
-        startangle=90,
-        autopct=lambda p: '{:.2f}%  ({:,.0f})'.format(p, p * sum(values) / 100))
-axes[1].set_title('PCC sig (Dir)')
+    return total_speed
 
-axes[1].axis('equal')
-axes[1].axis('equal')
-
-plt.show()
+tandemBicycle(redShirtSpeeds, blueShirtSpeeds, fastest)

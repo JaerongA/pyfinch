@@ -3,11 +3,10 @@ By Jaerong
 Plot spike correlograms
 """
 
-import matplotlib.pyplot as plt
-
 from analysis.parameters import *
 from analysis.spike import *
 from database.load import ProjectLoader, DBInfo
+import matplotlib.pyplot as plt
 from util import save
 
 
@@ -58,7 +57,7 @@ with open('database/create_unit_profile.sql', 'r') as sql_file:
 
 # SQL statement
 # query = "SELECT * FROM cluster WHERE id <= 14"
-query = "SELECT * FROM cluster WHERE ephysOK=True AND id >= 14"
+query = "SELECT * FROM cluster WHERE ephysOK=True"
 db.execute(query)
 
 
@@ -74,7 +73,7 @@ for row in db.cur.fetchall():
     motif = cluster_db.motif
 
     mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
-    bi = BaselineInfo(path, channel_nb, unit_nb, cluster_db.songNote, format, name, update=update)  # bout object
+    bi = BaselineInfo(path, channel_nb, unit_nb, cluster_db.songNote, format, name, update=True)  # bout object
 
     # Calculate firing rates
     mi.get_mean_fr()

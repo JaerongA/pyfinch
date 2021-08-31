@@ -10,7 +10,7 @@
       <change beforePath="$PROJECT_DIR$/entropy.py" beforeDir="false" afterPath="$PROJECT_DIR$/entropy.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/entropy_spk_corr.py" beforeDir="false" afterPath="$PROJECT_DIR$/entropy_spk_corr.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/entropy_spk_corr_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/entropy_spk_corr_v2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ff_spk_corr.py" beforeDir="false" afterPath="$PROJECT_DIR$/ff_spk_corr.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/get_pca_sap_features.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_pca_sap_features.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/motif_syllable_duration_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_duration.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/practice.py" beforeDir="false" afterPath="$PROJECT_DIR$/practice.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/raster.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster.py" afterDir="false" />
@@ -18,7 +18,6 @@
       <change beforePath="$PROJECT_DIR$/results/plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/plot.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/results/syllable.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/syllable.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/song_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/song_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/syllable_ff.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_ff.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -194,6 +193,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -798,42 +800,8 @@
       <workItem from="1629945901931" duration="1773000" />
       <workItem from="1630025628310" duration="4736000" />
       <workItem from="1630112726968" duration="5454000" />
-      <workItem from="1630267730955" duration="9073000" />
-    </task>
-    <task id="LOCAL-00436" summary="revised baseline FR calculation (s -&gt; ms)">
-      <created>1625710594622</created>
-      <option name="number" value="00436" />
-      <option name="presentableId" value="LOCAL-00436" />
-      <option name="project" value="LOCAL" />
-      <updated>1625710594623</updated>
-    </task>
-    <task id="LOCAL-00437" summary="added significance map">
-      <created>1625710643565</created>
-      <option name="number" value="00437" />
-      <option name="presentableId" value="LOCAL-00437" />
-      <option name="project" value="LOCAL" />
-      <updated>1625710643565</updated>
-    </task>
-    <task id="LOCAL-00438" summary="bursting analysis">
-      <created>1625710688615</created>
-      <option name="number" value="00438" />
-      <option name="presentableId" value="LOCAL-00438" />
-      <option name="project" value="LOCAL" />
-      <updated>1625710688615</updated>
-    </task>
-    <task id="LOCAL-00439" summary="added bout info class">
-      <created>1626062371316</created>
-      <option name="number" value="00439" />
-      <option name="presentableId" value="LOCAL-00439" />
-      <option name="project" value="LOCAL" />
-      <updated>1626062371317</updated>
-    </task>
-    <task id="LOCAL-00440" summary="syllable sequence analysis">
-      <created>1626062385008</created>
-      <option name="number" value="00440" />
-      <option name="presentableId" value="LOCAL-00440" />
-      <option name="project" value="LOCAL" />
-      <updated>1626062385008</updated>
+      <workItem from="1630267730955" duration="19246000" />
+      <workItem from="1630363194350" duration="5044000" />
     </task>
     <task id="LOCAL-00441" summary="update">
       <created>1626148499857</created>
@@ -1143,7 +1111,42 @@
       <option name="project" value="LOCAL" />
       <updated>1630294950747</updated>
     </task>
-    <option name="localTasksCounter" value="485" />
+    <task id="LOCAL-00485" summary="compared conditional means">
+      <created>1630294989201</created>
+      <option name="number" value="00485" />
+      <option name="presentableId" value="LOCAL-00485" />
+      <option name="project" value="LOCAL" />
+      <updated>1630294989201</updated>
+    </task>
+    <task id="LOCAL-00486" summary="update">
+      <created>1630295009590</created>
+      <option name="number" value="00486" />
+      <option name="presentableId" value="LOCAL-00486" />
+      <option name="project" value="LOCAL" />
+      <updated>1630295009590</updated>
+    </task>
+    <task id="LOCAL-00487" summary="plot_across_days_per_note">
+      <created>1630295068549</created>
+      <option name="number" value="00487" />
+      <option name="presentableId" value="LOCAL-00487" />
+      <option name="project" value="LOCAL" />
+      <updated>1630295068549</updated>
+    </task>
+    <task id="LOCAL-00488" summary="update">
+      <created>1630295130923</created>
+      <option name="number" value="00488" />
+      <option name="presentableId" value="LOCAL-00488" />
+      <option name="project" value="LOCAL" />
+      <updated>1630295130923</updated>
+    </task>
+    <task id="LOCAL-00489" summary="plot_paired_data added">
+      <created>1630308270108</created>
+      <option name="number" value="00489" />
+      <option name="presentableId" value="LOCAL-00489" />
+      <option name="project" value="LOCAL" />
+      <updated>1630308270108</updated>
+    </task>
+    <option name="localTasksCounter" value="490" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1176,9 +1179,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="added get_ff" />
-    <MESSAGE value="update syllable duration analysis" />
-    <MESSAGE value="added sparseness index" />
     <MESSAGE value="sparseness" />
     <MESSAGE value="update sparseness calculation" />
     <MESSAGE value="added sparseness, fano factor, cv of firing rates" />
@@ -1195,13 +1195,16 @@
     <MESSAGE value="added add_pre_normalized_col function" />
     <MESSAGE value="corrected ff csv update error" />
     <MESSAGE value="added FundementalFreq class" />
-    <MESSAGE value="update" />
     <MESSAGE value="added plot_across_days function" />
     <MESSAGE value="incorporated into main function" />
     <MESSAGE value="calculate cv of FF + update" />
     <MESSAGE value="normalize_from_pre, add_pre_normalized_col added" />
     <MESSAGE value="added __name__ == '__main__':" />
-    <option name="LAST_COMMIT_MESSAGE" value="added __name__ == '__main__':" />
+    <MESSAGE value="compared conditional means" />
+    <MESSAGE value="plot_across_days_per_note" />
+    <MESSAGE value="update" />
+    <MESSAGE value="plot_paired_data added" />
+    <option name="LAST_COMMIT_MESSAGE" value="plot_paired_data added" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

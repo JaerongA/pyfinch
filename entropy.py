@@ -311,98 +311,11 @@ if __name__ =='__main__':
     #                           )
 
 
-
     # Compare conditional means of CV of FF
-
-    def plot_paired_data(df, x, y,
-                         x_label=None, y_label=None,
-                         y_lim=None,
-                         view_folder=True,
-                         fig_name=None,
-                         save_fig=True,
-                         save_path=None,
-                         fig_ext='.png'
-                         ):
-
-
-        import matplotlib.pyplot as plt
-        import seaborn as sns
-        from scipy import stats
-        from util.draw import remove_right_top
-
-        df_mean = df.groupby(['birdID', 'note', 'taskName']).mean()[y].reset_index()
-
-        # Make paired-comparisons
-        fig, ax = plt.subplots(1, 1, figsize=(5, 6))
-        current_palette = sns.color_palette()
-        inc = 0
-
-        for bird in df_mean['birdID'].unique():
-            for note in df_mean['note'].unique():
-                temp_df = df_mean.loc[(df_mean['birdID'] == bird) & (df_mean['note'] == note)]
-                if len(temp_df[x].unique()) == 2:  # paired value exists
-                    ax = sns.pointplot(x=x, y=y,
-                                       data=temp_df,
-                                       order=["Predeafening", "Postdeafening"],
-                                       aspect=.5, scale=0.7, color=current_palette[inc])
-                elif len(temp_df[x].unique()) == 1:  # paired value doesn't exist
-                    if temp_df[x].values == 'Predeafening':
-                        ax.scatter(-0.2, temp_df[y].values, color=current_palette[inc])
-                    if temp_df[x].values == 'Postdeafening':
-                        ax.scatter(1.2, temp_df[y].values, color=current_palette[inc])
-            inc += 1
-        #     ax.get_legend().remove()
-        if y_lim:
-            ax.set_ylim([0, 1.2])
-        ax.set_xlabel(x_label), ax.set_ylabel(y_label)
-        remove_right_top(ax)
-
-        # t-test
-        group_var = df_mean[x]
-        dependent_var = df_mean[y]
-        group1 = dependent_var[group_var == list(set(group_var))[0]].dropna()
-        group2 = dependent_var[group_var == list(set(group_var))[1]].dropna()
-        tval, pval = stats.ttest_ind(group2, group1, nan_policy='omit')
-        degree_of_freedom = len(group1) + len(group2) - 2
-        msg1 = ('t({:.0f})'.format(degree_of_freedom) + ' = {:.2f}'.format(tval))
-        if pval < 0.001:  # mark significance
-            msg2 = ('p < 0.001')
-        else:
-            msg2 = ('p = {:.3f}'.format(pval))
-        msg = msg1 + ', ' + msg2
-
-        # rank-sum
-        # group1, group2 = [], []
-        # group1 = df_mean.query('taskName == "Predeafening"')['entropyUndir']
-        # group2 = df_mean.query('taskName == "Postdeafening"')['entropyUndir']
-        # stat, pval = stats.ranksums(group1, group2)
-        # degree_of_freedom = len(group1) + len(group2) - 2
-        # msg = f"ranksum p-val = {pval : .3f}"
-
-        if pval < 0.001:
-            sig = '***'
-        elif pval < 0.01:
-            sig = '**'
-        elif pval < 0.05:
-            sig = '*'
-        else:
-            sig = 'ns'
-
-        x1, x2 = 0, 1
-        y_loc, h, col = df_mean[y].max() + 0.2, 0.05, 'k'
-
-        ax.plot([x1, x1, x2, x2], [y_loc, y_loc + h, y_loc + h, y_loc], lw=1.5, c=col)
-        ax.text((x1 + x2) * .5, y_loc + h * 1.5, sig, ha='center', va='bottom', color=col, size=10)
-        plt.title(msg, size=10)
-
-        if save_fig:
-            save.save_fig(fig, save_path, fig_name, view_folder=view_folder, fig_ext=fig_ext)
-        else:
-            plt.show()
-
+    from results.plot import plot_paired_data
 
     plot_paired_data(df_norm, x='taskName', y='entropyUndir',
-                         x_label=None, y_label="Spectral Entropy (Undir)",
+                         x_label=None, y_label="Spectral Entropy",
                          y_lim=[0, 1.2],
                          view_folder=True,
                          fig_name='Spectral_entropy_comparison',
@@ -410,4 +323,26 @@ if __name__ =='__main__':
                          save_path=save_path,
                          fig_ext='.png'
                          )
+
+    plot_paired_data(df_norm, x='taskName', y='spectroTemporalEntropyUndir',
+                         x_label=None, y_label='Spectro temporal Entropy',
+                         y_lim=[0, 1.2],
+                         view_folder=True,
+                         fig_name='Spectro_temporal_entropy_across_days',
+                         save_fig=False,
+                         save_path=save_path,
+                         fig_ext='.png'
+                         )
+
+    plot_paired_data(df_norm, x='taskName', y='entropyVarUndir',
+                         x_label=None, y_label="Entropy variance",
+                         y_lim=[0, 0.03],
+                         view_folder=True,
+                         fig_name='EV_across_days',
+                         save_fig=False,
+                         save_path=save_path,
+                         fig_ext='.png'
+                         )
+
+    df_norm.to_csv(save_path / 'df_norm.csv', index=False, header=True)
 

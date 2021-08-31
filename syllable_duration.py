@@ -1,5 +1,5 @@
 # By Jaerong
-# Syllable duration for only motif syllables using SAP features
+# Syllable duration analysis
 
 import os
 import pandas as pd
