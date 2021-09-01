@@ -3,6 +3,7 @@ By Jaerong
 Calculate entropy, entropy variance per syllable
 """
 
+
 def get_entropy(query,
                 update=False,
                 nb_note_crit=None,
@@ -10,7 +11,6 @@ def get_entropy(query,
                 view_folder=False,
                 update_db=False,
                 fig_ext='.png'):
-
     from analysis.parameters import note_buffer, freq_range
     from analysis.song import AudioInfo, SongInfo
     from database.load import ProjectLoader, DBInfo
@@ -20,7 +20,6 @@ def get_entropy(query,
     import matplotlib.pyplot as plt
     from util.draw import remove_right_top
     import pandas as pd
-
 
     # Load database
     db = ProjectLoader().load_db()
@@ -131,12 +130,14 @@ def get_entropy(query,
                     txt_yloc = 0.8
                     ax_txt = plt.subplot(gs[1:, -1])
                     ax_txt.set_axis_off()  # remove all axes
-                    ax_txt.text(txt_xloc, txt_yloc, f"Spectral Entropy = {round(spectral_entropy, 3)}", fontsize=font_size)
+                    ax_txt.text(txt_xloc, txt_yloc, f"Spectral Entropy = {round(spectral_entropy, 3)}",
+                                fontsize=font_size)
                     txt_yloc -= txt_offset
                     ax_txt.text(txt_xloc, txt_yloc, f"Spectrotemporal Entropy = {round(se_dict['mean'], 3)}",
                                 fontsize=font_size)
                     txt_yloc -= txt_offset
-                    ax_txt.text(txt_xloc, txt_yloc, f"Entropy Variance = {round(se_dict['var'], 4)}", fontsize=font_size)
+                    ax_txt.text(txt_xloc, txt_yloc, f"Entropy Variance = {round(se_dict['var'], 4)}",
+                                fontsize=font_size)
 
                     # Save results
                     save_path2 = save.make_dir(save_path, si.name, add_date=False)
@@ -149,21 +150,30 @@ def get_entropy(query,
                     for context in df['context'].unique():
                         temp_df = df[(df['note'] == note) & (df['context'] == context)]
                         if context == 'U':
-                            db.cur.execute(f"UPDATE syllable SET nbNoteUndir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE syllable SET nbNoteUndir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
                             if len(temp_df) >= nb_note_crit:
-                                db.cur.execute(f"UPDATE syllable SET entropyUndir={temp_df['spectral_entropy'].mean() : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                                db.cur.execute(f"UPDATE syllable SET spectroTemporalEntropyUndir={temp_df['spectro_temporal_entropy'].mean(): .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                                db.cur.execute(f"UPDATE syllable SET entropyVarUndir={temp_df['entropy_var'].mean(): .4f} WHERE songID= {song_db.id} AND note= '{note}'")
+                                db.cur.execute(
+                                    f"UPDATE syllable SET entropyUndir={temp_df['spectral_entropy'].mean() : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                                db.cur.execute(
+                                    f"UPDATE syllable SET spectroTemporalEntropyUndir={temp_df['spectro_temporal_entropy'].mean(): .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                                db.cur.execute(
+                                    f"UPDATE syllable SET entropyVarUndir={temp_df['entropy_var'].mean(): .4f} WHERE songID= {song_db.id} AND note= '{note}'")
                         elif context == 'D':
-                            db.cur.execute(f"UPDATE syllable SET nbNoteDir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
+                            db.cur.execute(
+                                f"UPDATE syllable SET nbNoteDir={len(temp_df)} WHERE songID= {song_db.id} AND note= '{note}'")
                             if len(temp_df) >= nb_note_crit:
-                                db.cur.execute(f"UPDATE syllable SET entropyDir={temp_df['spectral_entropy'].mean() : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                                db.cur.execute(f"UPDATE syllable SET spectroTemporalEntropyDir={temp_df['spectro_temporal_entropy'].mean() : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                                db.cur.execute(f"UPDATE syllable SET entropyVarDir={temp_df['entropy_var'].mean() : .4f} WHERE songID= {song_db.id} AND note= '{note}'")
+                                db.cur.execute(
+                                    f"UPDATE syllable SET entropyDir={temp_df['spectral_entropy'].mean() : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                                db.cur.execute(
+                                    f"UPDATE syllable SET spectroTemporalEntropyDir={temp_df['spectro_temporal_entropy'].mean() : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                                db.cur.execute(
+                                    f"UPDATE syllable SET entropyVarDir={temp_df['entropy_var'].mean() : .4f} WHERE songID= {song_db.id} AND note= '{note}'")
                     db.conn.commit()
 
                     # If neither condition meets the number of notes criteria
-                    db.cur.execute(f"SELECT nbNoteUndir, nbNoteDir FROM syllable WHERE songID={song_db.id} AND note= '{note}'")
+                    db.cur.execute(
+                        f"SELECT nbNoteUndir, nbNoteDir FROM syllable WHERE songID={song_db.id} AND note= '{note}'")
                     nb_notes = [{'U': data[0], 'D': data[1]} for data in db.cur.fetchall()][0]
                     if not (bool(nb_notes['U']) or bool(nb_notes['D'])):
                         db.cur.execute(f"DELETE FROM syllable WHERE songID= {song_db.id} AND note= '{note}'")
@@ -180,8 +190,7 @@ def get_entropy(query,
     print('Done!')
 
 
-if __name__ =='__main__':
-
+if __name__ == '__main__':
     from database.load import create_db, DBInfo, ProjectLoader
     from util import save
 
@@ -217,7 +226,7 @@ if __name__ =='__main__':
     from results.plot import plot_across_days_per_note
 
     # Load database
-    query=f"""SELECT syl.*, song.taskSession, song.taskSessionDeafening, song.taskSessionPostDeafening, song.dph, song.block10days 
+    query = f"""SELECT syl.*, song.taskSession, song.taskSessionDeafening, song.taskSessionPostDeafening, song.dph, song.block10days 
     FROM syllable syl INNER JOIN song ON syl.songID = song.id WHERE syl.nbNoteUndir >= {nb_note_crit}"""
 
     df = ProjectLoader().load_db().to_dataframe(query)
@@ -310,39 +319,89 @@ if __name__ =='__main__':
     #                           save_path=save_path
     #                           )
 
-
     # Compare conditional means of CV of FF
-    from results.plot import plot_paired_data
+    # from results.plot import plot_paired_data
+    #
+    # plot_paired_data(df_norm, x='taskName', y='entropyUndir',
+    #                      x_label=None, y_label="Spectral Entropy",
+    #                      y_lim=[0, 1.2],
+    #                      view_folder=True,
+    #                      fig_name='Spectral_entropy_comparison',
+    #                      save_fig=False,
+    #                      save_path=save_path,
+    #                      fig_ext='.png'
+    #                      )
+    #
+    # plot_paired_data(df_norm, x='taskName', y='spectroTemporalEntropyUndir',
+    #                      x_label=None, y_label='Spectro temporal Entropy',
+    #                      y_lim=[0, 1.2],
+    #                      view_folder=True,
+    #                      fig_name='Spectro_temporal_entropy_across_days',
+    #                      save_fig=False,
+    #                      save_path=save_path,
+    #                      fig_ext='.png'
+    #                      )
+    #
+    # plot_paired_data(df_norm, x='taskName', y='entropyVarUndir',
+    #                      x_label=None, y_label="Entropy variance",
+    #                      y_lim=[0, 0.03],
+    #                      view_folder=True,
+    #                      fig_name='EV_across_days',
+    #                      save_fig=False,
+    #                      save_path=save_path,
+    #                      fig_ext='.png'
+    #
+    #
+    # df_norm.to_csv(save_path / 'df_norm.csv', index=False, header=True)
+    #
 
-    plot_paired_data(df_norm, x='taskName', y='entropyUndir',
-                         x_label=None, y_label="Spectral Entropy",
-                         y_lim=[0, 1.2],
-                         view_folder=True,
-                         fig_name='Spectral_entropy_comparison',
-                         save_fig=False,
-                         save_path=save_path,
-                         fig_ext='.png'
-                         )
+    # Compare post-deafening values relative to pre-deafening baseline (1)
 
-    plot_paired_data(df_norm, x='taskName', y='spectroTemporalEntropyUndir',
-                         x_label=None, y_label='Spectro temporal Entropy',
-                         y_lim=[0, 1.2],
-                         view_folder=True,
-                         fig_name='Spectro_temporal_entropy_across_days',
-                         save_fig=False,
-                         save_path=save_path,
-                         fig_ext='.png'
-                         )
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    from scipy import stats
+    from util.draw import remove_right_top
 
-    plot_paired_data(df_norm, x='taskName', y='entropyVarUndir',
-                         x_label=None, y_label="Entropy variance",
-                         y_lim=[0, 0.03],
-                         view_folder=True,
-                         fig_name='EV_across_days',
-                         save_fig=False,
-                         save_path=save_path,
-                         fig_ext='.png'
-                         )
+    df_mean = df.groupby(['birdID', 'note', 'taskName']).mean().reset_index()
+    df_mean = df_mean.query('taskName== "Postdeafening"')
 
-    df_norm.to_csv(save_path / 'df_norm.csv', index=False, header=True)
+
+
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    axes[0] = sns.stripplot(ax=axes[0], x=df_mean["taskName"], y=df_mean["entropyUndirNorm"],
+                            color='k', jitter=0.05)
+    axes[0] = sns.boxplot(ax=axes[0], y=df_mean["entropyUndirNorm"],
+                          width=0.2, color='w', showfliers = False)
+    axes[0].set_ylim([0, 1.5])
+    axes[0].set_title('Norm. Spectral Entropy')
+    axes[0].set_xlabel('')
+    axes[0].axhline(y=1, color='m', ls='--', lw=0.5)
+    remove_right_top(axes[0])
+
+    p_val = stats.ttest_1samp(a=pcc_shuffle[context], popmean=pi.pcc[context]['mean'],
+                              nan_policy='omit', alternative='less')[1]
+
+
+    axes[1] = sns.stripplot(ax=axes[1], x=df_mean["taskName"], y=df_mean["spectroTemporalEntropyUndirNorm"],
+                            color='k', jitter=0.05)
+    axes[1] = sns.boxplot(ax=axes[1], y=df_mean["spectroTemporalEntropyUndirNorm"],
+                          width=0.2, color='w', showfliers = False)
+    axes[1].set_ylim([0, 1.5])
+    axes[1].set_title('Norm. Spectro-temporal Entropy')
+    axes[1].set_xlabel('')
+    axes[1].axhline(y=1, color='m', ls='--', lw=0.5)
+    remove_right_top(axes[1])
+
+
+    axes[2] = sns.stripplot(ax=axes[2], x=df_mean["taskName"], y=df_mean["entropyVarUndirNorm"],
+                            color='k', jitter=0.05)
+    axes[2] = sns.boxplot(ax=axes[2], y=df_mean["entropyVarUndirNorm"],
+                          width=0.2, color='w', showfliers = False)
+    axes[2].set_ylim([0, 1.5])
+    axes[2].set_title('Norm. Entropy Variance')
+    axes[2].set_xlabel('')
+    axes[2].axhline(y=1, color='m', ls='--', lw=0.5)
+    remove_right_top(axes[2])
+
+    plt.show()
 
