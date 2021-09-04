@@ -352,14 +352,15 @@ if __name__ == '__main__':
     #                      fig_ext='.png'
     #
     #
-    # df_norm.to_csv(save_path / 'df_norm.csv', index=False, header=True)
+
+    # df_mean.to_csv(save_path / 'df_mean.csv', index=False, header=True)
     #
 
     # Compare post-deafening values relative to pre-deafening baseline (1)
 
     import matplotlib.pyplot as plt
     import seaborn as sns
-    from scipy import stats
+    import scipy.stats as stats
     from util.draw import remove_right_top
 
     df_mean = df.groupby(['birdID', 'note', 'taskName']).mean().reset_index()
@@ -378,8 +379,10 @@ if __name__ == '__main__':
     axes[0].axhline(y=1, color='m', ls='--', lw=0.5)
     remove_right_top(axes[0])
 
-    p_val = stats.ttest_1samp(a=pcc_shuffle[context], popmean=pi.pcc[context]['mean'],
-                              nan_policy='omit', alternative='less')[1]
+    statistics = stats.ttest_1samp(a=df_mean["entropyUndirNorm"].dropna(), popmean=1, alternative='greater')
+    msg = f"t({len(df_mean['entropyUndirNorm'].dropna())-1})=" \
+          f"{statistics.statistic: 0.3f}, p={statistics.pvalue: 0.3f}"
+    axes[0].set_text
 
 
     axes[1] = sns.stripplot(ax=axes[1], x=df_mean["taskName"], y=df_mean["spectroTemporalEntropyUndirNorm"],
@@ -392,6 +395,9 @@ if __name__ == '__main__':
     axes[1].axhline(y=1, color='m', ls='--', lw=0.5)
     remove_right_top(axes[1])
 
+    statistics = stats.ttest_1samp(a=df_mean["spectroTemporalEntropyUndirNorm"].dropna(), popmean=1, alternative='greater')
+    msg = f"t({len(df_mean['spectroTemporalEntropyUndirNorm'].dropna())-1})=" \
+          f"{statistics.statistic: 0.3f}, p={statistics.pvalue: 0.3f}"
 
     axes[2] = sns.stripplot(ax=axes[2], x=df_mean["taskName"], y=df_mean["entropyVarUndirNorm"],
                             color='k', jitter=0.05)
@@ -402,6 +408,10 @@ if __name__ == '__main__':
     axes[2].set_xlabel('')
     axes[2].axhline(y=1, color='m', ls='--', lw=0.5)
     remove_right_top(axes[2])
+
+    statistics = stats.ttest_1samp(a=df_mean["entropyVarUndirNorm"].dropna(), popmean=1, alternative='less')
+    msg = f"t({len(df_mean['entropyVarUndirNorm'].dropna())-1})=" \
+          f"{statistics.statistic: 0.3f}, p={statistics.pvalue: 0.3f}"
 
     plt.show()
 
