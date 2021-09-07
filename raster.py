@@ -4,65 +4,16 @@ plot raster & peth
 """
 
 
-def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
-    from analysis.parameters import peth_shuffle
-    # from analysis.spike import MotifInfo
-    from collections import defaultdict
-    from functools import partial
-    import scipy.stats as stats
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    pcc_shuffle = defaultdict(partial(np.ndarray, 0))
-    for iter in range(peth_shuffle['shuffle_iter']):
-        MotifInfo.jitter_spk_ts(peth_shuffle['shuffle_limit'])
-        pi_shuffle = MotifInfo.get_peth(shuffle=True)  # peth object
-        pi_shuffle.get_fr()  # get firing rates
-        pi_shuffle.get_pcc()  # get pcc
-        for context, pcc in pi_shuffle.pcc.items():
-            pcc_shuffle[context] = np.append(pcc_shuffle[context], pcc['mean'])
-
-    # One-sample t-test (one-sided)
-    p_val = {}
-    p_sig = {}
-    alpha = 0.05
-
-    for context in pcc_shuffle.keys():
-        (_, p_val[context]) = stats.ttest_1samp(a=pcc_shuffle[context], popmean=PethInfo.pcc[context]['mean'],
-                                                nan_policy='omit', alternative='less')
-    for context, value in p_val.items():
-        p_sig[context] = value < alpha
-
-    # Plot histogram
-    if plot_hist:
-        from util.draw import remove_right_top
-
-        fig, axes = plt.subplots(1, 2, figsize=(6, 3))
-        plt.suptitle('PCC shuffle distribution', y=.98, fontsize=10)
-        for axis, context in zip(axes, pcc_shuffle.keys()):
-            axis.set_title(context)
-            axis.hist(pcc_shuffle[context], color='k')
-            axis.set_xlim([-0.1, 0.6])
-            axis.set_xlabel('PCC'), axis.set_ylabel('Count')
-            if p_sig[context]:
-                axis.axvline(x=PethInfo.pcc[context]['mean'], color='r', linewidth=1, ls='--')
-            else:
-                axis.axvline(x=PethInfo.pcc[context]['mean'], color='k', linewidth=1, ls='--')
-            remove_right_top(axis)
-        plt.tight_layout()
-        plt.show()
-
-    return p_sig
-
-
 def get_raster(query,
                shuffled_baseline=False,
                norm_method=None,
-               fig_ext='.png',
                time_warp=True,
                update=False,
                save_fig=True,
-               update_db=True):
+               update_db=True,
+               view_folder=False,
+               fig_ext='.png',
+               ):
     """
     Plot raster & peri-event histogram
 
@@ -122,6 +73,7 @@ def get_raster(query,
 
         # Load class object
         mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
+        audio = AudioData(path, update=update)  # audio object
 
         # Get number of motifs
         nb_motifs = mi.nb_motifs(motif)
@@ -147,8 +99,8 @@ def get_raster(query,
         duration = offsets[-1] - onsets[0]
 
         # Get spectrogram
-        audio = AudioData(path, update=update).extract([start, end])  # audio object
-        audio.spectrogram(freq_range=freq_range)
+        timestamp, data = audio.extract([start, end])
+        spect_time, spect, spect_freq = audio.spectrogram(timestamp, data)
 
         # Plot figure
         fig = plt.figure(figsize=(8, 9), dpi=500)
@@ -164,8 +116,8 @@ def get_raster(query,
 
         # Plot spectrogram
         ax_spect = plt.subplot(gs[1:3, 0:4])
-        audio.spect_time = audio.spect_time - audio.spect_time[0] - peth_parm['buffer']  # starts from zero
-        ax_spect.pcolormesh(audio.spect_time, audio.spect_freq, audio.spect,  # data
+        spect_time = spect_time - spect_time[0] - peth_parm['buffer']  # starts from zero
+        ax_spect.pcolormesh(spect_time, spect_freq, spect,  # data
                             cmap='hot_r',
                             norm=colors.SymLogNorm(linthresh=0.05,
                                                    linscale=0.03,
@@ -348,7 +300,7 @@ def get_raster(query,
         # Draw peri-event histogram (PETH)
         pi = mi.get_peth(time_warp=time_warp)  # peth object
         # pi.get_fr(norm_method='sum')  # get firing rates
-        pi.get_fr(norm_method=norm_method)  # get firing rates
+        pi.get_fr()  # get firing rates
 
         ax_peth = plt.subplot(gs[10:12, 0:4], sharex=ax_spect)
         for context, mean_fr in pi.mean_fr.items():
@@ -485,33 +437,35 @@ def get_raster(query,
         # Save results to database
 
         if update_db and time_warp:  # only use values from time-warped data
+            db.cur.execute()
+
 
             if 'U' in pi.pcc and nb_motifs['U'] >= nb_note_crit:
                 db.cur.execute(
-                    f"UPDATE pcc SET pccUndir = ({pi.pcc['U']['mean']}) WHERE clusterID = ({cluster_db.id})")
+                    f"UPDATE cluster_results SET pccUndir = ({pi.pcc['U']['mean']}) WHERE clusterID = ({cluster_db.id})")
 
             if 'D' in pi.pcc and nb_motifs['D'] >= nb_note_crit:
                 db.cur.execute(
-                    f"UPDATE pcc SET pccDir = ({pi.pcc['D']['mean']}) WHERE clusterID = ({cluster_db.id})")
+                    f"UPDATE cluster_results SET pccDir = ({pi.pcc['D']['mean']}) WHERE clusterID = ({cluster_db.id})")
 
             if corr_context:
                 db.cur.execute(f"UPDATE pcc SET corrRContext = ({corr_context}) WHERE clusterID = ({cluster_db.id})")
 
             if 'U' in pi.spk_count_cv and nb_motifs['U'] >= nb_note_crit:
                 db.cur.execute(
-                    f"UPDATE pcc SET cvSpkCountUndir = ({pi.spk_count_cv['U']}) WHERE clusterID = ({cluster_db.id})")
+                    f"UPDATE cluster_results SET cvSpkCountUndir = ({pi.spk_count_cv['U']}) WHERE clusterID = ({cluster_db.id})")
 
             if 'D' in pi.spk_count_cv and nb_motifs['D'] >= nb_note_crit:
                 db.cur.execute(
-                    f"UPDATE pcc SET cvSpkCountDir = ({pi.spk_count_cv['D']}) WHERE clusterID = ({cluster_db.id})")
+                    f"UPDATE cluster_results SET cvSpkCountDir = ({pi.spk_count_cv['D']}) WHERE clusterID = ({cluster_db.id})")
 
             if 'U' in pi.fano_factor and nb_motifs['U'] >= nb_note_crit:
                 db.cur.execute(
-                    f"UPDATE pcc SET fanoSpkCountUndir = ({round(np.nanmean(pi.fano_factor['U']), 3)}) WHERE clusterID = ({cluster_db.id})")
+                    f"UPDATE cluster_results SET fanoSpkCountUndir = ({round(np.nanmean(pi.fano_factor['U']), 3)}) WHERE clusterID = ({cluster_db.id})")
 
             if 'D' in pi.fano_factor and nb_motifs['D'] >= nb_note_crit:
                 db.cur.execute(
-                    f"UPDATE pcc SET fanoSpkCountDir = ({round(np.nanmean(pi.fano_factor['D']), 3)}) WHERE clusterID = ({cluster_db.id})")
+                    f"UPDATE cluster_results SET fanoSpkCountDir = ({round(np.nanmean(pi.fano_factor['D']), 3)}) WHERE clusterID = ({cluster_db.id})")
 
             if shuffled_baseline:
                 if 'U' in p_sig and nb_motifs['U'] >= nb_note_crit:
@@ -523,7 +477,7 @@ def get_raster(query,
         # Save results
         if save_fig:
             save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Spk')
-            save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext)
+            save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, view_folder=view_folder)
         else:
             plt.show()
 
@@ -533,27 +487,82 @@ def get_raster(query,
     print('Done!')
 
 
+def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
+    from analysis.parameters import peth_shuffle
+    # from analysis.spike import MotifInfo
+    from collections import defaultdict
+    from functools import partial
+    import scipy.stats as stats
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    pcc_shuffle = defaultdict(partial(np.ndarray, 0))
+    for iter in range(peth_shuffle['shuffle_iter']):
+        MotifInfo.jitter_spk_ts(peth_shuffle['shuffle_limit'])
+        pi_shuffle = MotifInfo.get_peth(shuffle=True)  # peth object
+        pi_shuffle.get_fr()  # get firing rates
+        pi_shuffle.get_pcc()  # get pcc
+        for context, pcc in pi_shuffle.pcc.items():
+            pcc_shuffle[context] = np.append(pcc_shuffle[context], pcc['mean'])
+
+    # One-sample t-test (one-sided)
+    p_val = {}
+    p_sig = {}
+    alpha = 0.05
+
+    for context in pcc_shuffle.keys():
+        (_, p_val[context]) = stats.ttest_1samp(a=pcc_shuffle[context], popmean=PethInfo.pcc[context]['mean'],
+                                                nan_policy='omit', alternative='less')
+    for context, value in p_val.items():
+        p_sig[context] = value < alpha
+
+    # Plot histogram
+    if plot_hist:
+        from util.draw import remove_right_top
+
+        fig, axes = plt.subplots(1, 2, figsize=(6, 3))
+        plt.suptitle('PCC shuffle distribution', y=.98, fontsize=10)
+        for axis, context in zip(axes, pcc_shuffle.keys()):
+            axis.set_title(context)
+            axis.hist(pcc_shuffle[context], color='k')
+            axis.set_xlim([-0.1, 0.6])
+            axis.set_xlabel('PCC'), axis.set_ylabel('Count')
+            if p_sig[context]:
+                axis.axvline(x=PethInfo.pcc[context]['mean'], color='r', linewidth=1, ls='--')
+            else:
+                axis.axvline(x=PethInfo.pcc[context]['mean'], color='k', linewidth=1, ls='--')
+            remove_right_top(axis)
+        plt.tight_layout()
+        plt.show()
+
+    return p_sig
+
+
 if __name__ == '__main__':
 
     from database.load import create_db
 
     # Parameters
-    shuffled_baseline = True
-    fig_ext = '.png'
-    time_warp = True
-    update = False  # update the cache file
-    save_fig = False
+    shuffled_baseline = False  # Get PETH from shuffled spikes for getting pcc baseline
+    time_warp = True  # Perform piece-wise linear time-warping
+    update = False  # Update the cache file per cluster
+    save_fig = True
     update_db = False
+    view_folder = True  # open the folder where the result figures are saved
+    fig_ext = '.png'  # set to '.pdf' for vector output
 
-    # Create & Load database
+    # Create a new db to store results
     if update_db:
-        db = create_db('create_pcc.sql')
+        db = create_db('create_cluster_results.sql')
 
     # SQL statement
     # query = "SELECT * FROM cluster WHERE analysisOK = 1"
-    query = "SELECT * FROM cluster WHERE  analysisOK = 1 AND id = 17"
+    query = "SELECT * FROM cluster WHERE id = 6"
 
-    get_raster(query, shuffled_baseline=shuffled_baseline, fig_ext=fig_ext, time_warp=time_warp,
+    get_raster(query, shuffled_baseline=shuffled_baseline, time_warp=time_warp,
                update=update,
                save_fig=save_fig,
-               update_db=update_db)
+               update_db=update_db,
+               view_folder=view_folder,
+               fig_ext=fig_ext
+               )
