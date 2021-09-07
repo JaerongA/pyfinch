@@ -402,14 +402,14 @@ def get_raster(query,
 
         # Print out results on the figure
         txt_yloc -= txt_inc
-        for i, (context, cv) in enumerate(pi.spk_count_cv.items()):
+        for context, cv in sorted(pi.spk_count_cv.items(), reverse=True):
             txt_yloc -= txt_inc
             if nb_motifs[context] >= nb_note_crit:
                 ax_txt.text(txt_xloc, txt_yloc, f"CV of spk count ({context}) = {cv}", fontsize=font_size)
 
         # Plot fano factor
         ax_ff = plt.subplot(gs[16:18, 0:4], sharex=ax_spect)
-        for context, fano_factor in pi.fano_factor.items():
+        for context, fano_factor in sorted(pi.fano_factor.items(), reverse=True):
             if context == 'U' and nb_motifs[context] >= nb_note_crit:
                 ax_ff.plot(pi.time_bin, fano_factor, color='b', mfc='none', linewidth=0.5, label=context)
             elif context == 'D' and nb_motifs[context] >= nb_note_crit:
@@ -428,17 +428,16 @@ def get_raster(query,
 
         # Print out results on the figure
         txt_yloc -= txt_inc
-        for i, (context, ff) in enumerate(pi.fano_factor.items()):
+        for context, ff in sorted(pi.fano_factor.items(), reverse=True):
             txt_yloc -= txt_inc
             if nb_motifs[context] >= nb_note_crit:
                 ax_txt.text(txt_xloc, txt_yloc, f"Fano Factor ({context}) = {round(np.nanmean(ff), 3)}",
                             fontsize=font_size)
 
         # Save results to database
-
         if update_db and time_warp:  # only use values from time-warped data
-            db.cur.execute()
-
+            db.cur.execute(f"INSERT OR IGNORE INTO cluster_results (clusterID) VALUES ({cluster_db.id})")
+            db.conn.commit()
 
             if 'U' in pi.pcc and nb_motifs['U'] >= nb_note_crit:
                 db.cur.execute(
@@ -449,7 +448,7 @@ def get_raster(query,
                     f"UPDATE cluster_results SET pccDir = ({pi.pcc['D']['mean']}) WHERE clusterID = ({cluster_db.id})")
 
             if corr_context:
-                db.cur.execute(f"UPDATE pcc SET corrRContext = ({corr_context}) WHERE clusterID = ({cluster_db.id})")
+                db.cur.execute(f"UPDATE cluster_results SET corrRContext = ({corr_context}) WHERE clusterID = ({cluster_db.id})")
 
             if 'U' in pi.spk_count_cv and nb_motifs['U'] >= nb_note_crit:
                 db.cur.execute(
@@ -469,9 +468,9 @@ def get_raster(query,
 
             if shuffled_baseline:
                 if 'U' in p_sig and nb_motifs['U'] >= nb_note_crit:
-                    db.cur.execute(f"UPDATE pcc SET pccUndirSig = ({p_sig['U']}) WHERE clusterID = ({cluster_db.id})")
+                    db.cur.execute(f"UPDATE cluster_results SET pccUndirSig = ({p_sig['U']}) WHERE clusterID = ({cluster_db.id})")
                 if 'D' in p_sig and nb_motifs['D'] >= nb_note_crit:
-                    db.cur.execute(f"UPDATE pcc SET pccDirSig = ({p_sig['D']}) WHERE clusterID = ({cluster_db.id})")
+                    db.cur.execute(f"UPDATE cluster_results SET pccDirSig = ({p_sig['D']}) WHERE clusterID = ({cluster_db.id})")
             db.conn.commit()
 
         # Save results
@@ -483,7 +482,7 @@ def get_raster(query,
 
     # Convert db to csv
     if update_db:
-        db.to_csv('pcc')
+        db.to_csv('cluster_results')
     print('Done!')
 
 
@@ -547,7 +546,7 @@ if __name__ == '__main__':
     time_warp = True  # Perform piece-wise linear time-warping
     update = False  # Update the cache file per cluster
     save_fig = True
-    update_db = False
+    update_db = True
     view_folder = True  # open the folder where the result figures are saved
     fig_ext = '.png'  # set to '.pdf' for vector output
 

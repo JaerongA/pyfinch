@@ -4,12 +4,14 @@
     <option name="GROUP_BY_SEVERITY" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="compare relative to baseline">
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/jahn02.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/jahn02.xml" afterDir="false" />
+    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/database/create_cluster_results.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deafening/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/entropy.py" beforeDir="false" afterPath="$PROJECT_DIR$/entropy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/parameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/config.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/raster.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/raster_syllable.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster_syllable.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/syllable.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/syllable.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,7 +110,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="database.data.extractors.current.id" value="Comma-separated (CSV)_id" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/database" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -118,12 +120,12 @@
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="H:\Box\PythonToolbox\Deafening" />
       <recent name="H:\Box\PythonToolbox\Deafening\database" />
+      <recent name="H:\Box\PythonToolbox\Deafening" />
       <recent name="H:\Box\PythonToolbox\Deafening\results" />
       <recent name="H:\Box\PythonToolbox\Deafening\note_similarity_" />
       <recent name="H:\Box\PythonToolbox\Deafening\utilities" />
@@ -136,7 +138,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\test" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.entropy">
+  <component name="RunManager" selected="Python.raster">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -225,20 +227,17 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="raster_syllable" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="raster" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/raster_syllable.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/raster.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -294,18 +293,18 @@
     <list>
       <item itemvalue="Python.SongAnalysis" />
       <item itemvalue="Python.ff_spk_corr" />
-      <item itemvalue="Python.raster_syllable" />
       <item itemvalue="Python.syllable_ff (1)" />
       <item itemvalue="Python.syllable" />
       <item itemvalue="Python.entropy" />
+      <item itemvalue="Python.raster" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.raster" />
         <item itemvalue="Python.entropy" />
         <item itemvalue="Python.syllable" />
         <item itemvalue="Python.syllable_ff (1)" />
         <item itemvalue="Python.ff_spk_corr" />
-        <item itemvalue="Python.raster_syllable" />
       </list>
     </recent_temporary>
   </component>
@@ -797,49 +796,9 @@
       <workItem from="1630453366686" duration="10467000" />
       <workItem from="1630545844536" duration="1192000" />
       <workItem from="1630727260902" duration="1284000" />
-      <workItem from="1630986563757" duration="297000" />
-    </task>
-    <task id="LOCAL-00444" summary="update">
-      <created>1626232465079</created>
-      <option name="number" value="00444" />
-      <option name="presentableId" value="LOCAL-00444" />
-      <option name="project" value="LOCAL" />
-      <updated>1626232465079</updated>
-    </task>
-    <task id="LOCAL-00445" summary="added get_note_info into ClusterInfo class">
-      <created>1626232491246</created>
-      <option name="number" value="00445" />
-      <option name="presentableId" value="LOCAL-00445" />
-      <option name="project" value="LOCAL" />
-      <updated>1626232491246</updated>
-    </task>
-    <task id="LOCAL-00446" summary="added get_trans_matrix">
-      <created>1626232507004</created>
-      <option name="number" value="00446" />
-      <option name="presentableId" value="LOCAL-00446" />
-      <option name="project" value="LOCAL" />
-      <updated>1626232507004</updated>
-    </task>
-    <task id="LOCAL-00447" summary="incorporated into syllable_sequence.py">
-      <created>1626232585012</created>
-      <option name="number" value="00447" />
-      <option name="presentableId" value="LOCAL-00447" />
-      <option name="project" value="LOCAL" />
-      <updated>1626232585012</updated>
-    </task>
-    <task id="LOCAL-00448" summary="sequence analysis update">
-      <created>1626297543256</created>
-      <option name="number" value="00448" />
-      <option name="presentableId" value="LOCAL-00448" />
-      <option name="project" value="LOCAL" />
-      <updated>1626297543256</updated>
-    </task>
-    <task id="LOCAL-00449" summary="update">
-      <created>1626317598284</created>
-      <option name="number" value="00449" />
-      <option name="presentableId" value="LOCAL-00449" />
-      <option name="project" value="LOCAL" />
-      <updated>1626317598284</updated>
+      <workItem from="1630986563757" duration="717000" />
+      <workItem from="1630987302403" duration="1734000" />
+      <workItem from="1630989063980" duration="4196000" />
     </task>
     <task id="LOCAL-00450" summary="skip if no song bout exists">
       <created>1626318851786</created>
@@ -1142,7 +1101,49 @@
       <option name="project" value="LOCAL" />
       <updated>1630727962150</updated>
     </task>
-    <option name="localTasksCounter" value="493" />
+    <task id="LOCAL-00493" summary="get_raster_syllable">
+      <created>1630986886471</created>
+      <option name="number" value="00493" />
+      <option name="presentableId" value="LOCAL-00493" />
+      <option name="project" value="LOCAL" />
+      <updated>1630986886472</updated>
+    </task>
+    <task id="LOCAL-00494" summary="update">
+      <created>1630986896694</created>
+      <option name="number" value="00494" />
+      <option name="presentableId" value="LOCAL-00494" />
+      <option name="project" value="LOCAL" />
+      <updated>1630986896694</updated>
+    </task>
+    <task id="LOCAL-00495" summary="print out one-sample t-test">
+      <created>1630986924178</created>
+      <option name="number" value="00495" />
+      <option name="presentableId" value="LOCAL-00495" />
+      <option name="project" value="LOCAL" />
+      <updated>1630986924178</updated>
+    </task>
+    <task id="LOCAL-00496" summary="run analysis at the syllable level">
+      <created>1630986955361</created>
+      <option name="number" value="00496" />
+      <option name="presentableId" value="LOCAL-00496" />
+      <option name="project" value="LOCAL" />
+      <updated>1630986955361</updated>
+    </task>
+    <task id="LOCAL-00497" summary="get_fr update">
+      <created>1630990489128</created>
+      <option name="number" value="00497" />
+      <option name="presentableId" value="LOCAL-00497" />
+      <option name="project" value="LOCAL" />
+      <updated>1630990489128</updated>
+    </task>
+    <task id="LOCAL-00498" summary="version 1 (for deafening)">
+      <created>1630990707939</created>
+      <option name="number" value="00498" />
+      <option name="presentableId" value="LOCAL-00498" />
+      <option name="project" value="LOCAL" />
+      <updated>1630990707939</updated>
+    </task>
+    <option name="localTasksCounter" value="499" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1175,11 +1176,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="added sparseness, fano factor, cv of firing rates" />
-    <MESSAGE value="pairwise cc - regression fit (quadratic)" />
-    <MESSAGE value="added create db function" />
-    <MESSAGE value="added functions in __name__ == __main__" />
-    <MESSAGE value="new module, added z_test for proportions" />
     <MESSAGE value="analyze proportional difference" />
     <MESSAGE value="added draw_sig_prop" />
     <MESSAGE value="update (two sub-functions added)" />
@@ -1197,10 +1193,15 @@
     <MESSAGE value="compared conditional means" />
     <MESSAGE value="plot_across_days_per_note" />
     <MESSAGE value="plot_paired_data added" />
-    <MESSAGE value="update" />
     <MESSAGE value="compare relative to baseline" />
     <MESSAGE value="added one-sample test" />
-    <option name="LAST_COMMIT_MESSAGE" value="added one-sample test" />
+    <MESSAGE value="get_raster_syllable" />
+    <MESSAGE value="update" />
+    <MESSAGE value="print out one-sample t-test" />
+    <MESSAGE value="run analysis at the syllable level" />
+    <MESSAGE value="get_fr update" />
+    <MESSAGE value="version 1 (for deafening)" />
+    <option name="LAST_COMMIT_MESSAGE" value="version 1 (for deafening)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1239,6 +1240,11 @@
           <url>file://$PROJECT_DIR$/psd_similarity.py</url>
           <line>530</line>
           <option name="timeStamp" value="176" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/raster.py</url>
+          <line>88</line>
+          <option name="timeStamp" value="178" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -1309,7 +1315,7 @@
     <SUITE FILE_PATH="coverage/Deafening$test_song__1_.coverage" NAME="test_song (1) Coverage Results" MODIFIED="1623614683264" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$song.coverage" NAME="song Coverage Results" MODIFIED="1623023752835" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/analysis" />
     <SUITE FILE_PATH="coverage/Deafening$get_conditional_spk_test.coverage" NAME="get_conditional_spk_test Coverage Results" MODIFIED="1607059140938" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Deafening$raster.coverage" NAME="raster Coverage Results" MODIFIED="1620587333180" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$raster.coverage" NAME="raster Coverage Results" MODIFIED="1630991812821" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$syllable_duration_analysis.coverage" NAME="syllable_duration_analysis Coverage Results" MODIFIED="1594006452911" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$dir_undir_labeling.coverage" NAME="dir_undir_labeling Coverage Results" MODIFIED="1594184523992" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$bird_info.coverage" NAME="bird_info Coverage Results" MODIFIED="1625723107943" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/results" />

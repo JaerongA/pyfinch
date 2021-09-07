@@ -2,6 +2,8 @@
 By Jaerong
 plot raster & peth per syllable
 """
+import numpy as np
+from matplotlib import pyplot as plt
 
 
 def get_raster_syllable(query,
@@ -480,18 +482,18 @@ def get_raster_syllable(query,
                 if entropy:
                     if 'U' in entropy_mean and ni.nb_note['U'] >= nb_note_crit:
                         db.cur.execute(
-                            f"UPDATE syllable SET entropyUndir = ({entropy_mean['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                            f"UPDATE syllable_pcc SET entropyUndir = ({entropy_mean['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
                     if 'D' in entropy_mean and ni.nb_note['D'] >= nb_note_crit:
                         db.cur.execute(
-                            f"UPDATE syllable SET entropyDir = ({entropy_mean['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                            f"UPDATE syllable_pcc SET entropyDir = ({entropy_mean['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
                     if entropy_mode == 'spectro_temporal':
                         if 'U' in entropy_var and ni.nb_note['U'] >= nb_note_crit:
                             db.cur.execute(
-                                f"UPDATE syllable SET entropyVarUndir = ({entropy_var['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                                f"UPDATE syllable_pcc SET entropyVarUndir = ({entropy_var['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
                         if 'D' in entropy_var and ni.nb_note['D'] >= nb_note_crit:
                             db.cur.execute(
-                                f"UPDATE syllable SET entropyVarDir = ({entropy_var['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                                f"UPDATE syllable_pcc SET entropyVarDir = ({entropy_var['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
                 db.conn.commit()
 
             # Save results
@@ -513,7 +515,6 @@ if __name__ == '__main__':
     from database.load import create_db
 
     # Parameter
-    norm_method = None
     update = False  # Set True for recreating a cache file
     save_fig = True
     update_db = False  # save results to DB

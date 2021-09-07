@@ -47,7 +47,7 @@ spk_count_parm = {'win_size': 30}  # moving window where number of spikes will b
 
 # Raster
 tick_length = 0.8
-tick_width = 1
+tick_width = 0.5
 
 # Bursting criteria
 burst_hz = 200  # instantaneous firing rates >= 200 Hz to be considered bursting
