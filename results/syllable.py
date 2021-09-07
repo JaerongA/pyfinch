@@ -268,3 +268,146 @@ plot_pcc_syllable_by_day(fr_criteria=fr_criteria, save_fig=save_fig)
 #
 # plt.show()
 
+
+# Parameters
+nb_row = 3
+nb_col = 2
+nb_note_crit = 10
+fr_crit = 10
+
+from database.load import ProjectLoader
+from results.plot import plot_bar_comparison
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Load database
+db = ProjectLoader().load_db()
+
+# Plot results
+# Pairwise cross-correlation
+fig, ax = plt.subplots(figsize=(7, 4))
+plt.suptitle(f"Pairwise CC (FR >= {fr_crit} # of Notes >= {nb_note_crit})", y=.9, fontsize=20)
+
+# Undir
+# # SQL statement
+query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND frUndir >= {fr_crit}"
+df = db.to_dataframe(query)
+
+df['pccUndir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
+ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
+plot_bar_comparison(ax, df['pccUndir'], df['taskName'],
+                    hue_var=df['birdID'],
+                    title='Undir', ylabel='PCC',
+                    y_lim=[-0.01, round(df['pccUndir'].max() * 10) / 10 + 0.1],
+                    col_order=("Predeafening", "Postdeafening"),
+                    )
+
+# Dir
+# # SQL statement
+query = f"SELECT * FROM syllable_pcc WHERE nbNoteDir >= {nb_note_crit} AND frDir >= {fr_crit}"
+df = db.to_dataframe(query)
+
+df['pccDir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
+ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
+plot_bar_comparison(ax, df['pccDir'], df['taskName'],
+                    hue_var=df['birdID'],
+                    title='Dir',
+                    y_lim=[-0.01, round(df['pccDir'].max() * 10) / 10 + 0.2],
+                    col_order=("Predeafening", "Postdeafening"),
+                    legend_ok=True
+                    )
+fig.tight_layout()
+plt.show()
+
+
+# # Sparseness
+# fig, ax = plt.subplots(figsize=(7, 4))
+# plt.suptitle(f"Sparseness (FR >= {fr_crit} # of Notes >= {nb_note_crit})", y=.9, fontsize=20)
+#
+# # Undir
+# query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND frUndir >= {fr_crit}"
+# df = db.to_dataframe(query)
+# ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
+# plot_bar_comparison(ax, df['sparsenessUndir'], df['taskName'],
+#                     hue_var=df['birdID'],
+#                     title='Undir', ylabel='PCC',
+#                     y_lim=[0, round(df['sparsenessUndir'].max() * 10) / 10 + 0.1],
+#                     col_order=("Predeafening", "Postdeafening"),
+#                     )
+#
+# # Dir
+# query = f"SELECT * FROM syllable_pcc WHERE nbNoteDir >= {nb_note_crit} AND frDir >= {fr_crit}"
+# df = db.to_dataframe(query)
+# df['sparsenessDir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
+# ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
+# plot_bar_comparison(ax, df['sparsenessDir'], df['taskName'],
+#                     hue_var=df['birdID'],
+#                     title='Dir',
+#                     y_lim=[0, round(df['sparsenessDir'].max() * 10) / 10 + 0.2],
+#                     col_order=("Predeafening", "Postdeafening"),
+#                     legend_ok=True
+#                     )
+# fig.tight_layout()
+# plt.show()
+
+
+# CV of firing rates (over time)
+# fig, ax = plt.subplots(figsize=(7, 4))
+# plt.suptitle(f"CV of Firing Rates (FR >= {fr_crit} # of Notes >= {nb_note_crit})", y=.9, fontsize=20)
+#
+# # Undir
+# query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND frUndir >= {fr_crit}"
+# df = db.to_dataframe(query)
+# ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
+# plot_bar_comparison(ax, df['cvFRUndir'], df['taskName'],
+#                     hue_var=df['birdID'],
+#                     title='Undir', ylabel='CV of FR',
+#                     y_lim=[0, 2],
+#                     col_order=("Predeafening", "Postdeafening"),
+#                     )
+#
+# # Dir
+# query = f"SELECT * FROM syllable_pcc WHERE nbNoteDir >= {nb_note_crit} AND frDir >= {fr_crit}"
+# df = db.to_dataframe(query)
+# ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
+# plot_bar_comparison(ax, df['cvFRDir'], df['taskName'],
+#                     hue_var=df['birdID'],
+#                     title='Dir',
+#                     y_lim=[0, round(df['cvFRDir'].max() * 10) / 10 + 0.2],
+#                     col_order=("Predeafening", "Postdeafening"),
+#                     legend_ok=True
+#                     )
+# fig.tight_layout()
+# plt.show()
+
+
+# # Fano factor (spike counts)
+# fig, ax = plt.subplots(figsize=(7, 4))
+# plt.suptitle(f"Fano Factor (FR >= {fr_crit} # of Notes >= {nb_note_crit})", y=.9, fontsize=20)
+#
+# # Undir
+# query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND frUndir >= {fr_crit}"
+# df = db.to_dataframe(query)
+# ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
+# plot_bar_comparison(ax, df['fanoFactorUndir'], df['taskName'],
+#                     hue_var=df['birdID'],
+#                     title='Undir', ylabel='Fano factor',
+#                     y_lim=[0, 6],
+#                     col_order=("Predeafening", "Postdeafening"),
+#                     )
+#
+# # Dir
+# query = f"SELECT * FROM syllable_pcc WHERE nbNoteDir >= {nb_note_crit} AND frDir >= {fr_crit}"
+# df = db.to_dataframe(query)
+# ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
+# plot_bar_comparison(ax, df['fanoFactorDir'], df['taskName'],
+#                     hue_var=df['birdID'],
+#                     title='Dir',
+#                     y_lim=[0, round(df['fanoFactorDir'].max() * 10) / 10 + 0.2],
+#                     col_order=("Predeafening", "Postdeafening"),
+#                     legend_ok=True
+#                     )
+# fig.tight_layout()
+# plt.show()
+
+
