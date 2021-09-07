@@ -357,7 +357,6 @@ if __name__ == '__main__':
     #
 
     # Compare post-deafening values relative to pre-deafening baseline (1)
-
     import matplotlib.pyplot as plt
     import seaborn as sns
     import scipy.stats as stats
@@ -365,8 +364,6 @@ if __name__ == '__main__':
 
     df_mean = df.groupby(['birdID', 'note', 'taskName']).mean().reset_index()
     df_mean = df_mean.query('taskName== "Postdeafening"')
-
-
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     axes[0] = sns.stripplot(ax=axes[0], x=df_mean["taskName"], y=df_mean["entropyUndirNorm"],
@@ -379,10 +376,11 @@ if __name__ == '__main__':
     axes[0].axhline(y=1, color='m', ls='--', lw=0.5)
     remove_right_top(axes[0])
 
+    # One-sample t-test (one-tailed)
     statistics = stats.ttest_1samp(a=df_mean["entropyUndirNorm"].dropna(), popmean=1, alternative='greater')
     msg = f"t({len(df_mean['entropyUndirNorm'].dropna())-1})=" \
           f"{statistics.statistic: 0.3f}, p={statistics.pvalue: 0.3f}"
-    axes[0].set_text
+    axes[0].text(-0.25, 0.1, msg, fontsize=12)
 
 
     axes[1] = sns.stripplot(ax=axes[1], x=df_mean["taskName"], y=df_mean["spectroTemporalEntropyUndirNorm"],
@@ -398,6 +396,7 @@ if __name__ == '__main__':
     statistics = stats.ttest_1samp(a=df_mean["spectroTemporalEntropyUndirNorm"].dropna(), popmean=1, alternative='greater')
     msg = f"t({len(df_mean['spectroTemporalEntropyUndirNorm'].dropna())-1})=" \
           f"{statistics.statistic: 0.3f}, p={statistics.pvalue: 0.3f}"
+    axes[1].text(-0.25, 0.1, msg, fontsize=12)
 
     axes[2] = sns.stripplot(ax=axes[2], x=df_mean["taskName"], y=df_mean["entropyVarUndirNorm"],
                             color='k', jitter=0.05)
@@ -412,6 +411,7 @@ if __name__ == '__main__':
     statistics = stats.ttest_1samp(a=df_mean["entropyVarUndirNorm"].dropna(), popmean=1, alternative='less')
     msg = f"t({len(df_mean['entropyVarUndirNorm'].dropna())-1})=" \
           f"{statistics.statistic: 0.3f}, p={statistics.pvalue: 0.3f}"
+    axes[2].text(-0.25, 0.1, msg, fontsize=12)
 
     plt.show()
 
