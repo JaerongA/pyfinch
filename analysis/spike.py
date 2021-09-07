@@ -1032,10 +1032,12 @@ class PethInfo():
     def get_fr(self, smoothing=True):
         """
         Get trials-by-trial firing rates by default
-        Args:
-            smoothing: bool
-                performs gaussian smoothing on the firing rates
+        Parameters
+        ----------
+        smoothing : bool
+            performs gaussian smoothing on the firing rates
         """
+
         # if duration:
         #     ind = (((0 - peth_parm['buffer']) <= time_bin) & (time_bin <= duration))
         #     peth = peth[:, ind]
