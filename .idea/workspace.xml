@@ -4,20 +4,12 @@
     <option name="GROUP_BY_SEVERITY" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="incorporate s">
+    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="compare relative to baseline">
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/jahn02.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/jahn02.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/correlogram.py" beforeDir="false" afterPath="$PROJECT_DIR$/correlogram.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/entropy.py" beforeDir="false" afterPath="$PROJECT_DIR$/entropy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/entropy_spk_corr.py" beforeDir="false" afterPath="$PROJECT_DIR$/entropy_spk_corr.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/entropy_spk_corr_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/entropy_spk_corr_v2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/get_pca_sap_features.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_pca_sap_features.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/motif_syllable_duration_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_duration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/practice.py" beforeDir="false" afterPath="$PROJECT_DIR$/practice.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/raster.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/entropy.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/entropy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/plot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/raster_syllable.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster_syllable.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/results/syllable.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/syllable.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/song_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/song_analysis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -801,28 +793,11 @@
       <workItem from="1630025628310" duration="4736000" />
       <workItem from="1630112726968" duration="5454000" />
       <workItem from="1630267730955" duration="19246000" />
-      <workItem from="1630363194350" duration="5044000" />
-    </task>
-    <task id="LOCAL-00441" summary="update">
-      <created>1626148499857</created>
-      <option name="number" value="00441" />
-      <option name="presentableId" value="LOCAL-00441" />
-      <option name="project" value="LOCAL" />
-      <updated>1626148499857</updated>
-    </task>
-    <task id="LOCAL-00442" summary="update for syllable sequence analysis">
-      <created>1626148542180</created>
-      <option name="number" value="00442" />
-      <option name="presentableId" value="LOCAL-00442" />
-      <option name="project" value="LOCAL" />
-      <updated>1626148542180</updated>
-    </task>
-    <task id="LOCAL-00443" summary="sequence analysis">
-      <created>1626159696024</created>
-      <option name="number" value="00443" />
-      <option name="presentableId" value="LOCAL-00443" />
-      <option name="project" value="LOCAL" />
-      <updated>1626159696024</updated>
+      <workItem from="1630363194350" duration="6369000" />
+      <workItem from="1630453366686" duration="10467000" />
+      <workItem from="1630545844536" duration="1192000" />
+      <workItem from="1630727260902" duration="1284000" />
+      <workItem from="1630986563757" duration="297000" />
     </task>
     <task id="LOCAL-00444" summary="update">
       <created>1626232465079</created>
@@ -1146,7 +1121,28 @@
       <option name="project" value="LOCAL" />
       <updated>1630308270108</updated>
     </task>
-    <option name="localTasksCounter" value="490" />
+    <task id="LOCAL-00490" summary="update">
+      <created>1630387856867</created>
+      <option name="number" value="00490" />
+      <option name="presentableId" value="LOCAL-00490" />
+      <option name="project" value="LOCAL" />
+      <updated>1630387856867</updated>
+    </task>
+    <task id="LOCAL-00491" summary="compare relative to baseline">
+      <created>1630468450392</created>
+      <option name="number" value="00491" />
+      <option name="presentableId" value="LOCAL-00491" />
+      <option name="project" value="LOCAL" />
+      <updated>1630468450393</updated>
+    </task>
+    <task id="LOCAL-00492" summary="added one-sample test">
+      <created>1630727962149</created>
+      <option name="number" value="00492" />
+      <option name="presentableId" value="LOCAL-00492" />
+      <option name="project" value="LOCAL" />
+      <updated>1630727962150</updated>
+    </task>
+    <option name="localTasksCounter" value="493" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1179,8 +1175,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="sparseness" />
-    <MESSAGE value="update sparseness calculation" />
     <MESSAGE value="added sparseness, fano factor, cv of firing rates" />
     <MESSAGE value="pairwise cc - regression fit (quadratic)" />
     <MESSAGE value="added create db function" />
@@ -1202,9 +1196,11 @@
     <MESSAGE value="added __name__ == '__main__':" />
     <MESSAGE value="compared conditional means" />
     <MESSAGE value="plot_across_days_per_note" />
-    <MESSAGE value="update" />
     <MESSAGE value="plot_paired_data added" />
-    <option name="LAST_COMMIT_MESSAGE" value="plot_paired_data added" />
+    <MESSAGE value="update" />
+    <MESSAGE value="compare relative to baseline" />
+    <MESSAGE value="added one-sample test" />
+    <option name="LAST_COMMIT_MESSAGE" value="added one-sample test" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
