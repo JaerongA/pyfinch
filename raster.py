@@ -117,7 +117,7 @@ def get_raster(query,
         # Plot spectrogram
         ax_spect = plt.subplot(gs[1:3, 0:4])
         spect_time = spect_time - spect_time[0] - peth_parm['buffer']  # starts from zero
-        ax_spect.pcolormesh(spect_time, spect_freq, spect,  # data
+        ax_spect.pcolormesh(spect_time, spect_freq, spect,
                             cmap='hot_r',
                             norm=colors.SymLogNorm(linthresh=0.05,
                                                    linscale=0.03,

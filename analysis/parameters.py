@@ -74,7 +74,7 @@ interp_factor = 100  # factor by which to increase the sampling frequency
 spk_proportion = 0.2  # proportion of waveforms to plot
 
 # Bout raster plot
-bout_buffer = 100
+bout_buffer = 1000  # in ms
 
 # Note temporal buffer (for single syllable)
 note_buffer = 10  # in ms
