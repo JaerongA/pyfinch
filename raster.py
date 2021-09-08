@@ -103,7 +103,7 @@ def get_raster(query,
         spect_time, spect, spect_freq = audio.spectrogram(timestamp, data)
 
         # Plot figure
-        fig = plt.figure(figsize=(8, 9), dpi=500)
+        fig = plt.figure(figsize=(8, 9), dpi=600)
 
         fig.set_tight_layout(False)
         if time_warp:
@@ -548,7 +548,7 @@ if __name__ == '__main__':
     save_fig = True
     update_db = True
     view_folder = True  # open the folder where the result figures are saved
-    fig_ext = '.png'  # set to '.pdf' for vector output
+    fig_ext = '.pdf'  # set to '.pdf' for vector output (.png by default)
 
     # Create a new db to store results
     if update_db:

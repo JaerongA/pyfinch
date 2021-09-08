@@ -5,13 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/database/create_cluster_results.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deafening/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/parameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/config.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/peth.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/plot_rhd.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/raster.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/raster_syllable.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster_syllable.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -231,6 +228,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -798,14 +798,8 @@
       <workItem from="1630727260902" duration="1284000" />
       <workItem from="1630986563757" duration="717000" />
       <workItem from="1630987302403" duration="1734000" />
-      <workItem from="1630989063980" duration="4196000" />
-    </task>
-    <task id="LOCAL-00450" summary="skip if no song bout exists">
-      <created>1626318851786</created>
-      <option name="number" value="00450" />
-      <option name="presentableId" value="LOCAL-00450" />
-      <option name="project" value="LOCAL" />
-      <updated>1626318851786</updated>
+      <workItem from="1630989063980" duration="5483000" />
+      <workItem from="1631072118260" duration="414000" />
     </task>
     <task id="LOCAL-00451" summary="plot results over days">
       <created>1626371286672</created>
@@ -1143,7 +1137,14 @@
       <option name="project" value="LOCAL" />
       <updated>1630990707939</updated>
     </task>
-    <option name="localTasksCounter" value="499" />
+    <task id="LOCAL-00499" summary="update">
+      <created>1630994339774</created>
+      <option name="number" value="00499" />
+      <option name="presentableId" value="LOCAL-00499" />
+      <option name="project" value="LOCAL" />
+      <updated>1630994339774</updated>
+    </task>
+    <option name="localTasksCounter" value="500" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1196,21 +1197,16 @@
     <MESSAGE value="compare relative to baseline" />
     <MESSAGE value="added one-sample test" />
     <MESSAGE value="get_raster_syllable" />
-    <MESSAGE value="update" />
     <MESSAGE value="print out one-sample t-test" />
     <MESSAGE value="run analysis at the syllable level" />
     <MESSAGE value="get_fr update" />
     <MESSAGE value="version 1 (for deafening)" />
-    <option name="LAST_COMMIT_MESSAGE" value="version 1 (for deafening)" />
+    <MESSAGE value="update" />
+    <option name="LAST_COMMIT_MESSAGE" value="update" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/sap.py</url>
-          <line>47</line>
-          <option name="timeStamp" value="78" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/song/get_song_bout.py</url>
           <line>5</line>
