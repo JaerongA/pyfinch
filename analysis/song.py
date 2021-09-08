@@ -13,8 +13,13 @@ def load_song(dir, format='wav'):
     from scipy.io import wavfile
     from util.functions import list_files
 
+
+    ## Todo: this neeeds to be looked at
     # List all audio files in the dir
-    song_dir = [folder for folder in dir.rglob('Songs')]  # find the folder that has song data (not calls)
+    if not dir.stem == 'Songs':
+        song_dir = [folder for folder in dir.rglob('Songs')]  # find the folder that has song data (not calls)
+    else:
+        song_dir = [dir]
 
     audio_files = []
     for data_dir in song_dir:
