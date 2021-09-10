@@ -13,8 +13,6 @@ def load_song(dir, format='wav'):
     from scipy.io import wavfile
     from util.functions import list_files
 
-
-    ## Todo: this neeeds to be looked at
     # List all audio files in the dir
     if not dir.stem == 'Songs':
         song_dir = [folder for folder in dir.rglob('Songs')]  # find the folder that has song data (not calls)
@@ -57,7 +55,7 @@ def load_song(dir, format='wav'):
         timestamp_serialized = np.append(timestamp_serialized, timestamp)
 
         # File information (name, start & end timestamp of each file)
-        file_list.append(file)
+        file_list.append(file.name)
         file_start_list.append(timestamp_serialized[start_ind])  # in ms
         file_end_list.append(timestamp_serialized[-1])  # in ms
 
@@ -432,10 +430,15 @@ class AudioInfo:
     def extract(self, time_range):
         """
         Extracts data from the specified range
-        Args:
-            time_range: list
+        Parameters
+        ----------
+        time_range : list
+            list of time stamps [start, end]
 
-        Returns:
+        Returns
+        -------
+        timestamp : arr
+        data : arr
         """
         import numpy as np
 

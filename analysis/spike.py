@@ -29,11 +29,10 @@ def load_audio(dir, format='wav'):
         sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
 
         # Add timestamp info
-        length = data.shape[0] / sample_rate
         data_concat = np.append(data_concat, data)
 
         # Store results
-        file_list.append(file)
+        file_list.append(file.name)
 
     # Create timestamps
     timestamp_concat = np.arange(0, data_concat.shape[0] / sample_rate, (1 / sample_rate)) * 1E3
@@ -1539,7 +1538,7 @@ class NeuralData:
 
             # Load data file
             print('Loading... ' + file.stem)
-            file_list.append(file)
+            file_list.append(file.name)
             intan = read_rhd(file)  # note that the timestamp is in second
             # Concatenate timestamps
             intan['t_amplifier'] -= intan['t_amplifier'][0]  # start from t = 0

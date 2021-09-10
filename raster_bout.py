@@ -29,7 +29,7 @@ def plot_raster_bouts(query,
     font_size = 12  # figure font size
     rec_yloc = 0.05
     rect_height = 0.2
-    text_yloc = 1  # text height
+    text_yloc = 0.5  # text height
     nb_row = 13
     nb_col = 1
     tick_length = 1
@@ -50,18 +50,20 @@ def plot_raster_bouts(query,
         channel_nb = int(cluster_db.channel[-2:])
         format = cluster_db.format
 
+        # Load data
         ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
         ci.spk_ts = np.concatenate(ci.spk_ts, axis=0)  # concatenate all spike timestamp into a single array
         bi = BoutInfo(path, channel_nb, unit_nb, cluster_db.songNote, format, name, update=update)  # bout object
         audio = AudioData(path, update=update)  # audio object
+        nd = NeuralData(path, channel_nb, format, update=update)  # Load neural raw trace
 
         # Iterate through song bouts
         list_zip = zip(bi.files, bi.onsets, bi.offsets, bi.syllables, bi.contexts)
 
         for bout_ind, (file, onsets, offsets, syllables, context) in enumerate(list_zip):
 
-            if not bout_ind:
-                continue
+            # if not bout_ind:
+            #     continue
             # If you want to plot a specific bout, specify its number
             # Otherwise, plot them all
             if isinstance(bout_nb, int):
@@ -123,7 +125,7 @@ def plot_raster_bouts(query,
                 rectangle = plt.Rectangle((onsets[i], rec_yloc), note_dur[i], rect_height,
                                           linewidth=1, alpha=0.5, edgecolor='k', facecolor=bout_color[syl])
                 ax_syl.add_patch(rectangle)
-                ax_syl.text((onsets[i] + (offsets[i] - onsets[i]) / 2.3), text_yloc, syl, size=font_size)
+                ax_syl.text((onsets[i] + (offsets[i] - onsets[i]) / 2.6), text_yloc, syl, size=font_size)
             ax_syl.axis('off')
 
             # Plot song amplitude
@@ -141,15 +143,15 @@ def plot_raster_bouts(query,
             ax_raster.axis('off')
 
             # Plot raw neural data
-            nd = NeuralData(path, channel_nb, format, update=update).extract([start, end])  # raw neural data
-            nd.timestamp = nd.timestamp - nd.timestamp[0] - bout_buffer
+            timestamp, data = nd.extract([start, end])  # raw neural data
+            timestamp = timestamp - timestamp[0] - bout_buffer
             ax_nd = plt.subplot2grid((nb_row, nb_col), (8, 0), rowspan=2, colspan=1, sharex=ax_spect)
-            ax_nd.plot(nd.timestamp, nd.data, 'k', lw=0.5)
+            ax_nd.plot(timestamp, data, 'k', lw=0.5)
             ax_nd.set_xlabel('Time (ms)')
             remove_right_top(ax_nd)
 
             # Add a scale bar
-            plt.plot([ax_nd.get_xlim()[0] + 50, ax_nd.get_xlim()[0] + 50],
+            plt.plot([ax_nd.get_xlim()[0], ax_nd.get_xlim()[0] + 0],
                      [-250, 250], 'k', lw=3)  # for amplitude
             # plt.text(ax_nd.get_xlim()[0] - (bout_buffer / 2), -200, '500 µV', rotation=90)
             ax_nd.set_ylabel('500 µV', rotation=90)
@@ -171,8 +173,8 @@ if __name__ == '__main__':
 
     # Parameters
     bout_nb = None  # bout index you want to plot (None by default)
-    update = False  # Update the cache file per cluster
-    save_fig = True
+    update = True  # Update the cache file per cluster
+    save_fig = False
     view_folder = True  # open the folder where the result figures are saved
     fig_ext = '.png'  # set to '.pdf' for vector output (.png by default)
 

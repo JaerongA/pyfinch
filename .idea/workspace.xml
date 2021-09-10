@@ -4,12 +4,11 @@
     <option name="GROUP_BY_SEVERITY" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
+    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/parameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plot_bout.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster_bout.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/raster.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/unit_profile.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/unit_profile.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/song.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/song.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/spike.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/spike.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/raster_bout.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster_bout.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -799,28 +798,9 @@
       <workItem from="1630989063980" duration="5483000" />
       <workItem from="1631072118260" duration="6160000" />
       <workItem from="1631079195401" duration="5239000" />
-      <workItem from="1631116821831" duration="335000" />
-    </task>
-    <task id="LOCAL-00453" summary="using a new time window">
-      <created>1626667200291</created>
-      <option name="number" value="00453" />
-      <option name="presentableId" value="LOCAL-00453" />
-      <option name="project" value="LOCAL" />
-      <updated>1626667200291</updated>
-    </task>
-    <task id="LOCAL-00454" summary="linear vs. quadratic regression">
-      <created>1626922000814</created>
-      <option name="number" value="00454" />
-      <option name="presentableId" value="LOCAL-00454" />
-      <option name="project" value="LOCAL" />
-      <updated>1626922000814</updated>
-    </task>
-    <task id="LOCAL-00455" summary="linear vs. quadratic regression (aic calculation added)">
-      <created>1627009110774</created>
-      <option name="number" value="00455" />
-      <option name="presentableId" value="LOCAL-00455" />
-      <option name="project" value="LOCAL" />
-      <updated>1627009110774</updated>
+      <workItem from="1631116821831" duration="429000" />
+      <workItem from="1631158532024" duration="35000" />
+      <workItem from="1631243183360" duration="4760000" />
     </task>
     <task id="LOCAL-00456" summary="added get_ff">
       <created>1627605805323</created>
@@ -1144,7 +1124,28 @@
       <option name="project" value="LOCAL" />
       <updated>1631072615231</updated>
     </task>
-    <option name="localTasksCounter" value="502" />
+    <task id="LOCAL-00502" summary="update">
+      <created>1631117175874</created>
+      <option name="number" value="00502" />
+      <option name="presentableId" value="LOCAL-00502" />
+      <option name="project" value="LOCAL" />
+      <updated>1631117175874</updated>
+    </task>
+    <task id="LOCAL-00503" summary="update">
+      <created>1631117196421</created>
+      <option name="number" value="00503" />
+      <option name="presentableId" value="LOCAL-00503" />
+      <option name="project" value="LOCAL" />
+      <updated>1631117196421</updated>
+    </task>
+    <task id="LOCAL-00504" summary="fixed NeuralData extract method to ouput data &amp; timestamps">
+      <created>1631244344609</created>
+      <option name="number" value="00504" />
+      <option name="presentableId" value="LOCAL-00504" />
+      <option name="project" value="LOCAL" />
+      <updated>1631244344609</updated>
+    </task>
+    <option name="localTasksCounter" value="505" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1177,7 +1178,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="analyze proportional difference" />
     <MESSAGE value="added draw_sig_prop" />
     <MESSAGE value="update (two sub-functions added)" />
     <MESSAGE value="added get_syllable_ff" />
@@ -1202,7 +1202,8 @@
     <MESSAGE value="get_fr update" />
     <MESSAGE value="version 1 (for deafening)" />
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="fixed NeuralData extract method to ouput data &amp; timestamps" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed NeuralData extract method to ouput data &amp; timestamps" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1239,8 +1240,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/raster_bout.py</url>
-          <line>151</line>
-          <option name="timeStamp" value="182" />
+          <line>43</line>
+          <option name="timeStamp" value="188" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -1295,7 +1296,7 @@
     <SUITE FILE_PATH="coverage/Deafening$correlogram_jitter.coverage" NAME="correlogram_jitter Coverage Results" MODIFIED="1613073666971" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$practice.coverage" NAME="practice Coverage Results" MODIFIED="1613107441132" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$practice2.coverage" NAME="practice2 Coverage Results" MODIFIED="1594005839708" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Deafening$raster_bout__1_.coverage" NAME="raster_bout (1) Coverage Results" MODIFIED="1631084385979" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Deafening$raster_bout__1_.coverage" NAME="raster_bout (1) Coverage Results" MODIFIED="1631247539306" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$syllable_duration_analysis_v2.coverage" NAME="syllable_duration_analysis_v2 Coverage Results" MODIFIED="1627695544549" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$raster_syllable.coverage" NAME="raster_syllable Coverage Results" MODIFIED="1628297017255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$plot_bout.coverage" NAME="plot_bout Coverage Results" MODIFIED="1614801873953" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
