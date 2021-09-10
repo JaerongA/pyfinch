@@ -1571,20 +1571,24 @@ class NeuralData:
     def extract(self, time_range):
         """
         Extracts data from the specified range
-        Args:
-            time_range: list
+        Parameters
+        ----------
+        time_range : list
+            list of time stamps [start, end]
 
-        Returns:
+        Returns
+        -------
+        timestamp : arr
+        data : arr
         """
+
         import numpy as np
 
         start = time_range[0]
         end = time_range[-1]
 
         ind = np.where((self.timestamp >= start) & (self.timestamp <= end))
-        self.timestamp = self.timestamp[ind]
-        self.data = self.data[ind]
-        return self
+        return self.timestamp[ind], self.data[ind]
 
 
 class Correlogram():
