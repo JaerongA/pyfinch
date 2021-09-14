@@ -27,7 +27,7 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
                         col_order=None,
                         y_lim=None,
                         jitter=0.1, alpha=0.5,
-                        run_stats=True, stat_txt_size = 10,
+                        run_stats=True, stat_txt_size=10,
                         legend_ok=False
                         ):
     import math
@@ -110,7 +110,6 @@ def plot_across_days_per_note(df, x, y,
                               save_path=None,
                               fig_ext='.png'
                               ):
-
     # Load database
     import seaborn as sns
     import matplotlib.pyplot as plt
@@ -153,16 +152,15 @@ def plot_across_days_per_note(df, x, y,
         if ylim:
             axes[ax_ind].set_ylim(ylim)
 
-        if isinstance(vline, int): # Plot vertical line
+        if isinstance(vline, int):  # Plot vertical line
             axes[ax_ind].axvline(x=vline, color='k', ls='--', lw=0.5)
-        if isinstance(hline, int): # Plot horizontal line (e.g., baseline)
+        if isinstance(hline, int):  # Plot horizontal line (e.g., baseline)
             axes[ax_ind].axhline(y=hline, color='k', ls='--', lw=0.5)
 
     if save_fig:
         save.save_fig(fig, save_path, fig_name, view_folder=view_folder, fig_ext=fig_ext)
     else:
         plt.show()
-
 
     def plot_paired_data(df, x, y,
                          x_label=None, y_label=None,
@@ -173,7 +171,6 @@ def plot_across_days_per_note(df, x, y,
                          save_path=None,
                          fig_ext='.png'
                          ):
-
 
         import matplotlib.pyplot as plt
         import seaborn as sns
@@ -250,14 +247,6 @@ def plot_across_days_per_note(df, x, y,
         else:
             plt.show()
 
-
-
-
-
-
-
-
-
 # from database.load import ProjectLoader
 # import matplotlib.pyplot as plt
 # from util import save
@@ -280,5 +269,3 @@ def plot_across_days_per_note(df, x, y,
 # plt.title('Unit Category (Undir)')
 # ax.axis('equal')
 # plt.show()
-
-

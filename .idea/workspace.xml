@@ -6,9 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/song.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/song.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/spike.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/spike.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/raster_bout.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster_bout.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/config.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/fano_factor.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/fano_factor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/plot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/syllable.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/syllable.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,7 +136,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\test" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.raster_bout (1)">
+  <component name="RunManager" selected="Python.syllable">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -180,20 +181,17 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="entropy" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="fano_factor" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/results" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/entropy.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/results/fano_factor.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -228,6 +226,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -269,9 +270,6 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/results" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -289,19 +287,19 @@
     </configuration>
     <list>
       <item itemvalue="Python.SongAnalysis" />
-      <item itemvalue="Python.syllable" />
-      <item itemvalue="Python.entropy" />
       <item itemvalue="Python.raster" />
       <item itemvalue="Python.raster_bout" />
       <item itemvalue="Python.raster_bout (1)" />
+      <item itemvalue="Python.fano_factor" />
+      <item itemvalue="Python.syllable" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.syllable" />
+        <item itemvalue="Python.fano_factor" />
         <item itemvalue="Python.raster_bout (1)" />
         <item itemvalue="Python.raster_bout" />
         <item itemvalue="Python.raster" />
-        <item itemvalue="Python.entropy" />
-        <item itemvalue="Python.syllable" />
       </list>
     </recent_temporary>
   </component>
@@ -800,14 +798,10 @@
       <workItem from="1631079195401" duration="5239000" />
       <workItem from="1631116821831" duration="429000" />
       <workItem from="1631158532024" duration="35000" />
-      <workItem from="1631243183360" duration="4760000" />
-    </task>
-    <task id="LOCAL-00456" summary="added get_ff">
-      <created>1627605805323</created>
-      <option name="number" value="00456" />
-      <option name="presentableId" value="LOCAL-00456" />
-      <option name="project" value="LOCAL" />
-      <updated>1627605805324</updated>
+      <workItem from="1631243183360" duration="5450000" />
+      <workItem from="1631332008173" duration="489000" />
+      <workItem from="1631585339253" duration="2481000" />
+      <workItem from="1631590796731" duration="3651000" />
     </task>
     <task id="LOCAL-00457" summary="added get_ff">
       <created>1627605848652</created>
@@ -1145,7 +1139,14 @@
       <option name="project" value="LOCAL" />
       <updated>1631244344609</updated>
     </task>
-    <option name="localTasksCounter" value="505" />
+    <task id="LOCAL-00505" summary="update">
+      <created>1631248007098</created>
+      <option name="number" value="00505" />
+      <option name="presentableId" value="LOCAL-00505" />
+      <option name="project" value="LOCAL" />
+      <updated>1631248007098</updated>
+    </task>
+    <option name="localTasksCounter" value="506" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1201,9 +1202,9 @@
     <MESSAGE value="run analysis at the syllable level" />
     <MESSAGE value="get_fr update" />
     <MESSAGE value="version 1 (for deafening)" />
-    <MESSAGE value="update" />
     <MESSAGE value="fixed NeuralData extract method to ouput data &amp; timestamps" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed NeuralData extract method to ouput data &amp; timestamps" />
+    <MESSAGE value="update" />
+    <option name="LAST_COMMIT_MESSAGE" value="update" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1237,11 +1238,6 @@
           <url>file://$PROJECT_DIR$/psd_similarity.py</url>
           <line>530</line>
           <option name="timeStamp" value="176" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/raster_bout.py</url>
-          <line>43</line>
-          <option name="timeStamp" value="188" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
