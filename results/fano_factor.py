@@ -4,14 +4,9 @@
 def plot_fano_factor_cluster(save_fig=True,
                              view_folder=False,
                              fig_ext='.png'):
-
-
-    from database.load import ProjectLoader
     import numpy as np
     from util import save
 
-    # Load database
-    db = ProjectLoader().load_db()
     # # SQL statement
     # Fano factor at the motif level
     df = db.to_dataframe("SELECT * FROM cluster WHERE analysisOK=TRUE")
@@ -53,40 +48,11 @@ def plot_fano_factor_cluster(save_fig=True,
 
 
 def plot_fano_factor_syllable(save_fig=True,
-                             view_folder=False,
-                             fig_ext='.png'):
-
-
-
-
-
-if __name__ == '__main__':
-
-
-    from results.plot import plot_bar_comparison
-    import matplotlib.pyplot as plt
-
-    save_fig = False
-    view_folder = True  # open the folder where the result figures are saved
-    fig_ext = '.png'
-
-
-
-    plot_fano_factor_cluster(
-        save_fig=save_fig,
-        view_folder=view_folder,
-        fig_ext=fig_ext
-    )
-
-
-    # plot_fano_factor_syllable(
-    #     save_fig=save_fig,
-    #     view_folder=view_folder,
-    #     fig_ext=fig_ext
-    # )
-
-    nb_note_crit = 10
-    fr_crit = 10
+                              view_folder=False,
+                              fig_ext='.png'):
+    # Parameters
+    nb_row = 3
+    nb_col = 2
 
     # Fano factor (spike counts)
     fig, ax = plt.subplots(figsize=(7, 4))
@@ -117,4 +83,71 @@ if __name__ == '__main__':
     fig.tight_layout()
     plt.show()
 
+
+if __name__ == '__main__':
+
+    from database.load import ProjectLoader
+    from results.plot import plot_bar_comparison
+    import matplotlib.pyplot as plt
+
+    save_fig = False
+    view_folder = True  # open the folder where the result figures are saved
+    fig_ext = '.png'
+
+    nb_note_crit = 10
+    fr_crit = 10
+
+    # Load database
+    db = ProjectLoader().load_db()
+
+    # plot_fano_factor_cluster(
+    #     save_fig=save_fig,
+    #     view_folder=view_folder,
+    #     fig_ext=fig_ext
+    # )
+
+
+    # plot_fano_factor_syllable(
+    #     save_fig=save_fig,
+    #     view_folder=view_folder,
+    #     fig_ext=fig_ext
+    # )
+
+    import numpy as np
+    import seaborn as sns
+    from util.draw import remove_right_top
+
+    # Parameters
+    nb_row = 3
+    nb_col = 2
+
+    # Plot scatter with diagonal
+    fig, ax = plt.subplots(figsize=(7, 4))
+    plt.suptitle(f"Fano Factor (FR >= {fr_crit} # of Notes >= {nb_note_crit})", y=.9, fontsize=20)
+
+    db.execute(f"SELECT DISTINCT(taskName) FROM syllable_pcc ORDER BY taskName DESC")
+    task_list = [data[0] for data in db.cur.fetchall()]
+    
+    for ind, task in enumerate(task_list):
+
+        # Load database
+        if task =='Predeafening':
+            query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND frUndir >= {fr_crit}"
+        else:
+            query = f"SELECT * FROM syllable_pcc WHERE nbNoteDir >= {nb_note_crit} AND frUnDir >= {fr_crit}"
+
+        df = db.to_dataframe(query)
+
+        df_temp = df[df['taskName'] == task]
+        ax = plt.subplot2grid((nb_row, nb_col), (1, ind), rowspan=2, colspan=1)
+        sns.scatterplot(ax=ax, x='fanoFactorDir', y='fanoFactorUndir', data=df_temp, size=2, color='k')
+        ax.plot([0, 1], [0, 1], 'm--', transform=ax.transAxes, linewidth=1)
+        remove_right_top(ax)
+        ax.set_aspect('equal')
+        ax.set_xlabel('Dir'), ax.set_ylabel('Undir'), ax.set_title(task)
+        ax.set_xlim([0, 4]), ax.set_ylim([0, 4])
+        ax.get_legend().remove()
+        ax.set_xticks(np.arange(ax.get_xlim()[0], ax.get_xlim()[1]+1, 1))
+        ax.set_yticks(np.arange(ax.get_ylim()[0], ax.get_ylim()[1]+1, 1))
+    plt.show()
 
