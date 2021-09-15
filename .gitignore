@@ -1,1 +1,3 @@
-.load_intan_rhd_format
+load_intan_rhd_format
+.idea
+config.ini

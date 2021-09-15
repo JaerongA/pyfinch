@@ -5,11 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="update">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/config.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/fano_factor.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/fano_factor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/plot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/syllable.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/syllable.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/deafening.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/deafening.sqbpro" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,6 +102,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_MARK_IGNORED_FILES_AS_EXCLUDED" value="true" />
     <property name="DataGrid.QuickDoc.View" value="transposed" />
     <property name="DatabaseDriversLRU" value="sqlite.xerial&#10;sqlite" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
@@ -136,7 +137,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\test" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.syllable">
+  <component name="RunManager" selected="Python.fano_factor">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -270,6 +271,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/results" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -295,8 +299,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.syllable" />
         <item itemvalue="Python.fano_factor" />
+        <item itemvalue="Python.syllable" />
         <item itemvalue="Python.raster_bout (1)" />
         <item itemvalue="Python.raster_bout" />
         <item itemvalue="Python.raster" />
@@ -801,21 +805,8 @@
       <workItem from="1631243183360" duration="5450000" />
       <workItem from="1631332008173" duration="489000" />
       <workItem from="1631585339253" duration="2481000" />
-      <workItem from="1631590796731" duration="3651000" />
-    </task>
-    <task id="LOCAL-00457" summary="added get_ff">
-      <created>1627605848652</created>
-      <option name="number" value="00457" />
-      <option name="presentableId" value="LOCAL-00457" />
-      <option name="project" value="LOCAL" />
-      <updated>1627605848652</updated>
-    </task>
-    <task id="LOCAL-00458" summary="update syllable duration analysis">
-      <created>1627702802251</created>
-      <option name="number" value="00458" />
-      <option name="presentableId" value="LOCAL-00458" />
-      <option name="project" value="LOCAL" />
-      <updated>1627702802252</updated>
+      <workItem from="1631590796731" duration="4156000" />
+      <workItem from="1631667543775" duration="7424000" />
     </task>
     <task id="LOCAL-00459" summary="added sparseness index">
       <created>1627961826208</created>
@@ -1146,7 +1137,21 @@
       <option name="project" value="LOCAL" />
       <updated>1631248007098</updated>
     </task>
-    <option name="localTasksCounter" value="506" />
+    <task id="LOCAL-00506" summary="update">
+      <created>1631598432633</created>
+      <option name="number" value="00506" />
+      <option name="presentableId" value="LOCAL-00506" />
+      <option name="project" value="LOCAL" />
+      <updated>1631598432634</updated>
+    </task>
+    <task id="LOCAL-00507" summary="plot scatter with a diagonal line">
+      <created>1631678133082</created>
+      <option name="number" value="00507" />
+      <option name="presentableId" value="LOCAL-00507" />
+      <option name="project" value="LOCAL" />
+      <updated>1631678133082</updated>
+    </task>
+    <option name="localTasksCounter" value="508" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1179,7 +1184,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="added draw_sig_prop" />
     <MESSAGE value="update (two sub-functions added)" />
     <MESSAGE value="added get_syllable_ff" />
     <MESSAGE value="moved get_ff from spike.py to functions.py" />
@@ -1204,7 +1208,8 @@
     <MESSAGE value="version 1 (for deafening)" />
     <MESSAGE value="fixed NeuralData extract method to ouput data &amp; timestamps" />
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="plot scatter with a diagonal line" />
+    <option name="LAST_COMMIT_MESSAGE" value="plot scatter with a diagonal line" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
