@@ -4,12 +4,10 @@
     <option name="GROUP_BY_SEVERITY" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="update">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="update syllable duration">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/config.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/deafening.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/deafening.sqbpro" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gap_duration.py" beforeDir="false" afterPath="$PROJECT_DIR$/gap_duration.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,7 +135,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\test" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.fano_factor">
+  <component name="RunManager" selected="Python.gap_duration">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -186,6 +184,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/results" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -201,20 +202,17 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="raster" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="gap_duration" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/raster.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/gap_duration.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -227,9 +225,6 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -291,19 +286,19 @@
     </configuration>
     <list>
       <item itemvalue="Python.SongAnalysis" />
-      <item itemvalue="Python.raster" />
       <item itemvalue="Python.raster_bout" />
       <item itemvalue="Python.raster_bout (1)" />
       <item itemvalue="Python.fano_factor" />
       <item itemvalue="Python.syllable" />
+      <item itemvalue="Python.gap_duration" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.gap_duration" />
+        <item itemvalue="Python.raster_bout (1)" />
         <item itemvalue="Python.fano_factor" />
         <item itemvalue="Python.syllable" />
-        <item itemvalue="Python.raster_bout (1)" />
         <item itemvalue="Python.raster_bout" />
-        <item itemvalue="Python.raster" />
       </list>
     </recent_temporary>
   </component>
@@ -806,35 +801,9 @@
       <workItem from="1631332008173" duration="489000" />
       <workItem from="1631585339253" duration="2481000" />
       <workItem from="1631590796731" duration="4156000" />
-      <workItem from="1631667543775" duration="7424000" />
-    </task>
-    <task id="LOCAL-00459" summary="added sparseness index">
-      <created>1627961826208</created>
-      <option name="number" value="00459" />
-      <option name="presentableId" value="LOCAL-00459" />
-      <option name="project" value="LOCAL" />
-      <updated>1627961826209</updated>
-    </task>
-    <task id="LOCAL-00460" summary="sparseness">
-      <created>1628135739432</created>
-      <option name="number" value="00460" />
-      <option name="presentableId" value="LOCAL-00460" />
-      <option name="project" value="LOCAL" />
-      <updated>1628135739433</updated>
-    </task>
-    <task id="LOCAL-00461" summary="update sparseness calculation">
-      <created>1628221772105</created>
-      <option name="number" value="00461" />
-      <option name="presentableId" value="LOCAL-00461" />
-      <option name="project" value="LOCAL" />
-      <updated>1628221772105</updated>
-    </task>
-    <task id="LOCAL-00462" summary="added sparseness, fano factor, cv of firing rates">
-      <created>1628306035040</created>
-      <option name="number" value="00462" />
-      <option name="presentableId" value="LOCAL-00462" />
-      <option name="project" value="LOCAL" />
-      <updated>1628306035041</updated>
+      <workItem from="1631667543775" duration="7496000" />
+      <workItem from="1632023871944" duration="64000" />
+      <workItem from="1632108402306" duration="7910000" />
     </task>
     <task id="LOCAL-00463" summary="pairwise cc - regression fit (quadratic)">
       <created>1628395099439</created>
@@ -1151,7 +1120,35 @@
       <option name="project" value="LOCAL" />
       <updated>1631678133082</updated>
     </task>
-    <option name="localTasksCounter" value="508" />
+    <task id="LOCAL-00508" summary="update">
+      <created>1631678524503</created>
+      <option name="number" value="00508" />
+      <option name="presentableId" value="LOCAL-00508" />
+      <option name="project" value="LOCAL" />
+      <updated>1631678524503</updated>
+    </task>
+    <task id="LOCAL-00509" summary="gap duration analysis">
+      <created>1632110403588</created>
+      <option name="number" value="00509" />
+      <option name="presentableId" value="LOCAL-00509" />
+      <option name="project" value="LOCAL" />
+      <updated>1632110403589</updated>
+    </task>
+    <task id="LOCAL-00510" summary="remove">
+      <created>1632119079986</created>
+      <option name="number" value="00510" />
+      <option name="presentableId" value="LOCAL-00510" />
+      <option name="project" value="LOCAL" />
+      <updated>1632119079986</updated>
+    </task>
+    <task id="LOCAL-00511" summary="leave only one version syllable duration">
+      <created>1632119119883</created>
+      <option name="number" value="00511" />
+      <option name="presentableId" value="LOCAL-00511" />
+      <option name="project" value="LOCAL" />
+      <updated>1632119119883</updated>
+    </task>
+    <option name="localTasksCounter" value="512" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1184,9 +1181,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="update (two sub-functions added)" />
-    <MESSAGE value="added get_syllable_ff" />
-    <MESSAGE value="moved get_ff from spike.py to functions.py" />
     <MESSAGE value="normalize relative to pre-deafening" />
     <MESSAGE value="added add_pre_normalized_col function" />
     <MESSAGE value="corrected ff csv update error" />
@@ -1207,9 +1201,12 @@
     <MESSAGE value="get_fr update" />
     <MESSAGE value="version 1 (for deafening)" />
     <MESSAGE value="fixed NeuralData extract method to ouput data &amp; timestamps" />
-    <MESSAGE value="update" />
     <MESSAGE value="plot scatter with a diagonal line" />
-    <option name="LAST_COMMIT_MESSAGE" value="plot scatter with a diagonal line" />
+    <MESSAGE value="update" />
+    <MESSAGE value="gap duration analysis" />
+    <MESSAGE value="remove" />
+    <MESSAGE value="leave only one version syllable duration" />
+    <option name="LAST_COMMIT_MESSAGE" value="leave only one version syllable duration" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

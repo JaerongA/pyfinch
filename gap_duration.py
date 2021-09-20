@@ -2,6 +2,9 @@
 
 
 # Check if the data .csv exists
+import numpy as np
+
+from analysis.functions import get_note_type
 from analysis.song import SongInfo
 from database.load import ProjectLoader, DBInfo
 import pandas as pd
@@ -29,5 +32,20 @@ for row in db.cur.fetchall():
     # Store results in the dataframe
     df = pd.DataFrame()
 
+    list_zip = zip(si.onsets, si.offsets, si.syllables, si.contexts)
+
+    for onsets, offsets, syllables, context in list_zip:
 
 
+        note_types = get_note_type(''.join(si.syllables).replace('*', ''), song_db)  # Type of the syllables
+
+        onsets = onsets[onsets != '*'].astype(np.float)
+        offsets = offsets[offsets != '*'].astype(np.float)
+        intervals = onsets[1:] - offsets[:-1]
+        syllables = syllables.replace('*', '')
+
+        from analysis.functions import find_str
+        indices = find_str(syllables, 'a')
+        note_interval = []
+        for ind in indices:
+            note_interval.append(intervals[ind-1])
