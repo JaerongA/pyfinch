@@ -97,8 +97,8 @@ if __name__ == '__main__':
 
     from database.load import ProjectLoader
     from deafening.plot import plot_paired_scatter
-    from results.plot import plot_bar_comparison
     import matplotlib.pyplot as plt
+    from results.plot import plot_bar_comparison
 
     save_fig = False
     view_folder = True  # open the folder where the result figures are saved
@@ -130,6 +130,7 @@ if __name__ == '__main__':
 
     df = db.to_dataframe(query)
 
+    # Paired comparison between Undir and Dir
     plot_paired_scatter(df, 'fanoFactorDir', 'fanoFactorUndir',
                         save_folder_name='FanoFactor',
                         x_lim=[0, 4],

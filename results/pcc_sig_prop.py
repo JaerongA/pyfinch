@@ -1,16 +1,18 @@
 """Get the proportion of syllable having a significant PCC"""
 
 from collections import defaultdict
-from database.load import ProjectLoader
+
 import matplotlib.pyplot as plt
-import seaborn as sns
+
+from database.load import ProjectLoader
 from util import save
 from util.draw import remove_right_top
 
-
+# Parameters
 nb_note_crit = 10  # minimum number of notes for analysis
 fr_crit = 10  # in Hz
 task_name = ['Predeafening', 'Postdeafening']
+
 # Load database
 db = ProjectLoader().load_db()
 # # SQL statement
@@ -32,16 +34,15 @@ sig_prop = defaultdict(lambda: defaultdict(list))
 for shuffle_limit in peth_shuffle['shuffle_limit']:
 
     for task in df['taskName'].unique():
-
         df_task_undir = df_undir[(df_undir.taskName == task)]
         df_task_dir = df_dir[(df_dir.taskName == task)]
 
         pcc_col_names_undir = f"pccUndirSig_{shuffle_limit}"
         pcc_col_names_dir = f"pccDirSig_{shuffle_limit}"
 
-        sig_prop[task]['U'].append(df_task_undir[pcc_col_names_undir].sum() / df_task_undir[pcc_col_names_undir].count())
+        sig_prop[task]['U'].append(
+            df_task_undir[pcc_col_names_undir].sum() / df_task_undir[pcc_col_names_undir].count())
         sig_prop[task]['D'].append(df_task_dir[pcc_col_names_dir].sum() / df_task_dir[pcc_col_names_dir].count())
-
 
 # Plot the results
 fig, axes = plt.subplots(1, 2, figsize=(9, 4))
@@ -70,13 +71,9 @@ for ax, task in zip(axes, task_name):
 
 plt.show()
 
-
-
-
-# # Save results
-# if save_fig:
-#     save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
-#     save.save_fig(fig, save_path, 'PCC', fig_ext=fig_ext)
-# else:
-#     plt.show()
-
+# Save results
+if save_fig:
+    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
+    save.save_fig(fig, save_path, 'PCC', fig_ext=fig_ext)
+else:
+    plt.show()

@@ -1,3 +1,5 @@
 load_intan_rhd_format
 config.ini
-.idea/workspace.xml
+.idea/
+__pycache__/
+
