@@ -50,6 +50,9 @@ def plot_fano_factor_cluster(save_fig=True,
 def plot_fano_factor_syllable(save_fig=True,
                               view_folder=False,
                               fig_ext='.png'):
+
+    from util import save
+
     # Parameters
     nb_row = 3
     nb_col = 2
@@ -81,12 +84,19 @@ def plot_fano_factor_syllable(save_fig=True,
                         legend_ok=True
                         )
     fig.tight_layout()
-    plt.show()
+
+    # Save results
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
+        save.save_fig(fig, save_path, 'FanoFactor', fig_ext=fig_ext, view_folder=view_folder)
+    else:
+        plt.show()
 
 
 if __name__ == '__main__':
 
     from database.load import ProjectLoader
+    from deafening.plot import plot_paired_scatter
     from results.plot import plot_bar_comparison
     import matplotlib.pyplot as plt
 
@@ -106,48 +116,29 @@ if __name__ == '__main__':
     #     fig_ext=fig_ext
     # )
 
-
     # plot_fano_factor_syllable(
     #     save_fig=save_fig,
     #     view_folder=view_folder,
     #     fig_ext=fig_ext
     # )
 
-    import numpy as np
-    import seaborn as sns
-    from util.draw import remove_right_top
+    # Load database
+    query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND " \
+            f"nbNoteDir >= {nb_note_crit} AND " \
+            f"frUndir >= {fr_crit} AND " \
+            f"frDir >= {fr_crit}"
 
-    # Parameters
-    nb_row = 3
-    nb_col = 2
+    df = db.to_dataframe(query)
 
-    # Plot scatter with diagonal
-    fig, ax = plt.subplots(figsize=(7, 4))
-    plt.suptitle(f"Fano Factor (FR >= {fr_crit} # of Notes >= {nb_note_crit})", y=.9, fontsize=20)
+    plot_paired_scatter(df, 'fanoFactorDir', 'fanoFactorUndir',
+                        save_folder_name='FanoFactor',
+                        x_lim=[0, 4],
+                        y_lim=[0, 4],
+                        x_label='Dir',
+                        y_label='Undir',
+                        title=f"Fano Factor (FR >= {fr_crit} # of Notes >= {nb_note_crit}) (Paired)",
+                        save_fig=False,
+                        view_folder=False,
+                        fig_ext='.png')
 
-    db.execute(f"SELECT DISTINCT(taskName) FROM syllable_pcc ORDER BY taskName DESC")
-    task_list = [data[0] for data in db.cur.fetchall()]
-    
-    for ind, task in enumerate(task_list):
-
-        # Load database
-        if task =='Predeafening':
-            query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND frUndir >= {fr_crit}"
-        else:
-            query = f"SELECT * FROM syllable_pcc WHERE nbNoteDir >= {nb_note_crit} AND frUnDir >= {fr_crit}"
-
-        df = db.to_dataframe(query)
-
-        df_temp = df[df['taskName'] == task]
-        ax = plt.subplot2grid((nb_row, nb_col), (1, ind), rowspan=2, colspan=1)
-        sns.scatterplot(ax=ax, x='fanoFactorDir', y='fanoFactorUndir', data=df_temp, size=2, color='k')
-        ax.plot([0, 1], [0, 1], 'm--', transform=ax.transAxes, linewidth=1)
-        remove_right_top(ax)
-        ax.set_aspect('equal')
-        ax.set_xlabel('Dir'), ax.set_ylabel('Undir'), ax.set_title(task)
-        ax.set_xlim([0, 4]), ax.set_ylim([0, 4])
-        ax.get_legend().remove()
-        ax.set_xticks(np.arange(ax.get_xlim()[0], ax.get_xlim()[1]+1, 1))
-        ax.set_yticks(np.arange(ax.get_ylim()[0], ax.get_ylim()[1]+1, 1))
-    plt.show()
 

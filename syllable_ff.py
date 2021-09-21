@@ -1,6 +1,6 @@
 """
 By Jaerong
-FF analysis
+fundamental frequency analysis
 """
 
 

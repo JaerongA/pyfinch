@@ -56,23 +56,29 @@ def read_not_mat(notmat, unit='ms'):
     return onsets, offsets, intervals, durations, syllables, contexts
 
 
-def syl_type_(syllables, song_info):
-    """ function to determine the category of the syllable
-    INPUT1: syllables (str)
-    INPUT2: intervals (array) syllable gap duration
-    OUTPUT: type of the syllable (e.g., motif, intro notes, calls)
+def get_note_type(syllables, song_db):
     """
-    syl_type = []
+    Function to determine the category of the syllable
+    Parameters
+    ----------
+    syllables : str
+    song_db : db
+
+    Returns
+    -------
+    type_str : list
+    """
+    type_str = []
     for syllable in syllables:
-        if syllable in song_info['motif']:
-            syl_type.append('M')  # motif
-        elif syllable in song_info['calls']:
-            syl_type.append('C')  # call
-        elif syllable in song_info['introNotes']:
-            syl_type.append('I')  # intro notes
+        if syllable in song_db.motif:
+            type_str.append('M')  # motif
+        elif syllable in song_db.calls:
+            type_str.append('C')  # call
+        elif syllable in song_db.introNotes:
+            type_str.append('I')  # intro notes
         else:
-            syl_type.append(None)
-    return syl_type
+            type_str.append(None)  # intro notes
+    return type_str
 
 
 def demarcate_bout(target, intervals):

@@ -1,6 +1,6 @@
 """
 By Jaerong
-plot raster & peth
+plot raster & peth for motif
 """
 
 
