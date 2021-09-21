@@ -4,10 +4,14 @@
     <option name="GROUP_BY_SEVERITY" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="update syllable duration">
+    <list default="true" id="68d2b396-94bf-44bc-8fb1-8b0f927e65e4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analysis/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/functions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gap_duration.py" beforeDir="false" afterPath="$PROJECT_DIR$/gap_duration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/raster.py" beforeDir="false" afterPath="$PROJECT_DIR$/raster.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/fano_factor.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/fano_factor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/syllable.py" beforeDir="false" afterPath="$PROJECT_DIR$/results/syllable.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/syllable_ff.py" beforeDir="false" afterPath="$PROJECT_DIR$/syllable_ff.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/waveform.py" beforeDir="false" afterPath="$PROJECT_DIR$/waveform.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,7 +139,7 @@
       <recent name="H:\Box\PythonToolbox\Deafening\test" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.gap_duration">
+  <component name="RunManager" selected="Python.fano_factor">
     <configuration name="SongAnalysis" type="PythonConfigurationType" factoryName="Python">
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -184,9 +188,6 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/results" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -206,6 +207,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -225,6 +229,9 @@
       <module name="SongAnalysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -294,9 +301,9 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.fano_factor" />
         <item itemvalue="Python.gap_duration" />
         <item itemvalue="Python.raster_bout (1)" />
-        <item itemvalue="Python.fano_factor" />
         <item itemvalue="Python.syllable" />
         <item itemvalue="Python.raster_bout" />
       </list>
@@ -803,28 +810,8 @@
       <workItem from="1631590796731" duration="4156000" />
       <workItem from="1631667543775" duration="7496000" />
       <workItem from="1632023871944" duration="64000" />
-      <workItem from="1632108402306" duration="7910000" />
-    </task>
-    <task id="LOCAL-00463" summary="pairwise cc - regression fit (quadratic)">
-      <created>1628395099439</created>
-      <option name="number" value="00463" />
-      <option name="presentableId" value="LOCAL-00463" />
-      <option name="project" value="LOCAL" />
-      <updated>1628395099439</updated>
-    </task>
-    <task id="LOCAL-00464" summary="update">
-      <created>1628395128043</created>
-      <option name="number" value="00464" />
-      <option name="presentableId" value="LOCAL-00464" />
-      <option name="project" value="LOCAL" />
-      <updated>1628395128043</updated>
-    </task>
-    <task id="LOCAL-00465" summary="added create db function">
-      <created>1628565648896</created>
-      <option name="number" value="00465" />
-      <option name="presentableId" value="LOCAL-00465" />
-      <option name="project" value="LOCAL" />
-      <updated>1628565648897</updated>
+      <workItem from="1632108402306" duration="8088000" />
+      <workItem from="1632187539423" duration="9556000" />
     </task>
     <task id="LOCAL-00466" summary="added functions in __name__ == __main__">
       <created>1628567876372</created>
@@ -1148,7 +1135,28 @@
       <option name="project" value="LOCAL" />
       <updated>1632119119883</updated>
     </task>
-    <option name="localTasksCounter" value="512" />
+    <task id="LOCAL-00512" summary="update">
+      <created>1632119868220</created>
+      <option name="number" value="00512" />
+      <option name="presentableId" value="LOCAL-00512" />
+      <option name="project" value="LOCAL" />
+      <updated>1632119868221</updated>
+    </task>
+    <task id="LOCAL-00513" summary="for deafening project">
+      <created>1632196811105</created>
+      <option name="number" value="00513" />
+      <option name="presentableId" value="LOCAL-00513" />
+      <option name="project" value="LOCAL" />
+      <updated>1632196811105</updated>
+    </task>
+    <task id="LOCAL-00514" summary="added paired scatter plot">
+      <created>1632196833893</created>
+      <option name="number" value="00514" />
+      <option name="presentableId" value="LOCAL-00514" />
+      <option name="project" value="LOCAL" />
+      <updated>1632196833893</updated>
+    </task>
+    <option name="localTasksCounter" value="515" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1181,8 +1189,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="normalize relative to pre-deafening" />
-    <MESSAGE value="added add_pre_normalized_col function" />
     <MESSAGE value="corrected ff csv update error" />
     <MESSAGE value="added FundementalFreq class" />
     <MESSAGE value="added plot_across_days function" />
@@ -1202,11 +1208,13 @@
     <MESSAGE value="version 1 (for deafening)" />
     <MESSAGE value="fixed NeuralData extract method to ouput data &amp; timestamps" />
     <MESSAGE value="plot scatter with a diagonal line" />
-    <MESSAGE value="update" />
     <MESSAGE value="gap duration analysis" />
     <MESSAGE value="remove" />
     <MESSAGE value="leave only one version syllable duration" />
-    <option name="LAST_COMMIT_MESSAGE" value="leave only one version syllable duration" />
+    <MESSAGE value="update" />
+    <MESSAGE value="for deafening project" />
+    <MESSAGE value="added paired scatter plot" />
+    <option name="LAST_COMMIT_MESSAGE" value="added paired scatter plot" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1240,6 +1248,11 @@
           <url>file://$PROJECT_DIR$/psd_similarity.py</url>
           <line>530</line>
           <option name="timeStamp" value="176" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/unit_profile.py</url>
+          <line>2</line>
+          <option name="timeStamp" value="178" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -1301,6 +1314,7 @@
     <SUITE FILE_PATH="coverage/Deafening$get_notestat__1_.coverage" NAME="get_notestat (1) Coverage Results" MODIFIED="1606870542860" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/preprocessing" />
     <SUITE FILE_PATH="coverage/Deafening$correlogram.coverage" NAME="correlogram Coverage Results" MODIFIED="1625678956909" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$firing_rates__1_.coverage" NAME="firing_rates (1) Coverage Results" MODIFIED="1619661890158" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/results" />
+    <SUITE FILE_PATH="coverage/Deafening$fano_factor.coverage" NAME="fano_factor Coverage Results" MODIFIED="1632196470806" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/results" />
     <SUITE FILE_PATH="coverage/Deafening$SAP_features.coverage" NAME="SAP_features Coverage Results" MODIFIED="1593832745438" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$pytest_in_test_get_conditional_spk_py.coverage" NAME="pytest in test_get_conditional_spk.py Coverage Results" MODIFIED="1607056230657" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Deafening$note_similarity.coverage" NAME="note_similarity Coverage Results" MODIFIED="1614378962092" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/note_similarity" />

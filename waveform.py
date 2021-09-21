@@ -2,7 +2,7 @@
 By Jaerong
 Calculates a analysis signal-to-noise ratio (SNR) relative to the background (raw neural trace)
 """
-
+from analysis.functions import get_snr
 from analysis.parameters import *
 from analysis.spike import *
 from util import save

@@ -2,12 +2,12 @@
 
 
 # Check if the data .csv exists
-import numpy as np
 
 from analysis.functions import get_note_type
 from analysis.song import SongInfo
 from database.load import ProjectLoader, DBInfo
 import pandas as pd
+import numpy as np
 from util import save
 
 # Create save path

@@ -380,34 +380,3 @@ plt.show()
 # fig.tight_layout()
 # plt.show()
 
-
-# Fano factor (spike counts)
-fig, ax = plt.subplots(figsize=(7, 4))
-plt.suptitle(f"Fano Factor (FR >= {fr_crit} # of Notes >= {nb_note_crit})", y=.9, fontsize=20)
-
-# Undir
-query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND frUndir >= {fr_crit}"
-df = db.to_dataframe(query)
-ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['fanoFactorUndir'], df['taskName'],
-                    hue_var=df['birdID'],
-                    title='Undir', ylabel='Fano factor',
-                    y_lim=[0, 6],
-                    col_order=("Predeafening", "Postdeafening"),
-                    )
-
-# Dir
-query = f"SELECT * FROM syllable_pcc WHERE nbNoteDir >= {nb_note_crit} AND frDir >= {fr_crit}"
-df = db.to_dataframe(query)
-ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['fanoFactorDir'], df['taskName'],
-                    hue_var=df['birdID'],
-                    title='Dir',
-                    y_lim=[0, round(df['fanoFactorDir'].max() * 10) / 10 + 0.2],
-                    col_order=("Predeafening", "Postdeafening"),
-                    legend_ok=True
-                    )
-fig.tight_layout()
-plt.show()
-
-
