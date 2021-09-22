@@ -606,3 +606,24 @@ def add_pre_normalized_col(df, col_name_to_normalize, col_name_to_add, save_path
         df.to_csv(save_path / csv_name, index=False, header=True)
 
     return df
+
+def get_bird_colors(birds):
+    """
+    Get separate colors for different birds
+    Parameters
+    ----------
+    birds : list
+
+    Returns
+    -------
+    bird_color : dict
+    """
+    import matplotlib.cm as cm
+    import numpy as np
+
+    x = np.arange(10)
+    ys = [i + x + (i * x) ** 2 for i in range(10)]
+    colors = cm.rainbow(np.linspace(0, 1, len(ys)))
+    bird_color = {bird : color for bird, color in zip(birds, colors)}
+
+    return bird_color
