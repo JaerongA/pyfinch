@@ -3,10 +3,10 @@
 from database.load import ProjectLoader
 import matplotlib.pyplot as plt
 from results.plot import plot_bar_comparison
-import seaborn as sns
+# import seaborn as sns
 from util import save
 import numpy as np
-from deafening.plot import plot_paired_scatter
+from deafening.plot import plot_paired_scatter, plot_regression
 
 # Parameters
 nb_row = 3
@@ -19,7 +19,7 @@ fr_crit = 10
 # def plot_pcc_regression(x, y,
 #                         x_label, y_label, title,
 #                         x_lim=None, y_lim=None,
-#                         fr_criteria=fr_criteria, save_fig=save_fig, regression_fit=True):
+#                         fr_criteria=fr_crit, save_fig=save_fig, regression_fit=True):
 
 # # Load database
 # db = ProjectLoader().load_db()
@@ -80,157 +80,74 @@ fr_crit = 10
 ## Syllable PCC plot across days (with regression)
 ## SQL statement
 
-def plot_regression(x, y, **kwargs):
-    """Plot scatter plot between two continuous variables with its regression fit """
-
-    from sklearn.linear_model import LinearRegression
-    from sklearn.preprocessing import PolynomialFeatures
-    from scipy.stats import pearsonr
-    from util.draw import remove_right_top
-    import statsmodels.api as sm
-
-    def get_aic(x, y):
-        from statsmodels.regression.linear_model import OLS
-        from statsmodels.tools import add_constant
-
-        regr = OLS(y, add_constant(x)).fit()
-        return regr.aic
-
-    fig, ax = plt.subplots(figsize=(5, 4))
-
-    x = x.values.T
-    y = y.values.T
-
-    x_ind = x.argsort()
-    x = x[x_ind]
-    y = y[x_ind]
-
-    ax.scatter(x, y, color='k')
-    remove_right_top(ax)
-
-    if 'title' in kwargs:
-        ax.set_title(kwargs['title'])
-    if 'x_label' in kwargs:
-        ax.set_xlabel(kwargs['x_label'])
-    if 'y_label' in kwargs:
-        ax.set_ylabel(kwargs['y_label'])
-
-    txt_xloc = 0.6
-    txt_yloc = 0.85
-    txt_inc = 0.05
-
-    # Regression analysis
-    if 'regression_fit' in kwargs:
-        for fit in kwargs['regression_fit']:
-
-            x = x.reshape(-1, 1)
-            y = y.reshape(-1, 1)
-
-            if fit == 'linear':
-                # Linear regression
-
-                corr, corr_pval = pearsonr(x.T[0], y.T[0])
-                y_pred = LinearRegression().fit(x, y).predict(x)
-                ax.plot(x, y_pred, color='r')
-                aic_lin = get_aic(x, y_pred)
-                fig.text(txt_xloc, txt_yloc, f"CorrR = {round(corr, 4)}", fontsize=10)
-                txt_yloc -= txt_inc
-                fig.text(txt_xloc, txt_yloc, f"CorrR Pval = {round(corr_pval, 4)}", fontsize=10)
-                txt_yloc -= txt_inc
-                fig.text(txt_xloc, txt_yloc, f"aic (linear) = {round(aic_lin, 3)}", fontsize=10)
-
-            if fit == 'quadratic':
-                # Polynomial regression
-                poly = PolynomialFeatures(degree=2)
-                x_transformed = poly.fit_transform(x)
-                model = sm.OLS(y, x_transformed).fit()
-                y_pred = model.predict(x_transformed)
-                aic_quad = get_aic(x, y_pred)
-                ax.plot(x, y_pred, color='cyan')
-                txt_yloc -= txt_inc
-                fig.text(txt_xloc, txt_yloc, f"aic (quad) = {round(aic_quad, 3)}", fontsize=10)
-
-    if 'x_lim' in kwargs:
-        ax.set_xlim(kwargs['x_lim'])
-    if 'y_lim' in kwargs:
-        ax.set_ylim(kwargs['y_lim'])
-
-    # Save figure
-    if save_fig:
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
-        save.save_fig(fig, save_path, f'pcc_syllable_reg(fr_over_{fr_criteria})', fig_ext=fig_ext)
-    else:
-        plt.show()
-
-
 # Load database
 db = ProjectLoader().load_db()
-# # query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria}"
-# # query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskSessionDeafening <= 0"
-# # query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskName='Postdeafening'"
-# query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskName='Postdeafening' AND taskSessionDeafening <= 40"
-# df = db.to_dataframe(query)
-# df.set_index('syllableID')
-
-# # DPH
-# x = df['dph']
-# y = df['pccUndir']
-#
-# title = f'Undir FR over {fr_criteria} Postdeafening'
-# x_label = 'Age (dph)'
-# y_label = 'PCC'
-# # x_lim = [90, 130]
-# y_lim = [-0.05, 0.3]
-#
-# plot_regression(x, y,
-#                     title=title,
-#                     x_label=x_label, y_label=y_label,
-#                     # x_lim=x_lim,
-#                     y_lim=y_lim,
-#                     fr_criteria=fr_criteria,
-#                     save_fig=save_fig,
-#                     regression_fit=True
-#                     )
-
-
-# # Days from deafening
-# x = df['taskSessionDeafening']
-# y = df['pccUndir']
-#
-# title = f'Undir FR over {fr_criteria}'
-# x_label = 'Days from deafening'
-# y_label = 'PCC'
-# # x_lim = [0, 35]
-# y_lim = [-0.05, 0.25]
-#
-# plot_regression(x, y,
-#                 title=title,
-#                 x_label=x_label, y_label=y_label,
-#                 # x_lim=x_lim,
-#                 y_lim=y_lim,
-#                 fr_criteria=fr_criteria,
-#                 save_fig=save_fig,
-#                 regression_fit={'linear', 'quadratic'}
-#                 )
-
-
-# Load database
-query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND " \
-        f"nbNoteDir >= {nb_note_crit} AND " \
-        f"frUndir >= {fr_crit} AND " \
-        f"frDir >= {fr_crit}"
-
+# query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria}"
+# query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskSessionDeafening <= 0"
+# query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskName='Postdeafening'"
+query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_crit} AND " \
+        f"nbNoteUndir >={nb_note_crit} AND " \
+        f"taskName='Postdeafening'"
 df = db.to_dataframe(query)
 
+# DPH
+x = df['dph']
+y = df['pccUndir']
+
+title = f'Undir FR over {fr_crit} # of Notes >= {nb_note_crit}'
+x_label = 'Age (dph)'
+y_label = 'PCC'
+# x_lim = [90, 130]
+y_lim = [-0.05, 0.3]
+
+plot_regression(x, y,
+                title=title,
+                x_label=x_label, y_label=y_label,
+                # x_lim=x_lim,
+                y_lim=y_lim,
+                fr_criteria=fr_crit,
+                save_fig=save_fig,
+                # regression_fit=True
+                )
+
+
+# Days from deafening
+x = df['taskSessionDeafening']
+y = df['pccUndir']
+
+title = f'Undir FR over {fr_crit} # of Notes >= {nb_note_crit}'
+x_label = 'Days from deafening'
+y_label = 'PCC'
+# x_lim = [0, 35]
+y_lim = [-0.05, 0.25]
+
+plot_regression(x, y,
+                title=title,
+                x_label=x_label, y_label=y_label,
+                # x_lim=x_lim,
+                y_lim=y_lim,
+                fr_criteria=fr_crit,
+                save_fig=save_fig,
+                # regression_fit={'linear', 'quadratic'}
+                )
+
 # Paired comparison between Undir and Dir
-plot_paired_scatter(df, 'pccDir', 'pccUndir',
-                    # hue='birdID',
-                    save_folder_name='pcc',
-                    x_lim=[0, 0.45],
-                    y_lim=[0, 0.45],
-                    x_label='Dir',
-                    y_label='Undir', tick_freq=0.1,
-                    title=f"PCC syllable (FR >= {fr_crit} # of Notes >= {nb_note_crit}) (Paired)",
-                    save_fig=False,
-                    view_folder=False,
-                    fig_ext='.png')
+# Load database
+# query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND " \
+#         f"nbNoteDir >= {nb_note_crit} AND " \
+#         f"frUndir >= {fr_crit} AND " \
+#         f"frDir >= {fr_crit}"
+#
+# df = db.to_dataframe(query)
+#
+# plot_paired_scatter(df, 'pccDir', 'pccUndir',
+#                     # hue='birdID',
+#                     save_folder_name='pcc',
+#                     x_lim=[0, 0.45],
+#                     y_lim=[0, 0.45],
+#                     x_label='Dir',
+#                     y_label='Undir', tick_freq=0.1,
+#                     title=f"PCC syllable (FR >= {fr_crit} # of Notes >= {nb_note_crit}) (Paired)",
+#                     save_fig=False,
+#                     view_folder=False,
+#                     fig_ext='.png')

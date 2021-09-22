@@ -5,6 +5,7 @@ from database.load import ProjectLoader
 import matplotlib.pyplot as plt
 from results.plot import plot_bar_comparison
 from util import save
+from deafening.plot import plot_paired_scatter, plot_regression
 
 # Parameters
 nb_row = 3
@@ -51,26 +52,53 @@ db = ProjectLoader().load_db()
 # plt.show()
 
 
-from deafening.plot import plot_paired_scatter
+# from deafening.plot import plot_paired_scatter
+#
+# # Load database
+# query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND " \
+#         f"nbNoteDir >= {nb_note_crit} AND " \
+#         f"frUndir >= {fr_crit} AND " \
+#         f"frDir >= {fr_crit}"
+#
+# df = db.to_dataframe(query)
+#
+# # Paired comparison between Undir and Dir
+# plot_paired_scatter(df, 'sparsenessDir', 'sparsenessUndir',
+#                     hue= 'birdID',
+#                     save_folder_name='Sparseness',
+#                     x_lim=[0, 0.5],
+#                     y_lim=[0, 0.5],
+#                     x_label='Dir',
+#                     y_label='Undir',
+#                     title=f"Sparseness per syllable (FR >= {fr_crit} # of Notes >= {nb_note_crit}) (Paired)",
+#                     save_fig=False,
+#                     view_folder=False,
+#                     fig_ext='.png')
 
-# Load database
-query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND " \
-        f"nbNoteDir >= {nb_note_crit} AND " \
-        f"frUndir >= {fr_crit} AND " \
-        f"frDir >= {fr_crit}"
 
+# Plot over the course of days
+query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_crit} AND " \
+        f"nbNoteUndir >={nb_note_crit}"
 df = db.to_dataframe(query)
 
-# Paired comparison between Undir and Dir
-plot_paired_scatter(df, 'sparsenessDir', 'sparsenessUndir',
-                    hue= 'birdID',
-                    save_folder_name='Sparseness',
-                    x_lim=[0, 0.5],
-                    y_lim=[0, 0.5],
-                    x_label='Dir',
-                    y_label='Undir',
-                    title=f"Sparseness per syllable (FR >= {fr_crit} # of Notes >= {nb_note_crit}) (Paired)",
-                    save_fig=False,
-                    view_folder=False,
-                    fig_ext='.png')
+title = f'Undir FR over {fr_crit} # of Notes >= {nb_note_crit}'
+x_label = 'Days from deafening'
+y_label = 'Sparseness'
+# x_lim = [-30, 40]
+y_lim = [-0.05, 0.5]
+
+x = df['taskSessionDeafening']
+y = df['sparsenessUndir']
+
+plot_regression(x, y,
+                title=title,
+                x_label=x_label, y_label=y_label,
+                # x_lim=x_lim,
+                y_lim=y_lim,
+                fr_criteria=fr_crit,
+                save_fig=save_fig,
+                # regression_fit=True
+                )
+
+
 
