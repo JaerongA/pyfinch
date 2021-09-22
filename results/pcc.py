@@ -6,14 +6,15 @@ from results.plot import plot_bar_comparison
 import seaborn as sns
 from util import save
 import numpy as np
+from deafening.plot import plot_paired_scatter
 
 # Parameters
 nb_row = 3
 nb_col = 4
 save_fig = False
 fig_ext = '.png'
-fr_criteria = 10
-
+nb_note_crit = 10
+fr_crit = 10
 
 # def plot_pcc_regression(x, y,
 #                         x_label, y_label, title,
@@ -164,12 +165,12 @@ def plot_regression(x, y, **kwargs):
 
 # Load database
 db = ProjectLoader().load_db()
-# query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria}"
-# query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskSessionDeafening <= 0"
-# query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskName='Postdeafening'"
-query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskName='Postdeafening' AND taskSessionDeafening <= 40"
-df = db.to_dataframe(query)
-df.set_index('syllableID')
+# # query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria}"
+# # query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskSessionDeafening <= 0"
+# # query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskName='Postdeafening'"
+# query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskName='Postdeafening' AND taskSessionDeafening <= 40"
+# df = db.to_dataframe(query)
+# df.set_index('syllableID')
 
 # # DPH
 # x = df['dph']
@@ -192,22 +193,44 @@ df.set_index('syllableID')
 #                     )
 
 
-# Days from deafening
-x = df['taskSessionDeafening']
-y = df['pccUndir']
+# # Days from deafening
+# x = df['taskSessionDeafening']
+# y = df['pccUndir']
+#
+# title = f'Undir FR over {fr_criteria}'
+# x_label = 'Days from deafening'
+# y_label = 'PCC'
+# # x_lim = [0, 35]
+# y_lim = [-0.05, 0.25]
+#
+# plot_regression(x, y,
+#                 title=title,
+#                 x_label=x_label, y_label=y_label,
+#                 # x_lim=x_lim,
+#                 y_lim=y_lim,
+#                 fr_criteria=fr_criteria,
+#                 save_fig=save_fig,
+#                 regression_fit={'linear', 'quadratic'}
+#                 )
 
-title = f'Undir FR over {fr_criteria}'
-x_label = 'Days from deafening'
-y_label = 'PCC'
-# x_lim = [0, 35]
-y_lim = [-0.05, 0.25]
 
-plot_regression(x, y,
-                title=title,
-                x_label=x_label, y_label=y_label,
-                # x_lim=x_lim,
-                y_lim=y_lim,
-                fr_criteria=fr_criteria,
-                save_fig=save_fig,
-                regression_fit={'linear', 'quadratic'}
-                )
+# Load database
+query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND " \
+        f"nbNoteDir >= {nb_note_crit} AND " \
+        f"frUndir >= {fr_crit} AND " \
+        f"frDir >= {fr_crit}"
+
+df = db.to_dataframe(query)
+
+# Paired comparison between Undir and Dir
+plot_paired_scatter(df, 'pccDir', 'pccUndir',
+                    # hue='birdID',
+                    save_folder_name='pcc',
+                    x_lim=[0, 0.45],
+                    y_lim=[0, 0.45],
+                    x_label='Dir',
+                    y_label='Undir', tick_freq=0.1,
+                    title=f"PCC syllable (FR >= {fr_crit} # of Notes >= {nb_note_crit}) (Paired)",
+                    save_fig=False,
+                    view_folder=False,
+                    fig_ext='.png')

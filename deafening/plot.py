@@ -32,9 +32,9 @@ def plot_paired_scatter(df, x, y, hue=None,
 
         df_temp = df[df['taskName'] == task]
         ax = plt.subplot2grid((nb_row, nb_col), (1, ind), rowspan=3, colspan=1)
-        print(df_temp['birdID'].unique())
+
         if hue:  # color-code birds
-            sns.scatterplot(x="sparsenessDir", y="sparsenessUndir",
+            sns.scatterplot(x=x, y=y,
                             hue="birdID",
                             data=df_temp)
             ax.legend(loc='center left', bbox_to_anchor=(1.05, 0.5))

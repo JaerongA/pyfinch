@@ -68,12 +68,12 @@ df = db.to_dataframe(query)
 
 # Paired comparison between Undir and Dir
 plot_paired_scatter(df, 'cvFRDir', 'cvFRUndir',
-                    hue='birdID',
+                    # hue='birdID',
                     save_folder_name='CV',
                     x_lim=[0, 3],
                     y_lim=[0, 3],
                     x_label='Dir',
-                    y_label='Undir',
+                    y_label='Undir', tick_freq=1,
                     title=f"CV of FR (FR >= {fr_crit} # of Notes >= {nb_note_crit}) (Paired)",
                     save_fig=False,
                     view_folder=False,

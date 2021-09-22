@@ -132,11 +132,12 @@ if __name__ == '__main__':
 
     # Paired comparison between Undir and Dir
     plot_paired_scatter(df, 'fanoFactorDir', 'fanoFactorUndir',
+                        hue='birdID',
                         save_folder_name='FanoFactor',
                         x_lim=[0, 4],
                         y_lim=[0, 4],
                         x_label='Dir',
-                        y_label='Undir',
+                        y_label='Undir', tick_freq=1,
                         title=f"Fano Factor (FR >= {fr_crit} # of Notes >= {nb_note_crit}) (Paired)",
                         save_fig=False,
                         view_folder=False,
