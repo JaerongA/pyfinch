@@ -24,25 +24,23 @@ def plot_paired_scatter(df, x, y, hue=None,
     nb_col = 2
 
     # Plot scatter with diagonal
-    fig, ax = plt.subplots(figsize=(8, 4))
+    fig, ax = plt.subplots(figsize=(9, 4))
     plt.suptitle(title, y=.9, fontsize=15)
     task_list = ['Predeafening', 'Postdeafening']
-    ax_list = []
+
     for ind, task in enumerate(task_list):
 
         df_temp = df[df['taskName'] == task]
         ax = plt.subplot2grid((nb_row, nb_col), (1, ind), rowspan=3, colspan=1)
-
+        print(df_temp['birdID'].unique())
         if hue:  # color-code birds
-            if ind == 0:
-                ax0 = sns.scatterplot(ax=ax, x=x, y=y, hue=hue, data=df_temp, size=2, color='k')
-            else:
-                ax1 = sns.scatterplot(ax=ax, x=x, y=y, hue=hue, data=df_temp, size=2, color='k')
-            legend = ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+            sns.scatterplot(x="sparsenessDir", y="sparsenessUndir",
+                            hue="birdID",
+                            data=df_temp)
+            ax.legend(loc='center left', bbox_to_anchor=(1.05, 0.5))
 
         else:
-            sns.scatterplot(ax=ax, x=x, y=y, data=df_temp, size=2, color='k')
-            ax.get_legend().remove()
+            sns.scatterplot(x=x, y=y, data=df_temp, color='k')
 
         if diagonal:
             ax.plot([0, 1], [0, 1], 'm--', transform=ax.transAxes, linewidth=1)
@@ -52,7 +50,7 @@ def plot_paired_scatter(df, x, y, hue=None,
             stat = ttest_rel(df_temp[x], df_temp[y])
             msg = f"t({len(df_temp[x].dropna()) - 2})=" \
                   f"{stat.statistic: 0.3f}, p={stat.pvalue: 0.3f}"
-            ax_txt.text(0.25, 0.5, msg), ax_txt.axis('off')
+            ax_txt.text(0.25, 0, msg), ax_txt.axis('off')
 
         remove_right_top(ax)
         ax.set_aspect('equal')
