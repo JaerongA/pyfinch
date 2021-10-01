@@ -11,6 +11,7 @@ def get_entropy(query,
                 view_folder=False,
                 update_db=False,
                 fig_ext='.png'):
+
     from analysis.parameters import note_buffer, freq_range
     from analysis.song import AudioInfo, SongInfo
     from database.load import ProjectLoader, DBInfo
@@ -54,6 +55,13 @@ def get_entropy(query,
                 if note not in song_db.songNote: continue  # skip if not a song note
 
                 # Update db with note info
+                if update_db and note in song_db.songNote:
+                    # Fill in song info
+                    query = f"INSERT OR IGNORE INTO individual_syllable (songID, birdID, taskName, note, context)" \
+                            f"VALUES({song_db.id}, '{song_db.birdID}', '{song_db.taskName}', '{note}', '{ai.context}')"
+                    db.cur.execute(query)
+                    db.conn.commit()
+
                 if update_db and note in song_note:
                     # Fill in song info
                     query = f"INSERT OR IGNORE INTO syllable (songID, birdID, taskName, note)" \
@@ -77,7 +85,17 @@ def get_entropy(query,
                 spectral_entropy = ai.get_spectral_entropy(spect, mode='spectral')
                 se_dict = ai.get_spectral_entropy(spect, mode='spectro_temporal')
 
-                # Organize results per song session
+                if update_db:
+
+                    db.cur.execute(
+                    f"UPDATE individual_syllable SET entropyUndir={temp_df['spectral_entropy'].mean() : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                    db.cur.execute(
+                    f"UPDATE individual_syllable SET spectroTemporalEntropyUndir={temp_df['spectro_temporal_entropy'].mean(): .3f} WHERE songID= {song_db.id} AND note= '{note}'")
+                    db.cur.execute(
+                    f"UPDATE individual_syllable SET entropyVarUndir={temp_df['entropy_var'].mean(): .4f} WHERE songID= {song_db.id} AND note= '{note}'")
+
+
+                    # Organize results per song session
                 temp_df = pd.DataFrame({'note': [note], 'context': [ai.context],
                                         'spectral_entropy': [round(spectral_entropy, 3)],
                                         'spectro_temporal_entropy': [round(se_dict['mean'], 3)],
@@ -191,12 +209,13 @@ def get_entropy(query,
 
 
 if __name__ == '__main__':
+
     from database.load import create_db, DBInfo, ProjectLoader
     from util import save
 
     # Parameter
     update = False  # update or make a new cache file
-    save_fig = True
+    save_fig = False
     view_folder = False  # view the folder where figures are stored
     update_db = True  # save results to DB
     fig_ext = '.png'  # .png or .pdf
@@ -205,32 +224,33 @@ if __name__ == '__main__':
     # Make save path
     save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Entropy', add_date=False)
 
-    # # Create & Load database
-    # if update_db:
-    #     # Assumes that song, ff database have been created
-    #     db = create_db('create_syllable.sql')
+    # Create & Load database
+    if update_db:
+        # Assumes that song, ff database have been created
+        create_db('create_individual_syllable.sql')  # All song syllables
+        create_db('create_syllable.sql')  # All song syllables averaged
 
     # SQL statement
     # query = "SELECT * FROM song WHERE birdID='b70r38'"
     # query = "SELECT * FROM song WHERE id=2"
-    # query = "SELECT * FROM song WHERE id=1"
-    #
-    # get_entropy(query,
-    #                 nb_note_crit=nb_note_crit,
-    #                 save_fig=save_fig,
-    #                 view_folder=view_folder,
-    #                 update_db=update_db,
-    #                 fig_ext=fig_ext)
+    query = "SELECT * FROM song WHERE id=1"
+
+    get_entropy(query,
+                nb_note_crit=nb_note_crit,
+                save_fig=save_fig,
+                view_folder=view_folder,
+                update_db=update_db,
+                fig_ext=fig_ext)
 
     # Plot values across days
     from results.plot import plot_across_days_per_note
 
     # Load database
-    query = f"""SELECT syl.*, song.taskSession, song.taskSessionDeafening, song.taskSessionPostDeafening, song.dph, song.block10days 
-    FROM syllable syl INNER JOIN song ON syl.songID = song.id WHERE syl.nbNoteUndir >= {nb_note_crit}"""
-
-    df = ProjectLoader().load_db().to_dataframe(query)
-    df.set_index('syllableID')
+    # query = f"""SELECT syl.*, song.taskSession, song.taskSessionDeafening, song.taskSessionPostDeafening, song.dph, song.block10days
+    # FROM syllable syl INNER JOIN song ON syl.songID = song.id WHERE syl.nbNoteUndir >= {nb_note_crit}"""
+    #
+    # df = ProjectLoader().load_db().to_dataframe(query)
+    # df.set_index('syllableID')
 
     # # Spectral Entropy
     # plot_across_days_per_note(df, x='taskSessionDeafening', y='entropyUndir',
@@ -272,16 +292,16 @@ if __name__ == '__main__':
     #                           )
 
     # # Plot normalized values
-    from analysis.functions import add_pre_normalized_col
-
-    df_norm = add_pre_normalized_col(df, 'entropyUndir', 'entropyUndirNorm')
-    df_norm = add_pre_normalized_col(df_norm, 'entropyDir', 'entropyDirNorm')
-
-    df_norm = add_pre_normalized_col(df_norm, 'spectroTemporalEntropyUndir', 'spectroTemporalEntropyUndirNorm')
-    df_norm = add_pre_normalized_col(df_norm, 'spectroTemporalEntropyDir', 'spectroTemporalEntropyDirNorm')
-
-    df_norm = add_pre_normalized_col(df_norm, 'entropyVarUndir', 'entropyVarUndirNorm')
-    df_norm = add_pre_normalized_col(df_norm, 'entropyVarDir', 'entropyVarDirNorm')
+    # from analysis.functions import add_pre_normalized_col
+    #
+    # df_norm = add_pre_normalized_col(df, 'entropyUndir', 'entropyUndirNorm')
+    # df_norm = add_pre_normalized_col(df_norm, 'entropyDir', 'entropyDirNorm')
+    #
+    # df_norm = add_pre_normalized_col(df_norm, 'spectroTemporalEntropyUndir', 'spectroTemporalEntropyUndirNorm')
+    # df_norm = add_pre_normalized_col(df_norm, 'spectroTemporalEntropyDir', 'spectroTemporalEntropyDirNorm')
+    #
+    # df_norm = add_pre_normalized_col(df_norm, 'entropyVarUndir', 'entropyVarUndirNorm')
+    # df_norm = add_pre_normalized_col(df_norm, 'entropyVarDir', 'entropyVarDirNorm')
 
     # plot_across_days_per_note(df_norm, x='taskSessionDeafening', y='entropyUndirNorm',
     #                           x_label='Days from deafening',
@@ -356,62 +376,62 @@ if __name__ == '__main__':
     # df_mean.to_csv(save_path / 'df_mean.csv', index=False, header=True)
     #
 
-    # Compare post-deafening values relative to pre-deafening baseline (1)
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    import scipy.stats as stats
-    from util.draw import remove_right_top
-
-    df_mean = df.groupby(['birdID', 'note', 'taskName']).mean().reset_index()
-    df_mean = df_mean.query('taskName== "Postdeafening"')
-
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-    axes[0] = sns.stripplot(ax=axes[0], x=df_mean["taskName"], y=df_mean["entropyUndirNorm"],
-                            color='k', jitter=0.05)
-    axes[0] = sns.boxplot(ax=axes[0], y=df_mean["entropyUndirNorm"],
-                          width=0.2, color='w', showfliers = False)
-    axes[0].set_ylim([0, 1.5])
-    axes[0].set_title('Norm. Spectral Entropy')
-    axes[0].set_xlabel('')
-    axes[0].axhline(y=1, color='m', ls='--', lw=0.5)
-    remove_right_top(axes[0])
-
-    # One-sample t-test (one-tailed)
-    statistics = stats.ttest_1samp(a=df_mean["entropyUndirNorm"].dropna(), popmean=1, alternative='greater')
-    msg = f"t({len(df_mean['entropyUndirNorm'].dropna())-1})=" \
-          f"{statistics.statistic: 0.3f}, p={statistics.pvalue: 0.3f}"
-    axes[0].text(-0.25, 0.1, msg, fontsize=12)
-
-
-    axes[1] = sns.stripplot(ax=axes[1], x=df_mean["taskName"], y=df_mean["spectroTemporalEntropyUndirNorm"],
-                            color='k', jitter=0.05)
-    axes[1] = sns.boxplot(ax=axes[1], y=df_mean["spectroTemporalEntropyUndirNorm"],
-                          width=0.2, color='w', showfliers = False)
-    axes[1].set_ylim([0, 1.5])
-    axes[1].set_title('Norm. Spectro-temporal Entropy')
-    axes[1].set_xlabel('')
-    axes[1].axhline(y=1, color='m', ls='--', lw=0.5)
-    remove_right_top(axes[1])
-
-    statistics = stats.ttest_1samp(a=df_mean["spectroTemporalEntropyUndirNorm"].dropna(), popmean=1, alternative='greater')
-    msg = f"t({len(df_mean['spectroTemporalEntropyUndirNorm'].dropna())-1})=" \
-          f"{statistics.statistic: 0.3f}, p={statistics.pvalue: 0.3f}"
-    axes[1].text(-0.25, 0.1, msg, fontsize=12)
-
-    axes[2] = sns.stripplot(ax=axes[2], x=df_mean["taskName"], y=df_mean["entropyVarUndirNorm"],
-                            color='k', jitter=0.05)
-    axes[2] = sns.boxplot(ax=axes[2], y=df_mean["entropyVarUndirNorm"],
-                          width=0.2, color='w', showfliers = False)
-    axes[2].set_ylim([0, 1.5])
-    axes[2].set_title('Norm. Entropy Variance')
-    axes[2].set_xlabel('')
-    axes[2].axhline(y=1, color='m', ls='--', lw=0.5)
-    remove_right_top(axes[2])
-
-    statistics = stats.ttest_1samp(a=df_mean["entropyVarUndirNorm"].dropna(), popmean=1, alternative='less')
-    msg = f"t({len(df_mean['entropyVarUndirNorm'].dropna())-1})=" \
-          f"{statistics.statistic: 0.3f}, p={statistics.pvalue: 0.3f}"
-    axes[2].text(-0.25, 0.1, msg, fontsize=12)
-
-    plt.show()
+    # # Compare post-deafening values relative to pre-deafening baseline (1)
+    # import matplotlib.pyplot as plt
+    # import seaborn as sns
+    # import scipy.stats as stats
+    # from util.draw import remove_right_top
+    #
+    # df_mean = df.groupby(['birdID', 'note', 'taskName']).mean().reset_index()
+    # df_mean = df_mean.query('taskName== "Postdeafening"')
+    #
+    # fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    # axes[0] = sns.stripplot(ax=axes[0], x=df_mean["taskName"], y=df_mean["entropyUndirNorm"],
+    #                         color='k', jitter=0.05)
+    # axes[0] = sns.boxplot(ax=axes[0], y=df_mean["entropyUndirNorm"],
+    #                       width=0.2, color='w', showfliers = False)
+    # axes[0].set_ylim([0, 1.5])
+    # axes[0].set_title('Norm. Spectral Entropy')
+    # axes[0].set_xlabel('')
+    # axes[0].axhline(y=1, color='m', ls='--', lw=0.5)
+    # remove_right_top(axes[0])
+    #
+    # # One-sample t-test (one-tailed)
+    # statistics = stats.ttest_1samp(a=df_mean["entropyUndirNorm"].dropna(), popmean=1, alternative='greater')
+    # msg = f"t({len(df_mean['entropyUndirNorm'].dropna())-1})=" \
+    #       f"{statistics.statistic: 0.3f}, p={statistics.pvalue: 0.3f}"
+    # axes[0].text(-0.25, 0.1, msg, fontsize=12)
+    #
+    #
+    # axes[1] = sns.stripplot(ax=axes[1], x=df_mean["taskName"], y=df_mean["spectroTemporalEntropyUndirNorm"],
+    #                         color='k', jitter=0.05)
+    # axes[1] = sns.boxplot(ax=axes[1], y=df_mean["spectroTemporalEntropyUndirNorm"],
+    #                       width=0.2, color='w', showfliers = False)
+    # axes[1].set_ylim([0, 1.5])
+    # axes[1].set_title('Norm. Spectro-temporal Entropy')
+    # axes[1].set_xlabel('')
+    # axes[1].axhline(y=1, color='m', ls='--', lw=0.5)
+    # remove_right_top(axes[1])
+    #
+    # statistics = stats.ttest_1samp(a=df_mean["spectroTemporalEntropyUndirNorm"].dropna(), popmean=1, alternative='greater')
+    # msg = f"t({len(df_mean['spectroTemporalEntropyUndirNorm'].dropna())-1})=" \
+    #       f"{statistics.statistic: 0.3f}, p={statistics.pvalue: 0.3f}"
+    # axes[1].text(-0.25, 0.1, msg, fontsize=12)
+    #
+    # axes[2] = sns.stripplot(ax=axes[2], x=df_mean["taskName"], y=df_mean["entropyVarUndirNorm"],
+    #                         color='k', jitter=0.05)
+    # axes[2] = sns.boxplot(ax=axes[2], y=df_mean["entropyVarUndirNorm"],
+    #                       width=0.2, color='w', showfliers = False)
+    # axes[2].set_ylim([0, 1.5])
+    # axes[2].set_title('Norm. Entropy Variance')
+    # axes[2].set_xlabel('')
+    # axes[2].axhline(y=1, color='m', ls='--', lw=0.5)
+    # remove_right_top(axes[2])
+    #
+    # statistics = stats.ttest_1samp(a=df_mean["entropyVarUndirNorm"].dropna(), popmean=1, alternative='less')
+    # msg = f"t({len(df_mean['entropyVarUndirNorm'].dropna())-1})=" \
+    #       f"{statistics.statistic: 0.3f}, p={statistics.pvalue: 0.3f}"
+    # axes[2].text(-0.25, 0.1, msg, fontsize=12)
+    #
+    # plt.show()
 
