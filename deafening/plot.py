@@ -1,4 +1,6 @@
 """Plotting functions & classes specific to the deafening project"""
+
+from database.load import ProjectLoader
 import matplotlib.pyplot as plt
 import seaborn as sns
 from util.draw import remove_right_top
@@ -12,7 +14,7 @@ def plot_paired_scatter(df, x, y, hue=None,
                         title=None,
                         diagonal=True,  # plot diagonal line
                         paired_test=True,
-                        save_fig=True,
+                        save_fig=False,
                         view_folder=False,
                         fig_ext='.png'):
     from database.load import ProjectLoader
@@ -67,7 +69,7 @@ def plot_paired_scatter(df, x, y, hue=None,
         plt.show()
 
 
-def plot_by_day_per_syllable(fr_criteria=0, save_fig=True):
+def plot_by_day_per_syllable(fr_criteria=0, save_fig=False):
     """
     Plot daily pcc per syllable per bird
     Parameters
@@ -125,3 +127,87 @@ def plot_by_day_per_syllable(fr_criteria=0, save_fig=True):
         save.save_fig(fig, save_path, f'pcc_syllable_day(fr_over_{fr_criteria})', fig_ext=fig_ext)
     else:
         plt.show()
+
+
+
+def plot_regression(x, y, save_fig=False, **kwargs):
+    """Plot scatter plot between two continuous variables with its regression fit """
+
+    from sklearn.linear_model import LinearRegression
+    from sklearn.preprocessing import PolynomialFeatures
+    from scipy.stats import pearsonr
+    import statsmodels.api as sm
+
+    def get_aic(x, y):
+        from statsmodels.regression.linear_model import OLS
+        from statsmodels.tools import add_constant
+
+        regr = OLS(y, add_constant(x)).fit()
+        return regr.aic
+
+    fig, ax = plt.subplots(figsize=(5, 4))
+
+    x = x.values.T
+    y = y.values.T
+
+    x_ind = x.argsort()
+    x = x[x_ind]
+    y = y[x_ind]
+
+    ax.scatter(x, y, color='k')
+    remove_right_top(ax)
+
+    if 'title' in kwargs:
+        ax.set_title(kwargs['title'])
+    if 'x_label' in kwargs:
+        ax.set_xlabel(kwargs['x_label'])
+    if 'y_label' in kwargs:
+        ax.set_ylabel(kwargs['y_label'])
+
+    txt_xloc = 0.6
+    txt_yloc = 0.85
+    txt_inc = 0.05
+
+    # Regression analysis
+    if 'regression_fit' in kwargs:
+        for fit in kwargs['regression_fit']:
+
+            x = x.reshape(-1, 1)
+            y = y.reshape(-1, 1)
+
+            if fit == 'linear':
+                # Linear regression
+
+                corr, corr_pval = pearsonr(x.T[0], y.T[0])
+                y_pred = LinearRegression().fit(x, y).predict(x)
+                ax.plot(x, y_pred, color='r')
+                aic_lin = get_aic(x, y_pred)
+                fig.text(txt_xloc, txt_yloc, f"CorrR = {round(corr, 4)}", fontsize=10)
+                txt_yloc -= txt_inc
+                fig.text(txt_xloc, txt_yloc, f"CorrR Pval = {round(corr_pval, 4)}", fontsize=10)
+                txt_yloc -= txt_inc
+                fig.text(txt_xloc, txt_yloc, f"aic (linear) = {round(aic_lin, 3)}", fontsize=10)
+
+            if fit == 'quadratic':
+                # Polynomial regression
+                poly = PolynomialFeatures(degree=2)
+                x_transformed = poly.fit_transform(x)
+                model = sm.OLS(y, x_transformed).fit()
+                y_pred = model.predict(x_transformed)
+                aic_quad = get_aic(x, y_pred)
+                ax.plot(x, y_pred, color='cyan')
+                txt_yloc -= txt_inc
+                fig.text(txt_xloc, txt_yloc, f"aic (quad) = {round(aic_quad, 3)}", fontsize=10)
+
+    if 'x_lim' in kwargs:
+        ax.set_xlim(kwargs['x_lim'])
+    if 'y_lim' in kwargs:
+        ax.set_ylim(kwargs['y_lim'])
+
+    # Save figure
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
+        save.save_fig(fig, save_path, f'pcc_syllable_reg(fr_over_{fr_criteria})', fig_ext=fig_ext)
+    else:
+        plt.show()
+
