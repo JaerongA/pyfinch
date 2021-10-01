@@ -54,14 +54,6 @@ def get_entropy(query,
 
                 if note not in song_db.songNote: continue  # skip if not a song note
 
-                # Update db with note info
-                if update_db and note in song_db.songNote:
-                    # Fill in song info
-                    query = f"INSERT OR IGNORE INTO individual_syllable (songID, birdID, taskName, note, context)" \
-                            f"VALUES({song_db.id}, '{song_db.birdID}', '{song_db.taskName}', '{note}', '{ai.context}')"
-                    db.cur.execute(query)
-                    db.conn.commit()
-
                 if update_db and note in song_note:
                     # Fill in song info
                     query = f"INSERT OR IGNORE INTO syllable (songID, birdID, taskName, note)" \
@@ -85,17 +77,18 @@ def get_entropy(query,
                 spectral_entropy = ai.get_spectral_entropy(spect, mode='spectral')
                 se_dict = ai.get_spectral_entropy(spect, mode='spectro_temporal')
 
-                if update_db:
+                if update_db and note in song_db.songNote:
+                    query = f"INSERT INTO individual_syllable (noteIndSession, noteIndFile, songID, birdID, taskName, note, context)" \
+                            f"VALUES({note_ind1}, {note_ind2}, {song_db.id}, '{song_db.birdID}', '{song_db.taskName}', '{note}', '{ai.context}')"
+                    db.cur.execute(query)
+                    db.conn.commit()
 
-                    db.cur.execute(
-                    f"UPDATE individual_syllable SET entropyUndir={temp_df['spectral_entropy'].mean() : .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                    db.cur.execute(
-                    f"UPDATE individual_syllable SET spectroTemporalEntropyUndir={temp_df['spectro_temporal_entropy'].mean(): .3f} WHERE songID= {song_db.id} AND note= '{note}'")
-                    db.cur.execute(
-                    f"UPDATE individual_syllable SET entropyVarUndir={temp_df['entropy_var'].mean(): .4f} WHERE songID= {song_db.id} AND note= '{note}'")
+                    query = f"UPDATE individual_syllable " \
+                            f"SET entropy={round(spectral_entropy, 3)}, spectroTemporalEntropy={round(se_dict['mean'], 3)}, entropyVar={round(se_dict['var'], 4)} " \
+                            f"WHERE noteIndSession={note_ind1} AND noteIndFile={note_ind2} AND songID={song_db.id}"
+                    db.cur.execute(query)
 
-
-                    # Organize results per song session
+                # Organize results per song session
                 temp_df = pd.DataFrame({'note': [note], 'context': [ai.context],
                                         'spectral_entropy': [round(spectral_entropy, 3)],
                                         'spectro_temporal_entropy': [round(se_dict['mean'], 3)],
