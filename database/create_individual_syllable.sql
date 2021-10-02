@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS individual_syllable
     noteIndSession           INTEGER NOT NULL, -- note index across the session
     noteIndFile              INTEGER NOT NULL, -- note index within a file
     songID                   INTEGER NOT NULL,
+    fileID                   STRING,
     birdID                   STRING,
     taskName                 STRING,
     note                     STRING,
@@ -15,6 +16,7 @@ CREATE TABLE IF NOT EXISTS individual_syllable
     spectroTemporalEntropy   REAL,
     entropyVar               REAL,
 
-    FOREIGN KEY (songID) REFERENCES song (id)
+    FOREIGN KEY (songID) REFERENCES song (id),
+    UNIQUE (noteIndFile, fileID)
 )
 

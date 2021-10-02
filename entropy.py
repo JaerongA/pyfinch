@@ -78,8 +78,8 @@ def get_entropy(query,
                 se_dict = ai.get_spectral_entropy(spect, mode='spectro_temporal')
 
                 if update_db and note in song_db.songNote:
-                    query = f"INSERT INTO individual_syllable (noteIndSession, noteIndFile, songID, birdID, taskName, note, context)" \
-                            f"VALUES({note_ind1}, {note_ind2}, {song_db.id}, '{song_db.birdID}', '{song_db.taskName}', '{note}', '{ai.context}')"
+                    query = f"INSERT OR IGNORE INTO individual_syllable (noteIndSession, noteIndFile, songID, fileID, birdID, taskName, note, context)" \
+                            f"VALUES({note_ind1}, {note_ind2}, {song_db.id}, '{file.stem}', '{song_db.birdID}', '{song_db.taskName}', '{note}', '{ai.context}')"
                     db.cur.execute(query)
                     db.conn.commit()
 
@@ -197,6 +197,7 @@ def get_entropy(query,
 
     if update_db:
         db.to_csv('syllable')
+        db.to_csv('individual_syllable')
 
     print('Done!')
 
@@ -225,8 +226,8 @@ if __name__ == '__main__':
 
     # SQL statement
     # query = "SELECT * FROM song WHERE birdID='b70r38'"
-    # query = "SELECT * FROM song WHERE id=2"
-    query = "SELECT * FROM song WHERE id=1"
+    # query = "SELECT * FROM song WHERE id<=2"
+    query = "SELECT * FROM song"
 
     get_entropy(query,
                 nb_note_crit=nb_note_crit,
