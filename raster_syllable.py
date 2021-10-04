@@ -276,6 +276,7 @@ def get_raster_syllable(query,
 
             # Draw peri-event histogram (PETH)
             pi = ni.get_peth(duration=note_duration)  # PETH object (PethInfo)
+            #pi = ni.get_peth()  # PETH object (PethInfo)
             pi.get_fr()  # get firing rates
 
             # Plot mean firing rates
