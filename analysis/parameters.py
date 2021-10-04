@@ -47,7 +47,7 @@ spk_count_parm = {'win_size': 30}  # moving window where number of spikes will b
 
 # Raster
 tick_length = 0.8
-tick_width = 0.5
+tick_width = 0.7
 
 # Bursting criteria
 burst_hz = 200  # instantaneous firing rates >= 200 Hz to be considered bursting
@@ -81,6 +81,7 @@ note_buffer = 10  # in ms
 
 # Pre-motor window spike calculation
 pre_motor_win_size = 50  # in ms
+post_song_win_size = 50  # in ms
 
 nb_note_crit = 10  # minimum number of notes for analysis
 
