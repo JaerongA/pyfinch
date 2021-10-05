@@ -84,7 +84,7 @@ def get_raster_syllable(query,
             spect_time, spect, spect_freq = audio.spectrogram(timestamp, data)
 
             # Plot figure
-            fig = plt.figure(figsize=(7, 10), dpi=500)
+            fig = plt.figure(figsize=(7, 10))
             fig.set_tight_layout(False)
             note_name = ci.name + '-' + note
             if time_warp:
@@ -274,14 +274,37 @@ def get_raster_syllable(query,
             if 'baselineFR' in row.keys() and cluster_db.baselineFR:
                 ax_peth.axhline(y=row['baselineFR'], color='k', ls='--', lw=0.5)
 
-            # Mark end of the motif
+            # Mark syllable duration
             ax_peth.axvline(x=0, color='k', ls='--', lw=0.5)
             ax_peth.axvline(x=ni.median_dur, color='k', lw=0.5)
             ax_peth.set_xlabel('Time (ms)')
             remove_right_top(ax_peth)
 
+            # Mark windows
+
+            # Pre
+            # rectangle = plt.Rectangle((-buffer_size, 0), ni.median_dur, ax_peth.get_ylim()[-1],
+            #                           linewidth=1, alpha=0.1, edgecolor='k',
+            #                           facecolor='k'
+            #                           )
+            # ax_peth.add_patch(rectangle)
+
+            # Syllable
+            # rectangle = plt.Rectangle((0, 0), ni.median_dur, ax_peth.get_ylim()[-1],
+            #                           linewidth=1, alpha=0.1, edgecolor='k',
+            #                           facecolor='k'
+            #                           )
+            # ax_peth.add_patch(rectangle)
+
+            # Post
+            # rectangle = plt.Rectangle((buffer_size, 0), ni.median_dur, ax_peth.get_ylim()[-1],
+            #                           linewidth=1, alpha=0.1, edgecolor='k',
+            #                           facecolor='k'
+            #                           )
+            # ax_peth.add_patch(rectangle)
+
             # Print out results on the figure
-            txt_xloc = 2
+            txt_xloc = -2
             txt_yloc = 0.8
             txt_inc = 0.2  # y-distance between texts within the same section
 
@@ -294,17 +317,20 @@ def get_raster_syllable(query,
                 txt_yloc -= txt_inc
 
             # Calculate pairwise cross-correlation across different time_windows
-            pi_pre = ni.get_peth(pre_evt_buffer=buffer_size, duration=note_duration - buffer_size)  # pre-motor window
+            pi_pre = ni.get_peth(pre_evt_buffer=buffer_size, duration=ni.median_dur - buffer_size)  # pre-motor window
             pi_pre.get_fr()
             pi_pre.get_pcc()
 
-            pi_syllable = ni.get_peth(pre_evt_buffer=0, duration=note_duration)  # pre-motor window
+            pi_syllable = ni.get_peth(pre_evt_buffer=0, duration=ni.median_dur)  # pre-motor window
             pi_syllable.get_fr()
             pi_syllable.get_pcc()
 
-            pi_post = ni.get_peth(pre_evt_buffer=-buffer_size, duration=note_duration + buffer_size)  # pre-motor window
+            pi_post = ni.get_peth(pre_evt_buffer=-buffer_size, duration=ni.median_dur + buffer_size)  # pre-motor window
             pi_post.get_fr()
             pi_post.get_pcc()
+
+            txt_xloc = 1
+            txt_yloc = 0.8
 
             # PCC (pre)
             if "U" in pi_pre.pcc and ni.nb_note['U'] >= nb_note_crit:
@@ -312,27 +338,28 @@ def get_raster_syllable(query,
             txt_yloc -= txt_inc
 
             if "D" in pi_pre.pcc and ni.nb_note['D'] >= nb_note_crit:
-                ax_txt.text(txt_xloc, txt_yloc, f"PCC pre(D) = {pi_pre.pcc['D']['mean']}", fontsize=font_size)
+                ax_txt.text(txt_xloc, txt_yloc, f"PCC pre (D) = {pi_pre.pcc['D']['mean']}", fontsize=font_size)
             txt_yloc -= txt_inc
 
             # PCC (syllable)
             if "U" in pi_syllable.pcc and ni.nb_note['U'] >= nb_note_crit:
-                ax_txt.text(txt_xloc, txt_yloc, f"PCC pre (U) = {pi_syllable.pcc['U']['mean']}", fontsize=font_size)
+                ax_txt.text(txt_xloc, txt_yloc, f"PCC syllable (U) = {pi_syllable.pcc['U']['mean']}", fontsize=font_size)
             txt_yloc -= txt_inc
 
             if "D" in pi_syllable.pcc and ni.nb_note['D'] >= nb_note_crit:
-                ax_txt.text(txt_xloc, txt_yloc, f"PCC pre(D) = {pi_syllable.pcc['D']['mean']}", fontsize=font_size)
+                ax_txt.text(txt_xloc, txt_yloc, f"PCC syllable (D) = {pi_syllable.pcc['D']['mean']}", fontsize=font_size)
             txt_yloc -= txt_inc
 
             # PCC (post)
             if "U" in pi_post.pcc and ni.nb_note['U'] >= nb_note_crit:
-                ax_txt.text(txt_xloc, txt_yloc, f"PCC pre (U) = {pi_post.pcc['U']['mean']}", fontsize=font_size)
+                ax_txt.text(txt_xloc, txt_yloc, f"PCC post (U) = {pi_post.pcc['U']['mean']}", fontsize=font_size)
             txt_yloc -= txt_inc
 
             if "D" in pi_post.pcc and ni.nb_note['D'] >= nb_note_crit:
-                ax_txt.text(txt_xloc, txt_yloc, f"PCC pre(D) = {pi_post.pcc['D']['mean']}", fontsize=font_size)
+                ax_txt.text(txt_xloc, txt_yloc, f"PCC post (D) = {pi_post.pcc['D']['mean']}", fontsize=font_size)
             txt_yloc -= txt_inc
 
+            plt.show()
 
             # Save results to database
             if update_db:  # only use values from time-warped data
@@ -400,14 +427,14 @@ if __name__ == '__main__':
 
     # Create & Load database
     if update_db:
-        db = create_db('create_syllable_pcc.sql')
+        db = create_db('create_syllable_pcc_window.sql')
 
     # SQL statement
     # query = "SELECT * FROM cluster WHERE analysisOK"
     query = "SELECT * FROM cluster WHERE id=96"
 
     get_raster_syllable(query,
-                        buffer_size=40,
+                        buffer_size=40,  # in ms
                         target_note='a',
                         save_fig=save_fig,
                         update_db=update_db,
