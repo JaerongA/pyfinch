@@ -12,12 +12,13 @@ def get_raster_syllable(query,
                         update_db=None,
                         time_warp=True,
                         entropy=False,  # calculate entropy & entropy variance
-                        entropy_mode = 'spectral',  # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
+                        entropy_mode='spectral',
+                        # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
                         shuffled_baseline=False,
                         plot_hist=False,
                         fig_ext='.png'):
-
-    from analysis.parameters import freq_range, peth_parm,  note_color, tick_width, tick_length
+    global note_duration
+    from analysis.parameters import freq_range, peth_parm, note_color, tick_width, tick_length
     from analysis.spike import ClusterInfo, AudioData, pcc_shuffle_test
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
@@ -276,7 +277,7 @@ def get_raster_syllable(query,
 
             # Draw peri-event histogram (PETH)
             pi = ni.get_peth(duration=note_duration)  # PETH object (PethInfo)
-            #pi = ni.get_peth()  # PETH object (PethInfo)
+            # pi = ni.get_peth()  # PETH object (PethInfo)
             pi.get_fr()  # get firing rates
 
             # Plot mean firing rates
@@ -298,7 +299,7 @@ def get_raster_syllable(query,
             if 'baselineFR' in row.keys() and cluster_db.baselineFR:
                 ax_peth.axhline(y=row['baselineFR'], color='k', ls='--', lw=0.5)
 
-            # Mark end of the motif
+            # Mark syllable duration
             ax_peth.axvline(x=0, color='k', ls='--', lw=0.5)
             ax_peth.axvline(x=ni.median_dur, color='k', lw=0.5)
             ax_peth.set_xlabel('Time (ms)')
@@ -407,7 +408,8 @@ def get_raster_syllable(query,
                                                                                   cluster_db.taskSession,
                                                                                   cluster_db.taskSessionDeafening,
                                                                                   cluster_db.taskSessionPostDeafening,
-                                                                                  cluster_db.dph, cluster_db.block10days,
+                                                                                  cluster_db.dph,
+                                                                                  cluster_db.block10days,
                                                                                   note)
                 db.cur.execute(query)
 
@@ -508,7 +510,6 @@ def get_raster_syllable(query,
     if update_db:
         db.to_csv('syllable_pcc')
     print('Done!')
-
 
 
 if __name__ == '__main__':

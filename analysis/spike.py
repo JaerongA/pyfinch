@@ -186,7 +186,7 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
     import numpy as np
 
     pcc_shuffle = defaultdict(partial(np.ndarray, 0))
-    for iter in range(peth_shuffle['shuffle_iter']):
+    for i in range(peth_shuffle['shuffle_iter']):
         ClassObject.jitter_spk_ts(peth_shuffle['shuffle_limit'])
         pi_shuffle = ClassObject.get_peth(shuffle=True)  # peth object
         pi_shuffle.get_fr()  # get firing rates
@@ -1333,7 +1333,6 @@ class BaselineInfo(ClusterInfo):
 
             for file, spks, file_start, onsets, offsets, syllables, context in list_zip:
 
-                baseline_spk = []
                 bout_ind_list = find_str(syllables, '*')
                 bout_ind_list.insert(0, -1)  # start from the first index
 
