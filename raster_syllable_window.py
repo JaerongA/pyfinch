@@ -1,7 +1,7 @@
 """
 By Jaerong
 plot raster & peth per syllable
-calculate PCC across different timw windows
+calculate PCC across different time windows
 """
 import numpy as np
 from matplotlib import pyplot as plt
@@ -15,8 +15,8 @@ def get_raster_syllable(query,
                         update_db=None,
                         time_warp=True,
                         fig_ext='.png'):
-    from analysis.parameters import freq_range, peth_parm, note_color, tick_width, tick_length, post_song_win_size
-    from analysis.spike import ClusterInfo, AudioData, pcc_shuffle_test
+    from analysis.parameters import freq_range, peth_parm, note_color, tick_width, tick_length
+    from analysis.spike import ClusterInfo, AudioData
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
     from database.load import DBInfo, ProjectLoader
@@ -49,7 +49,6 @@ def get_raster_syllable(query,
         unit_nb = int(cluster_db.unit[-2:])
         channel_nb = int(cluster_db.channel[-2:])
         format = cluster_db.format
-        motif = cluster_db.motif
 
         # Load class object
         ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
@@ -281,7 +280,6 @@ def get_raster_syllable(query,
             remove_right_top(ax_peth)
 
             # Mark windows
-
             # Pre
             # rectangle = plt.Rectangle((-buffer_size, 0), ni.median_dur, ax_peth.get_ylim()[-1],
             #                           linewidth=1, alpha=0.1, edgecolor='k',
@@ -343,11 +341,13 @@ def get_raster_syllable(query,
 
             # PCC (syllable)
             if "U" in pi_syllable.pcc and ni.nb_note['U'] >= nb_note_crit:
-                ax_txt.text(txt_xloc, txt_yloc, f"PCC syllable (U) = {pi_syllable.pcc['U']['mean']}", fontsize=font_size)
+                ax_txt.text(txt_xloc, txt_yloc, f"PCC syllable (U) = {pi_syllable.pcc['U']['mean']}",
+                            fontsize=font_size)
             txt_yloc -= txt_inc
 
             if "D" in pi_syllable.pcc and ni.nb_note['D'] >= nb_note_crit:
-                ax_txt.text(txt_xloc, txt_yloc, f"PCC syllable (D) = {pi_syllable.pcc['D']['mean']}", fontsize=font_size)
+                ax_txt.text(txt_xloc, txt_yloc, f"PCC syllable (D) = {pi_syllable.pcc['D']['mean']}",
+                            fontsize=font_size)
             txt_yloc -= txt_inc
 
             # PCC (post)
@@ -363,8 +363,8 @@ def get_raster_syllable(query,
 
             # Save results to database
             if update_db:  # only use values from time-warped data
-                query = "INSERT OR IGNORE INTO " \
-                        "syllable_pcc (clusterID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, dph, block10days, note)" \
+                sql = "INSERT OR IGNORE INTO " \
+                        "syllable_pcc_window (clusterID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, dph, block10days, note)" \
                         "VALUES({}, '{}', '{}', {}, {}, {}, {}, {}, '{}')".format(cluster_db.id, cluster_db.birdID,
                                                                                   cluster_db.taskName,
                                                                                   cluster_db.taskSession,
@@ -373,30 +373,27 @@ def get_raster_syllable(query,
                                                                                   cluster_db.dph,
                                                                                   cluster_db.block10days,
                                                                                   note)
-                db.cur.execute(query)
+                db.cur.execute(sql)
 
                 if 'U' in ni.nb_note:
                     db.cur.execute(
-                        f"UPDATE syllable_pcc SET nbNoteUndir = ({ni.nb_note['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                        f"UPDATE syllable_pcc_window SET nbNoteUndir = ({ni.nb_note['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
                 if 'D' in ni.nb_note:
                     db.cur.execute(
-                        f"UPDATE syllable_pcc SET nbNoteDir = ({ni.nb_note['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
-
-                if 'U' in ni.mean_fr and ni.nb_note['U'] >= nb_note_crit:
-                    db.cur.execute(
-                        f"UPDATE syllable_pcc SET frUndir = ({ni.mean_fr['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
-                if 'D' in ni.mean_fr and ni.nb_note['D'] >= nb_note_crit:
-                    db.cur.execute(
-                        f"UPDATE syllable_pcc SET frDir = ({ni.mean_fr['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                        f"UPDATE syllable_pcc_window SET nbNoteDir = ({ni.nb_note['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
                 if 'U' in pi_pre.pcc and ni.nb_note['U'] >= nb_note_crit:
                     db.cur.execute(
-                        f"UPDATE syllable_pcc SET pccUndir = ({pi_pre.pcc['U']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                        f"UPDATE syllable_pcc_window "
+                        f"SET pccUndirPre = ({pi_pre.pcc['U']['mean']}), pccUndirSyllable = ({pi_syllable.pcc['U']['mean']}), pccUndirPost = ({pi_post.pcc['U']['mean']}) "
+                        f"WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
                 if 'D' in pi_pre.pcc and ni.nb_note['D'] >= nb_note_crit:
                     db.cur.execute(
-                        f"UPDATE syllable_pcc SET pccDir = ({pi_pre.pcc['D']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                        f"UPDATE syllable_pcc_window "
+                        f"SET pccDirPre = ({pi_pre.pcc['D']['mean']}), pccDirSyllable = ({pi_syllable.pcc['D']['mean']}), pccDirPost = ({pi_post.pcc['D']['mean']}) "
+                        f"WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
             # Save results
             if save_fig:
@@ -407,7 +404,7 @@ def get_raster_syllable(query,
 
     # Convert db to csv
     if update_db:
-        db.to_csv('syllable_pcc')
+        db.to_csv('syllable_pcc_window')
     print('Done!')
 
 
