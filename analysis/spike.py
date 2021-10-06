@@ -85,8 +85,6 @@ def get_peth(evt_ts_list: list, spk_ts_list: list, pre_evt_buffer=None, duration
 
     if pre_evt_buffer is None:
         pre_evt_buffer = peth_parm['buffer']
-    else:
-        peth_parm['buffer'] = pre_evt_buffer
 
     for trial_ind, (evt_ts, spk_ts) in enumerate(zip(evt_ts_list, spk_ts_list)):
         spk_ts_new = copy.deepcopy(spk_ts)
