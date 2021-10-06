@@ -15,6 +15,7 @@ def get_raster_syllable(query,
                         update_db=None,
                         time_warp=True,
                         fig_ext='.png'):
+
     from analysis.parameters import freq_range, peth_parm, note_color, tick_width, tick_length
     from analysis.spike import ClusterInfo, AudioData
     import matplotlib.colors as colors
@@ -301,19 +302,6 @@ def get_raster_syllable(query,
             #                           )
             # ax_peth.add_patch(rectangle)
 
-            # Print out results on the figure
-            txt_xloc = -2
-            txt_yloc = 0.8
-            txt_inc = 0.2  # y-distance between texts within the same section
-
-            ax_txt = plt.subplot(gs[13:, 2])
-            ax_txt.set_axis_off()  # remove all axes
-
-            # # of notes
-            for i, (k, v) in enumerate(ni.nb_note.items()):
-                ax_txt.text(txt_xloc, txt_yloc, f"# of notes ({k}) = {v}", fontsize=font_size)
-                txt_yloc -= txt_inc
-
             # Calculate pairwise cross-correlation across different time_windows
             pi_pre = ni.get_peth(pre_evt_buffer=buffer_size, duration=ni.median_dur - buffer_size)  # pre-motor window
             pi_pre.get_fr()
@@ -327,10 +315,48 @@ def get_raster_syllable(query,
             pi_post.get_fr()
             pi_post.get_pcc()
 
+            # Print out results on the figure
+            txt_xloc = -2
+            txt_yloc = 0.8
+            txt_inc = 0.2  # y-distance between texts within the same section
+
+            ax_txt = plt.subplot(gs[13:, 2])
+            ax_txt.set_axis_off()  # remove all axes
+
+            # # of notes
+            #for i, (k, v) in enumerate(ni.nb_note.items()):
+            #    ax_txt.text(txt_xloc, txt_yloc, f"# of notes ({k}) = {v}", fontsize=font_size)
+            #    txt_yloc -= txt_inc
+
+            # Print out firing rates
+            if "U" in pi_pre.mean_fr.keys() and ni.nb_note['U'] >= nb_note_crit:
+                ax_txt.text(txt_xloc, txt_yloc, f"FR pre (U) = {pi_pre.mean_fr['U'].mean(): .3f}", fontsize=font_size)
+            txt_yloc -= txt_inc
+
+            if "D" in pi_pre.mean_fr.keys() and ni.nb_note['D'] >= nb_note_crit:
+                ax_txt.text(txt_xloc, txt_yloc, f"FR pre (D) = {pi_pre.mean_fr['D'].mean(): .3f}", fontsize=font_size)
+            txt_yloc -= txt_inc
+
+            if "U" in pi_syllable.mean_fr.keys() and ni.nb_note['U'] >= nb_note_crit:
+                ax_txt.text(txt_xloc, txt_yloc, f"FR syllable (U) = {pi_syllable.mean_fr['U'].mean(): .3f}", fontsize=font_size)
+            txt_yloc -= txt_inc
+
+            if "D" in pi_syllable.mean_fr.keys() and ni.nb_note['D'] >= nb_note_crit:
+                ax_txt.text(txt_xloc, txt_yloc, f"FR syllable (D) = {pi_syllable.mean_fr['D'].mean(): .3f}", fontsize=font_size)
+            txt_yloc -= txt_inc
+
+            if "U" in pi_post.mean_fr.keys() and ni.nb_note['U'] >= nb_note_crit:
+                ax_txt.text(txt_xloc, txt_yloc, f"FR post (U) = {pi_post.mean_fr['U'].mean(): .3f}", fontsize=font_size)
+            txt_yloc -= txt_inc
+
+            if "D" in pi_post.mean_fr.keys() and ni.nb_note['D'] >= nb_note_crit:
+                ax_txt.text(txt_xloc, txt_yloc, f"FR post (D) = {pi_post.mean_fr['D'].mean(): .3f}", fontsize=font_size)
+            txt_yloc -= txt_inc
+
+            # PCC (pre)
             txt_xloc = 1
             txt_yloc = 0.8
 
-            # PCC (pre)
             if "U" in pi_pre.pcc and ni.nb_note['U'] >= nb_note_crit:
                 ax_txt.text(txt_xloc, txt_yloc, f"PCC pre (U) = {pi_pre.pcc['U']['mean']}", fontsize=font_size)
             txt_yloc -= txt_inc
@@ -359,7 +385,7 @@ def get_raster_syllable(query,
                 ax_txt.text(txt_xloc, txt_yloc, f"PCC post (D) = {pi_post.pcc['D']['mean']}", fontsize=font_size)
             txt_yloc -= txt_inc
 
-            plt.show()
+            #plt.show()
 
             # Save results to database
             if update_db:  # only use values from time-warped data
@@ -383,17 +409,42 @@ def get_raster_syllable(query,
                     db.cur.execute(
                         f"UPDATE syllable_pcc_window SET nbNoteDir = ({ni.nb_note['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
-                if 'U' in pi_pre.pcc and ni.nb_note['U'] >= nb_note_crit:
+                if 'U' in pi_pre.mean_fr and ni.nb_note['U'] >= nb_note_crit:
                     db.cur.execute(
                         f"UPDATE syllable_pcc_window "
-                        f"SET pccUndirPre = ({pi_pre.pcc['U']['mean']}), pccUndirSyllable = ({pi_syllable.pcc['U']['mean']}), pccUndirPost = ({pi_post.pcc['U']['mean']}) "
+                        f"SET frUndirPre = ({pi_pre.mean_fr['U'].mean(): .3f}),"
+                        f"frUndirSyllable = ({pi_syllable.mean_fr['U'].mean(): .3f}),"
+                        f"frUndirPost = ({pi_post.mean_fr['U'].mean(): .3f}) "
                         f"WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
-                if 'D' in pi_pre.pcc and ni.nb_note['D'] >= nb_note_crit:
+                if 'D' in pi_pre.mean_fr and ni.nb_note['D'] >= nb_note_crit:
                     db.cur.execute(
                         f"UPDATE syllable_pcc_window "
-                        f"SET pccDirPre = ({pi_pre.pcc['D']['mean']}), pccDirSyllable = ({pi_syllable.pcc['D']['mean']}), pccDirPost = ({pi_post.pcc['D']['mean']}) "
+                        f"SET frDirPre = ({pi_pre.mean_fr['D'].mean(): .3f}),"
+                        f"frDirSyllable = ({pi_syllable.mean_fr['D'].mean(): .3f}),"
+                        f"frDirPost = ({pi_post.mean_fr['D'].mean(): .3f}) "
                         f"WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
+                # Undir
+                if 'U' in pi_pre.pcc and not np.isnan(pi_pre.pcc['U']['mean']) and ni.nb_note['U'] >= nb_note_crit:
+                    db.cur.execute(f"UPDATE syllable_pcc_window SET pccUndirPre = ({pi_pre.pcc['U']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
+                if 'U' in pi_syllable.pcc and not np.isnan(pi_syllable.pcc['U']['mean']) and ni.nb_note['U'] >= nb_note_crit:
+                    db.cur.execute(f"UPDATE syllable_pcc_window SET pccUndirSyllable = ({pi_syllable.pcc['U']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
+                if 'U' in pi_post.pcc and not np.isnan(pi_post.pcc['U']['mean']) and ni.nb_note['U'] >= nb_note_crit:
+                    db.cur.execute(f"UPDATE syllable_pcc_window SET pccUndirPost = ({pi_post.pcc['U']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
+                # Dir
+                if 'D' in pi_pre.pcc and not np.isnan(pi_pre.pcc['D']['mean']) and ni.nb_note['D'] >= nb_note_crit:
+                    db.cur.execute(f"UPDATE syllable_pcc_window SET pccDirPre = ({pi_pre.pcc['D']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
+                if 'D' in pi_syllable.pcc and not np.isnan(pi_syllable.pcc['D']['mean']) and ni.nb_note['D'] >= nb_note_crit:
+                    db.cur.execute(f"UPDATE syllable_pcc_window SET pccDirSyllable = ({pi_syllable.pcc['D']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
+                if 'D' in pi_post.pcc and not np.isnan(pi_post.pcc['U']['mean']) and ni.nb_note['U'] >= nb_note_crit:
+                    db.cur.execute(f"UPDATE syllable_pcc_window SET pccDirPost = ({pi_post.pcc['D']['mean']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                db.conn.commit()
 
             # Save results
             if save_fig:
@@ -415,11 +466,7 @@ if __name__ == '__main__':
     # Parameter
     update = False  # Set True for recreating a cache file
     save_fig = True
-    update_db = False  # save results to DB
-    entropy = False  # calculate entropy & entropy variance
-    entropy_mode = 'spectral'  # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
-    shuffled_baseline = False
-    plot_hist = False
+    update_db = True  # save results to DB
     fig_ext = '.png'  # .png or .pdf
 
     # Create & Load database
@@ -427,12 +474,12 @@ if __name__ == '__main__':
         db = create_db('create_syllable_pcc_window.sql')
 
     # SQL statement
-    # query = "SELECT * FROM cluster WHERE analysisOK"
-    query = "SELECT * FROM cluster WHERE id=96"
+    query = "SELECT * FROM cluster WHERE analysisOK"
+    #query = "SELECT * FROM cluster WHERE id>16"
 
     get_raster_syllable(query,
                         buffer_size=40,  # in ms
-                        target_note='a',
+                        #target_note='b',
                         save_fig=save_fig,
                         update_db=update_db,
                         fig_ext=fig_ext)
