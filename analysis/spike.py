@@ -85,6 +85,8 @@ def get_peth(evt_ts_list: list, spk_ts_list: list, pre_evt_buffer=None, duration
 
     if pre_evt_buffer is None:
         pre_evt_buffer = peth_parm['buffer']
+    else:
+        peth_parm['buffer'] = pre_evt_buffer
 
     for trial_ind, (evt_ts, spk_ts) in enumerate(zip(evt_ts_list, spk_ts_list)):
         spk_ts_new = copy.deepcopy(spk_ts)
@@ -108,7 +110,7 @@ def get_peth(evt_ts_list: list, spk_ts_list: list, pre_evt_buffer=None, duration
         peth = peth[:, ind]
         time_bin = time_bin[ind]
 
-    return peth, time_bin, peth_parm
+    return peth, time_bin
 
 
 def get_pcc(fr_array):
@@ -686,20 +688,19 @@ class NoteInfo:
         peth_dict = {}
 
         if shuffle:
-            peth, time_bin, peth_parm = \
+            peth, time_bin = \
                 get_peth(self.onsets, self.spk_ts_jittered, pre_evt_buffer=pre_evt_buffer, duration=duration)
         else:
             if time_warp:  # peth calculated from time-warped spikes by default
                 # peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
-                peth, time_bin, peth_parm = \
+                peth, time_bin = \
                     get_peth(self.onsets, self.spk_ts_warp, pre_evt_buffer=pre_evt_buffer, duration=duration)
             else:
-                peth, time_bin, peth_parm = \
+                peth, time_bin = \
                     get_peth(self.onsets, self.spk_ts, pre_evt_buffer=pre_evt_buffer, duration=duration)
 
         peth_dict['peth'] = peth
         peth_dict['time_bin'] = time_bin
-        peth_dict['parameters'] = peth_parm
         peth_dict['contexts'] = self.contexts
         peth_dict['median_duration'] = self.median_dur
         return PethInfo(peth_dict)  # return peth class object for further analysis
@@ -1093,7 +1094,7 @@ class PethInfo():
         self.mean_fr = mean_fr_dict
 
     def get_pcc(self):
-        "Get pairwise cross-correlation"
+        """Get pairwise cross-correlation"""
         from analysis.parameters import nb_note_crit
 
         pcc_dict = {}
