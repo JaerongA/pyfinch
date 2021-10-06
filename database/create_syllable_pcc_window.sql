@@ -17,6 +17,15 @@ CREATE TABLE IF NOT EXISTS syllable_pcc_window
     nbNoteUndir              INT,
     nbNoteDir                INT,
 
+    frUndirPre              REAL,  -- mean firing rates (time-averaged)
+    frDirPre                REAL,
+
+    frUndirSyllable         REAL,
+    frDirSyllable           REAL,
+
+    frUndirPost             REAL,
+    frDirPost               REAL,
+
     pccUndirPre              REAL,
     pccDirPre                REAL,
 
