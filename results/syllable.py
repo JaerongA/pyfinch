@@ -226,33 +226,35 @@ db = ProjectLoader().load_db()
 # Plot results
 # Pairwise cross-correlation
 fig, ax = plt.subplots(figsize=(7, 4))
-plt.suptitle(f"Pairwise CC (FR >= {fr_crit} # of Notes >= {nb_note_crit})", y=.9, fontsize=20)
+plt.suptitle(f"Pairwise CC Post (FR >= {fr_crit} # of Notes >= {nb_note_crit})", y=.9, fontsize=20)
 
 # Undir
 # # SQL statement
-query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND frUndir >= {fr_crit}"
+query = f"SELECT * FROM syllable_pcc_window WHERE nbNoteUndir >= {nb_note_crit} AND frUndirPost >= {fr_crit}"
 df = db.to_dataframe(query)
 
-df['pccUndir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
+df['pccUndirPost'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
 ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['pccUndir'], df['taskName'],
+plot_bar_comparison(ax, df['pccUndirPost'], df['taskName'],
                     hue_var=df['birdID'],
                     title='Undir', ylabel='PCC',
-                    y_lim=[-0.01, round(df['pccUndir'].max() * 10) / 10 + 0.1],
+                    #y_lim=[-0.01, round(df['pccUndirPre'].max() * 10) / 10 + 0.1],
+                    y_lim=[-0.01, 0.4],
                     col_order=("Predeafening", "Postdeafening"),
                     )
 
 # Dir
 # # SQL statement
-query = f"SELECT * FROM syllable_pcc WHERE nbNoteDir >= {nb_note_crit} AND frDir >= {fr_crit}"
+query = f"SELECT * FROM syllable_pcc_window WHERE nbNoteDir >= {nb_note_crit} AND frDirPost >= {fr_crit}"
 df = db.to_dataframe(query)
 
-df['pccDir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
+df['pccDirPost'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
 ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['pccDir'], df['taskName'],
+plot_bar_comparison(ax, df['pccDirPost'], df['taskName'],
                     hue_var=df['birdID'],
                     title='Dir',
-                    y_lim=[-0.01, round(df['pccDir'].max() * 10) / 10 + 0.2],
+                    #y_lim=[-0.01, round(df['pccDirPre'].max() * 10) / 10 + 0.2],
+                    y_lim=[-0.01, 0.4],
                     col_order=("Predeafening", "Postdeafening"),
                     legend_ok=True
                     )
