@@ -1,11 +1,12 @@
 """Analyze syllable gap durations"""
 
-
 # Check if the data .csv exists
+from analysis.functions import get_note_type, find_str
 
-from analysis.functions import get_note_type
 from analysis.song import SongInfo
+from collections import defaultdict
 from database.load import ProjectLoader, DBInfo
+from functools import partial
 import pandas as pd
 import numpy as np
 from util import save
@@ -13,7 +14,7 @@ from util import save
 # Create save path
 save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'GapDuration')
 
-query = "SELECT * FROM song WHERE id=1"
+query = "SELECT * FROM song WHERE id=3"
 
 # Load song database
 db = ProjectLoader().load_db()
@@ -34,18 +35,20 @@ for row in db.cur.fetchall():
 
     list_zip = zip(si.onsets, si.offsets, si.syllables, si.contexts)
 
+    pre_syllable_gap = defaultdict(partial(np.ndarray, 0))
+
     for onsets, offsets, syllables, context in list_zip:
-
-
-        note_types = get_note_type(''.join(si.syllables).replace('*', ''), song_db)  # Type of the syllables
 
         onsets = onsets[onsets != '*'].astype(np.float)
         offsets = offsets[offsets != '*'].astype(np.float)
-        intervals = onsets[1:] - offsets[:-1]
         syllables = syllables.replace('*', '')
+        gaps = onsets[1:] - offsets[:-1]  # gap durations of all syllables
 
-        from analysis.functions import find_str
-        indices = find_str(syllables, 'a')
-        note_interval = []
-        for ind in indices:
-            note_interval.append(intervals[ind-1])
+        for note in song_db.songNote:
+            note_indices = find_str(syllables, 'a')
+
+            for ind in note_indices:
+                # Get pre-motor gap duration for each song syllable
+                pre_syllable_gap[note] = np.append(pre_syllable_gap[note], gaps[ind - 1])
+
+
