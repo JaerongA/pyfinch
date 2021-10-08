@@ -20,19 +20,21 @@ def unique(list):
     return [x for x in list if not (x in seen or seen.add(x))]
 
 
-def find_str(string: str, pattern: str):
+def find_str(string: str, pattern: str) -> list:
     """
     Find all indices of patterns in a string
 
-    Args:
-        string: str
-            input string
-        pattern: str
-            string pattern to search
+    Parameters
+    ----------
+    string : str
+        input string
+    pattern : str
+        string pattern to search
 
-    Returns:
-        ind : list
-            list of starting index values
+    Returns
+    -------
+    ind : list
+        list of starting indices
     """
     import re
     if not pattern.isalpha():  # if the pattern contains non-alphabetic chars such as *

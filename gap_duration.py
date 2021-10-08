@@ -5,11 +5,17 @@ from analysis.functions import get_note_type, find_str
 
 from analysis.song import SongInfo
 from collections import defaultdict
-from database.load import ProjectLoader, DBInfo
+from database.load import ProjectLoader, DBInfo, create_db
 from functools import partial
 import pandas as pd
 import numpy as np
 from util import save
+
+update_db = True
+
+# Create & Load database
+if update_db:
+    db = create_db('create_gap_duration.sql')
 
 # Create save path
 save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'GapDuration')
@@ -44,8 +50,9 @@ for row in db.cur.fetchall():
         syllables = syllables.replace('*', '')
         gaps = onsets[1:] - offsets[:-1]  # gap durations of all syllables
 
+        # Loop over notes
         for note in song_db.songNote:
-            note_indices = find_str(syllables, 'a')
+            note_indices = find_str(syllables, note)
 
             for ind in note_indices:
                 # Get pre-motor gap duration for each song syllable

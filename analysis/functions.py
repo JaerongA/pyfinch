@@ -56,7 +56,7 @@ def read_not_mat(notmat, unit='ms'):
     return onsets, offsets, intervals, durations, syllables, contexts
 
 
-def get_note_type(syllables, song_db):
+def get_note_type(syllables, song_db) -> list:
     """
     Function to determine the category of the syllable
     Parameters
