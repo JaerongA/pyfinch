@@ -1,7 +1,7 @@
 """Analyze syllable gap durations"""
 
 # Check if the data .csv exists
-from analysis.functions import get_note_type, find_str
+from analysis.functions import find_str
 
 from analysis.song import SongInfo
 from collections import defaultdict
@@ -41,7 +41,7 @@ for row in db.cur.fetchall():
 
     list_zip = zip(si.onsets, si.offsets, si.syllables, si.contexts)
 
-    pre_syllable_gap = defaultdict(partial(np.ndarray, 0))
+    pre_syllable_gaps = defaultdict(partial(np.ndarray, 0))
 
     for onsets, offsets, syllables, context in list_zip:
 
@@ -56,6 +56,17 @@ for row in db.cur.fetchall():
 
             for ind in note_indices:
                 # Get pre-motor gap duration for each song syllable
-                pre_syllable_gap[note] = np.append(pre_syllable_gap[note], gaps[ind - 1])
+                pre_syllable_gap = gaps[ind - 1]
+                pre_syllable_gaps[note] = np.append(pre_syllable_gaps[note], pre_syllable_gap)
 
+            if update_db:
 
+                # sql= f"""UPDATE gap_duration
+                #         SET songID={song_db.id}, birdID='{song_db.birdID}', taskName='{song_db.taskName}'
+                #             note='{note}', context='{context}', gap_duration={pre_syllable_gap}"""
+
+                sql=f"INSERT INTO gap_duration (songID, birdID, taskName, note, context, gap_duration)" \
+                    f"VALUES ('song_db.id', 'song_db.birdID', 'song_db.taskName', 'note', 'context', 'pre_syllable_gap')"
+                db.cur.execute(sql)
+
+    print('Done!')
