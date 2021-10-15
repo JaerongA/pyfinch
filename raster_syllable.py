@@ -315,7 +315,7 @@ def get_raster_syllable(query,
             pi.get_spk_count()  # pi.spk_count, pi.fano_factor, pi.spk_count_cv added
 
             # Print out results on the figure
-            txt_xloc = -1.8
+            txt_xloc = -2.5
             txt_yloc = 0.8
             txt_inc = 0.2  # y-distance between texts within the same section
 
@@ -360,7 +360,7 @@ def get_raster_syllable(query,
             ax_txt.text(txt_xloc, txt_yloc, f"Context Corr = {corr_context}", fontsize=font_size)
             txt_yloc -= txt_inc
 
-            txt_xloc = 1
+            txt_xloc = -0.5
             txt_yloc = 0.8
 
             # Sparseness index
@@ -385,12 +385,24 @@ def get_raster_syllable(query,
                 txt_yloc -= txt_inc
             txt_yloc -= txt_inc
 
-            # Syllable entropy (if exists)
+            # Print out syllable entropy (if exists)
             if entropy:
-                txt_xloc = 1
+                txt_xloc = 1.8
+                txt_yloc = 0.8
                 for context, value in entropy_mean.items():
                     ax_txt.text(txt_xloc, txt_yloc, f"Entropy ({context}) = {value}", fontsize=font_size)
                     txt_yloc -= txt_inc
+                txt_yloc -= txt_inc
+
+                for context, value in spectro_temporal_entropy_mean.items():
+                    ax_txt.text(txt_xloc, txt_yloc, f"ST Entropy ({context}) = {value}", fontsize=font_size)
+                    txt_yloc -= txt_inc
+                txt_yloc -= txt_inc
+
+                for context, value in entropy_var.items():
+                    ax_txt.text(txt_xloc, txt_yloc, f"EV ({context}) = {value}", fontsize=font_size)
+                    txt_yloc -= txt_inc
+                txt_yloc -= txt_inc
 
             # Save results to database
             if update_db:  # only use values from time-warped data
@@ -518,7 +530,7 @@ if __name__ == '__main__':
 
     # Parameter
     update = False  # Set True for recreating a cache file
-    save_fig = True
+    save_fig = False
     update_db = True  # save results to DB
     time_warp = True  # spike time warping
     entropy = True  # calculate entropy & entropy variance
