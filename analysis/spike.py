@@ -616,15 +616,16 @@ class NoteInfo:
 
     def get_entropy(self, normalize=True, mode='spectral'):
         """
-        Calculate syllable entropy
+        Calculate syllable entropy from all renditions and get the average
         Two versions : spectro-temporal entropy & spectral entropy
         """
         from analysis.parameters import nb_note_crit
-        from analysis.functions import find_str
+        from analysis.functions import get_spectral_entropy, get_spectrogram, find_str
         import numpy as np
 
         entropy_mean = {}
         entropy_var = {}
+        audio = AudioData(self.path)
 
         for context in ['U', 'D']:
 
@@ -634,17 +635,16 @@ class NoteInfo:
 
             if ind.shape[0] >= nb_note_crit:
                 for (start, end) in zip(self.onsets[ind], self.offsets[ind]):
-                    audio = AudioData(self.path)
                     timestamp, data = audio.extract([start, end])  # audio object
-                    _, spect, _ = audio.spectrogram(timestamp, data )  # get self.spect first
-                    se = audio.get_spectral_entropy(spect, normalize=normalize, mode=mode)
+                    _, spect, _ = get_spectrogram(timestamp, data, audio.sample_rate)
+                    se = get_spectral_entropy(spect, normalize=normalize, mode=mode)
                     if isinstance(se, dict):
                         se_mean_arr = np.append(se_mean_arr, se['mean'])  # spectral entropy averaged over time bins per rendition
                         se_var_arr = np.append(se_var_arr, se['var'])  # spectral entropy variance per rendition
                     else:
                         se_mean_arr = np.append(se_mean_arr, se)  # spectral entropy time-resolved
                 entropy_mean[context] = round(se_mean_arr.mean(), 3)
-                entropy_var[context] = round(se_var_arr.mean(), 3)
+                entropy_var[context] = round(se_var_arr.mean(), 5)
         if mode == 'spectro_temporal':
             return entropy_mean, entropy_var
         else:  # spectral entropy (does not have entropy variance)
@@ -1120,7 +1120,7 @@ class PethInfo():
         Parameters
         ----------
         bin_size : int
-            By default, it uses the same time bin size used in peth calculation
+            By default, it uses the same time bin size used in peth calculation (in ms)
 
         Returns
         -------
