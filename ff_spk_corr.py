@@ -401,7 +401,7 @@ def draw_sig_prop(df, sig_prop,
                   title, y_lim=None, save_fig=True,
                   fig_name=None, fig_ext='.png'):
     """Plot significant proportions of neurons / FF syllables"""
-    from analysis.stats import z_test
+    from util.stats import z_test
     from util.draw import remove_right_top
     from scipy.stats import fisher_exact
 

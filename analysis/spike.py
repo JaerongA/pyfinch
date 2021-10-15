@@ -313,7 +313,7 @@ class ClusterInfo:
         self.nb_spk = nb_spk  # the number of spikes
 
         # Units are in second by default, but convert to  millisecond with the argument
-        if time_unit is 'ms':
+        if time_unit == 'ms':
             spk_ts *= 1E3
 
         # Output analysis timestamps per file in a list
