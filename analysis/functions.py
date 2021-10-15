@@ -485,7 +485,7 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
     return pre_motor_spk_dict
 
 
-def get_spectral_entropy(psd_array, normalize=None, mode=None):
+def get_spectral_entropy(psd_array, normalize=True, mode=None):
     import numpy as np
 
     if mode == 'spectral':
@@ -510,7 +510,6 @@ def get_spectral_entropy(psd_array, normalize=None, mode=None):
         se_dict['var'] = se_array.var()
         # se_dict['var'] = 1 / -np.log(se_array.var())
         # se_dict['var'] = se_array.std() / se_array.mean()  # calculate cv
-
         return se_dict
 
 
