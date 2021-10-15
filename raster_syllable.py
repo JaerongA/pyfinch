@@ -18,7 +18,7 @@ def get_raster_syllable(query,
                         fig_ext='.png'):
     global note_duration
     from analysis.functions import get_spectral_entropy
-    from analysis.parameters import freq_range, peth_parm, note_color, tick_width, tick_length
+    from analysis.parameters import freq_range, peth_parm, note_color, tick_width, tick_length, nb_note_crit
     from analysis.spike import ClusterInfo, AudioData, pcc_shuffle_test
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
@@ -35,7 +35,6 @@ def get_raster_syllable(query,
     text_yloc = 0.5  # text height
     font_size = 12
     marker_size = 0.4  # for spike count
-    nb_note_crit = 10  # minimum number of notes for analysis
 
     # Load database
     # SQL statement
@@ -56,7 +55,7 @@ def get_raster_syllable(query,
 
         # Load class object
         ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
-        audio = AudioData(path, update=update)  # audio object
+        audio = AudioData(path)  # audio object
 
         # Loop through note
         for note in cluster_db.songNote:
@@ -84,6 +83,7 @@ def get_raster_syllable(query,
             # Load audio object with info from .not.mat files
             timestamp, data = audio.extract([start, end])
             spect_time, spect, spect_freq = audio.spectrogram(timestamp, data)
+            del timestamp, data
 
             # Plot figure
             fig = plt.figure(figsize=(7, 10), dpi=500)
@@ -126,14 +126,9 @@ def get_raster_syllable(query,
                 # Plot entropy over time (includes buffer window)
                 ax_se = ax_spect.twinx()
                 se = get_spectral_entropy(spect, mode='spectro_temporal')
-                # time = audio.spect_time[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
-                # se = se[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
-                # ax_se.plot(time, se, 'k')
                 ax_se.plot(spect_time, se['array'], 'k', linewidth=3)
                 ax_se.set_ylim(0, 1)
-                # se['array'] = se['array'][np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
                 ax_se.spines['top'].set_visible(False)
-                plt.show()
 
             # Plot syllable duration
             ax_syl = plt.subplot(gs[0, 0:5], sharex=ax_spect)
@@ -537,8 +532,8 @@ if __name__ == '__main__':
         db = create_db('create_syllable_pcc.sql')
 
     # SQL statement
-    #query = "SELECT * FROM cluster WHERE analysisOK"
-    query = "SELECT * FROM cluster WHERE id=96"
+    # query = "SELECT * FROM cluster WHERE id=12"
+    query = "SELECT * FROM cluster WHERE id=19 and analysisOK"
 
     get_raster_syllable(query,
                         save_fig=save_fig,
