@@ -30,6 +30,10 @@ CREATE TABLE IF NOT EXISTS syllable_pcc
 
     entropyUndir             REAL,
     entropyDir               REAL,
+
+    spectroTempEntropyUndir  REAL,
+    spectroTempEntropyDir    REAL,
+
     entropyVarUndir          REAL,
     entropyVarDir            REAL,
 

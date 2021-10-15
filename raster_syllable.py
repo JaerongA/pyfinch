@@ -12,12 +12,12 @@ def get_raster_syllable(query,
                         update_db=None,
                         time_warp=True,
                         entropy=False,  # calculate entropy & entropy variance
-                        entropy_mode='spectral',
-                        # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
+                        entropy_mode='spectral',  # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
                         shuffled_baseline=False,
                         plot_hist=False,
                         fig_ext='.png'):
     global note_duration
+    from analysis.functions import get_spectral_entropy
     from analysis.parameters import freq_range, peth_parm, note_color, tick_width, tick_length
     from analysis.spike import ClusterInfo, AudioData, pcc_shuffle_test
     import matplotlib.colors as colors
@@ -41,8 +41,6 @@ def get_raster_syllable(query,
     # SQL statement
     # Create a new database (syllable)
     db = ProjectLoader().load_db()
-    query = "SELECT * FROM cluster WHERE analysisOK=1"
-    # query = "SELECT * FROM cluster WHERE analysisOK=1 AND id>=115"
     db.execute(query)
 
     # Loop through db
@@ -117,30 +115,30 @@ def get_raster_syllable(query,
             plt.yticks(freq_range, [str(freq_range[0]), str(freq_range[1])])
             plt.setp(ax_spect.get_xticklabels(), visible=False)
 
+            # Calculate spectral entropy per time bin
+            # Plot syllable entropy
+            if entropy:
+                # Calculate spectral entropy
+                entropy_mean = ni.get_entropy(mode='spectral')
+                # Calculate averaged entropy and entropy variance across renditions
+                spectro_temporal_entropy_mean, entropy_var = ni.get_entropy(mode='spectro_temporal')
+
+                # Plot entropy over time (includes buffer window)
+                ax_se = ax_spect.twinx()
+                se = get_spectral_entropy(spect, mode='spectro_temporal')
+                # time = audio.spect_time[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
+                # se = se[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
+                # ax_se.plot(time, se, 'k')
+                ax_se.plot(spect_time, se['array'], 'k', linewidth=3)
+                ax_se.set_ylim(0, 1)
+                # se['array'] = se['array'][np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
+                ax_se.spines['top'].set_visible(False)
+                plt.show()
+
             # Plot syllable duration
             ax_syl = plt.subplot(gs[0, 0:5], sharex=ax_spect)
             onset = 0  # start from 0
             offset = onset + duration
-
-            # Calculate spectral entropy per time bin
-            # Plot syllable entropy
-            if entropy:
-
-                if entropy_mode == 'spectral':
-                    # entropy_mean = get_entropy(note_onsets, note_offsets, note_contexts, time_resolved)
-                    entropy_mean = ni.get_entropy(mode=entropy_mode)
-                elif entropy_mode == 'spectro_temporal':
-                    ax_se = ax_spect.twinx()
-                    se = audio.get_spectral_entropy(mode=entropy_mode)
-                    # time = audio.spect_time[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
-                    # se = se[np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
-                    # ax_se.plot(time, se, 'k')
-                    ax_se.plot(audio.spect_time, se['array'], 'k')
-                    ax_se.set_ylim(0, 1)
-                    # se['array'] = se['array'][np.where((audio.spect_time >= onset) & (audio.spect_time <= offset))]
-                    remove_right_top(ax_se)
-                    # Calculate averaged entropy and entropy variance across renditions
-                    entropy_mean, entropy_var = ni.get_entropy(mode=entropy_mode)
 
             # Mark syllables
             rectangle = plt.Rectangle((onset, rec_yloc), duration, 0.2,
@@ -490,13 +488,20 @@ def get_raster_syllable(query,
                         db.cur.execute(
                             f"UPDATE syllable_pcc SET entropyDir = ({entropy_mean['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
 
-                    if entropy_mode == 'spectro_temporal':
-                        if 'U' in entropy_var and ni.nb_note['U'] >= nb_note_crit:
-                            db.cur.execute(
-                                f"UPDATE syllable_pcc SET entropyVarUndir = ({entropy_var['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
-                        if 'D' in entropy_var and ni.nb_note['D'] >= nb_note_crit:
-                            db.cur.execute(
-                                f"UPDATE syllable_pcc SET entropyVarDir = ({entropy_var['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                    if 'U' in spectro_temporal_entropy_mean and ni.nb_note['U'] >= nb_note_crit:
+                        db.cur.execute(
+                            f"UPDATE syllable_pcc SET spectroTempEntropyUndir = ({spectro_temporal_entropy_mean['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                    if 'D' in spectro_temporal_entropy_mean and ni.nb_note['D'] >= nb_note_crit:
+                        db.cur.execute(
+                            f"UPDATE syllable_pcc SET spectroTempEntropyDir = ({spectro_temporal_entropy_mean['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
+                    if 'U' in entropy_var and ni.nb_note['U'] >= nb_note_crit:
+                        db.cur.execute(
+                            f"UPDATE syllable_pcc SET entropyVarUndir = ({entropy_var['U']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+                    if 'D' in entropy_var and ni.nb_note['D'] >= nb_note_crit:
+                        db.cur.execute(
+                            f"UPDATE syllable_pcc SET entropyVarDir = ({entropy_var['D']}) WHERE clusterID = {cluster_db.id} AND note = '{note}'")
+
                 db.conn.commit()
 
             # Save results
@@ -519,9 +524,9 @@ if __name__ == '__main__':
     # Parameter
     update = False  # Set True for recreating a cache file
     save_fig = True
-    update_db = False  # save results to DB
+    update_db = True  # save results to DB
     time_warp = True  # spike time warping
-    entropy = False  # calculate entropy & entropy variance
+    entropy = True  # calculate entropy & entropy variance
     entropy_mode = 'spectral'  # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
     shuffled_baseline = False
     plot_hist = False
@@ -532,13 +537,13 @@ if __name__ == '__main__':
         db = create_db('create_syllable_pcc.sql')
 
     # SQL statement
-    # query = "SELECT * FROM cluster WHERE analysisOK"
+    #query = "SELECT * FROM cluster WHERE analysisOK"
     query = "SELECT * FROM cluster WHERE id=96"
 
-    # get_raster_syllable(query,
-    #                     save_fig=save_fig,
-    #                     update_db=update_db,
-    #                     entropy=False,
-    #                     entropy_mode='spectral',
-    #                     shuffled_baseline=shuffled_baseline,
-    #                     fig_ext=fig_ext)
+    get_raster_syllable(query,
+                        save_fig=save_fig,
+                        update_db=update_db,
+                        entropy=entropy,
+                        entropy_mode='spectral',
+                        shuffled_baseline=shuffled_baseline,
+                        fig_ext=fig_ext)
