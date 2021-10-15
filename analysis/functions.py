@@ -606,6 +606,7 @@ def add_pre_normalized_col(df, col_name_to_normalize, col_name_to_add, save_path
 
     return df
 
+
 def get_bird_colors(birds):
     """
     Get separate colors for different birds
@@ -623,6 +624,16 @@ def get_bird_colors(birds):
     x = np.arange(10)
     ys = [i + x + (i * x) ** 2 for i in range(10)]
     colors = cm.rainbow(np.linspace(0, 1, len(ys)))
-    bird_color = {bird : color for bird, color in zip(birds, colors)}
+    bird_color = {bird: color for bird, color in zip(birds, colors)}
 
     return bird_color
+
+
+def get_spectrogram(timestamp, data, sample_rate, freq_range=[300, 8000]):
+    """Calculate spectrogram"""
+    import numpy as np
+    from util.spect import spectrogram
+
+    spect, spect_freq, _ = spectrogram(data, sample_rate, freq_range=freq_range)
+    spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram
+    return spect_time, spect, spect_freq
