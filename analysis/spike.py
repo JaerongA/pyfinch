@@ -628,24 +628,24 @@ class NoteInfo:
 
         for context in ['U', 'D']:
 
-            se_mean = np.array([], dtype=np.float32)
-            se_var = np.array([], dtype=np.float32)
+            se_mean_arr = np.array([], dtype=np.float32)
+            se_var_arr = np.array([], dtype=np.float32)
             ind = np.array(find_str(self.contexts, context))
 
             if ind.shape[0] >= nb_note_crit:
                 for (start, end) in zip(self.onsets[ind], self.offsets[ind]):
-                    audio = AudioData(self.path).extract([start, end])  # audio object
-                    audio.spectrogram()  # get self.spect first
-                    se = audio.get_spectral_entropy(normalize=normalize, mode=mode)
-                    if type(se) == 'dict':
-                        se_mean = np.append(se_mean,
-                                            se['mean'])  # spectral entropy averaged over time bins per rendition
-                        se_var = np.append(se_var, se['var'])  # spectral entropy variance per rendition
+                    audio = AudioData(self.path)
+                    timestamp, data = audio.extract([start, end])  # audio object
+                    _, spect, _ = audio.spectrogram(timestamp, data )  # get self.spect first
+                    se = audio.get_spectral_entropy(spect, normalize=normalize, mode=mode)
+                    if isinstance(se, dict):
+                        se_mean_arr = np.append(se_mean_arr, se['mean'])  # spectral entropy averaged over time bins per rendition
+                        se_var_arr = np.append(se_var_arr, se['var'])  # spectral entropy variance per rendition
                     else:
-                        se_mean = np.append(se_mean, se)  # spectral entropy time-resolved
-                entropy_mean[context] = round(se_mean.mean(), 3)
+                        se_mean_arr = np.append(se_mean_arr, se)  # spectral entropy time-resolved
+                entropy_mean[context] = round(se_mean_arr.mean(), 3)
+                entropy_var[context] = round(se_var_arr.mean(), 3)
         if mode == 'spectro_temporal':
-            entropy_var[context] = round(se_var.mean(), 3)
             return entropy_mean, entropy_var
         else:  # spectral entropy (does not have entropy variance)
             return entropy_mean
@@ -1127,13 +1127,14 @@ class PethInfo():
         sparseness : dict
         """
 
+        from analysis.parameters import peth_parm, gauss_std, nb_note_crit
         import math
         import numpy as np
 
         mean_fr = dict()
         sparseness = dict()
 
-        if bin_size != self.parameters['bin_size']:
+        if bin_size != peth_parm['bin_size']:
             for context, peth in self.peth.items():
 
                 if context == 'All': continue
