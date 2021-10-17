@@ -530,7 +530,7 @@ if __name__ == '__main__':
 
     # Parameter
     update = False  # Set True for recreating a cache file
-    save_fig = False
+    save_fig = True
     update_db = True  # save results to DB
     time_warp = True  # spike time warping
     entropy = True  # calculate entropy & entropy variance
@@ -545,7 +545,7 @@ if __name__ == '__main__':
 
     # SQL statement
     # query = "SELECT * FROM cluster WHERE id=12"
-    query = "SELECT * FROM cluster WHERE id=19 and analysisOK"
+    query = "SELECT * FROM cluster WHERE analysisOK"
 
     get_raster_syllable(query,
                         save_fig=save_fig,

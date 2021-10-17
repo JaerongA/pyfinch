@@ -3,7 +3,7 @@
 from database.load import ProjectLoader
 import matplotlib.pyplot as plt
 from util import save
-from results.plot import plot_bar_comparison
+from deafening.results.plot import plot_bar_comparison
 
 
 # Load database

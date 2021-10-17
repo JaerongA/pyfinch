@@ -1,10 +1,8 @@
 """Plotting functions & classes specific to the deafening project"""
 
 from database.load import ProjectLoader
-import matplotlib.pyplot as plt
-import seaborn as sns
-from util.draw import remove_right_top
 from util import save
+from util.draw import remove_right_top
 
 
 def plot_paired_scatter(df, x, y, hue=None,
@@ -17,9 +15,11 @@ def plot_paired_scatter(df, x, y, hue=None,
                         save_fig=False,
                         view_folder=False,
                         fig_ext='.png'):
-    from database.load import ProjectLoader
+
+    import matplotlib.pyplot as plt
     import numpy as np
     from scipy.stats import ttest_rel
+    import seaborn as sns
 
     # Parameters
     nb_row = 5
@@ -80,6 +80,11 @@ def plot_by_day_per_syllable(fr_criteria=0, save_fig=False):
     -------
 
     """
+    from database.load import ProjectLoader
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    db = ProjectLoader().load_db()
 
     # # SQL statement
     df = db.to_dataframe(f"SELECT * FROM syllable WHERE frUndir >= {fr_criteria}")
@@ -130,9 +135,11 @@ def plot_by_day_per_syllable(fr_criteria=0, save_fig=False):
 
 
 
-def plot_regression(x, y, save_fig=False, **kwargs):
+def plot_regression(x, y, color='k', size=None, save_fig=False, fig_ext='.png', **kwargs):
     """Plot scatter plot between two continuous variables with its regression fit """
 
+    import matplotlib.pyplot as plt
+    import matplotlib.gridspec as gridspec
     from sklearn.linear_model import LinearRegression
     from sklearn.preprocessing import PolynomialFeatures
     from scipy.stats import pearsonr
@@ -145,8 +152,6 @@ def plot_regression(x, y, save_fig=False, **kwargs):
         regr = OLS(y, add_constant(x)).fit()
         return regr.aic
 
-    fig, ax = plt.subplots(figsize=(5, 4))
-
     x = x.values.T
     y = y.values.T
 
@@ -154,7 +159,18 @@ def plot_regression(x, y, save_fig=False, **kwargs):
     x = x[x_ind]
     y = y[x_ind]
 
-    ax.scatter(x, y, color='k')
+    # Plot figure
+    fig = plt.figure(figsize=(6, 4))
+    if 'fig_name' in kwargs:
+        fig_name = kwargs['title']
+    else:
+        fig_name = 'Untitled'
+
+    gs = gridspec.GridSpec(3, 4)
+
+    # Plot scatter & regression
+    ax = plt.subplot(gs[0:3, 0:3])
+    ax.scatter(x, y, c=color, s=size)
     remove_right_top(ax)
 
     if 'title' in kwargs:
@@ -164,40 +180,42 @@ def plot_regression(x, y, save_fig=False, **kwargs):
     if 'y_label' in kwargs:
         ax.set_ylabel(kwargs['y_label'])
 
-    txt_xloc = 0.6
-    txt_yloc = 0.85
-    txt_inc = 0.05
+    # Print out text results
+    txt_xloc = -0.2
+    txt_yloc = 0.8
+    txt_inc = 0.2
+    ax_txt = plt.subplot(gs[1:, -1])
+    ax_txt.set_axis_off()
 
     # Regression analysis
-    if 'regression_fit' in kwargs:
-        for fit in kwargs['regression_fit']:
+    if 'regression_type' in kwargs:
+        for fit in kwargs['regression_type']:
 
             x = x.reshape(-1, 1)
             y = y.reshape(-1, 1)
 
-            if fit == 'linear':
-                # Linear regression
-
+            if fit == 'linear': # Linear regression
                 corr, corr_pval = pearsonr(x.T[0], y.T[0])
                 y_pred = LinearRegression().fit(x, y).predict(x)
                 ax.plot(x, y_pred, color='r')
-                aic_lin = get_aic(x, y_pred)
-                fig.text(txt_xloc, txt_yloc, f"CorrR = {round(corr, 4)}", fontsize=10)
+                ax_txt.text(txt_xloc, txt_yloc, f"CorrR = {round(corr, 4)}", fontsize=10)
                 txt_yloc -= txt_inc
-                fig.text(txt_xloc, txt_yloc, f"CorrR Pval = {round(corr_pval, 4)}", fontsize=10)
-                txt_yloc -= txt_inc
-                fig.text(txt_xloc, txt_yloc, f"aic (linear) = {round(aic_lin, 3)}", fontsize=10)
+                ax_txt.text(txt_xloc, txt_yloc, f"CorrR Pval = {round(corr_pval, 4)}", fontsize=10)
 
-            if fit == 'quadratic':
-                # Polynomial regression
+                txt_yloc -= txt_inc
+                aic_lin = get_aic(x, y_pred)
+                ax_txt.text(txt_xloc, txt_yloc, f"aic (linear) = {round(aic_lin, 1)}", fontsize=10)
+
+            if fit == 'quadratic': # Polynomial regression
                 poly = PolynomialFeatures(degree=2)
                 x_transformed = poly.fit_transform(x)
                 model = sm.OLS(y, x_transformed).fit()
                 y_pred = model.predict(x_transformed)
-                aic_quad = get_aic(x, y_pred)
-                ax.plot(x, y_pred, color='cyan')
+                fig.plot(x, y_pred, color='cyan')
+
                 txt_yloc -= txt_inc
-                fig.text(txt_xloc, txt_yloc, f"aic (quad) = {round(aic_quad, 3)}", fontsize=10)
+                aic_quad = get_aic(x, y_pred)
+                ax_txt.text(txt_xloc, txt_yloc, f"aic (quad) = {round(aic_quad, 1)}", fontsize=10)
 
     if 'x_lim' in kwargs:
         ax.set_xlim(kwargs['x_lim'])
@@ -207,7 +225,7 @@ def plot_regression(x, y, save_fig=False, **kwargs):
     # Save figure
     if save_fig:
         save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
-        save.save_fig(fig, save_path, f'pcc_syllable_reg(fr_over_{fr_criteria})', fig_ext=fig_ext)
+        save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext)
     else:
         plt.show()
 

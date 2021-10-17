@@ -105,7 +105,7 @@ def plot_across_days(x, y,
 
     # Save figure
     if save_fig:
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'deafening/results')
         save.save_fig(fig, save_path, title, fig_ext=fig_ext, view_folder=False)
     else:
         plt.show()
