@@ -98,7 +98,7 @@ if __name__ == '__main__':
     from database.load import ProjectLoader
     from deafening.plot import plot_paired_scatter, plot_regression
     import matplotlib.pyplot as plt
-    from results.plot import plot_bar_comparison
+    from deafening.results.plot import plot_bar_comparison
 
     save_fig = False
     view_folder = True  # open the folder where the result figures are saved

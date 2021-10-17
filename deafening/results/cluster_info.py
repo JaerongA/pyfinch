@@ -2,7 +2,7 @@
 
 from database.load import ProjectLoader
 import matplotlib.pyplot as plt
-from results.plot import get_nb_cluster
+from deafening.results.plot import get_nb_cluster
 from util import save
 
 # Parameters

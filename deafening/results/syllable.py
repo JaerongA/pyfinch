@@ -216,7 +216,7 @@ nb_note_crit = 10
 fr_crit = 10
 
 from database.load import ProjectLoader
-from results.plot import plot_bar_comparison
+from deafening.results.plot import plot_bar_comparison
 import matplotlib.pyplot as plt
 import numpy as np
 
