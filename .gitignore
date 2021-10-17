@@ -1,4 +1,3 @@
-load_intan_rhd_format
 config.ini
 .idea/
 __pycache__/
