@@ -160,7 +160,7 @@ def plot_regression(x, y, color='k', size=None, save_fig=False, fig_ext='.png', 
     y = y[x_ind]
 
     # Plot figure
-    fig = plt.figure(figsize=(6, 4))
+    fig = plt.figure(figsize=(7, 4))
     if 'fig_name' in kwargs:
         fig_name = kwargs['title']
     else:
@@ -170,7 +170,10 @@ def plot_regression(x, y, color='k', size=None, save_fig=False, fig_ext='.png', 
 
     # Plot scatter & regression
     ax = plt.subplot(gs[0:3, 0:3])
-    ax.scatter(x, y, c=color, s=size)
+    plot = ax.scatter(x, y, c=color, s=size, edgecolors='k', cmap=plt.cm.hot_r)
+    cbar = plt.colorbar(mappable=plot, ax=ax)
+    #bar.set_clim(color.min(), color.max())
+    cbar.set_label('Days after deafening')
     remove_right_top(ax)
 
     if 'title' in kwargs:
@@ -181,7 +184,7 @@ def plot_regression(x, y, color='k', size=None, save_fig=False, fig_ext='.png', 
         ax.set_ylabel(kwargs['y_label'])
 
     # Print out text results
-    txt_xloc = -0.2
+    txt_xloc = 0
     txt_yloc = 0.8
     txt_inc = 0.2
     ax_txt = plt.subplot(gs[1:, -1])
