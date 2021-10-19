@@ -135,7 +135,9 @@ def plot_by_day_per_syllable(fr_criteria=0, save_fig=False):
 
 
 
-def plot_regression(x, y, color='k', size=None, save_fig=False, fig_ext='.png', **kwargs):
+def plot_regression(x, y, color='k', size=None, save_fig=False, fig_ext='.png',
+                    view_folder=True,
+                    **kwargs):
     """Plot scatter plot between two continuous variables with its regression fit """
 
     import matplotlib.pyplot as plt
@@ -152,12 +154,12 @@ def plot_regression(x, y, color='k', size=None, save_fig=False, fig_ext='.png', 
         regr = OLS(y, add_constant(x)).fit()
         return regr.aic
 
-    x = x.values.T
-    y = y.values.T
-
-    x_ind = x.argsort()
-    x = x[x_ind]
-    y = y[x_ind]
+    # x = x.values.T
+    # y = y.values.T
+    #
+    # x_ind = x.argsort()
+    # x = x[x_ind]
+    # y = y[x_ind]
 
     # Plot figure
     fig = plt.figure(figsize=(7, 4))
@@ -171,9 +173,9 @@ def plot_regression(x, y, color='k', size=None, save_fig=False, fig_ext='.png', 
     # Plot scatter & regression
     ax = plt.subplot(gs[0:3, 0:3])
     plot = ax.scatter(x, y, c=color, s=size, edgecolors='k', cmap=plt.cm.hot_r)
-    cbar = plt.colorbar(mappable=plot, ax=ax)
-    #bar.set_clim(color.min(), color.max())
-    cbar.set_label('Days after deafening')
+    if color is not 'k':
+        cbar = plt.colorbar(mappable=plot, ax=ax)
+        cbar.set_label('Days after deafening')
     remove_right_top(ax)
 
     if 'title' in kwargs:
@@ -228,7 +230,7 @@ def plot_regression(x, y, color='k', size=None, save_fig=False, fig_ext='.png', 
     # Save figure
     if save_fig:
         save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
-        save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext)
+        save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, view_folder=view_folder)
     else:
         plt.show()
 
