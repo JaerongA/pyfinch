@@ -822,7 +822,7 @@ class MotifInfo(ClusterInfo):
 
                 motif_onset = float(onsets[start_ind])
                 motif_offset = float(offsets[stop_ind])
-
+                # Includes pre-motor spikes
                 motif_spk = spks[np.where((spks >= motif_onset - peth_parm['buffer']) & (spks <= motif_offset))]
                 onsets_in_motif = onsets[start_ind:stop_ind + 1]  # list of motif onset timestamps
                 offsets_in_motif = offsets[start_ind:stop_ind + 1]  # list of motif offset timestamps
@@ -948,7 +948,17 @@ class MotifInfo(ClusterInfo):
         return spk_ts_warped_list
 
     def get_mean_fr(self, add_pre_motor=False):
-        """Calculate mean firing rates during motif"""
+        """
+        Calculate mean firing rates during motif
+        Parameters
+        ----------
+        add_pre_motor : bool
+            Set True if you want to include spikes from the pre-motor window for calculating firing rates
+            (False by default)
+        -------
+
+        """
+        from analysis.parameters import peth_parm
         import numpy as np
 
         fr_dict = {}
@@ -957,14 +967,21 @@ class MotifInfo(ClusterInfo):
 
         # Make sure spikes from the pre-motif buffer is not included in calculation
         for onset, offset, spks in list_zip:
+
             onset = np.asarray(list(map(float, onset)))
             offset = np.asarray(list(map(float, offset)))
-            motif_spk_list.append(spks[np.where((spks >= onset[0]) & (spks <= offset[-1]))])
+            if add_pre_motor:
+                motif_spk_list.append(spks[np.where((spks >= (onset[0] - peth_parm['buffer'])) & (spks <= offset[-1]))])
+            else:
+                motif_spk_list.append(spks[np.where((spks >= onset[0]) & (spks <= offset[-1]))])
 
         for context1 in set(self.contexts):
             nb_spk = sum([len(spk) for spk, context2 in zip(motif_spk_list, self.contexts) if context2 == context1])
-            total_duration = sum(
-                [duration for duration, context2 in zip(self.durations, self.contexts) if context2 == context1])
+            if add_pre_motor:
+                total_duration = sum([duration + peth_parm['buffer'] for duration, context2 in zip(self.durations, self.contexts) if context2 == context1])
+            else:
+                total_duration = sum([duration for duration, context2 in zip(self.durations, self.contexts) if context2 == context1])
+
             mean_fr = nb_spk / (total_duration / 1E3)
             fr_dict[context1] = round(mean_fr, 3)
         # print("mean_fr added")
@@ -1429,7 +1446,7 @@ class BaselineInfo(ClusterInfo):
         nb_spk = sum([len(spk_ts) for spk_ts in self.spk_ts])
         total_duration = sum(self.durations)
         mean_fr = nb_spk / (total_duration / 1E3)
-        return mean_fr
+        return round(mean_fr, 3)
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
