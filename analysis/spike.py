@@ -947,8 +947,8 @@ class MotifInfo(ClusterInfo):
             spk_ts_warped_list.append(spk_ts_new)
         return spk_ts_warped_list
 
-    def get_mean_fr(self):
-        "Mean motif firing rates"
+    def get_mean_fr(self, add_pre_motor=False):
+        """Calculate mean firing rates during motif"""
         import numpy as np
 
         fr_dict = {}

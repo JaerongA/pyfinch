@@ -5,8 +5,8 @@ Get mean firing rates per condition
 Get firing rates from song motif (including pre-motor windows)
 """
 
-def get_firing_rates(query, update=False, update_db=False):
 
+def get_firing_rates(query, update=False, update_db=False):
     from analysis.spike import BaselineInfo, MotifInfo
     from database.load import ProjectLoader, DBInfo
     from analysis.parameters import nb_note_crit
@@ -40,30 +40,33 @@ def get_firing_rates(query, update=False, update_db=False):
 
         # Save results to database
         if update_db:
-            db.create_col('cluster', 'baselineFR', 'REAL')
-            db.update('cluster', 'baselineFR', row['id'], round(bi.mean_fr, 3))  # baseline firing rates
-
-            db.create_col('cluster', 'motifFRUndir', 'REAL')
+            db.cur.execute(f"""UPDATE unit_profile SET baselineFR = ({bi.mean_fr}) WHERE clusterID = {cluster_db.id}""")
             if 'U' in mi.mean_fr and nb_motifs['U'] >= nb_note_crit:
-                db.update('cluster', 'motifFRUndir', row['id'], round(mi.mean_fr['U'], 3))  # motif firing rates during Undir
-
-            db.create_col('cluster', 'motifFRDir', 'REAL')
+                db.cur.execute(f"""UPDATE unit_profile SET motifFRUndir = ({mi.mean_fr['U']}) WHERE clusterID = {cluster_db.id}""")
             if 'D' in mi.mean_fr and nb_motifs['D'] >= nb_note_crit:
-                db.update('cluster', 'motifFRDir', row['id'], round(mi.mean_fr['D'], 3))  # motif firing rates during Dir
+                db.cur.execute(f"""UPDATE unit_profile SET motifFRDir = ({mi.mean_fr['D']}) WHERE clusterID = {cluster_db.id}""")
+            db.cur.execute(query)
 
     # Convert db to csv
     if update_db:
-        db.to_csv('cluster')
+        db.to_csv('unit_profile')
     print('Done!')
 
 
-if __name__ =='__main__':
+if __name__ == '__main__':
+
+    from database.load import create_db
 
     # Parameters
     update = False
     update_db = True
 
+    # Create & Load database
+    if update_db:
+        db = create_db('create_unit_profile.sql')
+
     # SQL statement (select from cluster db)
-    query = "SELECT * FROM cluster WHERE analysisOK = 1"
+    #query = "SELECT * FROM cluster WHERE analysisOK = 1"
+    query = "SELECT * FROM cluster WHERE id=96"
 
     get_firing_rates(query, update=update, update_db=update_db)
