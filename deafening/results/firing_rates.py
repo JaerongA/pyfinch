@@ -1,16 +1,22 @@
-"""Compare motif firing rates between different conditions"""
+"""
+Compare motif firing rates between different conditions
+Get values from unit_profile table
+Run firing_rates.py to calculate motif firing rates
+"""
+
 
 from database.load import ProjectLoader
+from deafening.results.plot import plot_bar_comparison
 import matplotlib.pyplot as plt
 from util import save
-from deafening.results.plot import plot_bar_comparison
 
 
 # Load database
 db = ProjectLoader().load_db()
 # # SQL statement
-df = db.to_dataframe("SELECT * FROM cluster WHERE analysisOK=TRUE")
-df.set_index('id')
+df = db.to_dataframe("SELECT * FROM unit_profile")
+# df.set_index('id')
+df.dropna(subset=['motifFRUndir'], inplace=True)  # Drop out NaNs
 
 # Parameters
 nb_row = 3
