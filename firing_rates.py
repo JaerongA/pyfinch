@@ -1,12 +1,11 @@
 """
-By Jaerong
 Run firing rate analysis
 Get mean firing rates per condition
 Get firing rates from song motif (including pre-motor windows)
 """
 
 
-def get_firing_rates(query, update=False, update_db=False):
+def get_firing_rates(query, add_pre_motor=False, update=False, update_db=False):
     from analysis.spike import BaselineInfo, MotifInfo
     from database.load import ProjectLoader, DBInfo
     from analysis.parameters import nb_note_crit
@@ -36,7 +35,7 @@ def get_firing_rates(query, update=False, update_db=False):
         nb_motifs.pop('All', None)
 
         # Calculate firing rates
-        mi.get_mean_fr()
+        mi.get_mean_fr(add_pre_motor=add_pre_motor)
 
         # Save results to database
         if update_db:
@@ -46,6 +45,7 @@ def get_firing_rates(query, update=False, update_db=False):
             if 'D' in mi.mean_fr and nb_motifs['D'] >= nb_note_crit:
                 db.cur.execute(f"""UPDATE unit_profile SET motifFRDir = ({mi.mean_fr['D']}) WHERE clusterID = {cluster_db.id}""")
             db.cur.execute(query)
+            db.conn.commit()
 
     # Convert db to csv
     if update_db:
@@ -60,13 +60,14 @@ if __name__ == '__main__':
     # Parameters
     update = False
     update_db = True
+    add_pre_motor = True # Add spikes from the pre-motor window
 
     # Create & Load database
     if update_db:
         db = create_db('create_unit_profile.sql')
 
     # SQL statement (select from cluster db)
-    #query = "SELECT * FROM cluster WHERE analysisOK = 1"
-    query = "SELECT * FROM cluster WHERE id=96"
+    query = "SELECT * FROM cluster WHERE analysisOK = 1"
+    # query = "SELECT * FROM cluster WHERE id=96"
 
-    get_firing_rates(query, update=update, update_db=update_db)
+    get_firing_rates(query, add_pre_motor=add_pre_motor, update=update, update_db=update_db)
