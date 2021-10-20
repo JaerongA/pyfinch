@@ -40,15 +40,15 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
                           inplace=True)  # replace empty cells with np.nans (to prevent the var to be recognized as non-numeric)
 
     if hue_var is not None:
-        ax = sns.stripplot(group_var, dependent_var,
+        sns.stripplot(group_var, dependent_var, ax=ax,
                            size=5, hue=hue_var, jitter=jitter, order=col_order,
                            edgecolor="k", alpha=alpha, linewidth=1, zorder=1)
     else:
-        ax = sns.stripplot(group_var, dependent_var,
+        sns.stripplot(group_var, dependent_var, ax=ax,
                            size=5, color="w", jitter=jitter, order=col_order,
                            edgecolor="k", alpha=alpha, linewidth=1, zorder=1)
 
-    ax = sns.barplot(group_var, dependent_var, ax=ax, facecolor=(1, 1, 1, 0),
+    sns.barplot(group_var, dependent_var, ax=ax, facecolor=(1, 1, 1, 0),
                      linewidth=1,
                      order=col_order, errcolor=".2", edgecolor=".2", zorder=0)
     title += '\n\n\n'
