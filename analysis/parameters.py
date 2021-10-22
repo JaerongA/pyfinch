@@ -84,6 +84,8 @@ pre_motor_win_size = 50  # in ms
 post_song_win_size = 50  # in ms
 
 nb_note_crit = 10  # minimum number of notes for analysis
+fr_crit = 10 # minimum firing rates criterion (in Hz)
+
 
 # Spike shuffling parameter for peth for getting baseline PCC
 peth_shuffle = {'shuffle_limit': 10,  # in ms (50 for motif, 10 for syllable)
