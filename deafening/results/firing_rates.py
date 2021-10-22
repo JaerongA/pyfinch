@@ -13,50 +13,87 @@ from util import save
 
 # Load database
 db = ProjectLoader().load_db()
-# # SQL statement
-df = db.to_dataframe("SELECT * FROM unit_profile")
+# SQL statement
+query = """SELECT unit.*, cluster.taskSessionDeafening, cluster.taskSessionPostDeafening, cluster.dph, cluster.block10days
+    FROM unit_profile unit INNER JOIN cluster ON cluster.id = unit.clusterID"""
+
+df = db.to_dataframe(query)
 # df.set_index('id')
 df.dropna(subset=['motifFRUndir'], inplace=True)  # Drop out NaNs
 
-# Parameters
-nb_row = 3
-nb_col = 3
-save_fig = False
-fig_ext = '.png'
+
+# # Compare firing rates pre vs. post-deafening
+# # Parameters
+# nb_row = 3
+# nb_col = 3
+# save_fig = False
+# fig_ext = '.png'
+#
+# # Plot the results
+# fig, ax = plt.subplots(figsize=(9, 4))
+# plt.suptitle('Firing Rates', y=.9, fontsize=20)
+#
+# # Baseline FR
+# ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
+# plot_bar_comparison(ax, df['baselineFR'], df['taskName'],
+#                     hue_var=df['birdID'],
+#                     title='Baseline', ylabel='Firing Rates (Hz)',
+#                     col_order=("Predeafening", "Postdeafening"),
+#                     )
+#
+# # Undir
+# ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
+# plot_bar_comparison(ax, df['motifFRUndir'], df['taskName'],
+#                     hue_var=df['birdID'],
+#                     title='Undir',
+#                     col_order=("Predeafening", "Postdeafening"),
+#                     )
+#
+# # Dir
+# ax = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=2, colspan=1)
+# plot_bar_comparison(ax, df['motifFRDir'], df['taskName'],
+#                     hue_var=df['birdID'],
+#                     title='Dir',
+#                     col_order=("Predeafening", "Postdeafening"),
+#                     legend_ok=True
+#                     )
+# fig.tight_layout()
+#
+# # Save results
+# if save_fig:
+#     save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
+#     save.save_fig(fig, save_path, 'Firing Rates', fig_ext=fig_ext)
+# else:
+#     plt.show()
+
+
+
+import seaborn as sns
+from util.draw import remove_right_top
 
 # Plot the results
-fig, ax = plt.subplots(figsize=(9, 4))
-plt.suptitle('Firing Rates', y=.9, fontsize=20)
+x = df['block10days']
+y = df['motifFRUndir']
 
-# Baseline FR
-ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['baselineFR'], df['taskName'],
-                    hue_var=df['birdID'],
-                    title='Baseline', ylabel='Firing Rates (Hz)',
-                    col_order=("Predeafening", "Postdeafening"),
-                    )
+title = 'Motif FR per day block'
+fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+plt.suptitle(title, y=1, fontsize=12)
 
-# Undir
-ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['motifFRUndir'], df['taskName'],
-                    hue_var=df['birdID'],
-                    title='Undir',
-                    col_order=("Predeafening", "Postdeafening"),
-                    )
+sns.barplot(x, y, ax=axes[0], facecolor=(1, 1, 1, 0),
+                 linewidth=1,
+                 errcolor=".2", edgecolor=".2", zorder=0)
+remove_right_top(axes[0])
 
-# Dir
-ax = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['motifFRDir'], df['taskName'],
-                    hue_var=df['birdID'],
-                    title='Dir',
-                    col_order=("Predeafening", "Postdeafening"),
-                    legend_ok=True
-                    )
-fig.tight_layout()
+sns.violinplot(x, y, ax=axes[1], inner=None)
+sns.swarmplot(x, y, ax=axes[1], color="k")
+remove_right_top(axes[1])
 
-# Save results
-if save_fig:
-    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
-    save.save_fig(fig, save_path, 'Firing Rates', fig_ext=fig_ext)
-else:
-    plt.show()
+axes[0].set_xlabel('Day Block (10 days)'), axes[0].set_ylabel('FR (Hz)')
+axes[1].set_xlabel('Day Block (10 days)'), axes[1].set_ylabel('')
+axes[0].set_ylim([0, 70]), axes[1].set_ylim([0, 70])
+day_block_label_list = ['Predeafening', 'Day 4-10', 'Day 11-20', 'Day 21-30', 'Day >= 31' ]
+axes[0].set_xticklabels(day_block_label_list, rotation = 45)
+axes[1].set_xticklabels(day_block_label_list, rotation = 45)
+
+plt.tight_layout()
+plt.show()
