@@ -76,7 +76,7 @@ x = df['block10days']
 y = df['motifFRUndir']
 
 title = 'Motif FR per day block'
-fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+fig, axes = plt.subplots(1, 3, figsize=(10, 4))
 plt.suptitle(title, y=1, fontsize=12)
 
 sns.barplot(x, y, ax=axes[0], facecolor=(1, 1, 1, 0),
@@ -94,6 +94,18 @@ axes[0].set_ylim([0, 70]), axes[1].set_ylim([0, 70])
 day_block_label_list = ['Predeafening', 'Day 4-10', 'Day 11-20', 'Day 21-30', 'Day >= 31' ]
 axes[0].set_xticklabels(day_block_label_list, rotation = 45)
 axes[1].set_xticklabels(day_block_label_list, rotation = 45)
+
+# Run one-way ANOVA
+import scipy.stats as stats
+f_val, p_val = stats.f_oneway(df['motifFRUndir'][df['block10days'] == 0],
+                              df['motifFRUndir'][df['block10days'] == 1],
+                              df['motifFRUndir'][df['block10days'] == 2],
+                              df['motifFRUndir'][df['block10days'] == 3],
+                              df['motifFRUndir'][df['block10days'] == 4]
+                              )
+
+msg = f"""One-way ANOVA \n\n F={f_val: 0.3f}, p={p_val: 0.3f}"""
+axes[2].text(0, 0.5, msg), axes[2].axis('off')
 
 plt.tight_layout()
 plt.show()
