@@ -237,7 +237,7 @@ if __name__ == '__main__':
 
     from database.load import create_db, DBInfo, ProjectLoader
     from util import save
-    from deafening.results.plot import plot_across_days_per_note
+    from deafening.plot import plot_across_days_per_note
     from analysis.functions import add_pre_normalized_col
 
     # Parameter

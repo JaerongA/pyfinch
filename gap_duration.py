@@ -1,8 +1,9 @@
-"""Analyze syllable gap durations"""
+"""
+Analyze syllable gap durations
+"""
 
 # Check if the data .csv exists
 from analysis.functions import find_str
-
 from analysis.song import SongInfo
 from collections import defaultdict
 from database.load import ProjectLoader, DBInfo, create_db

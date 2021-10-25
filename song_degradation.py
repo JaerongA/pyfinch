@@ -46,7 +46,7 @@ df_pre = df_b70r38[df_b70r38['taskName'] == 'Predeafening']
 
 
 # Plot values across days
-from deafening.results.plot import plot_across_days_per_note
+from deafening.plot import plot_across_days_per_note
 
 # Load database
 # query = f"""SELECT syl.*, song.taskSession, song.taskSessionDeafening, song.taskSessionPostDeafening, song.dph, song.block10days
