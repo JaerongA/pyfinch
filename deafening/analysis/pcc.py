@@ -4,12 +4,11 @@ Compute pcc either per syllable or at the motif level
 Get values from syllable_pcc
 """
 
+from analysis.parameters import fr_crit, nb_note_crit
 from database.load import ProjectLoader
 import matplotlib.pyplot as plt
 from deafening.plot import plot_bar_comparison, plot_per_day_block
 import seaborn as sns
-
-from analysis.parameters import fr_crit, nb_note_crit
 from util import save
 import numpy as np
 from deafening.plot import plot_paired_scatter, plot_regression
@@ -82,9 +81,9 @@ def plot_pcc_regression(x, y,
         plt.show()
 
 # Syllable PCC plot across days (with regression)
-# SQL statement
 # Load database
 db = ProjectLoader().load_db()
+# SQL statement
 query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_crit} AND " \
         f"nbNoteUndir >={nb_note_crit}"
 # query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_criteria} AND taskSessionDeafening <= 0"
