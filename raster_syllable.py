@@ -1,5 +1,4 @@
 """
-By Jaerong
 plot raster & peth per syllable
 """
 import numpy as np
