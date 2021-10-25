@@ -763,7 +763,10 @@ class NoteInfo:
 
 
 class MotifInfo(ClusterInfo):
-    """Child class of ClusterInfo"""
+    """
+    Class object for motif information
+    Child class of ClusterInfo
+    """
 
     def __init__(self, path, channel_nb, unit_nb, motif, format='rhd', *name, update=False):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
