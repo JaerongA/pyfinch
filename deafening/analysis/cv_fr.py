@@ -1,18 +1,17 @@
-"""Compare CV of firing rates over time"""
+"""
+Compare CV of firing rates over time
+"""
 
-
+from analysis.parameters import fr_crit, nb_note_crit
 from database.load import ProjectLoader
 import matplotlib.pyplot as plt
 from deafening.plot import plot_bar_comparison
 from util import save
-from deafening.plot import plot_paired_scatter, plot_regression
+from deafening.plot import plot_paired_scatter, plot_regression, plot_per_day_block
 
 # Parameters
 nb_row = 3
 nb_col = 2
-
-nb_note_crit = 10
-fr_crit = 10
 
 save_fig = False
 view_folder = True  # open the folder where the result figures are saved
@@ -86,23 +85,22 @@ query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_crit} AND " \
         f"nbNoteUndir >={nb_note_crit}"
 df = db.to_dataframe(query)
 
-title = f'Undir FR over {fr_crit} # of Notes >= {nb_note_crit}'
-x_label = 'Days from deafening'
-y_label = 'CV of FR'
-# x_lim = [-30, 40]
-y_lim = [-0.05, 3]
+# plot_regression(x=df['taskSessionDeafening'], y=df['cvFRUndir'],
+#                 title=f'Undir FR over {fr_crit} # of Notes >= {nb_note_crit}',
+#                 x_label='Days from deafening',
+#                 y_label='CV of FR',
+#                 # x_lim=x_lim,
+#                 y_lim=[-0.05, 3],
+#                 fr_criteria=fr_crit,
+#                 save_fig=save_fig,
+#                 # regression_fit=True
+#                 )
 
-x = df['taskSessionDeafening']
-y = df['cvFRUndir']
-
-plot_regression(x, y,
-                title=title,
-                x_label=x_label, y_label=y_label,
-                # x_lim=x_lim,
-                y_lim=y_lim,
-                fr_criteria=fr_crit,
-                save_fig=save_fig,
-                # regression_fit=True
-                )
-
-
+# Plot fano factor per syllable across blocks
+plot_per_day_block(df, ind_var_name='block10days', dep_var_name='cvFRUndir',
+                   title=f'CV of FR (Undir) per day block FR >= {fr_crit} & # of Notes >= {nb_note_crit}',
+                   y_label='CV of FR',
+                   y_lim=[0, 2.5],
+                   fig_name='CV_of_FR_syllable_per_day_block',
+                   save_fig=False, fig_ext='.png'
+                   )

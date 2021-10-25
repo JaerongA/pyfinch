@@ -95,17 +95,14 @@ def plot_fano_factor_syllable(save_fig=True,
 
 
 if __name__ == '__main__':
+    from analysis.parameters import fr_crit, nb_note_crit
     from database.load import ProjectLoader
-    from deafening.plot import plot_paired_scatter, plot_regression
+    from deafening.plot import plot_paired_scatter, plot_regression, plot_bar_comparison, plot_per_day_block
     import matplotlib.pyplot as plt
-    from deafening.plot import plot_bar_comparison
 
     save_fig = False
     view_folder = True  # open the folder where the result figures are saved
     fig_ext = '.png'
-
-    nb_note_crit = 10
-    fr_crit = 10
 
     # Load database
     db = ProjectLoader().load_db()
@@ -166,3 +163,12 @@ if __name__ == '__main__':
     #                 save_fig=save_fig,
     #                 # regression_fit=True
     #                 )
+
+    # Plot fano factor per syllable across blocks
+    plot_per_day_block(df, ind_var_name='block10days', dep_var_name='fanoFactorUndir',
+                       title=f'Fano Factor Undir per day block FR >= {fr_crit} & # of Notes >= {nb_note_crit}',
+                       y_label='Fano Factor',
+                       y_lim=[0, 5.5],
+                       fig_name='FanoFactor_syllable_per_day_block',
+                       save_fig=False, fig_ext='.png'
+                       )
