@@ -1,5 +1,4 @@
 """
-By Jaerong
 A collection of utility functions used for analysis
 """
 
@@ -68,15 +67,10 @@ def list_files(dir: str, ext: str):
     return files
 
 
-def open_folder(dir: str):
-    """
-    Open the directory in win explorer
-
-    Args:
-        dir: path
-    """
+def open_folder(path):
+    """Open the directory in win explorer"""
     import webbrowser
-    webbrowser.open(dir)
+    webbrowser.open(path)
 
 
 def myround(x, base=5):
