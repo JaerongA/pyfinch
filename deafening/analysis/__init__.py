@@ -1,5 +1,4 @@
 """
-Organize analysis results for deafening project
+Package for analyzing data from the deafening project
 """
-
 
