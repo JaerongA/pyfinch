@@ -1,5 +1,4 @@
 """
-By Jaerong
 Utility functions to make output directories & save output files
 """
 
@@ -45,6 +44,25 @@ def make_dir(parent_path, *dir_name, add_date=True):
 
 
 def save_fig(fig, save_path, title, fig_ext='.png', view_folder=False, dpi=None):
+    """
+    Function for saving figures
+    Parameters
+    ----------
+    fig : figure object
+    save_path : path
+        directory path to save figures
+    title : str
+        title of the figure
+    fig_ext : str
+        figure extension (e.g., '.pdf' for vector output), '.png' by default
+    view_folder : bool
+        open the folder where the figure is saved
+    dpi : int
+        increase the value for enhanced resolution
+    Returns
+    -------
+
+    """
 
     import matplotlib.pyplot as plt
     import matplotlib
@@ -68,7 +86,17 @@ def save_fig(fig, save_path, title, fig_ext='.png', view_folder=False, dpi=None)
 
 
 def save2json(filename, data):
-    # save the song bout & number of bouts in .json
+    """
+    Save data in .json format
+    Parameters
+    ----------
+    filename : str
+    data : arr
+
+    Returns
+    -------
+
+    """
     import json
     with open(filename, 'w') as f:
         json.dump(data, f)

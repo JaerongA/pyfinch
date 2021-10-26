@@ -331,32 +331,6 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
         ax.get_legend().remove()
 
 
-def plot_cluster_pie_chart(axis, colors, category_column_name):
-    # from database.load import ProjectLoader
-    # import matplotlib.pyplot as plt
-    # from util import save
-    #
-    # # Load database
-    # db = ProjectLoader().load_db()
-    # # # SQL statement
-    # df = db.to_dataframe("SELECT unitCategoryUndir FROM cluster WHERE ephysOK=TRUE")
-    # unit_category = df['unitCategoryUndir']
-    #
-    # explode = (0.1, 0)
-    # colors = ['#66b3ff', '#ff9999']
-    # values = [sum(unit_category == 'Bursting'), sum(unit_category == 'NonBursting')]
-    #
-    # fig, ax = plt.subplots()
-    # ax.pie(values, explode=explode, colors=colors,
-    #         shadow=True, labels=unit_category.unique(), startangle=90,
-    #         autopct=lambda p: '{:.2f}%  ({:,.0f})'.format(p, p * sum(values) / 100))
-    #
-    # plt.title('Unit Category (Undir)')
-    # ax.axis('equal')
-    # plt.show()
-    pass
-
-
 def plot_across_days_per_note(df, x, y,
                               x_label=None,
                               y_label=None,
