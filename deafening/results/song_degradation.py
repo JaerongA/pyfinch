@@ -16,17 +16,18 @@ pd.set_option('display.max_rows', None)
 db = ProjectLoader().load_db()
 
 # Get pre-deafening baseline
-query = f"""SELECT syl.*, song.taskSessionPostDeafening
-        FROM individual_syllable syl INNER JOIN song 
-        ON song.id = syl.songID WHERE syl.context='U' AND syl.taskName='Predeafening'"""
+query = f"""SELECT syl.birdID, syl.taskName, song.taskSessionPostDeafening, syl.note, syl.entropy, syl.entropyVar AS ev
+            FROM individual_syllable syl INNER JOIN song 
+            ON song.id = syl.songID WHERE syl.context='U' AND syl.taskName='Predeafening'"""
+df_pre = db.to_dataframe(query)
 
 # Get post-deafening where neural data are present
-df = db.to_dataframe(query)
-query = f"""SELECT birdID, taskName, taskSessionPostDeafening, note, nbNoteUndir, entropyUndir, spectroTempEntropyUndir, entropyVarUndir  
-FROM syllable_pcc 
-WHERE frUndir >= {fr_crit} AND nbNoteUndir >={nb_note_crit} 
-AND taskName='Postdeafening'
-"""
+query = \
+    f"""SELECT birdID, taskName, taskSessionPostDeafening, note, nbNoteUndir AS nbNotes, entropyUndir AS entropy,  entropyVarUndir AS ev 
+        FROM syllable_pcc 
+        WHERE frUndir >= {fr_crit} AND nbNoteUndir >={nb_note_crit} 
+        AND taskName='Postdeafening'
+        """
 df_pcc = db.to_dataframe(query)
 
 
@@ -38,17 +39,17 @@ def plot_song_feature_pre_post(song_feature,
     import numpy as np
     import seaborn as sns
 
-    bird_list = df['birdID'].unique()
+    bird_list = df_pre['birdID'].unique()
 
-    df_baseline = df.groupby(['birdID', 'note']).mean().reset_index()  # Get average feature values per bird per note
-    df_baseline['nb_notes'] = df.groupby(['birdID', 'note'])[
+    df_pre = df_pre.groupby(['birdID', 'note']).mean().reset_index()  # Get average feature values per bird per note
+    df_pre['nb_notes'] = df_pre.groupby(['birdID', 'note'])[
         'note'].count().values  # Add a column with the number of each note
-    df_baseline.rename(columns={'nb_notes': 'nbNotePre',
+    df_pre.rename(columns={'nb_notes': 'nbNotePre',
                                 'entropy': 'entropyPre',
                                 'spectroTemporalEntropy': 'spectroTemporalEntropyPre',
                                 'entropyVar': 'entropyVarPre',
                                 }, inplace=True)
-    df_baseline.drop('taskSessionPostDeafening', axis=1, inplace=True)
+    df_pre.drop('taskSessionPostDeafening', axis=1, inplace=True)
 
     # Get post-deafening where neural data are present
     # Store values from the last day of neural recording in post-deafening in df_post
@@ -82,7 +83,7 @@ def plot_song_feature_pre_post(song_feature,
         # if bird == 'y44r34': continue
         # print(bird)
 
-        df_bird_pre = df_baseline[df_baseline['birdID'] == bird]
+        df_bird_pre = df_pre[df_pre['birdID'] == bird]
         df_bird_post = df_post[df_post['birdID'] == bird]
 
         # Skip if one of the conditions does not exist
@@ -130,7 +131,7 @@ def plot_song_feature_pre_post(song_feature,
 
 
 # Song features to compare (select from these features)
-features = ['entropy', 'spectroTemporalEntropy', 'entropyVar']
+features = ['entropy', 'entropyVar']
 
 # plot_song_feature_pre_post(song_feature='entropy',
 #                            # x_lim=[0, 70],
@@ -145,4 +146,32 @@ features = ['entropy', 'spectroTemporalEntropy', 'entropyVar']
 
 # Subsample from pre-deafening to match the number of rendition to that from post-deafening
 # df_baseline = df.groupby(['birdID', 'note']).mean().reset_index()
+
+# Decide how many renditions to subsample from predeafening
+
+# Pre
+# ['id', 'noteIndSession', 'noteIndFile', 'songID', 'fileID', 'birdID',
+#        'taskName', 'note', 'context', 'entropy', 'spectroTemporalEntropy',
+#        'entropyVar', 'taskSessionPostDeafening']
+
+# Post
+# ['birdID', 'taskName', 'taskSessionPostDeafening', 'note', 'nbNoteUndir',
+#        'entropyUndir', 'spectroTempEntropyUndir', 'entropyVarUndir']
+
+
 bird = 'b70r38'
+feature = 'entropy'
+
+df_bird_pre = df_pre[df_pre['birdID'] == bird]
+df_bird_post = df_pcc[df_pcc['birdID'] == bird]
+
+nb_note_dict = df_bird_post.groupby('note').size().to_dict()
+
+df_all = pd.DataFrame()
+
+for note, nb_note in nb_note_dict:
+    if nb_note >= nb_note_dict:
+        df_temp = df_bird_pre[df_bird_pre['note'] == note]
+
+
+
