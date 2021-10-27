@@ -42,7 +42,8 @@ def get_entropy(query,
 
         for file in si.files:
 
-            print(f'Loading... {file.name}')
+            file = ProjectLoader().path / file
+            # print(f'Loading... {file}')
             # Loop through the notes
             note_ind2 = -1  # note index within a file
 
@@ -208,10 +209,10 @@ if __name__ == '__main__':
     from util import save
 
     # Parameter
-    update = False  # update or make a new cache file
+    update = True  # update or make a new cache file for a class object
     save_fig = False
     view_folder = False  # view the folder where figures are stored
-    update_db = True  # save results to DB
+    update_db = False  # save results to DB
     fig_ext = '.png'  # .png or .pdf
     nb_note_crit = 10
 
@@ -227,9 +228,10 @@ if __name__ == '__main__':
     # SQL statement
     # query = "SELECT * FROM song WHERE birdID='b70r38'"
     # query = "SELECT * FROM song WHERE id<=2"
-    query = "SELECT * FROM song"
+    query = "SELECT * FROM song WHERE id=2"
 
     get_entropy(query,
+                update=update,
                 nb_note_crit=nb_note_crit,
                 save_fig=save_fig,
                 view_folder=view_folder,

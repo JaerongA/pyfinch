@@ -9,7 +9,9 @@ def load_song(dir, format='wav'):
     Obtain event info & serialized timestamps for song & neural analysis
     """
     from analysis.functions import demarcate_bout, read_not_mat
+    from database.load import ProjectLoader
     import numpy as np
+    import os
     from scipy.io import wavfile
     from util.functions import list_files
 
@@ -55,7 +57,7 @@ def load_song(dir, format='wav'):
         timestamp_serialized = np.append(timestamp_serialized, timestamp)
 
         # File information (name, start & end timestamp of each file)
-        file_list.append(file.name)
+        file_list.append(os.path.relpath(file, ProjectLoader().path))
         file_start_list.append(timestamp_serialized[start_ind])  # in ms
         file_end_list.append(timestamp_serialized[-1])  # in ms
 
