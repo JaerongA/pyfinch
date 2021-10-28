@@ -2,6 +2,7 @@
 Run firing rate analysis
 Get mean firing rates per condition
 Get firing rates from song motif (including pre-motor windows)
+Stores the results in the unit_profile table
 """
 
 

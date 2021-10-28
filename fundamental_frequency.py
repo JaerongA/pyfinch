@@ -1,6 +1,7 @@
 """
-By Jaerong
-fundamental frequency analysis
+Fundamental frequency analysis of individual syllables
+Reads parameters from ff table
+Stores the results to ff_result table
 """
 
 
