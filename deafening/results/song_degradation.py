@@ -37,6 +37,7 @@ def plot_song_feature_pre_post(song_feature,
     import matplotlib.pyplot as plt
     import numpy as np
     import seaborn as sns
+    from util.draw import remove_right_top
 
     bird_list = df['birdID'].unique()
 
@@ -104,21 +105,21 @@ def plot_song_feature_pre_post(song_feature,
                         df_merge[song_feature + 'Post'],
                         s=dot_size, color='k', ax=ax)
 
-        # Connect two dots
+        # Plot connecting lines
         for note in df_merge['note']:
             ax.plot([0, df_merge['taskSessionPostDeafening'].unique()],
                     [df_merge[df_merge['note'] == note][song_feature + 'Pre'].values,
                      df_merge[df_merge['note'] == note][song_feature + 'Post'].values],
                     'k-', linewidth=1)
 
-    ax.spines['right'].set_visible(False), ax.spines['top'].set_visible(False)
+    remove_right_top(ax)
     if x_lim:
         ax.set_xlim(x_lim)
     if y_lim:
         ax.set_ylim(y_lim)
     ax.set_xlabel('Days after deafening')
     ax.set_ylabel(song_feature)
-    plt.suptitle(f"""Pre-defeaning mean vs. Last day of neural recording after deafening
+    plt.suptitle(f"""Predefeaning mean vs. Last day of neural recording after deafening
                     \n # of notes = {nb_notes}""", y=0.9, fontsize=8)
 
     # Save results
