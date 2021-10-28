@@ -70,3 +70,6 @@ plot_per_day_block(df, ind_var_name='block10days', dep_var_name='motifFRUndir',
                    fig_name='MotifFR_per_day_block',
                    save_fig=False, fig_ext='.png'
                    )
+
+
+
