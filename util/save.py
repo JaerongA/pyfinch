@@ -2,14 +2,10 @@
 Utility functions to make output directories & save output files
 """
 
-from datetime import date
-from database import load
-from pathlib import Path
-
 
 def make_dir(parent_path, *dir_name, add_date=True):
     """
-
+    Make a new directory
     Parameters
     ----------
     parent_path : str
@@ -22,6 +18,7 @@ def make_dir(parent_path, *dir_name, add_date=True):
     -------
     save_path : path
     """
+    from datetime import date
 
     global save_path
     if dir_name:
@@ -33,7 +30,7 @@ def make_dir(parent_path, *dir_name, add_date=True):
     else:
         if add_date:
             today = date.today()
-            save_path = parent_path /  today.strftime("%Y-%m-%d")  # 2020-07-04
+            save_path = parent_path / today.strftime("%Y-%m-%d")  # 2020-07-04
         else:
             save_path = parent_path
 
@@ -59,9 +56,6 @@ def save_fig(fig, save_path, title, fig_ext='.png', view_folder=False, dpi=None)
         open the folder where the figure is saved
     dpi : int
         increase the value for enhanced resolution
-    Returns
-    -------
-
     """
 
     import matplotlib.pyplot as plt
@@ -92,10 +86,6 @@ def save2json(filename, data):
     ----------
     filename : str
     data : arr
-
-    Returns
-    -------
-
     """
     import json
     with open(filename, 'w') as f:
