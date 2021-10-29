@@ -4,17 +4,16 @@ from database.load import ProjectLoader
 from util import save
 from util.draw import remove_right_top
 
-
-def plot_paired_scatter(df, x, y, hue=None,
-                        save_folder_name=None,
-                        x_lim=None, y_lim=None,
-                        x_label=None, y_label=None, tick_freq=0.1,
-                        title=None,
-                        diagonal=True,  # plot diagonal line
-                        paired_test=True,
-                        save_fig=False,
-                        view_folder=False,
-                        fig_ext='.png'):
+def plot_scatter_digaonal(df, x, y, hue=None,
+                          save_folder_name=None,
+                          x_lim=None, y_lim=None,
+                          x_label=None, y_label=None, tick_freq=0.1,
+                          title=None,
+                          diagonal=True,  # plot diagonal line
+                          paired_test=True,
+                          save_fig=False,
+                          view_folder=False,
+                          fig_ext='.png'):
     import matplotlib.pyplot as plt
     import numpy as np
     from scipy.stats import ttest_rel
@@ -68,16 +67,17 @@ def plot_paired_scatter(df, x, y, hue=None,
         plt.show()
 
 
-def plot_by_day_per_syllable(fr_criteria=0, save_fig=False):
+def plot_by_day_per_syllable(fr_criteria=0,
+                             save_fig=False,
+                             fig_ext='.png'):
     """
     Plot daily pcc per syllable per bird
     Parameters
     ----------
-    fr_criteria : 0 by default
+    fr_criteria : 0 (default)
         only plot the pcc for syllable having higher firing rates than criteria
-    Returns
-    -------
-
+    save_fig : bool
+        save figure
     """
     from database.load import ProjectLoader
     import matplotlib.pyplot as plt
@@ -232,12 +232,6 @@ def plot_regression(x, y, color='k', size=None, save_fig=False, fig_ext='.png',
     else:
         plt.show()
 
-# Functions used for plotting results
-from database.load import ProjectLoader
-from util import save
-from util.draw import remove_right_top
-
-
 def get_nb_cluster(ax):
     from pandas.plotting import table
 
@@ -312,7 +306,7 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
         plt.plot([x1, x1, x2, x2], [y, y + h, y + h, y], lw=1, c=col)
         plt.text((x1 + x2) * .5, y + h * 1.1, sig, ha='center', va='bottom', color=col, size=stat_txt_size)
         if sig == '***':  # mark significance
-            msg = ('$P$ < 0.001')
+            msg = '$P$ < 0.001'
         else:
             msg = ('$P$ = {:.3f}'.format(pval))
         plt.text((x1 + x2) * .5, y * 1.1, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
@@ -327,15 +321,15 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
 
     if legend_ok and hue_var is not None:
         plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-    else:
-        ax.get_legend().remove()
+    # else:
+    #     ax.get_legend().remove()
 
 
 def plot_across_days_per_note(df, x, y,
                               x_label=None,
                               y_label=None,
                               title=None, fig_name=None,
-                              xlim=None, ylim=None,
+                              x_lim=None, y_lim=None,
                               vline=None,
                               hline=None,
                               view_folder=True,
@@ -379,10 +373,10 @@ def plot_across_days_per_note(df, x, y,
         else:
             axes[ax_ind].set_ylabel('')
 
-        if xlim:
-            axes[ax_ind].set_xlim(xlim)
-        if ylim:
-            axes[ax_ind].set_ylim(ylim)
+        if x_lim:
+            axes[ax_ind].set_xlim(x_lim)
+        if y_lim:
+            axes[ax_ind].set_ylim(y_lim)
 
         if isinstance(vline, int):  # Plot vertical line
             axes[ax_ind].axvline(x=vline, color='k', ls='--', lw=0.5)
@@ -445,7 +439,7 @@ def plot_paired_data(df, x, y,
     degree_of_freedom = len(group1) + len(group2) - 2
     msg1 = ('t({:.0f})'.format(degree_of_freedom) + ' = {:.2f}'.format(tval))
     if pval < 0.001:  # mark significance
-        msg2 = ('p < 0.001')
+        msg2 = 'p < 0.001'
     else:
         msg2 = ('p = {:.3f}'.format(pval))
     msg = msg1 + ', ' + msg2
