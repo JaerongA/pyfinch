@@ -160,19 +160,36 @@ features = ['entropy', 'entropyVar']
 #        'entropyUndir', 'spectroTempEntropyUndir', 'entropyVarUndir']
 
 
-bird = 'b70r38'
-feature = 'entropy'
+# Get song features from pre & post (Undir)
+query = f"""SELECT syl.birdID, syl.taskName, song.taskSessionPostDeafening, syl.note, syl.entropy, syl.entropyVar AS ev
+            FROM individual_syllable syl INNER JOIN song 
+            ON song.id = syl.songID WHERE syl.context='U'
+        """
+df = db.to_dataframe(query)
 
-df_bird_pre = df_pre[df_pre['birdID'] == bird]
-df_bird_post = df_pcc[df_pcc['birdID'] == bird]
+#
+# bird = 'b70r38'
+# feature = 'entropy'
+#
+# df_bird_pre = df_pre[df_pre['birdID'] == bird]
+# df_bird_post = df_pcc[df_pcc['birdID'] == bird]
+# df_bird_post = df_pcc[df_pcc['birdID'] == bird]
 
-nb_note_dict = df_bird_post.groupby('note').size().to_dict()
+# nb_note_dict = df_bird_post.groupby('note').size().to_dict()
+
+last_day_dict = df_pcc.groupby('birdID')['taskSessionPostDeafening'].max().to_dict()
 
 df_all = pd.DataFrame()
+
+bird_list = df_pre['birdID'].unique()
+
+
+
+
 
 for note, nb_note in nb_note_dict:
     if nb_note >= nb_note_dict:
         df_temp = df_bird_pre[df_bird_pre['note'] == note]
 
 
-
+for df_bird_post
