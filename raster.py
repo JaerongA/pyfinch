@@ -337,6 +337,9 @@ def get_raster(query,
         if shuffled_baseline:
             p_sig = pcc_shuffle_test(mi, pi, plot_hist=True)
 
+        # Calculate sparseness index
+        sparseness = pi.get_sparseness(bin_size=3)
+
         # Print out results on the figure
         txt_xloc = -0.5
         txt_yloc = 1
@@ -434,43 +437,57 @@ def get_raster(query,
                 ax_txt.text(txt_xloc, txt_yloc, f"Fano Factor ({context}) = {round(np.nanmean(ff), 3)}",
                             fontsize=font_size)
 
+        txt_yloc -= txt_inc
+        for context, value in sorted(sparseness.items(), reverse=True):
+            txt_yloc -= txt_inc
+            if nb_motifs[context] >= nb_note_crit:
+                ax_txt.text(txt_xloc, txt_yloc, f"Sparseness ({context}) = {value : 1.3f}",
+                            fontsize=font_size)
         # Save results to database
         if update_db and time_warp:  # only use values from time-warped data
-            db.cur.execute(f"INSERT OR IGNORE INTO cluster_results (clusterID) VALUES ({cluster_db.id})")
+            db.cur.execute(f"INSERT OR IGNORE INTO pcc (clusterID) VALUES ({cluster_db.id})")
             db.conn.commit()
 
             if 'U' in pi.pcc and nb_motifs['U'] >= nb_note_crit:
                 db.cur.execute(
-                    f"UPDATE cluster_results SET pccUndir = ({pi.pcc['U']['mean']}) WHERE clusterID = ({cluster_db.id})")
+                    f"UPDATE pcc SET pccUndir = ({pi.pcc['U']['mean']}) WHERE clusterID = ({cluster_db.id})")
 
             if 'D' in pi.pcc and nb_motifs['D'] >= nb_note_crit:
                 db.cur.execute(
-                    f"UPDATE cluster_results SET pccDir = ({pi.pcc['D']['mean']}) WHERE clusterID = ({cluster_db.id})")
+                    f"UPDATE pcc SET pccDir = ({pi.pcc['D']['mean']}) WHERE clusterID = ({cluster_db.id})")
 
             if corr_context:
-                db.cur.execute(f"UPDATE cluster_results SET corrRContext = ({corr_context}) WHERE clusterID = ({cluster_db.id})")
+                db.cur.execute(f"UPDATE pcc SET corrRContext = ({corr_context}) WHERE clusterID = ({cluster_db.id})")
 
             if 'U' in pi.spk_count_cv and nb_motifs['U'] >= nb_note_crit:
                 db.cur.execute(
-                    f"UPDATE cluster_results SET cvSpkCountUndir = ({pi.spk_count_cv['U']}) WHERE clusterID = ({cluster_db.id})")
+                    f"UPDATE pcc SET cvSpkCountUndir = ({pi.spk_count_cv['U']}) WHERE clusterID = ({cluster_db.id})")
 
             if 'D' in pi.spk_count_cv and nb_motifs['D'] >= nb_note_crit:
                 db.cur.execute(
-                    f"UPDATE cluster_results SET cvSpkCountDir = ({pi.spk_count_cv['D']}) WHERE clusterID = ({cluster_db.id})")
+                    f"UPDATE pcc SET cvSpkCountDir = ({pi.spk_count_cv['D']}) WHERE clusterID = ({cluster_db.id})")
 
             if 'U' in pi.fano_factor and nb_motifs['U'] >= nb_note_crit:
                 db.cur.execute(
-                    f"UPDATE cluster_results SET fanoSpkCountUndir = ({round(np.nanmean(pi.fano_factor['U']), 3)}) WHERE clusterID = ({cluster_db.id})")
+                    f"UPDATE pcc SET fanoSpkCountUndir = ({round(np.nanmean(pi.fano_factor['U']), 3)}) WHERE clusterID = ({cluster_db.id})")
 
             if 'D' in pi.fano_factor and nb_motifs['D'] >= nb_note_crit:
                 db.cur.execute(
-                    f"UPDATE cluster_results SET fanoSpkCountDir = ({round(np.nanmean(pi.fano_factor['D']), 3)}) WHERE clusterID = ({cluster_db.id})")
+                    f"UPDATE pcc SET fanoSpkCountDir = ({round(np.nanmean(pi.fano_factor['D']), 3)}) WHERE clusterID = ({cluster_db.id})")
+
+            if 'U' in sparseness and nb_motifs['U'] >= nb_note_crit:
+                db.cur.execute(
+                    f"UPDATE pcc SET sparsenessUndir = ({sparseness['U'] :1.3f)}) WHERE clusterID = ({cluster_db.id})")
+
+            if 'D' in sparseness and nb_motifs['D'] >= nb_note_crit:
+                db.cur.execute(
+                    f"UPDATE pcc SET sparsenessDir = ({sparseness['D'] :1.3f)}) WHERE clusterID = ({cluster_db.id})")
 
             if shuffled_baseline:
                 if 'U' in p_sig and nb_motifs['U'] >= nb_note_crit:
-                    db.cur.execute(f"UPDATE cluster_results SET pccUndirSig = ({p_sig['U']}) WHERE clusterID = ({cluster_db.id})")
+                    db.cur.execute(f"UPDATE pcc SET pccUndirSig = ({p_sig['U']}) WHERE clusterID = ({cluster_db.id})")
                 if 'D' in p_sig and nb_motifs['D'] >= nb_note_crit:
-                    db.cur.execute(f"UPDATE cluster_results SET pccDirSig = ({p_sig['D']}) WHERE clusterID = ({cluster_db.id})")
+                    db.cur.execute(f"UPDATE pcc SET pccDirSig = ({p_sig['D']}) WHERE clusterID = ({cluster_db.id})")
             db.conn.commit()
 
         # Save results
@@ -545,18 +562,18 @@ if __name__ == '__main__':
     shuffled_baseline = False  # Get PETH from shuffled spikes for getting pcc baseline
     time_warp = True  # Perform piece-wise linear time-warping
     update = False  # Update the cache file per cluster
-    save_fig = True
-    update_db = True
-    view_folder = True  # open the folder where the result figures are saved
-    fig_ext = '.pdf'  # set to '.pdf' for vector output (.png by default)
+    save_fig = False
+    update_db = False
+    view_folder = False  # open the folder where the result figures are saved
+    fig_ext = '.png'  # set to '.pdf' for vector output (.png by default)
 
     # Create a new db to store results
     if update_db:
-        db = create_db('create_cluster_results.sql')
+        db = create_db('create_pcc.sql')
 
     # SQL statement
     # query = "SELECT * FROM cluster WHERE analysisOK = 1"
-    query = "SELECT * FROM cluster WHERE id = 6"
+    query = "SELECT * FROM cluster WHERE id = 96"
 
     get_raster(query, shuffled_baseline=shuffled_baseline, time_warp=time_warp,
                update=update,
