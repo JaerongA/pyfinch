@@ -108,7 +108,7 @@ def get_peth(evt_ts_list: list, spk_ts_list: list, pre_evt_buffer=None, duration
         peth = peth[:, ind]
         time_bin = time_bin[ind]
 
-    return peth, time_bin
+    return peth, time_bin, peth_parm
 
 
 def get_pcc(fr_array):
@@ -1096,11 +1096,11 @@ class PethInfo():
                     fr = gaussian_filter1d(fr, gauss_std)
 
                 # Truncate values outside the range
-                # ind = (((0 - peth_parm['buffer']) <= self.time_bin) & (self.time_bin <= self.median_duration))
-                # fr = fr[:, ind]
+                ind = (((0 - peth_parm['buffer']) <= self.time_bin) & (self.time_bin <= self.median_duration))
+                fr = fr[:, ind]
                 fr_dict[k] = fr
         self.fr = fr_dict
-        # self.time_bin = self.time_bin[ind]
+        self.time_bin = self.time_bin[ind]
 
         # Get mean firing rates
         mean_fr_dict = {}
@@ -1147,16 +1147,15 @@ class PethInfo():
         sparseness : dict
         """
 
-        from analysis.parameters import peth_parm, gauss_std, nb_note_crit
+        from analysis.parameters import gauss_std, nb_note_crit
         import math
         import numpy as np
 
         mean_fr = dict()
         sparseness = dict()
 
-        if bin_size != peth_parm['bin_size']:
+        if bin_size != None and bin_size != self.parameters['bin_size']:
             for context, peth in self.peth.items():
-
                 if context == 'All': continue
                 new_peth = np.empty([peth.shape[0], 0])
                 nb_bins = math.ceil(peth.shape[1] / bin_size)
