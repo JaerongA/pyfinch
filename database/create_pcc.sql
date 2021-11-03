@@ -30,6 +30,9 @@ CREATE TABLE IF NOT EXISTS pcc(
             fanoSpkCountUndir        REAL,
             fanoSpkCountDir          REAL,
 
+            sparsenessUndir          REAL,
+            sparsenessDir            REAL,
+
             FOREIGN KEY(clusterID) REFERENCES cluster(id));
 
 INSERT OR IGNORE INTO pcc
