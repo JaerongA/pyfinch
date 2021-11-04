@@ -47,6 +47,8 @@ def get_raster(query,
     from util import save
     from util.functions import myround
     from util.draw import remove_right_top
+    import warnings
+    warnings.filterwarnings('ignore')
 
     # parameters
     rec_yloc = 0.05

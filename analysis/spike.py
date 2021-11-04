@@ -686,15 +686,15 @@ class NoteInfo:
         peth_dict = {}
 
         if shuffle:
-            peth, time_bin = \
+            peth, time_bin, peth_parm = \
                 get_peth(self.onsets, self.spk_ts_jittered, pre_evt_buffer=pre_evt_buffer, duration=duration)
         else:
             if time_warp:  # peth calculated from time-warped spikes by default
                 # peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
-                peth, time_bin = \
+                peth, time_bin, peth_parm = \
                     get_peth(self.onsets, self.spk_ts_warp, pre_evt_buffer=pre_evt_buffer, duration=duration)
             else:
-                peth, time_bin = \
+                peth, time_bin, peth_parm = \
                     get_peth(self.onsets, self.spk_ts, pre_evt_buffer=pre_evt_buffer, duration=duration)
 
         peth_dict['peth'] = peth
