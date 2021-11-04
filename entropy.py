@@ -1,6 +1,8 @@
 """
 By Jaerong
 Calculate entropy, entropy variance per syllable
+Stores the results in individual_syllable, syllable table
+Figures saved in /Analysis/Entropy
 """
 
 
@@ -209,10 +211,10 @@ if __name__ == '__main__':
     from util import save
 
     # Parameter
-    update = True  # update or make a new cache file for a class object
+    update = False  # update or make a new cache file for a class object
     save_fig = False
     view_folder = False  # view the folder where figures are stored
-    update_db = False  # save results to DB
+    update_db = True  # save results to DB
     fig_ext = '.png'  # .png or .pdf
     nb_note_crit = 10
 
@@ -228,7 +230,7 @@ if __name__ == '__main__':
     # SQL statement
     # query = "SELECT * FROM song WHERE birdID='b70r38'"
     # query = "SELECT * FROM song WHERE id<=2"
-    query = "SELECT * FROM song WHERE id=2"
+    query = "SELECT * FROM song"
 
     get_entropy(query,
                 update=update,

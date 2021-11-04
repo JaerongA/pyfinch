@@ -5,7 +5,6 @@ Change the name of the .cbin & .rec files to fit the format (b14r74_190913_16140
 
 
 def main(data_path=None):
-
     import os
     from pathlib import Path
     from util.functions import find_data_path
@@ -50,7 +49,7 @@ def main(data_path=None):
 
         print('Done!')
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     # Search for data dir manually
     main()

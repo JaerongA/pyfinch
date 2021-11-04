@@ -11,6 +11,3 @@ def create_database(database_path: str):
         cur = conn.cursor()
         cur.execute("drop table if exists deafening")
     conn.close()
-
-def save_to_database(database_path: str):
-    pass
