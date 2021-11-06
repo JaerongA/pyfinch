@@ -4,7 +4,7 @@ from database.load import ProjectLoader
 from util import save
 from util.draw import remove_right_top
 
-def plot_scatter_digaonal(df, x, y, hue=None,
+def plot_scatter_diagonal(df, x, y, hue=None,
                           save_folder_name=None,
                           x_lim=None, y_lim=None,
                           x_label=None, y_label=None, tick_freq=0.1,
@@ -171,7 +171,7 @@ def plot_regression(x, y, color='k', size=None, save_fig=False, fig_ext='.png',
     # Plot scatter & regression
     ax = plt.subplot(gs[0:3, 0:3])
     plot = ax.scatter(x, y, c=color, s=size, edgecolors='k', cmap=plt.cm.hot_r)
-    if color is not 'k':
+    if color != 'k':
         cbar = plt.colorbar(mappable=plot, ax=ax)
         cbar.set_label('Days after deafening')
     remove_right_top(ax)
@@ -259,7 +259,8 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
                         y_lim=None,
                         jitter=0.1, alpha=0.5,
                         run_stats=True, stat_txt_size=10,
-                        legend_ok=False
+                        legend_ok=False,
+                        **kwargs
                         ):
     import math
     import numpy as np
@@ -282,8 +283,9 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
     sns.barplot(group_var, dependent_var, ax=ax, facecolor=(1, 1, 1, 0),
                 linewidth=1,
                 order=col_order, errcolor=".2", edgecolor=".2", zorder=0)
-    title += '\n\n\n'
-    plt.title(title), plt.xlabel(xlabel), plt.ylabel(ylabel)
+    # title += '\n\n\n'
+    # plt.title(title)
+    plt.xlabel(xlabel), plt.ylabel(ylabel)
 
     # Add stat comparisons
     if run_stats:
@@ -303,15 +305,17 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
 
         x1, x2 = 0, 1
         y, h, col = ax.get_ylim()[1] * 1.02, 0, 'k'
-        plt.plot([x1, x1, x2, x2], [y, y + h, y + h, y], lw=1, c=col)
-        plt.text((x1 + x2) * .5, y + h * 1.1, sig, ha='center', va='bottom', color=col, size=stat_txt_size)
+        # plt.plot([x1, x1, x2, x2], [y, y + h, y + h, y], lw=1, c=col)
+        # plt.text((x1 + x2) * .5, y + h * 1.1, sig, ha='center', va='bottom', color=col, size=stat_txt_size)
         if sig == '***':  # mark significance
-            msg = '$P$ < 0.001'
+            msg2 = '$P$ < 0.001'
         else:
-            msg = ('$P$ = {:.3f}'.format(pval))
-        plt.text((x1 + x2) * .5, y * 1.1, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
-        msg = ('t({:.0f})'.format(degree_of_freedom) + ' = {:.2f}'.format(tval))
-        plt.text((x1 + x2) * .5, y * 1.2, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
+            msg2 = ('$P$ = {:.3f}'.format(pval))
+        # plt.text((x1 + x2) * .5, y * 1.1, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
+        msg1 = ('t({:.0f})'.format(degree_of_freedom) + ' = {:.2f}'.format(tval))
+        # plt.text((x1 + x2) * .5, y * 1.2, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
+
+        ax.set_title(f"{title} \n\n {msg1} \n {msg2}", size=10)
 
     if y_lim:
         plt.ylim(y_lim[0], y_lim[1])
@@ -319,10 +323,13 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
     #     ax.set_ylim([0, myround(math.ceil(y), base=10)])
     ax.spines['right'].set_visible(False), ax.spines['top'].set_visible(False)
 
+    if 'xtick_label' in kwargs:
+        ax.set_xticklabels(kwargs['xtick_label'])
+
     if legend_ok and hue_var is not None:
         plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-    # else:
-    #     ax.get_legend().remove()
+    else:
+        ax.get_legend().remove()
 
 
 def plot_across_days_per_note(df, x, y,

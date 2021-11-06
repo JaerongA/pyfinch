@@ -14,21 +14,21 @@ pd.set_option('display.max_rows', None)
 
 # Load database
 db = ProjectLoader().load_db()
-
-# Get pre-deafening baseline
-query = f"""SELECT syl.birdID, syl.taskName, song.taskSessionPostDeafening, syl.note, syl.entropy, syl.entropyVar AS ev
-            FROM individual_syllable syl INNER JOIN song 
-            ON song.id = syl.songID WHERE syl.context='U' AND syl.taskName='Predeafening'"""
-df_pre = db.to_dataframe(query)
-
-# Get post-deafening where neural data are present
-query = \
-    f"""SELECT birdID, taskName, taskSessionPostDeafening, note, nbNoteUndir AS nbNotes, entropyUndir AS entropy,  entropyVarUndir AS ev 
-        FROM syllable_pcc 
-        WHERE frUndir >= {fr_crit} AND nbNoteUndir >={nb_note_crit} 
-        AND taskName='Postdeafening'
-        """
-df_pcc = db.to_dataframe(query)
+#
+# # Get pre-deafening baseline
+# query = f"""SELECT syl.birdID, syl.taskName, song.taskSessionPostDeafening, syl.note, syl.entropy, syl.entropyVar AS ev
+#             FROM individual_syllable syl INNER JOIN song
+#             ON song.id = syl.songID WHERE syl.context='U' AND syl.taskName='Predeafening'"""
+# df_pre = db.to_dataframe(query)
+#
+# # Get post-deafening where neural data are present
+# query = \
+#     f"""SELECT birdID, taskName, taskSessionPostDeafening, note, nbNoteUndir AS nbNotes, entropyUndir AS entropy,  entropyVarUndir AS ev
+#         FROM syllable_pcc
+#         WHERE frUndir >= {fr_crit} AND nbNoteUndir >={nb_note_crit}
+#         AND taskName='Postdeafening'
+#         """
+# df_pcc = db.to_dataframe(query)
 
 # Plot results
 def plot_song_feature_pre_post(song_feature,
@@ -130,8 +130,6 @@ def plot_song_feature_pre_post(song_feature,
         plt.show()
 
 
-# Song features to compare (select from these features)
-features = ['entropy', 'entropyVar']
 
 # plot_song_feature_pre_post(song_feature='entropy',
 #                            # x_lim=[0, 70],
@@ -175,57 +173,63 @@ def compare_song_feature_pre_post(db, song_feature):
             AND taskName='Postdeafening'
             """
     df_pcc = db.to_dataframe(query)
-    last_day_dict = df_pcc.groupby('birdID')['taskSessionPostDeafening'].max().to_dict()
+    df_last_day = df_pcc.groupby(['birdID', 'note'])['taskSessionPostDeafening'].max().reset_index()
 
     df_results = pd.DataFrame() # store results here
 
-    for bird, last_day in last_day_dict.items():
-        # if bird == 'b70r38':
-        df_post = df.loc[(df['birdID']==bird) & (df['taskSessionPostDeafening']==last_day)]
-        nb_notes_dict = df_post.groupby('note').size().to_dict()
-        for note, nb_notes_post in nb_notes_dict.items():
-            if nb_notes_post >= nb_note_crit:
-                df_note_pre = df.loc[(df['birdID']==bird) &
-                                (df['taskName']=='Predeafening') &
-                                (df['note'] == note)
-                                 ]
-                nb_notes_pre = len(df_note_pre)
-                if nb_notes_pre < nb_note_crit: continue
-                # Subsample so that # of notes are equal between pre and post
-                if nb_notes_pre < nb_notes_post:
-                    pre_data, post_data = \
-                        df_note_pre[song_feature].values, \
-                        df_post.loc[df_post['note']==note].sample(n=nb_notes_pre, random_state=1)[song_feature].values
-                else:
-                    pre_data, post_data = \
-                        df_note_pre.sample(n=nb_notes_post, random_state=1)[song_feature].values, \
-                        df_post.loc[df_post['note'] == note][song_feature].values
-                # print(len(pre_data), len(post_data))
-                # print(f"{pre_data.mean() :.3f}, {post_data.mean() :.3f}")
+    for _, row in df_last_day.iterrows():
+        # if not row['birdID'] == 'b4r64': continue
+        bird, note, last_day = row['birdID'], row['note'], row['taskSessionPostDeafening']
+        df_post = df.loc[(df['birdID']==bird) &
+                         (df['taskSessionPostDeafening'] == last_day) &
+                         (df['note'] == note)
+                         ]
 
-                # rank-sum test (two-sample non-parametric test)
-                from scipy.stats import ranksums
-                if song_feature == 'entropy':
-                    stat, pval = ranksums(pre_data, post_data, alternative='less')
-                elif  song_feature == 'ev':
-                    stat, pval = ranksums(pre_data, post_data, alternative='greater')
+        nb_notes_post = len(df_post)
+        if nb_notes_post < nb_note_crit: continue
 
-                # degree_of_freedom = len(pre_data) + len(pre_data) - 2
-                # if pval < 0.001:  # mark significance
-                #     msg = f"ranksum Z={stat : .3f}, p < 0.001"
-                # else:
-                #     msg = f"ranksum Z={stat : .3f}, p={pval : .3f}"
+        df_pre = df.loc[(df['birdID'] == bird) &
+                        (df['taskName'] == 'Predeafening') &
+                        (df['note'] == note)
+                        ]
 
-                # Organize results
-                df_temp = pd.DataFrame({'birdID' : [bird],
-                                        'note': [note],
-                                        'nbNotes' : [len(pre_data)],
-                                        song_feature + 'Pre': [round(pre_data.mean(), 3)],
-                                        song_feature + 'Post': [round(post_data.mean(), 3)],
-                                        'postSessionDeafening': [last_day],
-                                        'sig': [pval<0.05],
-                                        })
-                df_results = df_results.append(df_temp, ignore_index=True)
+        nb_notes_pre = len(df_pre)
+        if nb_notes_pre < nb_note_crit: continue
+        # Subsample so that # of notes are equal between pre and post
+        if nb_notes_pre < nb_notes_post:
+            pre_data, post_data = \
+                df_pre[song_feature].values, \
+                df_post.loc[df_post['note']==note].sample(n=nb_notes_pre, random_state=1)[song_feature].values
+        else:
+            pre_data, post_data = \
+                df_pre.sample(n=nb_notes_post, random_state=1)[song_feature].values, \
+                df_post.loc[df_post['note'] == note][song_feature].values
+        # print(len(pre_data), len(post_data))
+        # print(f"{pre_data.mean() :.3f}, {post_data.mean() :.3f}")
+
+        # rank-sum test (two-sample non-parametric test)
+        from scipy.stats import ranksums
+        if song_feature == 'entropy':
+            stat, pval = ranksums(pre_data, post_data, alternative='less')
+        elif  song_feature == 'ev':
+            stat, pval = ranksums(pre_data, post_data, alternative='greater')
+
+        # degree_of_freedom = len(pre_data) + len(pre_data) - 2
+        # if pval < 0.001:  # mark significance
+        #     msg = f"ranksum Z={stat : .3f}, p < 0.001"
+        # else:
+        #     msg = f"ranksum Z={stat : .3f}, p={pval : .3f}"
+
+        # Organize results
+        df_temp = pd.DataFrame({'birdID' : [bird],
+                                'note': [note],
+                                'nbNotes' : [len(pre_data)],
+                                song_feature + 'Pre': [round(pre_data.mean(), 3)],
+                                song_feature + 'Post': [round(post_data.mean(), 3)],
+                                'postSessionDeafening': [last_day],
+                                'sig': [pval<0.05],
+                                })
+        df_results = df_results.append(df_temp, ignore_index=True)
 
     return df_results
 
@@ -268,36 +272,41 @@ def plot_song_feature_pre_post_stats(df, song_feature, x_lim=None, y_lim=None):
                     \n # of notes = {len(df)} ({df['sig'].sum()} /{len(df_results)})""", y=1, fontsize=10)
     plt.show()
 
-
-
-df_results = compare_song_feature_pre_post(db, song_feature='entropy')
-plot_song_feature_pre_post_stats(df_results, song_feature='entropy',
-                                 x_lim=[-5, 70], y_lim=[0.3, 0.9]
-                                 )
-
+# Entropy
+# df_results = compare_song_feature_pre_post(db, song_feature='entropy')
+# plot_song_feature_pre_post_stats(df_results, song_feature='entropy',
+#                                  x_lim=[-5, 70], y_lim=[0.3, 0.9]
+#                                  )
+# # Entropy Variance
 df_results = compare_song_feature_pre_post(db, song_feature='ev')
-plot_song_feature_pre_post_stats(df_results, song_feature='ev',
-                                 # x_lim=[-5, 70], y_lim=[0.3, 0.9]
-                                 )
-
-
-
-
+# plot_song_feature_pre_post_stats(df_results, song_feature='ev',
+#                                  # x_lim=[-5, 70], y_lim=[0.3, 0.9]
+#                                  )
 
 # Get post-deafening where neural data are present
 query = \
     f"""SELECT birdID, taskName, taskSessionPostDeafening AS postSessionDeafening, note, nbNoteUndir AS nbNotes, pccUndir
-        FROM syllable_pcc 
-        WHERE frUndir >= {fr_crit} AND nbNoteUndir >={nb_note_crit} 
+        FROM syllable_pcc
+        WHERE frUndir >= {fr_crit} AND nbNoteUndir >={nb_note_crit}
         AND taskName='Postdeafening'
         """
 df_pcc = db.to_dataframe(query)
 
-
-
-df_pcc.columns
-df_results.columns
-
 df_merged = pd.merge(df_results, df_pcc, how='left', on=['birdID', 'note', 'postSessionDeafening'])
 
-df_merged.to_csv(r"C:\Users\jahn02\Box\Data\Deafening Project\Analysis\Database\merged_table.csv", header=True)
+# df_merged.to_csv(r"C:\Users\jahn02\Box\Data\Deafening Project\Analysis\Database\merged_table.csv", header=True)
+
+import matplotlib.pyplot as plt
+from deafening.plot import plot_bar_comparison
+
+fig, ax = plt.subplots(figsize=(4, 3))
+plot_bar_comparison(ax, df_merged['pccUndir'], df_merged['sig'],
+                    hue_var=df_merged['birdID'],
+                    title='PCC Undir Post-deafening comparison (Entropy)',
+                    ylabel='PCC',
+                    # y_lim=[-0.01, 0.15],
+                    xtick_label= ['NonSig', 'Sig'],
+                    legend_ok=True
+                    )
+plt.tight_layout()
+plt.show()
