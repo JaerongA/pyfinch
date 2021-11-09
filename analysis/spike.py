@@ -544,8 +544,19 @@ class ClusterInfo:
 
         return nb_motifs
 
-    def get_note_info(self, note):
-        """Return a class object (NoteInfo) for individual note"""
+    def get_note_info(self, note, pre_buffer=0, post_buffer=0):
+        """
+        Obtain a class object (NoteInfo) for individual note
+        Parameters
+        ----------
+        note : str
+        pre_buffer : int
+        post_buffer : int
+
+        Returns
+        -------
+        NoteInfo : class object
+        """
         from analysis.parameters import pre_motor_win_size, post_song_win_size
         from analysis.functions import find_str
         import numpy as np
@@ -573,7 +584,7 @@ class ClusterInfo:
         for onset, offset in zip(note_onsets, note_offsets):
             # note_spk_ts_list.append(spk_ts[np.where((spk_ts >= onset - pre_motor_win_size) & (spk_ts <= offset))])
             note_spk_ts_list.append(
-                spk_ts[np.where((spk_ts >= onset - pre_motor_win_size) & (spk_ts <= offset + post_song_win_size))])
+                spk_ts[np.where((spk_ts >= onset + pre_buffer) & (spk_ts <= offset + post_buffer))])
 
         # Organize data into a dictionary
         note_info = {
@@ -584,7 +595,9 @@ class ClusterInfo:
             'contexts': note_contexts,
             'median_dur': np.median(note_durations, axis=0),
             'spk_ts': note_spk_ts_list,
-            'path': self.path  # directory where the data exists
+            'path': self.path,  # directory where the data exists
+            'pre_buffer' : pre_buffer,
+            'post_buffer' : post_buffer
         }
 
         return NoteInfo(note_info)  # return note info
@@ -672,7 +685,7 @@ class NoteInfo:
 
     def get_peth(self, time_warp=True, shuffle=False, pre_evt_buffer=None, duration=None):
         """
-        Get peri-event time histograms
+        Get peri-event time histograms for single syllable
         Parameters
         ----------
         time_warp : perform piecewise linear transform
@@ -699,6 +712,7 @@ class NoteInfo:
 
         peth_dict['peth'] = peth
         peth_dict['time_bin'] = time_bin
+        peth_dict['parameters'] = peth_parm
         peth_dict['contexts'] = self.contexts
         peth_dict['median_duration'] = self.median_dur
         return PethInfo(peth_dict)  # return peth class object for further analysis
@@ -1021,7 +1035,17 @@ class MotifInfo(ClusterInfo):
         self.spk_ts_jittered = spk_ts_jittered_list
 
     def get_peth(self, time_warp=True, shuffle=False):
-        """Get peri-event time histograms & rasters during song motif"""
+        """
+        Get peri-event time histogram & raster during song motif
+        Parameters
+        ----------
+        time_warp : perform piecewise linear transform
+        shuffle : add jitter to spike timestamps
+
+        Returns
+        -------
+        PethInfo : class object
+        """
         peth_dict = {}
 
         if shuffle:  # Get peth with shuffled (jittered) spikes
@@ -1033,6 +1057,7 @@ class MotifInfo(ClusterInfo):
             else:
                 peth, time_bin, peth_parm = get_peth(self.onsets, self.spk_ts)
 
+        peth_parm.pop('time_bin'); peth_parm.pop('nb_bins')
         peth_dict['peth'] = peth
         peth_dict['time_bin'] = time_bin
         peth_dict['parameters'] = peth_parm
