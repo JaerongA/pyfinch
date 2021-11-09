@@ -1,11 +1,10 @@
 """
 plot raster & peth per syllable
 """
-import numpy as np
-from matplotlib import pyplot as plt
 
 
 def get_raster_syllable(query,
+                        target_note='all',
                         update=False,
                         save_fig=None,
                         update_db=None,
@@ -21,6 +20,8 @@ def get_raster_syllable(query,
     from analysis.spike import ClusterInfo, AudioData, pcc_shuffle_test
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
+    from matplotlib import pyplot as plt
+    import numpy as np
     from database.load import DBInfo, ProjectLoader
     from util import save
     from util.draw import remove_right_top
@@ -32,7 +33,7 @@ def get_raster_syllable(query,
     rec_yloc = 0.05
     rec_height = 1  # syllable duration rect
     text_yloc = 0.5  # text height
-    font_size = 12
+    font_size = 10
     marker_size = 0.4  # for spike count
 
     # Load database
@@ -57,32 +58,22 @@ def get_raster_syllable(query,
         audio = AudioData(path)  # audio object
 
         # Loop through note
-        for note in cluster_db.songNote:
+        if target_note == 'all':
+            notes = cluster_db.songNote
+        else:
+            notes = target_note
 
-            # if note is not 'a':
-            #     continue
-
+        for note in notes:
             # Load note object
-            ni = ci.get_note_info(note)
+            ni = ci.get_note_info(note, pre_buffer=-50, post_buffer=+50)  # this will be used for plotting raster
             if not ni:  # the target note does not exist
+                print("The note does not exist!")
                 continue
 
             # Skip if there are not enough motifs per condition
             if np.prod([nb[1] < nb_note_crit for nb in ni.nb_note.items()]):
-                print("Not enough notes")
+                print("Not enough notes!")
                 continue
-
-            # Plot spectrogram & peri-event histogram (Just the first rendition)
-            # Note start and end
-            start = ni.onsets[0] - peth_parm['buffer']
-            end = ni.offsets[0] + peth_parm['buffer']
-            duration = ni.durations[0]
-
-            # Get spectrogram
-            # Load audio object with info from .not.mat files
-            timestamp, data = audio.extract([start, end])
-            spect_time, spect, spect_freq = audio.spectrogram(timestamp, data)
-            del timestamp, data
 
             # Plot figure
             fig = plt.figure(figsize=(7, 10), dpi=500)
@@ -95,6 +86,18 @@ def get_raster_syllable(query,
             plt.suptitle(fig_name, y=.93, fontsize=11)
             gs = gridspec.GridSpec(17, 5)
             gs.update(wspace=0.025, hspace=0.05)
+
+            # Plot spectrogram & peri-event histogram (Just the first rendition)
+            # Note start and end
+            start = ni.onsets[0] - peth_parm['buffer']
+            end = ni.offsets[0] + peth_parm['buffer']
+            duration = ni.durations[0]
+
+            # Get spectrogram
+            # Load audio object with info from .not.mat files
+            timestamp, data = audio.extract([start, end])
+            spect_time, spect, spect_freq = audio.spectrogram(timestamp, data)
+            del timestamp, data
 
             # Plot spectrogram
             ax_spect = plt.subplot(gs[1:3, 0:5])
@@ -296,8 +299,8 @@ def get_raster_syllable(query,
             ax_peth.axvline(x=ni.median_dur, color='k', lw=0.5)
             ax_peth.set_xlabel('Time (ms)')
             remove_right_top(ax_peth)
-
-            # Calculate pairwise cross-correlation
+            # Calculate metrics
+            # pairwise cross-correlation
             pi.get_pcc()
 
             # Get shuffled PETH & pcc
@@ -316,17 +319,20 @@ def get_raster_syllable(query,
             # Print out results on the figure
             txt_xloc = -2.5
             txt_yloc = 0.8
-            txt_inc = 0.2  # y-distance between texts within the same section
+            txt_inc = 0.15  # y-distance between texts within the same section
 
             ax_txt = plt.subplot(gs[13:, 2])
             ax_txt.set_axis_off()  # remove all axes
 
-            # # of motifs
+            # # of notes
             for i, (k, v) in enumerate(ni.nb_note.items()):
                 ax_txt.text(txt_xloc, txt_yloc, f"# of notes ({k}) = {v}", fontsize=font_size)
                 txt_yloc -= txt_inc
+            txt_yloc -= txt_inc
 
             # Firing rates (includes the pre-motor window)
+            # Load NoteInfo class again to calculate firing rates from a different window
+            ni = ci.get_note_info(note, pre_buffer=-50, post_buffer=0)  # this will be used for plotting raster
             for i, (k, v) in enumerate(ni.mean_fr.items()):
                 if v is not np.nan:
                     ax_txt.text(txt_xloc, txt_yloc, f"FR ({k}) = {v}", fontsize=font_size)
@@ -543,10 +549,12 @@ if __name__ == '__main__':
         db = create_db('create_syllable_pcc.sql')
 
     # SQL statement
-    # query = "SELECT * FROM cluster WHERE id=12"
     query = "SELECT * FROM cluster WHERE analysisOK"
+    # query = "SELECT * FROM cluster WHERE id = 96"
 
     get_raster_syllable(query,
+                        # target_note = 'a',
+                        update=update,
                         save_fig=save_fig,
                         update_db=update_db,
                         entropy=entropy,
