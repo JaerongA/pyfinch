@@ -302,7 +302,7 @@ from deafening.plot import plot_bar_comparison
 fig, ax = plt.subplots(figsize=(4, 3))
 plot_bar_comparison(ax, df_merged['pccUndir'], df_merged['sig'],
                     hue_var=df_merged['birdID'],
-                    title='PCC Undir Post-deafening comparison (Entropy)',
+                    title='PCC Undir Post-deafening comparison (EV)',
                     ylabel='PCC',
                     # y_lim=[-0.01, 0.15],
                     xtick_label= ['NonSig', 'Sig'],
