@@ -1,7 +1,7 @@
 """
-By Jaerong
-Runs PCA analysis on SAP features
+Runs PCA analysis on song features generated from SAP (Song Analysis Pro 10)
 """
+
 import os
 import pandas as pd
 import numpy as np
