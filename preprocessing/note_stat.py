@@ -1,5 +1,5 @@
 """
-By Jaerong
+Plot note stats (distribution of syllable duration)
 """
 
 
@@ -22,7 +22,7 @@ def get_notestat(data_path=None, save_fig=False):
     from song.analysis import read_not_mat
     from util.draw import remove_right_top
     from util.functions import myround, open_folder, find_data_path
-    from util.save import save_fig
+    from util import save
     import math
 
     # Find data path
@@ -79,6 +79,7 @@ def get_notestat(data_path=None, save_fig=False):
     remove_right_top(ax)
     plt.ylabel('Duration (ms)')
     fig.tight_layout()
+
     if save_fig:
         save_fig(fig, data_path, data_path.name, ext='.png')
     # plt.show()
@@ -87,5 +88,6 @@ def get_notestat(data_path=None, save_fig=False):
 
 
 if __name__ == '__main__':
+
     data_path = r"H:\Box\Data\BMI\g20r5\BMI"
     get_notestat(data_path, save_fig=True)

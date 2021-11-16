@@ -1,5 +1,4 @@
 """
-By Jaerong
 load & plot the neural data (.rhd)
 """
 import os
