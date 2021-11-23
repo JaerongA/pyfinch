@@ -7,7 +7,7 @@ from database.load import ProjectLoader
 import matplotlib.pyplot as plt
 from deafening.plot import plot_bar_comparison
 from util import save
-from deafening.plot import plot_paired_scatter, plot_regression, plot_per_day_block
+from deafening.plot import plot_scatter_diagonal, plot_regression, plot_per_day_block
 
 # Parameters
 nb_row = 3
@@ -51,7 +51,7 @@ db = ProjectLoader().load_db()
 # plt.show()
 
 
-# from deafening.plot import plot_paired_scatter
+# from deafening.plot import plot_scatter_digaonal
 #
 # # Load database
 # query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND " \
@@ -62,7 +62,7 @@ db = ProjectLoader().load_db()
 # df = db.to_dataframe(query)
 #
 # # Paired comparison between Undir and Dir
-# plot_paired_scatter(df, 'sparsenessDir', 'sparsenessUndir',
+# plot_scatter_digaonal(df, 'sparsenessDir', 'sparsenessUndir',
 #                     hue= 'birdID',
 #                     save_folder_name='Sparseness',
 #                     x_lim=[0, 0.5],
@@ -91,7 +91,7 @@ df = db.to_dataframe(query)
 #                 # regression_fit=True
 #                 )
 
-# Plot fano factor per syllable across blocks
+# Plot sparseness per syllable across blocks
 plot_per_day_block(df, ind_var_name='block10days', dep_var_name='sparsenessUndir',
                    title=f'Sparseness (Undir) per day block FR >= {fr_crit} & # of Notes >= {nb_note_crit}',
                    y_label='Sparseness',

@@ -26,7 +26,7 @@ def plot_fano_factor_cluster(save_fig=True,
     df['fanoSpkCountUndir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
     ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
     plot_bar_comparison(ax, df['fanoSpkCountUndir'], df['taskName'], hue_var=df['birdID'],
-                        title='Undir', ylabel='Fano Factor',
+                        title='Undir', y_label='Fano Factor',
                         y_lim=[0, round(df['fanoSpkCountUndir'].max()) + 1],
                         col_order=("Predeafening", "Postdeafening")
                         )
@@ -65,10 +65,11 @@ def plot_fano_factor_syllable(save_fig=True,
     # Undir
     query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND frUndir >= {fr_crit}"
     df = db.to_dataframe(query)
+    df = df[df.fanoFactorUndir != df.fanoFactorUndir.max()]
     ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
     plot_bar_comparison(ax, df['fanoFactorUndir'], df['taskName'],
                         hue_var=df['birdID'],
-                        title='Undir', ylabel='Fano factor',
+                        title='Undir', y_label='Fano factor',
                         y_lim=[0, 6],
                         col_order=("Predeafening", "Postdeafening"),
                         )
@@ -97,7 +98,7 @@ def plot_fano_factor_syllable(save_fig=True,
 if __name__ == '__main__':
     from analysis.parameters import fr_crit, nb_note_crit
     from database.load import ProjectLoader
-    from deafening.plot import plot_paired_scatter, plot_regression, plot_bar_comparison, plot_per_day_block
+    from deafening.plot import plot_scatter_diagonal, plot_regression, plot_bar_comparison, plot_per_day_block
     import matplotlib.pyplot as plt
 
     save_fig = False
@@ -113,11 +114,11 @@ if __name__ == '__main__':
     #     fig_ext=fig_ext
     # )
 
-    # plot_fano_factor_syllable(
-    #     save_fig=save_fig,
-    #     view_folder=view_folder,
-    #     fig_ext=fig_ext
-    # )
+    plot_fano_factor_syllable(
+        save_fig=save_fig,
+        view_folder=view_folder,
+        fig_ext=fig_ext
+    )
 
     # Paired comparison between Undir and Dir
     # Load database
@@ -128,11 +129,11 @@ if __name__ == '__main__':
     #
     # df = db.to_dataframe(query)
     #
-    # plot_paired_scatter(df, 'fanoFactorDir', 'fanoFactorUndir',
+    # plot_scatter_digaonal(df, 'fanoFactorDir', 'fanoFactorUndir',
     #                     hue='birdID',
     #                     save_folder_name='FanoFactor',
-    #                     x_lim=[0, 4],
-    #                     y_lim=[0, 4],
+    #                     x_lim=[0, 6],
+    #                     y_lim=[0, 6],
     #                     x_label='Dir',
     #                     y_label='Undir', tick_freq=1,
     #                     title=f"Fano Factor (FR >= {fr_crit} # of Notes >= {nb_note_crit}) (Paired)",
@@ -141,10 +142,10 @@ if __name__ == '__main__':
     #                     fig_ext='.png')
 
     # Plot over the course of days
-    query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_crit} AND " \
-            f"nbNoteUndir >={nb_note_crit}"
-    df = db.to_dataframe(query)
-
+    # query = f"SELECT * FROM syllable_pcc WHERE frUndir >= {fr_crit} AND " \
+    #         f"nbNoteUndir >={nb_note_crit}"
+    # df = db.to_dataframe(query)
+    #
     # title = f'Undir FR over {fr_crit} # of Notes >= {nb_note_crit}'
     # x_label = 'Days from deafening'
     # y_label = 'Fano Factor'
@@ -163,12 +164,27 @@ if __name__ == '__main__':
     #                 save_fig=save_fig,
     #                 # regression_fit=True
     #                 )
+    #
+    # # Plot fano factor per syllable across blocks
+    # plot_per_day_block(df, ind_var_name='block10days', dep_var_name='fanoFactorUndir',
+    #                    title=f'Fano Factor Undir per day block FR >= {fr_crit} & # of Notes >= {nb_note_crit}',
+    #                    y_label='Fano Factor',
+    #                    y_lim=[0, 5.5],
+    #                    fig_name='FanoFactor_syllable_per_day_block',
+    #                    save_fig=False, fig_ext='.png'
+    #                    )
 
-    # Plot fano factor per syllable across blocks
-    plot_per_day_block(df, ind_var_name='block10days', dep_var_name='fanoFactorUndir',
-                       title=f'Fano Factor Undir per day block FR >= {fr_crit} & # of Notes >= {nb_note_crit}',
-                       y_label='Fano Factor',
-                       y_lim=[0, 5.5],
-                       fig_name='FanoFactor_syllable_per_day_block',
-                       save_fig=False, fig_ext='.png'
-                       )
+
+
+    # Undir
+    query = f"SELECT * FROM syllable_pcc WHERE nbNoteUndir >= {nb_note_crit} AND frUndir >= {fr_crit}"
+    df = db.to_dataframe(query)
+    fig, ax = plt.subplots(figsize=(3, 3))
+    df_new = df[df.fanoFactorUndir != df.fanoFactorUndir.max()]
+
+    plot_bar_comparison(ax, df_new['fanoFactorUndir'], df_new['taskName'],
+                        hue_var=df_new['birdID'],
+                        title='Undir', y_label='Fano factor',
+                        y_lim=[0, 6],
+                        col_order=("Predeafening", "Postdeafening"),
+                        )

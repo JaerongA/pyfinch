@@ -30,7 +30,7 @@ plt.suptitle('Bursting Analysis', y=.95, fontsize=15)
 # df['pairwiseCorrUndir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
 ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
 plot_bar_comparison(ax, df['burstFractionUndir'], df['taskName'], hue_var=df['birdID'],
-                    title='Burst Fraction', ylabel='Burst Fraction (%)',
+                    title='Burst Fraction', y_label='Burst Fraction (%)',
                     y_lim=[0, 80],
                     col_order=("Predeafening", "Postdeafening"),
                     )
@@ -38,7 +38,7 @@ plot_bar_comparison(ax, df['burstFractionUndir'], df['taskName'], hue_var=df['bi
 # Burst Duration
 ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
 plot_bar_comparison(ax, df['burstDurationUndir'], df['taskName'], hue_var=df['birdID'],
-                    title='Burst Duration', ylabel='Burst Duration (ms)',
+                    title='Burst Duration', y_label='Burst Duration (ms)',
                     y_lim=[0, 10],
                     col_order=("Predeafening", "Postdeafening"),
                     )
@@ -46,7 +46,7 @@ plot_bar_comparison(ax, df['burstDurationUndir'], df['taskName'], hue_var=df['bi
 # Burst Freq
 ax = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=2, colspan=1)
 plot_bar_comparison(ax, df['burstFreqUndir'], df['taskName'], hue_var=df['birdID'],
-                    title='Burst Freq', ylabel='Burst Freq (Hz)',
+                    title='Burst Freq', y_label='Burst Freq (Hz)',
                     y_lim=[0, 12],
                     col_order=("Predeafening", "Postdeafening"),
                     )
@@ -54,7 +54,7 @@ plot_bar_comparison(ax, df['burstFreqUndir'], df['taskName'], hue_var=df['birdID
 # Nb of spk per burst
 ax = plt.subplot2grid((nb_row, nb_col), (1, 3), rowspan=2, colspan=1)
 plot_bar_comparison(ax, df['burstMeanNbSpkUndir'], df['taskName'], hue_var=df['birdID'],
-                    title='# of spk per burst', ylabel='# of spk',
+                    title='# of spk per burst', y_label='# of spk',
                     y_lim=[0, 5],
                     col_order=("Predeafening", "Postdeafening"),
                     )
@@ -62,7 +62,7 @@ plot_bar_comparison(ax, df['burstMeanNbSpkUndir'], df['taskName'], hue_var=df['b
 # Burst index
 ax = plt.subplot2grid((nb_row, nb_col), (1, 4), rowspan=2, colspan=1)
 plot_bar_comparison(ax, df['burstIndexUndir'], df['taskName'], hue_var=df['birdID'],
-                    title='Burst index', ylabel='Burst index',
+                    title='Burst index', y_label='Burst index',
                     y_lim=[0, 0.3],
                     col_order=("Predeafening", "Postdeafening"),
                     )

@@ -11,7 +11,7 @@ from deafening.plot import plot_bar_comparison, plot_per_day_block
 import seaborn as sns
 from util import save
 import numpy as np
-from deafening.plot import plot_paired_scatter, plot_regression
+from deafening.plot import plot_scatter_diagonal, plot_regression
 
 # Parameters
 nb_row = 3
@@ -38,7 +38,7 @@ def plot_pcc_regression(x, y,
     df['pairwiseCorrUndir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
     ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
     plot_bar_comparison(ax, df['pairwiseCorrUndir'], df['taskName'], hue_var=df['birdID'],
-                        title='Undir', ylabel='PCC',
+                        title='Undir', y_label='PCC',
                         y_max=round(df['pairwiseCorrUndir'].max() * 10) / 10 + 0.1,
                         col_order=("Predeafening", "Postdeafening"),
                         )
@@ -58,7 +58,7 @@ def plot_pcc_regression(x, y,
 
     ax = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=2, colspan=1)
 
-    ax = sns.pointplot(x='taskName', y='pairwiseCorrUndir', hue='birdID',
+    sns.pointplot(x='taskName', y='pairwiseCorrUndir', ax=ax, hue='birdID',
                        data=pcc_mean_per_condition,
                        order=["Predeafening", "Postdeafening"],
                        aspect=.5, hue_order=df['birdID'].unique().tolist(), scale=0.7)
@@ -131,7 +131,7 @@ df = db.to_dataframe(query)
 #                 y_lim=y_lim,
 #                 fr_criteria=fr_crit,
 #                 save_fig=save_fig,
-#                 # regression_fit={'linear', 'quadratic'}
+#                 # regression_fit={'linear'}
 #                 )
 
 # Paired comparison between Undir and Dir
@@ -143,29 +143,134 @@ df = db.to_dataframe(query)
 #
 # df = db.to_dataframe(query)
 #
-# plot_paired_scatter(df, 'pccDir', 'pccUndir',
-#                     # hue='birdID',
-#                     save_folder_name='pcc',
-#                     x_lim=[0, 0.45],
-#                     y_lim=[0, 0.45],
-#                     x_label='Dir',
-#                     y_label='Undir', tick_freq=0.1,
-#                     title=f"PCC syllable (FR >= {fr_crit} # of Notes >= {nb_note_crit}) (Paired)",
-#                     save_fig=False,
-#                     view_folder=False,
-#                     fig_ext='.png')
+# plot_scatter_diagonal(df, 'pccDir', 'pccUndir',
+#                       # hue='birdID',
+#                       save_folder_name='pcc',
+#                       x_lim=[0, 0.45],
+#                       y_lim=[0, 0.45],
+#                       x_label='Dir',
+#                       y_label='Undir', tick_freq=0.1,
+#                       title=f"PCC syllable (FR >= {fr_crit} # of Notes >= {nb_note_crit}) (Paired)",
+#                       save_fig=False,
+#                       view_folder=False,
+#                       fig_ext='.png')
 
 
-# Plot pcc syllable across blocks
-plot_per_day_block(df, ind_var_name='block10days', dep_var_name='pccUndir',
-                   title=f'PCC Undir per day block FR >= {fr_crit} & # of Notes >= {nb_note_crit}',
-                   y_label='PCC',
-                   y_lim=[-0.05, 0.25],
-                   view_folder=True,
-                   fig_name='PCC_syllable_per_day_block',
-                   save_fig=False, fig_ext='.png'
-                   )
+# # Plot pcc syllable across blocks
+# plot_per_day_block(df, ind_var_name='block10days', dep_var_name='pccUndir',
+#                    title=f'PCC Undir per day block FR >= {fr_crit} & # of Notes >= {nb_note_crit}',
+#                    y_label='PCC',
+#                    y_lim=[-0.05, 0.25],
+#                    view_folder=True,
+#                    fig_name='PCC_syllable_per_day_block',
+#                    save_fig=False, fig_ext='.png'
+#                    )
+
+
+# # Analyze pcc using different time windows (pre, syllable, post)
+# # Parameters
+# nb_row = 3
+# nb_col = 2
+# nb_note_crit = 10
+# fr_crit = 10
+#
+# from database.load import ProjectLoader
+# from deafening.plot import plot_bar_comparison
+# import matplotlib.pyplot as plt
+# import numpy as np
+#
+# # Load database
+# db = ProjectLoader().load_db()
+#
+# # Plot results
+# # Pairwise cross-correlation
+# fig, ax = plt.subplots(figsize=(7, 4))
+# plt.suptitle(f"Pairwise CC Post (FR >= {fr_crit} # of Notes >= {nb_note_crit})", y=.9, fontsize=20)
+#
+# # Undir
+# # # SQL statement
+# query = f"SELECT * FROM syllable_pcc_window WHERE nbNoteUndir >= {nb_note_crit} AND frUndirPost >= {fr_crit}"
+# df = db.to_dataframe(query)
+#
+# df['pccUndirPost'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
+# ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
+# plot_bar_comparison(ax, df['pccUndirPost'], df['taskName'],
+#                     hue_var=df['birdID'],
+#                     title='Undir', ylabel='PCC',
+#                     #y_lim=[-0.01, round(df['pccUndirPre'].max() * 10) / 10 + 0.1],
+#                     y_lim=[-0.01, 0.4],
+#                     col_order=("Predeafening", "Postdeafening"),
+#                     )
+#
+# # Dir
+# # # SQL statement
+# query = f"SELECT * FROM syllable_pcc_window WHERE nbNoteDir >= {nb_note_crit} AND frDirPost >= {fr_crit}"
+# df = db.to_dataframe(query)
+#
+# df['pccDirPost'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
+# ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
+# plot_bar_comparison(ax, df['pccDirPost'], df['taskName'],
+#                     hue_var=df['birdID'],
+#                     title='Dir',
+#                     #y_lim=[-0.01, round(df['pccDirPre'].max() * 10) / 10 + 0.2],
+#                     y_lim=[-0.01, 0.4],
+#                     col_order=("Predeafening", "Postdeafening"),
+#                     legend_ok=True
+#                     )
+# fig.tight_layout()
+# plt.show()
 
 
 
+# Parameters
+nb_row = 3
+nb_col = 2
+
+# import numpy as np
+# import seaborn as sns
+
+# Plot the results
+fig, ax = plt.subplots(figsize=(6, 4))
+plt.suptitle('Pairwise CC', y=.9, fontsize=20)
+
+# Undir
+df['pccUndir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
+ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
+plot_bar_comparison(ax, df['pccUndir'], df['taskName'], hue_var=df['birdID'],
+                    title='Undir', y_label='PCC',
+                    y_lim=[-0.01, 0.45],
+                    col_order=("Predeafening", "Postdeafening"),
+                    )
+
+# Dir
+df['pccDir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
+ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
+plot_bar_comparison(ax, df['pccDir'], df['taskName'], hue_var=df['birdID'],
+                    title='Dir', y_lim=[-0.01, 0.45],
+                    col_order=("Predeafening", "Postdeafening"),
+                    )
+fig.tight_layout()
+
+plt.show()
+
+
+# Undir (paired comparisons)
+pcc_mean_per_condition = df.groupby(['birdID','taskName'])['pccUndir'].mean().to_frame()
+pcc_mean_per_condition.reset_index(inplace = True)
+
+ax = plt.subplot2grid((1, 1), (1, 1), rowspan=1, colspan=1)
+
+ax = sns.pointplot(x='taskName', y='pccUndir', hue = 'birdID',
+                   data=pcc_mean_per_condition,
+                   order=["Predeafening", "Postdeafening"],
+                   aspect=.5, hue_order = df['birdID'].unique().tolist(), scale = 0.7)
+
+ax.spines['right'].set_visible(False),ax.spines['top'].set_visible(False)
+
+title = 'Undir (Paired Comparison)'
+title += '\n\n\n'
+plt.title(title)
+plt.xlabel(''), plt.ylabel('')
+plt.ylim(0, 0.3), plt.xlim(-0.5, 1.5)
+plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
