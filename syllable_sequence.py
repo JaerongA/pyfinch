@@ -1,14 +1,6 @@
 """
-By Jaerong
 Syllable sequence analysis and calculates transition entropy
 """
-
-from analysis.song import SongInfo
-from database.load import ProjectLoader, DBInfo
-import matplotlib.pyplot as plt
-import numpy as np
-import seaborn as sns
-from util import save
 
 
 def nb_song_note_in_bout(song_notes, bout):
@@ -17,7 +9,7 @@ def nb_song_note_in_bout(song_notes, bout):
     return nb_song_note_in_bout
 
 
-def get_syl_color(bird_id : str):
+def get_syl_color(bird_id: str):
     """Map colors to each syllable"""
     from analysis.parameters import sequence_color
     import copy
@@ -45,7 +37,7 @@ def get_syl_color(bird_id : str):
             syl_color[note] = sequence_color2['call'].pop(0)
         else:
             syl_color[note] = sequence_color2['intro'].pop(0)
-    syl_color['*'] = 'y'   # syllable stop
+    syl_color['*'] = 'y'  # syllable stop
 
     return note_seq, syl_color
 
@@ -113,7 +105,8 @@ def plot_transition_diag(ax, note_seq, syl_network, syl_color,
             start_nodey = syl_loc[1][start_node] + (np.random.uniform(-1, 1, weight) / 8)
 
             for x, y in zip(start_nodex, start_nodey):
-                circle = plt.Circle((x, y), circle_size, color=list(syl_color.values())[start_node], fill=False, clip_on=False,
+                circle = plt.Circle((x, y), circle_size, color=list(syl_color.values())[start_node], fill=False,
+                                    clip_on=False,
                                     linewidth=0.3)
                 ax.add_artist(circle)
 
@@ -138,7 +131,9 @@ def get_syllable_network(trans_matrix):
 
 
 def get_trans_entropy(trans_matrix):
-    '''Calculate transition entropy'''
+    """
+    Calculate transition entropy
+    """
     trans_entropy = []
     for row in trans_matrix:
         if np.sum(row):
@@ -165,7 +160,7 @@ def get_sequence_consistency(note_seq, trans_matrix):
         max_ind = np.where(row == np.amax(row))
         if ((max_ind[0].shape[0]) == 1) \
                 and (
-        np.sum(row)):  # skip if there are more than two max weight values or the sum of weights equals zero
+                np.sum(row)):  # skip if there are more than two max weight values or the sum of weights equals zero
             # print(f"{note_seq[i]} -> {note_seq[max_ind[0][0]]}") # starting syllable -> syllable with the highest prob of transition"
             typical_transition.append((note_seq[i], note_seq[max_ind[0][0]]))
 
@@ -180,236 +175,189 @@ def get_song_stereotypy(sequence_linearity, sequence_consistency):
     return song_stereotypy
 
 
-# Load database
-db = ProjectLoader().load_db()
+def get_syllable_sequence(query, update_db=False, save_fig=None, view_folder=True, fig_ext='.png'):
+    """Main function"""
 
-# Make database
-with open('database/create_song_sequence.sql', 'r') as sql_file:
-    db.conn.executescript(sql_file.read())
+    # Parameters
+    nb_row = 10
+    cmap = "gist_heat_r"  # for heatmap
+    font_size = 12
 
-# Parameters
-nb_row = 10
-cmap = "gist_heat_r"
-font_size = 12
-update_db = True
-save_fig = True
-fig_ext = '.png'
+    # Load database
+    db = ProjectLoader().load_db()
+    db.execute(query)
 
-
-# # SQL statement
-# query = "SELECT * FROM song WHERE id = 17"
-query = "SELECT * FROM song WHERE id >= 104"
-# query = "SELECT * FROM song"
-db.execute(query)
-
-# Loop through db
-for row in db.cur.fetchall():
-
-    # Load song info from db
-    song_db = DBInfo(row)
-    name, path = song_db.load_song_db()
-
-    si = SongInfo(path, name)  # song object
-
-    # Get syllable color
-    note_seq, syl_color = get_syl_color(song_db.birdID)
-
-    # Store results here per context
-    song_bouts = dict()
-    nb_bouts = dict()  # nb of song bouts per context
-    trans_entropy = dict()
-    sequence_linearity = dict()
-    sequence_consistency = dict()
-    song_stereotypy = dict()
-
-    for i, context in enumerate(sorted(set(si.contexts), reverse=True)):
-        bout_list = []
-        syllable_list = [syllable for syllable, _context in zip(si.syllables, si.contexts) if _context == context]
-        for syllables in syllable_list:
-            bout = [bout for bout in syllables.split('*') if nb_song_note_in_bout(song_db.songNote, bout)]
-            if bout:
-                bout_list.append(bout[0])
-        if bout_list:
-            song_bouts[context] = '*'.join(bout_list) + '*'
-            nb_bouts[context] = len(song_bouts[context].split('*')[:-1])
-
-    for i, context in enumerate(song_bouts.keys()):
-        # Get transition matrix
-        trans_matrix = []
-        trans_matrix = get_trans_matrix(song_bouts[context], note_seq)
-
-        # Plot transition matrix
-        if not 'fig' in locals():
-            fig = plt.figure(figsize=(len(song_bouts.keys()) * 4, 10), dpi=350)
-            plt.suptitle(si.name, y=.98, fontsize=font_size)
-
-        ax = plt.subplot2grid((nb_row, len(song_bouts.keys())), (1, i), rowspan=3, colspan=1)
-        y_max = trans_matrix.max() + (10 - trans_matrix.max() % 10)
-        ax = sns.heatmap(trans_matrix, cmap=cmap, annot=True, vmin=0, vmax=y_max,
-                         linewidth=0.2, linecolor='k',
-                         cbar_kws=dict(ticks=[0, y_max / 2, y_max], label='# of transitions'),
-                         annot_kws={"fontsize": 6}, fmt='g')
-
-        ax.set_title(f"{context}", y=2)
-        ax.tick_params(axis='both', which='major', labelsize=10,
-                       labelbottom=False, bottom=False, top=False, labeltop=True)  # move the x-tick label on the top of the figure
-        ax.set_aspect(aspect=1)
-        ax.set_yticklabels(note_seq, rotation=0, weight='bold', fontsize=12)
-        ax.set_xticklabels(note_seq, weight='bold', fontsize=12)
-        ax.tick_params(axis=u'both', which=u'both', length=0)
-        cbar = ax.collections[0].colorbar
-
-        # Calculate transition entropy
-        # Entropy = 0 when there's a single transition and increases with more branching points
-        trans_entropy[context] = get_trans_entropy(trans_matrix)
-
-        # Build the syllable network (start & end nodes and weights)
-        syl_network = get_syllable_network(trans_matrix)
-
-        sequence_linearity[context] = get_sequence_linearity(note_seq, syl_network)
-
-        sequence_consistency[context] = get_sequence_consistency(note_seq, trans_matrix)
-
-        song_stereotypy[context] = get_song_stereotypy(sequence_linearity[context], sequence_consistency[context])
-
-        ax = plt.subplot2grid((nb_row, len(set(song_bouts.keys()))), (4, i), rowspan=3, colspan=1)
-        plot_transition_diag(ax, note_seq, syl_network, syl_color)
-
-        ax_txt = plt.subplot2grid((nb_row, len(set(song_bouts.keys()))), (9, i), rowspan=1, colspan=1)
-
-        txt_xloc = 0.1
-        txt_yloc = -0.5
-        txt_inc = 0.2
-
-        ax_txt.text(txt_xloc, txt_yloc, f"nb bouts = {nb_bouts[context]}", fontsize=font_size, transform=ax.transAxes)
-        txt_yloc -= txt_inc
-        ax_txt.text(txt_xloc, txt_yloc, f"transition entropy = "
-                                        f"{round(trans_entropy[context], 3)}", fontsize=font_size, transform=ax.transAxes)
-        txt_yloc -= txt_inc
-        ax_txt.text(txt_xloc, txt_yloc, f"sequence linearity = "
-                                        f"{round(sequence_linearity[context], 3)}", fontsize=font_size, transform=ax.transAxes)
-        txt_yloc -= txt_inc
-        ax_txt.text(txt_xloc, txt_yloc, f"sequence consistency = "
-                                        f"{round(sequence_consistency[context], 3)}", fontsize=font_size, transform=ax.transAxes)
-        txt_yloc -= txt_inc
-        ax_txt.text(txt_xloc, txt_yloc, f"song stereotypy = "
-                                        f"{round(song_stereotypy[context], 3)}", fontsize=font_size, transform=ax.transAxes)
-        ax_txt.axis('off')
-
-    plt.tight_layout()
-
-    # Save results
-    if save_fig:
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'SequenceAnalysis')
-        save.save_fig(fig, save_path, si.name, fig_ext=fig_ext, view_folder=True)
-    else:
-        plt.show()
-
-    # Update database
+    # Make database
     if update_db:
-        for context, val in nb_bouts.items():
-            column = 'nbBoutsUndir' if context == 'U' else 'nbBoutsDir'
-            db.cur.execute(f"""UPDATE song_sequence SET {column}={nb_bouts[context]} WHERE songID= {song_db.id}""")
+        with open('database/create_song_sequence.sql', 'r') as sql_file:
+            db.conn.executescript(sql_file.read())
 
-        for context, val in trans_entropy.items():
-            column = 'transEntUndir' if context == 'U' else 'transEntDir'
-            db.cur.execute(f"""UPDATE song_sequence SET {column}={round(trans_entropy[context], 3)} WHERE songID= {song_db.id}""")
+    # Loop through db
+    for row in db.cur.fetchall():
 
-        for context, val in sequence_linearity.items():
-            column = 'seqLinearityUndir' if context == 'U' else 'seqLinearityDir'
-            db.cur.execute(f"""UPDATE song_sequence SET {column}={round(sequence_linearity[context], 3)} WHERE songID= {song_db.id}""")
+        # Load song info from db
+        song_db = DBInfo(row)
+        name, path = song_db.load_song_db()
 
-        for context, val in sequence_consistency.items():
-            column = 'seqConsistencyUndir' if context == 'U' else 'seqConsistencyDir'
-            db.cur.execute(f"""UPDATE song_sequence SET {column}={round(sequence_consistency[context], 3)} WHERE songID= {song_db.id}""")
+        si = SongInfo(path, name)  # song object
 
-        for context, val in song_stereotypy.items():
-            column = 'songStereotypyUndir' if context == 'U' else 'songStereotypyDir'
-            db.cur.execute(f"""UPDATE song_sequence SET {column}={round(song_stereotypy[context], 3)} WHERE songID= {song_db.id}""")
-        db.conn.commit()
+        # Get syllable color
+        note_seq, syl_color = get_syl_color(song_db.birdID)
 
-    del fig
+        # Store results here per context
+        song_bouts = dict()
+        nb_bouts = dict()  # nb of song bouts per context
+        trans_entropy = dict()
+        sequence_linearity = dict()
+        sequence_consistency = dict()
+        song_stereotypy = dict()
 
-# Convert db to csv
-if update_db:
-    db.to_csv('song_sequence')
-    print('Done!')
+        for i, context in enumerate(sorted(set(si.contexts), reverse=True)):
+            bout_list = []
+            syllable_list = [syllable for syllable, _context in zip(si.syllables, si.contexts) if
+                             _context == context]
+            for syllables in syllable_list:
+                bout = [bout for bout in syllables.split('*') if nb_song_note_in_bout(song_db.songNote, bout)]
+                if bout:
+                    bout_list.append(bout[0])
+            if bout_list:
+                song_bouts[context] = '*'.join(bout_list) + '*'
+                nb_bouts[context] = len(song_bouts[context].split('*')[:-1])
 
-def plot_across_days(df, x, y,
-                     context,
-                     nb_bout_crit=0,
-                     title=None,
-                     x_lim=None,
-                     y_lim=None,
-                     fig_ext='.png',
-                     save_fig=False):
+        for i, context in enumerate(song_bouts.keys()):
+            # Get transition matrix
+            trans_matrix = []
+            trans_matrix = get_trans_matrix(song_bouts[context], note_seq)
 
-    from database.load import ProjectLoader
+            # Plot transition matrix
+            if not 'fig' in locals():
+                fig = plt.figure(figsize=(len(song_bouts.keys()) * 4, 10), dpi=350)
+                plt.suptitle(si.name, y=.98, fontsize=font_size)
+
+            ax = plt.subplot2grid((nb_row, len(song_bouts.keys())), (1, i), rowspan=3, colspan=1)
+            y_max = trans_matrix.max() + (10 - trans_matrix.max() % 10)
+            ax = sns.heatmap(trans_matrix, cmap=cmap, annot=True, vmin=0, vmax=y_max,
+                             linewidth=0.2, linecolor='k',
+                             cbar_kws=dict(ticks=[0, y_max / 2, y_max], label='# of transitions'),
+                             annot_kws={"fontsize": 6}, fmt='g')
+
+            ax.set_title(f"{context}", y=2)
+            ax.tick_params(axis='both', which='major', labelsize=10,
+                           labelbottom=False, bottom=False, top=False,
+                           labeltop=True)  # move the x-tick label on the top of the figure
+            ax.set_aspect(aspect=1)
+            ax.set_yticklabels(note_seq, rotation=0, weight='bold', fontsize=12)
+            ax.set_xticklabels(note_seq, weight='bold', fontsize=12)
+            ax.tick_params(axis=u'both', which=u'both', length=0)
+            cbar = ax.collections[0].colorbar
+
+            # Calculate transition entropy
+            # Entropy = 0 when there's a single transition and increases with more branching points
+            trans_entropy[context] = get_trans_entropy(trans_matrix)
+
+            # Build the syllable network (start & end nodes and weights)
+            syl_network = get_syllable_network(trans_matrix)
+
+            sequence_linearity[context] = get_sequence_linearity(note_seq, syl_network)
+
+            sequence_consistency[context] = get_sequence_consistency(note_seq, trans_matrix)
+
+            song_stereotypy[context] = get_song_stereotypy(sequence_linearity[context],
+                                                           sequence_consistency[context])
+
+            ax = plt.subplot2grid((nb_row, len(set(song_bouts.keys()))), (4, i), rowspan=3, colspan=1)
+            plot_transition_diag(ax, note_seq, syl_network, syl_color)
+            ax_txt = plt.subplot2grid((nb_row, len(set(song_bouts.keys()))), (9, i), rowspan=1, colspan=1)
+
+            txt_xloc = 0.1
+            txt_yloc = -0.5
+            txt_inc = 0.2
+
+            ax_txt.text(txt_xloc, txt_yloc, f"nb bouts = {nb_bouts[context]}", fontsize=font_size,
+                        transform=ax.transAxes)
+            txt_yloc -= txt_inc
+            ax_txt.text(txt_xloc, txt_yloc, f"transition entropy = "
+                                            f"{round(trans_entropy[context], 3)}", fontsize=font_size,
+                        transform=ax.transAxes)
+            txt_yloc -= txt_inc
+            ax_txt.text(txt_xloc, txt_yloc, f"sequence linearity = "
+                                            f"{round(sequence_linearity[context], 3)}", fontsize=font_size,
+                        transform=ax.transAxes)
+            txt_yloc -= txt_inc
+            ax_txt.text(txt_xloc, txt_yloc, f"sequence consistency = "
+                                            f"{round(sequence_consistency[context], 3)}", fontsize=font_size,
+                        transform=ax.transAxes)
+            txt_yloc -= txt_inc
+            ax_txt.text(txt_xloc, txt_yloc, f"song stereotypy = "
+                                            f"{round(song_stereotypy[context], 3)}", fontsize=font_size,
+                        transform=ax.transAxes)
+            ax_txt.axis('off')
+        plt.tight_layout()
+
+        # Save results
+        if save_fig:
+            save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'SequenceAnalysis')
+            save.save_fig(fig, save_path, si.name, fig_ext=fig_ext, view_folder=view_folder)
+        else:
+            plt.show()
+
+        # Update database
+        if update_db:
+            for context, val in nb_bouts.items():
+                column = 'nbBoutsUndir' if context == 'U' else 'nbBoutsDir'
+                db.cur.execute(
+                    f"""UPDATE song_sequence SET {column}={nb_bouts[context]} WHERE songID= {song_db.id}""")
+
+            for context, val in trans_entropy.items():
+                column = 'transEntUndir' if context == 'U' else 'transEntDir'
+                db.cur.execute(
+                    f"""UPDATE song_sequence SET {column}={round(trans_entropy[context], 3)} WHERE songID= {song_db.id}""")
+
+            for context, val in sequence_linearity.items():
+                column = 'seqLinearityUndir' if context == 'U' else 'seqLinearityDir'
+                db.cur.execute(
+                    f"""UPDATE song_sequence SET {column}={round(sequence_linearity[context], 3)} WHERE songID= {song_db.id}""")
+
+            for context, val in sequence_consistency.items():
+                column = 'seqConsistencyUndir' if context == 'U' else 'seqConsistencyDir'
+                db.cur.execute(
+                    f"""UPDATE song_sequence SET {column}={round(sequence_consistency[context], 3)} WHERE songID= {song_db.id}""")
+
+            for context, val in song_stereotypy.items():
+                column = 'songStereotypyUndir' if context == 'U' else 'songStereotypyDir'
+                db.cur.execute(
+                    f"""UPDATE song_sequence SET {column}={round(song_stereotypy[context], 3)} WHERE songID= {song_db.id}""")
+            db.conn.commit()
+
+        del fig
+
+    # Convert db to csv
+    if update_db:
+        db.to_csv('song_sequence')
+        print('Done!')
+
+
+if __name__ == '__main__':
     import matplotlib.pyplot as plt
+    import numpy as np
     import seaborn as sns
+
+    from analysis.song import SongInfo
+    from database.load import ProjectLoader, DBInfo
     from util import save
-    from util.draw import remove_right_top
 
-    # # Load database
-    # db = ProjectLoader().load_db()
-    # # SQL statement
-    # df = db.to_dataframe(f"SELECT * FROM song WHERE nbBoutsUndir >= {nb_bout_crit}")
-    # df.set_index('id')
+    # Parameters
+    update_db = False
+    save_fig = False
+    view_folder = True  # open up the figure folder after saving
+    fig_ext = '.png'
 
-    # Plot the results
-    circ_size = 0.5
-    bird_list = df['birdID'].unique()
-    fig, axes = plt.subplots(2, 5, figsize=(21, 8))
-    fig.subplots_adjust(hspace=.3, wspace=.2, top=0.9)
-    if title:
-        fig.get_axes()[0].annotate(f"{title} (nb of bouts >= {nb_bout_crit}) {context}", (0.5, 0.97),
-                                   xycoords='figure fraction',
-                                   ha='center',
-                                   fontsize=16)
-        axes = axes.ravel()
+    # SQL statement
+    query = "SELECT * FROM song"
 
-    for bird, ax_ind in zip(bird_list, range(len(bird_list))):
-
-        temp_df = df.loc[df['birdID'] == bird]
-        sns.lineplot(x=x, y=y,
-                     data=temp_df, marker='o', color='k', mew=circ_size, ax=axes[ax_ind])
-        remove_right_top(axes[ax_ind])
-        axes[ax_ind].set_title(bird)
-        if ax_ind >= 5:
-            axes[ax_ind].set_xlabel('Days from deafening')
-        else:
-            axes[ax_ind].set_xlabel('')
-
-        if (ax_ind == 0) or (ax_ind == 5):
-            axes[ax_ind].set_ylabel(title)
-        else:
-            axes[ax_ind].set_ylabel('')
-
-        axes[ax_ind].set_xlim(x_lim)
-        axes[ax_ind].set_ylim(y_lim)
-        axes[ax_ind].axvline(x=0, color='k', linestyle='dashed', linewidth=0.5)
-
-    # Save figure
-    if save_fig:
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'deafening/results')
-        save.save_fig(fig, save_path, title, fig_ext=fig_ext, view_folder=False)
-    else:
-        plt.show()
-
-
-
-# Analyze song transition metrics
-# Load database
-from database.load import ProjectLoader
-db = ProjectLoader().load_db()
-df = db.to_dataframe("""SELECT song_sequence.*, song.taskSessionDeafening  
-                FROM song_sequence INNER JOIN song ON song.id = song_sequence.songID""")
-
-dependent_var = 'songStereotypyDir'
-context = 'Dir'
-plot_across_days(df, 'taskSessionDeafening', dependent_var, context,
-                 title='Song stereotypy',
-                 x_lim=[-30, 70],
-                 y_lim=[0.1, 1],
-                 fig_ext=fig_ext,
-                 save_fig=False)
+    get_syllable_sequence(query,
+                          update_db=update_db,
+                          save_fig=save_fig,
+                          view_folder=view_folder,
+                          fig_ext=fig_ext
+                          )
