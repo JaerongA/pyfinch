@@ -1,8 +1,38 @@
 """Plotting functions & classes specific to the deafening project"""
 
 from database.load import ProjectLoader
+import matplotlib.pyplot as plt
+import seaborn as sns
 from util import save
 from util.draw import remove_right_top
+
+
+def get_nb_cluster(ax):
+    """
+    Print out the number of usable clusters in a table for each condition
+    Parameters
+    ----------
+    ax : axis object
+    """
+    from pandas.plotting import table
+
+    # Load database
+    db = ProjectLoader().load_db()
+    # # SQL statement
+    # Only the neurons that could be used in the analysis (bursting during undir & number of motifs >= 10)
+    df = db.to_dataframe("SELECT * FROM cluster WHERE analysisOK=TRUE")
+    df.set_index('id')
+
+    df_nb_cluster = df.groupby(['birdID', 'taskName']).count()['id'].reset_index()
+    df_nb_cluster = df_nb_cluster.pivot_table('id', ['birdID'], 'taskName')
+    df_nb_cluster = df_nb_cluster.fillna(0).astype(int)
+    df_nb_cluster.loc['Total'] = df_nb_cluster.sum(numeric_only=True)
+    df_nb_cluster = df_nb_cluster[['Predeafening', 'Postdeafening']]
+
+    # Plot in a table format
+    table(ax, df_nb_cluster,
+          loc="center", colWidths=[0.8, 0.8, 0.8], cellLoc='center')
+
 
 def plot_scatter_diagonal(df, x, y, hue=None,
                           save_folder_name=None,
@@ -14,10 +44,8 @@ def plot_scatter_diagonal(df, x, y, hue=None,
                           save_fig=False,
                           view_folder=False,
                           fig_ext='.png'):
-    import matplotlib.pyplot as plt
     import numpy as np
     from scipy.stats import ttest_rel
-    import seaborn as sns
 
     # Parameters
     nb_row = 5
@@ -61,8 +89,8 @@ def plot_scatter_diagonal(df, x, y, hue=None,
 
     # Save results
     if save_fig:
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
-        save.save_fig(fig, save_path, save_folder_name, fig_ext=fig_ext, view_folder=view_folder)
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', save_folder_name)
+        save.save_fig(fig, save_path, title, fig_ext=fig_ext, view_folder=view_folder)
     else:
         plt.show()
 
@@ -232,29 +260,10 @@ def plot_regression(x, y, color='k', size=None, save_fig=False, fig_ext='.png',
     else:
         plt.show()
 
-def get_nb_cluster(ax):
-    from pandas.plotting import table
-
-    # Load database
-    db = ProjectLoader().load_db()
-    # # SQL statement
-    # Only the neurons that could be used in the analysis (bursting during undir & number of motifs >= 10)
-    df = db.to_dataframe("SELECT * FROM cluster WHERE analysisOK=TRUE")
-    df.set_index('id')
-
-    df_nb_cluster = df.groupby(['birdID', 'taskName']).count()['id'].reset_index()
-    df_nb_cluster = df_nb_cluster.pivot_table('id', ['birdID'], 'taskName')
-    df_nb_cluster = df_nb_cluster.fillna(0).astype(int)
-    df_nb_cluster.loc['Total'] = df_nb_cluster.sum(numeric_only=True)
-    df_nb_cluster = df_nb_cluster[['Predeafening', 'Postdeafening']]
-
-    # Plot in a table format
-    table(ax, df_nb_cluster,
-          loc="center", colWidths=[0.2, 0.2, 0.2], cellLoc='center')
 
 
 def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
-                        title=None, xlabel=None, ylabel=None,
+                        title=None, x_label=None, y_label=None,
                         col_order=None,
                         y_lim=None,
                         jitter=0.1, alpha=0.5,
@@ -264,9 +273,8 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
                         ):
     import math
     import numpy as np
-    import matplotlib.pyplot as plt
     from scipy import stats
-    import seaborn as sns
+    from util.stats import get_sig
 
     dependent_var.replace('', np.nan,
                           inplace=True)  # replace empty cells with np.nans (to prevent the var to be recognized as non-numeric)
@@ -285,28 +293,17 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
                 order=col_order, errcolor=".2", edgecolor=".2", zorder=0)
     # title += '\n\n\n'
     # plt.title(title)
-    plt.xlabel(xlabel), plt.ylabel(ylabel)
+    ax.set_xlabel(x_label), ax.set_ylabel(y_label)
 
-    # Add stat comparisons
+    # Add stat comparisons (2-sample t-test)
     if run_stats:
         group1 = dependent_var[group_var == list(set(group_var))[0]].dropna()
         group2 = dependent_var[group_var == list(set(group_var))[1]].dropna()
         tval, pval = stats.ttest_ind(group2, group1, nan_policy='omit')
         degree_of_freedom = len(group1) + len(group2) - 2
 
-        if pval < 0.001:
-            sig = '***'
-        elif pval < 0.01:
-            sig = '**'
-        elif pval < 0.05:
-            sig = '*'
-        else:
-            sig = 'ns'
+        sig = get_sig(pval)  # print out asterisk
 
-        x1, x2 = 0, 1
-        y, h, col = ax.get_ylim()[1] * 1.02, 0, 'k'
-        # plt.plot([x1, x1, x2, x2], [y, y + h, y + h, y], lw=1, c=col)
-        # plt.text((x1 + x2) * .5, y + h * 1.1, sig, ha='center', va='bottom', color=col, size=stat_txt_size)
         if sig == '***':  # mark significance
             msg2 = '$P$ < 0.001'
         else:
@@ -314,7 +311,6 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
         # plt.text((x1 + x2) * .5, y * 1.1, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
         msg1 = ('t({:.0f})'.format(degree_of_freedom) + ' = {:.2f}'.format(tval))
         # plt.text((x1 + x2) * .5, y * 1.2, msg, ha='center', va='bottom', color=col, size=stat_txt_size)
-
         ax.set_title(f"{title} \n\n {msg1} \n {msg2}", size=10)
 
     if y_lim:
@@ -332,6 +328,61 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
         ax.get_legend().remove()
 
 
+def plot_across_days(df, x, y,
+                     x_lim=None, y_lim=None,
+                     x_label=None, y_label=None,
+                     title=None,
+                     save_fig=False,
+                     view_folder=True,
+                     fig_ext='.png',
+                     **kwargs
+                     ):
+    # Plot the results
+    circ_size = 0.5
+    bird_list = df['birdID'].unique()
+    fig, axes = plt.subplots(2, 5, figsize=(21, 8))
+    fig.subplots_adjust(hspace=.3, wspace=.2, top=0.9)
+
+    if title:  # title
+        plt.suptitle(title, y=.98, fontsize=18)
+        axes = axes.ravel()
+
+    if 'fig_name' in kwargs:
+        fig_name = kwargs['title']
+    else:
+        fig_name = 'Untitled'
+
+    for bird, ax_ind in zip(bird_list, range(len(bird_list))):
+
+        df_temp = df.loc[df['birdID'] == bird]
+        sns.lineplot(x=x, y=y,
+                     data=df_temp, marker='o', color='k', mew=circ_size, ax=axes[ax_ind])
+        remove_right_top(axes[ax_ind])
+        axes[ax_ind].set_title(bird)
+
+        if x_label:
+            if ax_ind >= 5:
+                axes[ax_ind].set_xlabel('Days from deafening')
+            else:
+                axes[ax_ind].set_xlabel('')
+
+        if y_label:
+            if (ax_ind == 0) or (ax_ind == 5):
+                axes[ax_ind].set_ylabel(y_label)
+            else:
+                axes[ax_ind].set_ylabel('')
+
+        axes[ax_ind].set_xlim(x_lim)
+        axes[ax_ind].set_ylim(y_lim)
+        axes[ax_ind].axvline(x=0, color='k', linestyle='dashed', linewidth=0.5)
+
+    # Save figure
+    if save_fig:
+        save.save_fig(fig, kwargs['save_path'], fig_name, fig_ext=fig_ext, view_folder=view_folder)
+    else:
+        plt.show()
+
+
 def plot_across_days_per_note(df, x, y,
                               x_label=None,
                               y_label=None,
@@ -344,24 +395,39 @@ def plot_across_days_per_note(df, x, y,
                               save_path=None,
                               fig_ext='.png'
                               ):
-    # Load database
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-    from util.draw import remove_right_top
+    """
+    Plot values across sessions per block & per bird
+    Parameters
+    ----------
+    df : Dataframe
+    x : str
+        column name (independent variable)
+    y : str
+        column name (dependent variable)
+    x_label : str
+    y_label : str
+    title : str
+    fig_name : str
+    x_lim : list
+    y_lim : list
+    vline : float
+    hline : float
+    view_folder : bool
+    save_fig : bool
+    save_path : Path
+    fig_ext : str
+    """
 
-    # Plot the results
     circ_size = 1
-
-    # bird_list = sorted(set(df['birdID'].to_list()))
     bird_list = df['birdID'].unique()
     fig, axes = plt.subplots(2, 5, figsize=(20, 8))
     fig.subplots_adjust(hspace=.3, wspace=.2, top=0.9)
-
-    fig.get_axes()[0].annotate(f"{title}", (0.5, 0.97),
-                               xycoords='figure fraction',
-                               ha='center',
-                               fontsize=16)
-    axes = axes.ravel()
+    if title:
+        fig.get_axes()[0].annotate(f"{title}", (0.5, 0.97),
+                                   xycoords='figure fraction',
+                                   ha='center',
+                                   fontsize=16)
+        axes = axes.ravel()
 
     for bird, ax_ind in zip(bird_list, range(len(bird_list))):
 
@@ -399,45 +465,74 @@ def plot_across_days_per_note(df, x, y,
 def plot_paired_data(df, x, y,
                      x_label=None, y_label=None,
                      y_lim=None,
+                     fig_size=(5, 5),
                      view_folder=True,
                      fig_name=None,
                      save_fig=True,
                      save_path=None,
+                     color_by_bird=True,
                      fig_ext='.png'
                      ):
-    import matplotlib.pyplot as plt
-    import seaborn as sns
+    """
+    Plot paired data
+    data points connected by lines if paired
+    each data point from one syllable or one bird
+    """
     from scipy import stats
-    from util.draw import remove_right_top
+    from util.stats import get_sig
 
-    df_mean = df.groupby(['birdID', 'note', 'taskName']).mean()[y].reset_index()
+    if 'note' in df.columns:
+        df_mean = df.groupby(['birdID', 'note', 'taskName']).mean()[y].reset_index()
+    else:
+        df_mean = df.groupby(['birdID', 'taskName']).mean()[y].reset_index()
+    df_mean.dropna(inplace=True)
 
-    # Make paired-comparisons
-    fig, ax = plt.subplots(1, 1, figsize=(6, 7))
+    # Connect paired data
+    fig, ax = plt.subplots(1, 1, figsize=fig_size)
     current_palette = sns.color_palette()
     inc = 0
 
-    for bird in df_mean['birdID'].unique():
-        for note in df_mean['note'].unique():
-            temp_df = df_mean.loc[(df_mean['birdID'] == bird) & (df_mean['note'] == note)]
+    if 'note' in df.columns:
+        for bird in df_mean['birdID'].unique():
+            color = current_palette[inc] if color_by_bird else 'k'
+            for note in df_mean['note'].unique():
+                temp_df = df_mean.loc[(df_mean['birdID'] == bird) & (df_mean['note'] == note)]
+                if len(temp_df[x].unique()) == 2:  # paired value exists
+
+                    ax = sns.pointplot(x=x, y=y,
+                                       data=temp_df,
+                                       order=["Predeafening", "Postdeafening"],
+                                       aspect=.5, scale=0.7, color=color)
+                elif len(temp_df[x].unique()) == 1:  # paired value doesn't exist
+                    if temp_df[x].values == 'Predeafening':
+                        ax.scatter(-0.2, temp_df[y].values, color=color)
+                    if temp_df[x].values == 'Postdeafening':
+                        ax.scatter(1.2, temp_df[y].values, color=color)
+            inc += 1
+    else:
+        for bird in df_mean['birdID'].unique():
+            color = current_palette[inc] if color_by_bird else 'k'
+            temp_df = df_mean.loc[(df_mean['birdID'] == bird)]
             if len(temp_df[x].unique()) == 2:  # paired value exists
+
                 ax = sns.pointplot(x=x, y=y,
                                    data=temp_df,
                                    order=["Predeafening", "Postdeafening"],
-                                   aspect=.5, scale=0.7, color=current_palette[inc])
+                                   aspect=.5, scale=0.7, color=color)
+                inc += 1
             elif len(temp_df[x].unique()) == 1:  # paired value doesn't exist
                 if temp_df[x].values == 'Predeafening':
-                    ax.scatter(-0.2, temp_df[y].values, color=current_palette[inc])
+                    ax.scatter(-0.2, temp_df[y].values, color=color)
                 if temp_df[x].values == 'Postdeafening':
-                    ax.scatter(1.2, temp_df[y].values, color=current_palette[inc])
-        inc += 1
-    #     ax.get_legend().remove()
+                    ax.scatter(1.2, temp_df[y].values, color=color)
+                inc += 1
+
     if y_lim:
         ax.set_ylim(y_lim)
     ax.set_xlabel(x_label), ax.set_ylabel(y_label)
     remove_right_top(ax)
 
-    # 2 sample t-test
+    # 2 sample t-test (independent)
     group_var = df_mean[x]
     dependent_var = df_mean[y]
     group1 = dependent_var[group_var == list(set(group_var))[0]].dropna()
@@ -450,31 +545,12 @@ def plot_paired_data(df, x, y,
     else:
         msg2 = ('p = {:.3f}'.format(pval))
     msg = msg1 + ', ' + msg2
+    sig = get_sig(pval)  # print out asterisk
 
-    # rank-sum
-    # group1, group2 = [], []
-    # group1 = df_mean.query('taskName == "Predeafening"')['entropyUndir']
-    # group2 = df_mean.query('taskName == "Postdeafening"')['entropyUndir']
-    # stat, pval = stats.ranksums(group1, group2)
-    # degree_of_freedom = len(group1) + len(group2) - 2
-    # msg = f"ranksum p-val = {pval : .3f}"
-
-    if pval < 0.001:
-        sig = '***'
-    elif pval < 0.01:
-        sig = '**'
-    elif pval < 0.05:
-        sig = '*'
-    else:
-        sig = 'ns'
-
-    x1, x2 = 0, 1
-    y_loc, h, col = df_mean[y].max() + 0.2, 0.05, 'k'
-
-    ax.plot([x1, x1, x2, x2], [y_loc, y_loc + h, y_loc + h, y_loc], lw=1.5, c=col)
-    ax.text((x1 + x2) * .5, y_loc + h * 1.5, sig, ha='center', va='bottom', color=col, size=10)
-    plt.title(msg, size=10)
-
+    # rank-sum test (non-parametric independent 2-sample test)
+    from scipy.stats import ranksums
+    stat, pval = stats.ranksums(group1, group2)
+    msg = f"ranksum p-val = {pval : .3f}"
     if save_fig:
         save.save_fig(fig, save_path, fig_name, view_folder=view_folder, fig_ext=fig_ext)
     else:
@@ -489,15 +565,12 @@ def plot_per_day_block(df, ind_var_name, dep_var_name,
                        save_fig=True, fig_ext='.png'
                        ):
     """Plot bar plot and violin plot for values per day block and run one-way ANOVA"""
-    import matplotlib.pyplot as plt
-    import seaborn as sns
 
     # Plot the results
     x = df[ind_var_name]
     y = df[dep_var_name]
 
-
-    fig, axes = plt.subplots(1, 3, figsize=(10, 4))
+    fig, axes = plt.subplots(1, 3, figsize=(12, 4))
     plt.suptitle(title, y=1, fontsize=12)
 
     sns.barplot(x, y, ax=axes[0], facecolor=(1, 1, 1, 0),
@@ -537,7 +610,7 @@ def plot_per_day_block(df, ind_var_name, dep_var_name,
 
         # Tukey/Kramer post-hoc test
         from statsmodels.stats.multicomp import MultiComparison
-        mc = MultiComparison(df['pccUndir'], df['block10days'])
+        mc = MultiComparison(df[dep_var_name], df[ind_var_name])
         print(mc.tukeyhsd())
     plt.tight_layout()
 
@@ -547,3 +620,50 @@ def plot_per_day_block(df, ind_var_name, dep_var_name,
         save.save_fig(fig, save_path, fig_name, view_folder=view_folder, fig_ext=fig_ext)
     else:
         plt.show()
+
+
+def pre_post_comparison(query,
+                        x, y1, y2,
+                        title=None,
+                        run_stats=True,
+                        y_lim=None,
+                        fig_ext='.png',
+                        save_fig=False,
+                        update_cache=False):
+    from database.load import ProjectLoader
+    import matplotlib.pyplot as plt
+
+    # Parameters
+    nb_row = 3
+    nb_col = 2
+
+    # Load database
+    db = ProjectLoader().load_db()
+    # # SQL statement
+
+    df = db.to_dataframe(query)
+    # df.set_index('id')
+
+    # Plot the results
+    fig, ax = plt.subplots(figsize=(7, 4))
+    plt.suptitle(title, y=.9, fontsize=20)
+
+    # Undir
+    ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
+    plot_bar_comparison(ax, df[y1], df[x], hue_var=df['birdID'],
+                        title='Undir', y_label=y1,
+                        col_order=("Predeafening", "Postdeafening"),
+                        y_lim=y_lim,
+                        run_stats=run_stats
+                        )
+    # Dir
+    ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
+    plot_bar_comparison(ax, df[y2], df[x], hue_var=df['birdID'],
+                        title='Dir', y_label=y2,
+                        col_order=("Predeafening", "Postdeafening"),
+                        y_lim=y_lim,
+                        run_stats=run_stats,
+                        legend_ok=True
+                        )
+    fig.tight_layout()
+    plt.show()

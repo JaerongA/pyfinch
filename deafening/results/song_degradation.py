@@ -214,7 +214,6 @@ def compare_song_feature_pre_post(db, song_feature):
         elif  song_feature == 'ev':
             stat, pval = ranksums(pre_data, post_data, alternative='greater')
 
-        # degree_of_freedom = len(pre_data) + len(pre_data) - 2
         # if pval < 0.001:  # mark significance
         #     msg = f"ranksum Z={stat : .3f}, p < 0.001"
         # else:
@@ -303,7 +302,7 @@ fig, ax = plt.subplots(figsize=(4, 3))
 plot_bar_comparison(ax, df_merged['pccUndir'], df_merged['sig'],
                     hue_var=df_merged['birdID'],
                     title='PCC Undir Post-deafening comparison (EV)',
-                    ylabel='PCC',
+                    y_label='PCC',
                     # y_lim=[-0.01, 0.15],
                     xtick_label= ['NonSig', 'Sig'],
                     legend_ok=True

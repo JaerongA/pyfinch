@@ -107,7 +107,7 @@ plt.suptitle('Firing Rates', y=.9, fontsize=20)
 ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
 plot_bar_comparison(ax, df['baselineFR'], df['taskName'],
                     hue_var=df['birdID'],
-                    title='Baseline', ylabel='Firing Rates (Hz)',
+                    title='Baseline', y_label='Firing Rates (Hz)',
                     col_order=("Predeafening", "Postdeafening"),
                     )
 
@@ -164,7 +164,7 @@ fig, ax = plt.subplots(figsize=(4, 4))
 plot_bar_comparison(ax, df['motifFRNorm'], df['taskName'],
                     y_lim=[0, 60],
                     # hue_var=df['birdID'],
-                    title='Norm. Motif FR(Undir)', ylabel='Norm. Motif FR',
+                    title='Norm. Motif FR(Undir)', y_label='Norm. Motif FR',
                     col_order=("Predeafening", "Postdeafening"),
                     )
 plt.tight_layout()
