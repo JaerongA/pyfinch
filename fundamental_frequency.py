@@ -12,7 +12,6 @@ def get_syllable_ff(query,
                     view_folder=False,
                     update_db=False,
                     fig_ext='.png'):
-
     from analysis.functions import get_ff
     from analysis.parameters import note_buffer, freq_range
     from analysis.song import AudioInfo, SongInfo
@@ -23,7 +22,6 @@ def get_syllable_ff(query,
     import pandas as pd
     from util import save
     from util.draw import remove_right_top
-
 
     # Load database
     db = ProjectLoader().load_db()
@@ -51,7 +49,6 @@ def get_syllable_ff(query,
                              'harmonic': data[6]  # 1st or 2nd harmonic detection
                              } for data in db.cur.fetchall()  # ff duration
                    }
-
 
         if not bool(ff_info):
             print("FF note doesn't exist")
@@ -174,7 +171,8 @@ def get_syllable_ff(query,
                         ax_txt.text(txt_xloc, txt_yloc, f"{ff_info[ff_note]['parameter']} {ff_info[ff_note]['crit']}",
                                     fontsize=font_size)
                         txt_yloc -= txt_offset
-                        ax_txt.text(txt_xloc, txt_yloc, f"ff duration = {ff_info[ff_note]['duration']} ms", fontsize=font_size)
+                        ax_txt.text(txt_xloc, txt_yloc, f"ff duration = {ff_info[ff_note]['duration']} ms",
+                                    fontsize=font_size)
                         txt_yloc -= txt_offset
                         ax_txt.text(txt_xloc, txt_yloc, f"ff = {ff} Hz", fontsize=font_size)
 
@@ -238,8 +236,6 @@ if __name__ == '__main__':
 
     from database.load import create_db, DBInfo, ProjectLoader
     from util import save
-    from deafening.plot import plot_across_days_per_note
-    from analysis.functions import add_pre_normalized_col
 
     # Parameter
     save_fig = True  # save spectrograms with FF
@@ -257,51 +253,11 @@ if __name__ == '__main__':
         db = create_db('create_ff_result.sql')
 
     # SQL statement
-    # query = "SELECT * FROM song WHERE id>=80"
-    #
-    # get_syllable_ff(query,
-    #                 nb_note_crit=nb_note_crit,
-    #                 save_fig=save_fig,
-    #                 view_folder=view_folder,
-    #                 update_db=update_db,
-    #                 fig_ext=fig_ext)
+    query = "SELECT * FROM song WHERE id>=80"
 
-    # Load database
-    df = ProjectLoader().load_db().to_dataframe(f"SELECT * FROM ff_result")
-    df_norm = add_pre_normalized_col(df, 'ffUndirCV', 'ffUndirCVNorm')
-    df_norm = add_pre_normalized_col(df_norm, 'ffDirCV', 'ffDirCVNorm', csv_name='ff_results.csv', save_csv=True)
-    df_norm.set_index('id')
-
-    # Plot FF per day
-    # Parameters
-    fr_criteria = 10
-
-    # plot_across_days_per_note(df_norm, x='taskSessionDeafening', y='ffUndirCV',
-    #                  x_label='Days from deafening',
-    #                  y_label='FF',
-    #                  title='CV of FF (Undir)', fig_name='FF_across_days',
-    #                  xlim=[-20, 40], ylim=[0, 5],
-    #                  view_folder=True,
-    #                  save_fig=False,
-    #                  )
-
-    # plot_across_days_per_note(df_norm, x='taskSessionDeafening', y='ffUndirCVNorm',
-    #                  x_label='Days from deafening',
-    #                  y_label='Norm. FF',
-    #                  title='CV of FF (Undir)', fig_name='FF_across_days',
-    #                  xlim=[0, 31],
-    #                  ylim=[0, 3],
-    #                  plot_baseline=True,
-    #                  view_folder=True,
-    #                  save_fig=False,
-    #                  )
-
-    # Compare conditional means of CV of FF
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-
-    df_cv_undir = df_norm.groupby(['birdID', 'note', 'taskName']).mean()['ffUndirCV'].reset_index()
-
-    fig, axes = plt.subplots(1, 1, figsize=(4, 4))
-    # df_cv_undir.groupby(['taskName']).mean()
-    ax = sns.scatterplot(x='taskName', y='ffUndirCV', data=df_cv_undir, hue="note", style="birdID", size=2)
+    get_syllable_ff(query,
+                    nb_note_crit=nb_note_crit,
+                    save_fig=save_fig,
+                    view_folder=view_folder,
+                    update_db=update_db,
+                    fig_ext=fig_ext)
