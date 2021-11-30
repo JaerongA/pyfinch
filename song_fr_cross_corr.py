@@ -2,13 +2,14 @@
 Get time-shifted cross-correlation between song and firing rates
 """
 
-from analysis.parameters import peth_parm, freq_range, tick_length, tick_width, note_color, nb_note_crit
+from analysis.parameters import peth_parm, freq_range, peth_parm, tick_length, tick_width, note_color, nb_note_crit
 from analysis.spike import MotifInfo, AudioData
 from database.load import DBInfo, ProjectLoader, create_db
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import stats
 from util import save
 from util.functions import myround
 from util.draw import remove_right_top
@@ -114,4 +115,46 @@ for row in db.cur.fetchall():
         ax_syl.text((onsets[i] + (offsets[i] - onsets[i]) / 2), text_yloc, syl, size=font_size)
     ax_syl.axis('off')
 
+    # Plot song amplitude
+    ax_amp = plt.subplot(gs[4:6, 0:4], sharex=ax_spect)
+    timestamp = timestamp - timestamp[0] - peth_parm['buffer']
+    data = stats.zscore(data)
+    ax_amp.plot(timestamp, data, 'k', lw=0.1)
+    ax_amp.set_ylabel('Amplitude (zscore)', fontsize=font_size)
+    ax_amp.set_ylim(-5, 5)
+    plt.setp(ax_amp.get_xticklabels(), visible=False)
+    remove_right_top(ax_amp)
+
+    # Plot binarized song & firing rates
+    pi = mi.get_peth(time_warp=time_warp)  # peth object
+    pi.get_fr()  # get firing rates
+
+    ax_song = plt.subplot(gs[7:9, 0:4], sharex=ax_spect)
+
+    # Binarized song signal (0 = silence, 1 = song) Example from the first trial
+    song_ts = np.arange(-peth_parm['buffer'], round(mi.durations[0]) + peth_parm['buffer'], peth_parm['bin_size'])
+    binary_song = np.zeros(len(song_ts))
+    # binary_song[np.where(peth_parm['time_bin'] <= mi.durations[0])]
+    for onset, offset in zip(onsets, offsets):
+        binary_song[np.where((song_ts >= onset) & (song_ts <= offset))] = 1
+    ax_song.plot(song_ts, binary_song, 'k')
+    ax_song.set_ylim([0, 1])
+    ax_song.spines['left'].set_visible(False)
+    ax_song.set_xlabel('Time (ms)', fontsize=font_size)
+
+    # Plot firing rates on the same axis
+    ax_fr = ax_song.twinx()
+    ax_fr.plot(pi.time_bin, pi.fr['All'][:, 0], 'k')
+    ax_fr.set_ylabel('FR (Hz)', fontsize=font_size)
+    # ax_fr.set_ylim(0, 1)
+    # plt.xticks(fontsize=5), plt.yticks(fontsize=5)
+
+
+    remove_right_top(ax_song)
+
     plt.show()
+
+    # pi.get_fr(norm_method='sum')  # get firing rates
+
+
+    # pi.fr['U']  # trial-by-trial firing rates
