@@ -17,6 +17,19 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
+
+def get_cross_corr(sig1, sig2, lag_lim=None):
+    """Get cross-correlation between two signals"""
+    from scipy import signal
+    corr = signal.correlate(sig1, sig2)
+    corr /= np.max(corr)
+    lags = signal.correlation_lags(len(sig1), len(sig2))
+    corr = corr[np.where((lags >= -lag_lim) & (lags < lag_lim))]
+    lags = lags[np.where((lags >= -lag_lim) & (lags < lag_lim))]
+    return corr, lags
+
+
+
 # SQL statement
 # query = "SELECT * FROM cluster WHERE analysisOK = 1"
 query = "SELECT * FROM cluster WHERE id = 34"
@@ -34,6 +47,8 @@ font_size = 10
 marker_size = 0.4  # for spike count
 update = False
 time_warp = True  # Perform piece-wise linear time-warping
+motif_nb = 0
+
 
 # Loop through db
 for row in db.cur.fetchall():
@@ -49,14 +64,10 @@ for row in db.cur.fetchall():
     mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
     audio = AudioData(path, update=update)  # audio object
 
-    # Get number of motifs
-    nb_motifs = mi.nb_motifs(motif)
-    nb_motifs.pop('All', None)
-
     # Plot spectrogram & peri-event histogram (Just the first rendition)
     # for onset, offset in zip(mi.onsets, mi.offsets):
-    onsets = mi.onsets[0]
-    offsets = mi.offsets[0]
+    onsets = mi.onsets[motif_nb]
+    offsets = mi.offsets[motif_nb]
 
     # Convert from string to array of floats
     onsets = np.asarray(list(map(float, onsets)))
@@ -123,6 +134,7 @@ for row in db.cur.fetchall():
     ax_amp.set_ylabel('Amplitude (zscore)', fontsize=font_size)
     ax_amp.set_ylim(-5, 5)
     plt.setp(ax_amp.get_xticklabels(), visible=False)
+    ax_amp.set_title(f"Motif = {motif_nb}", fontsize=font_size)
     remove_right_top(ax_amp)
 
     # Plot binarized song & firing rates
@@ -134,27 +146,58 @@ for row in db.cur.fetchall():
     # Binarized song signal (0 = silence, 1 = song) Example from the first trial
     song_ts = np.arange(-peth_parm['buffer'], round(mi.durations[0]) + peth_parm['buffer'], peth_parm['bin_size'])
     binary_song = np.zeros(len(song_ts))
+
     # binary_song[np.where(peth_parm['time_bin'] <= mi.durations[0])]
     for onset, offset in zip(onsets, offsets):
         binary_song[np.where((song_ts >= onset) & (song_ts <= offset))] = 1
-    ax_song.plot(song_ts, binary_song, 'k')
+    ax_song.plot(song_ts, binary_song, 'k',  linewidth=0.5)
     ax_song.set_ylim([0, 1])
-    ax_song.spines['left'].set_visible(False)
+    ax_song.set_yticks([])
     ax_song.set_xlabel('Time (ms)', fontsize=font_size)
+    ax_song.spines['left'].set_visible(False)
+    ax_song.spines['top'].set_visible(False)
 
     # Plot firing rates on the same axis
     ax_fr = ax_song.twinx()
-    ax_fr.plot(pi.time_bin, pi.fr['All'][:, 0], 'k')
+    ax_fr.plot(pi.time_bin, pi.fr['All'][motif_nb, :], 'k')
     ax_fr.set_ylabel('FR (Hz)', fontsize=font_size)
-    # ax_fr.set_ylim(0, 1)
-    # plt.xticks(fontsize=5), plt.yticks(fontsize=5)
+    fr_ymax = myround(round(ax_fr.get_ylim()[1], 3), base=5)
+    ax_fr.set_ylim(0, fr_ymax)
+    plt.yticks([0, ax_fr.get_ylim()[1]], [str(0), str(int(fr_ymax))])
+    ax_fr.spines['left'].set_visible(False)
+    ax_fr.spines['top'].set_visible(False)
+
+    # Plot cross-correlation between binarized song and firing rates
+    ax_corr = plt.subplot(gs[10:12, 0:4])
+    corr, lags = get_cross_corr(pi.fr['All'][motif_nb, :], binary_song, lag_lim=100)
+    ax_corr.plot(lags, corr, 'k')
+    ax_corr.set_ylabel('Cross-correlation', fontsize=font_size)
+    ax_corr.set_xlabel('Time (ms)', fontsize=font_size)
+    ax_corr.set_xlim([-100, 100])
+    ax_corr.set_ylim([0.4, 1.01])
+    ax_corr.axvline(x=lags[corr.argmax()], color='r', linewidth=1, ls='--')  # mark the peak location
+    remove_right_top(ax_corr)
+    del corr, lags
+
+    # Get cross-correlation heatmap across all renditions
+
+    onsets = mi.onsets[motif_nb]
+    offsets = mi.offsets[motif_nb]
+
+    onsets = np.asarray(list(map(float, onsets)))
+    offsets = np.asarray(list(map(float, offsets)))
+
+    start = onsets[0] - peth_parm['buffer']
+    end = offsets[-1]  # buffer not included
+    timestamp, data = audio.extract([start, end])
+    data = stats.zscore(data)
 
 
-    remove_right_top(ax_song)
+
+
+
+    ax_heatmap = plt.subplot(gs[13:15, 0:4])
+
+
 
     plt.show()
-
-    # pi.get_fr(norm_method='sum')  # get firing rates
-
-
-    # pi.fr['U']  # trial-by-trial firing rates
