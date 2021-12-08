@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from util import save
 from util.draw import remove_right_top
-
+import warnings
+warnings.filterwarnings('ignore')
 
 def get_nb_cluster(ax):
     """
@@ -569,6 +570,7 @@ def plot_per_day_block(df, ind_var_name, dep_var_name,
     # Plot the results
     x = df[ind_var_name]
     y = df[dep_var_name]
+    ind_groups = df[ind_var_name].sort_values().unique()
 
     fig, axes = plt.subplots(1, 3, figsize=(12, 4))
     plt.suptitle(title, y=1, fontsize=12)
@@ -586,21 +588,41 @@ def plot_per_day_block(df, ind_var_name, dep_var_name,
     axes[1].set_xlabel('Day Block (10 days)'), axes[1].set_ylabel('')
     if y_lim:
         axes[0].set_ylim(y_lim), axes[1].set_ylim(y_lim)
-    day_block_label_list = ['Predeafening', 'Day 4-10', 'Day 11-20', 'Day 21-30', 'Day >= 31']
+
+    if len(ind_groups) == 5:
+        day_block_label_list = ['Predeafening', 'Day 4-10', 'Day 11-20', 'Day 21-30', 'Day >= 31']
+    elif len(ind_groups) == 4:
+        day_block_label_list = ['Predeafening', 'Day 4-10', 'Day 11-20', 'Day >= 21']
     axes[0].set_xticklabels(day_block_label_list, rotation=45)
     axes[1].set_xticklabels(day_block_label_list, rotation=45)
 
     # Run one-way ANOVA
     import scipy.stats as stats
-    f_val, p_val = stats.f_oneway(df[dep_var_name][df[ind_var_name] == 0],
-                                  df[dep_var_name][df[ind_var_name] == 1],
-                                  df[dep_var_name][df[ind_var_name] == 2],
-                                  df[dep_var_name][df[ind_var_name] == 3],
-                                  df[dep_var_name][df[ind_var_name] == 4]
-                                  )
+    from util.stats import get_sig
+    if len(ind_groups) == 5:
+        f_val, p_val = stats.f_oneway(df[dep_var_name][df[ind_var_name] == 0].to_numpy(),
+                                      df[dep_var_name][df[ind_var_name] == 1].to_numpy(),
+                                      df[dep_var_name][df[ind_var_name] == 2].to_numpy(),
+                                      df[dep_var_name][df[ind_var_name] == 3].to_numpy(),
+                                      df[dep_var_name][df[ind_var_name] == 4].to_numpy()
+                                      )
+    elif len(ind_groups) == 4:
+        f_val, p_val = stats.f_oneway(df[dep_var_name][df[ind_var_name] == 0].to_numpy(),
+                                      df[dep_var_name][df[ind_var_name] == 1].to_numpy(),
+                                      df[dep_var_name][df[ind_var_name] == 2].to_numpy(),
+                                      df[dep_var_name][df[ind_var_name] == 3].to_numpy()
+                                      )
+    sig = get_sig(p_val)  # print out asterisk
 
-    msg = f"""One-way ANOVA \n\n F={f_val: 0.3f}, p={p_val: 0.3f}"""
+    # Get degrees of freedom
+    total_num = df[dep_var_name][df[ind_var_name]].shape[0]
+    num_groups = df[ind_var_name].unique().shape[0]
+    df_bn = df[ind_var_name].unique().shape[0] - 1
+    df_wn = total_num - num_groups
+
+    msg = f"""One-way ANOVA \n\n F({df_bn}, {df_wn})={f_val: 0.3f}, p={p_val: 0.3f} ({sig})"""
     axes[2].text(0, 0.5, msg), axes[2].axis('off')
+
     # Run post-hoc comparisons
     # The output values don't match those from Statview (This needs to be checked)
     if post_hoc:
