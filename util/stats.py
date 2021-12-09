@@ -24,21 +24,23 @@ def z_test(count1, nbos1, count2, nobs2):
     count = np.array([count1, nbos1])
     nobs = np.array([count2, nobs2])
     stat, pval = proportions_ztest(count, nobs)
-    return stat, pval
+    sig = get_sig(stat.pvalue)  # print out asterisk
+    return stat, pval, sig
 
 
 def paired_ttest(arr1, arr2):
     """Performs paired t-test between two arrays"""
     from scipy.stats import ttest_rel
     stat = ttest_rel(arr1, arr2, nan_policy='omit')
+    sig = get_sig(stat.pvalue)  # print out asterisk
     degree_of_freedom = len(arr1) - 1
-    msg1 = f"t({degree_of_freedom}) = {stat.statistic :.3f}"
+    msg1 = f"t({degree_of_freedom}) = {stat.statistic :.4f}"
     if stat.pvalue < 0.001:  # mark significance
         msg2 = "p < 0.001"
     else:
         msg2 = f"p = {stat.pvalue :.3f}"
     msg = msg1 + ', ' + msg2
-    return stat.statistic, stat.pvalue, msg
+    return stat.statistic, stat.pvalue, msg, sig
 
 
 def two_sample_ttest(arr1, arr2):
@@ -51,14 +53,15 @@ def two_sample_ttest(arr1, arr2):
     arr2 = arr2[~np.isnan(arr2)]
 
     tval, pval = stats.ttest_ind(arr1, arr2, nan_policy='omit')
+    sig = get_sig(pval)  # print out asterisk
     degree_of_freedom = len(arr1) + len(arr2) - 2
-    msg1= f"t({degree_of_freedom}) = {tval : 3f}"
+    msg1= f"t({degree_of_freedom})={tval : 3f}"
     if pval < 0.001:  # mark significance
         msg2 = 'p < 0.001'
     else:
-        msg2 = (f"p = {pval :.3f}")
+        msg2 = (f"p={pval :.3f}")
     msg = msg1 + ', ' + msg2
-    return tval, pval, msg
+    return tval, pval, msg, sig
 
 
 def rank_sum_test(arr1, arr2):
@@ -70,13 +73,14 @@ def rank_sum_test(arr1, arr2):
     arr1 = arr1[~np.isnan(arr1)]
     arr2 = arr2[~np.isnan(arr2)]
     z, pval = ranksums(arr1, arr2)
-    msg1 = f"Z = {z : .3f}"
+    sig = get_sig(pval)  # print out asterisk
+    msg1 = f"Z={z : .3f}"
     if pval < 0.001:  # mark significance
         msg2 = 'p < 0.001'
     else:
-        msg2 = (f"p = {pval :.3f}")
+        msg2 = (f"p={pval :.4f}")
     msg = msg1 + ', ' + msg2
-    return z, pval, msg
+    return z, pval, msg, sig
 
 
 def signed_rank_test(arr1, arr2):
@@ -84,11 +88,12 @@ def signed_rank_test(arr1, arr2):
     from scipy.stats import wilcoxon
     ## Todo: the output slightly different from statview. This needs to be checked.
     z, pval = wilcoxon(arr1, arr2)
-    msg1 = f"Z = {z}"
+    sig = get_sig(pval)  # print out asterisk
+    msg1 = f"Z = {z : .3f}"
     if pval < 0.001:  # mark significance
         msg2 = 'p < 0.001'
     else:
-        msg2 = (f"p = {pval :.3f}")
+        msg2 = (f"p={pval :.4f}")
     msg = msg1 + ', ' + msg2
-    return z, pval, msg
+    return z, pval, msg, sig
 
