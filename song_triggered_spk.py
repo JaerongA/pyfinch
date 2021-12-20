@@ -149,20 +149,30 @@ for note_ind, (_, note, spk_ts, onset, duration) in enumerate(zipped_list):
 ax_raster.axvline(x=0, linewidth=1, color='r', label='syllable onset', ls='--')
 
 # Print out corr metrics on the figure
-txt_xloc = 0
-txt_yloc = 0.5
-txt_inc = 0.15  # y-distance between texts within the same section
+txt_xloc = -0.5
+txt_yloc = 1
+txt_inc = 0.5  # y-distance between texts within the same section
 
+pcc_undir = pcc_dir = max_cross_corr = peak_latency = np.nan
 db.execute(f"SELECT crossCorrMax, peakLatency from song_fr_cross_corr WHERE clusterID= {cluster_db.id}")
 for row in db.cur.fetchall():
-    crossCorrMax, peakLatency = row[0], row[1]
+    max_cross_corr, peak_latency = row[0], row[1]
 
+db.execute(f"SELECT pccUndir, pccDir from pcc WHERE clusterID= {cluster_db.id}")
+for row in db.cur.fetchall():
+    pcc_undir, pcc_dir = row[0], row[1]
 ax_txt = plt.subplot(gs[1, -1])
-ax_txt.set_axis_off()  # remove all axes
-msg = f"Cross-corr max = {crossCorrMax : 0.3f}"
-ax_txt.text(txt_xloc, txt_yloc, msg)
+ax_txt.set_axis_off()
+ax_txt.text(txt_xloc, txt_yloc, f"Cross-corr max = {max_cross_corr : 0.3f}", fontsize=8)
 txt_yloc -= txt_inc
 
+ax_txt.text(txt_xloc, txt_yloc, f"Peak latency = {int(peak_latency)} (ms)", fontsize=8)
+txt_yloc -= txt_inc
+if context == 'U':
+    ax_txt.text(txt_xloc, txt_yloc, f"PCC = {pcc_undir : .3f}", fontsize=8)
+else:
+    ax_txt.text(txt_xloc, txt_yloc, f"PCC = {pcc_dir : .3f}", fontsize=8)
+txt_yloc -= txt_inc
 
 def _print_legend():
     # print out legend
@@ -187,3 +197,6 @@ ax_raster.set_xlim([pre_buffer, post_buffer])
 ax_raster.set_xlabel('Time (ms)')
 ax_raster.set_ylabel('Renditions')
 plt.show()
+
+
+##TODO : add psth
