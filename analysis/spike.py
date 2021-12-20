@@ -1,5 +1,4 @@
 """
-By Jaerong
 main package for neural analysis
 """
 
@@ -81,10 +80,11 @@ def get_peth(evt_ts_list: list, spk_ts_list: list, pre_evt_buffer=None, duration
     import math
     import numpy as np
 
-    peth = np.zeros((len(evt_ts_list), peth_parm['bin_size'] * peth_parm['nb_bins']))  # nb of trials x nb of time bins
+    parameter = peth_parm.copy()
+    peth = np.zeros((len(evt_ts_list), parameter['bin_size'] * parameter['nb_bins']))  # nb of trials x nb of time bins
 
     if pre_evt_buffer is None:
-        pre_evt_buffer = peth_parm['buffer']
+        pre_evt_buffer = parameter['buffer']
 
     for trial_ind, (evt_ts, spk_ts) in enumerate(zip(evt_ts_list, spk_ts_list)):
         spk_ts_new = copy.deepcopy(spk_ts)
@@ -96,11 +96,11 @@ def get_peth(evt_ts_list: list, spk_ts_list: list, pre_evt_buffer=None, duration
             spk_ts_new -= evt_ts - pre_evt_buffer
 
         for spk in spk_ts_new:
-            ind = math.ceil(spk / peth_parm['bin_size'])
+            ind = math.ceil(spk / parameter['bin_size'])
             # print("spk = {}, bin index = {}".format(spk, ind))  # for debugging
             peth[trial_ind, ind] += 1
 
-    time_bin = peth_parm['time_bin'] - pre_evt_buffer
+    time_bin = parameter['time_bin'] - pre_evt_buffer
 
     # Truncate the array leaving out only the portion of our interest
     if duration:
@@ -108,7 +108,7 @@ def get_peth(evt_ts_list: list, spk_ts_list: list, pre_evt_buffer=None, duration
         peth = peth[:, ind]
         time_bin = time_bin[ind]
 
-    return peth, time_bin, peth_parm
+    return peth, time_bin, parameter
 
 
 def get_pcc(fr_array):
@@ -544,14 +544,19 @@ class ClusterInfo:
 
         return nb_motifs
 
-    def get_note_info(self, note, pre_buffer=0, post_buffer=0):
+    def get_note_info(self, note,
+                      pre_buffer=0, post_buffer=0
+                      ):
         """
         Obtain a class object (NoteInfo) for individual note
+        spikes will be collected from note onset (+- pre_buffer) to offset (+- post_buffer)
         Parameters
         ----------
         note : str
         pre_buffer : int
+            amount of time buffer relative to the event onset (e.g., syllable onset)
         post_buffer : int
+            amount of time buffer relative to the event offset (e.g., syllable onset)
 
         Returns
         -------
@@ -1039,8 +1044,10 @@ class MotifInfo(ClusterInfo):
         Get peri-event time histogram & raster during song motif
         Parameters
         ----------
-        time_warp : perform piecewise linear transform
-        shuffle : add jitter to spike timestamps
+        time_warp : bool
+            perform piecewise linear transform
+        shuffle : bool
+            add jitter to spike timestamps
 
         Returns
         -------
@@ -1093,7 +1100,7 @@ class PethInfo():
             peth_dict[context] = self.peth[ind, :]
         self.peth = peth_dict
 
-    def get_fr(self, smoothing=True):
+    def get_fr(self, gaussian_std=None, smoothing=True):
         """
         Get trials-by-trial firing rates by default
         Parameters
@@ -1111,6 +1118,9 @@ class PethInfo():
         import numpy as np
         from scipy.ndimage import gaussian_filter1d
 
+        if not gaussian_std:  # if not specified, get the value fromm analysis.parameters
+            gaussian_std = gauss_std
+
         # Get trial-by-trial firing rates
         fr_dict = {}
         for k, v in self.peth.items():  # loop through different conditions in peth dict
@@ -1118,7 +1128,7 @@ class PethInfo():
                 fr = v / (peth_parm['bin_size'] / 1E3)  # in Hz
 
                 if smoothing:  # Gaussian smoothing
-                    fr = gaussian_filter1d(fr, gauss_std)
+                    fr = gaussian_filter1d(fr, gaussian_std)
 
                 # Truncate values outside the range
                 ind = (((0 - peth_parm['buffer']) <= self.time_bin) & (self.time_bin <= self.median_duration))
@@ -1872,10 +1882,8 @@ class ISI:
     """
     Class object for inter-spike interval analysis
     """
-
     def __init__(self, isi):
         """
-
         Parameters
         ----------
         isi : array
