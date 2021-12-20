@@ -560,6 +560,7 @@ def plot_paired_data(df, x, y,
 
 def plot_per_day_block(df, ind_var_name, dep_var_name,
                        title=None, y_label=None, y_lim=None,
+                       plot_type='bar',  # {bar, box}
                        post_hoc=False,
                        view_folder=True,
                        fig_name='Untitled',
@@ -575,9 +576,14 @@ def plot_per_day_block(df, ind_var_name, dep_var_name,
     fig, axes = plt.subplots(1, 3, figsize=(12, 4))
     plt.suptitle(title, y=1, fontsize=12)
 
-    sns.barplot(x, y, ax=axes[0], facecolor=(1, 1, 1, 0),
-                linewidth=1,
-                errcolor=".2", edgecolor=".2", zorder=0)
+    if plot_type == 'bar':
+        sns.barplot(x, y, ax=axes[0], facecolor=(1, 1, 1, 0),
+                    linewidth=1,
+                    errcolor=".2", edgecolor=".2", zorder=0)
+    elif plot_type == 'box':
+        sns.stripplot(x, y, ax=axes[0], color="k", jitter=0.1, size=4)
+        sns.boxplot(x, y, ax=axes[0], width=0.5, color='w', showfliers=False)
+
     remove_right_top(axes[0])
 
     sns.violinplot(x, y, ax=axes[1], inner=None)
