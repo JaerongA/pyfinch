@@ -1,6 +1,7 @@
 """
-By Jaerong
 plot raster & peth for motif
+calculate spike temporal precision metrics such as pcc
+store results in pcc table
 """
 
 
@@ -10,6 +11,7 @@ def get_raster(query,
                time_warp=True,
                update=False,
                save_fig=True,
+               save_folder_name='Raster',
                update_db=True,
                view_folder=False,
                fig_ext='.png',
@@ -149,12 +151,13 @@ def get_raster(query,
         ax_syl.axis('off')
 
         # Plot raster
+        ax_raster = plt.subplot(gs[4:6, 0:4], sharex=ax_spect)
+
         line_offsets = np.arange(0.5, len(mi))
         if time_warp:
             zipped_lists = zip(mi.contexts, mi.spk_ts_warp, mi.onsets)
         else:
             zipped_lists = zip(mi.contexts, mi.spk_ts, mi.onsets)
-        ax_raster = plt.subplot(gs[4:6, 0:4], sharex=ax_spect)
 
         pre_context = ''  # for marking  context change
         context_change = np.array([])
@@ -300,11 +303,12 @@ def get_raster(query,
         remove_right_top(ax_raster)
 
         # Draw peri-event histogram (PETH)
+        ax_peth = plt.subplot(gs[10:12, 0:4], sharex=ax_spect)
+
         pi = mi.get_peth(time_warp=time_warp)  # peth object
         # pi.get_fr(norm_method='sum')  # get firing rates
         pi.get_fr()  # get firing rates
 
-        ax_peth = plt.subplot(gs[10:12, 0:4], sharex=ax_spect)
         for context, mean_fr in pi.mean_fr.items():
             if context == 'U' and nb_motifs['U'] >= nb_note_crit:
                 ax_peth.plot(pi.time_bin, mean_fr, 'b', label=context)
@@ -479,11 +483,11 @@ def get_raster(query,
 
             if 'U' in sparseness and nb_motifs['U'] >= nb_note_crit:
                 db.cur.execute(
-                    f"UPDATE pcc SET sparsenessUndir = ({sparseness['U'] :1.3f)}) WHERE clusterID = ({cluster_db.id})")
+                    f"UPDATE pcc SET sparsenessUndir = ({sparseness['U'] :1.3f}) WHERE clusterID = ({cluster_db.id})")
 
             if 'D' in sparseness and nb_motifs['D'] >= nb_note_crit:
                 db.cur.execute(
-                    f"UPDATE pcc SET sparsenessDir = ({sparseness['D'] :1.3f)}) WHERE clusterID = ({cluster_db.id})")
+                    f"UPDATE pcc SET sparsenessDir = ({sparseness['D'] :1.3f}) WHERE clusterID = ({cluster_db.id})")
 
             if shuffled_baseline:
                 if 'U' in p_sig and nb_motifs['U'] >= nb_note_crit:
@@ -494,14 +498,14 @@ def get_raster(query,
 
         # Save results
         if save_fig:
-            save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Spk')
+            save_path = save.make_dir(ProjectLoader().path / 'Analysis', save_folder_name)
             save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, view_folder=view_folder)
         else:
             plt.show()
 
     # Convert db to csv
     if update_db:
-        db.to_csv('cluster_results')
+        db.to_csv('pcc')
     print('Done!')
 
 
@@ -517,7 +521,7 @@ def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
     pcc_shuffle = defaultdict(partial(np.ndarray, 0))
     for iter in range(peth_shuffle['shuffle_iter']):
         MotifInfo.jitter_spk_ts(peth_shuffle['shuffle_limit'])
-        pi_shuffle = MotifInfo.get_peth(shuffle=True)  # peth object
+        pi_shuffle = MotifInfo.get_note_peth(shuffle=True)  # peth object
         pi_shuffle.get_fr()  # get firing rates
         pi_shuffle.get_pcc()  # get pcc
         for context, pcc in pi_shuffle.pcc.items():
@@ -564,8 +568,8 @@ if __name__ == '__main__':
     shuffled_baseline = False  # Get PETH from shuffled spikes for getting pcc baseline
     time_warp = True  # Perform piece-wise linear time-warping
     update = False  # Update the cache file per cluster
-    save_fig = False
-    update_db = False
+    save_fig = True  # Save the figure
+    update_db = True
     view_folder = False  # open the folder where the result figures are saved
     fig_ext = '.png'  # set to '.pdf' for vector output (.png by default)
 
@@ -574,8 +578,7 @@ if __name__ == '__main__':
         db = create_db('create_pcc.sql')
 
     # SQL statement
-    # query = "SELECT * FROM cluster WHERE analysisOK = 1"
-    query = "SELECT * FROM cluster WHERE id = 96"
+    query = "SELECT * FROM cluster WHERE analysisOK"
 
     get_raster(query, shuffled_baseline=shuffled_baseline, time_warp=time_warp,
                update=update,
