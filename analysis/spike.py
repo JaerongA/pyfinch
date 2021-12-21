@@ -57,8 +57,8 @@ def get_isi(spk_ts_list: list):
 
     Returns
     -------
-    isi : array
-        array of inter-spike intervals
+    isi : class object
+        class object for inter-spike intervals
     """
     import numpy as np
 
@@ -70,7 +70,11 @@ def get_isi(spk_ts_list: list):
     return isi
 
 
-def get_peth(evt_ts_list: list, spk_ts_list: list, pre_evt_buffer=None, duration=None):
+def get_peth(evt_ts_list: list, spk_ts_list: list,
+             pre_evt_buffer=None, duration=None,
+             bin_size=None,
+             nb_bins=None
+             ):
     """
     Get peri-event histogram & firing rates
     for song peth event_ts indicates syllable onset
@@ -81,32 +85,45 @@ def get_peth(evt_ts_list: list, spk_ts_list: list, pre_evt_buffer=None, duration
     import numpy as np
 
     parameter = peth_parm.copy()
-    peth = np.zeros((len(evt_ts_list), parameter['bin_size'] * parameter['nb_bins']))  # nb of trials x nb of time bins
 
     if pre_evt_buffer is None:
         pre_evt_buffer = parameter['buffer']
+
+    if bin_size is None:
+        bin_size = parameter['bin_size']
+
+    if nb_bins is None:
+        nb_bins = parameter['nb_bins']
+
+    time_bin = np.arange(0, nb_bins, bin_size) - pre_evt_buffer
+    peth = np.zeros((len(evt_ts_list), nb_bins))  # nb of trials x nb of time bins
 
     for trial_ind, (evt_ts, spk_ts) in enumerate(zip(evt_ts_list, spk_ts_list)):
         spk_ts_new = copy.deepcopy(spk_ts)
 
         if not isinstance(evt_ts, np.float64):
-            evt_ts = np.asarray(list(map(float, evt_ts))) - pre_evt_buffer
+            # evt_ts = np.asarray(list(map(float, evt_ts))) + pre_evt_buffer
+            # spk_ts_new -= evt_ts[0]
+
+            evt_ts = np.asarray(list(map(float, evt_ts)))
             spk_ts_new -= evt_ts[0]
+            spk_ts_new += pre_evt_buffer
+
         else:
-            spk_ts_new -= evt_ts - pre_evt_buffer
+            spk_ts_new -= evt_ts
+            spk_ts_new += pre_evt_buffer
 
         for spk in spk_ts_new:
-            ind = math.ceil(spk / parameter['bin_size'])
+            ind = math.ceil(spk / bin_size)
             # print("spk = {}, bin index = {}".format(spk, ind))  # for debugging
+            if ind < 0: raise Exception("Index out of bound")
             peth[trial_ind, ind] += 1
-
-    time_bin = parameter['time_bin'] - pre_evt_buffer
 
     # Truncate the array leaving out only the portion of our interest
     if duration:
-        ind = (((0 - pre_evt_buffer) <= time_bin) & (time_bin <= duration))
-        peth = peth[:, ind]
-        time_bin = time_bin[ind]
+        ind = np.where(((0 - pre_evt_buffer) <= time_bin) & (time_bin < duration))[0]
+        peth = peth[:, ind[0]:ind[-1]+1]
+        time_bin = time_bin[ind[0]:ind[-1]+1]
 
     return peth, time_bin, parameter
 
@@ -188,7 +205,7 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
     pcc_shuffle = defaultdict(partial(np.ndarray, 0))
     for i in range(peth_shuffle['shuffle_iter']):
         ClassObject.jitter_spk_ts(peth_shuffle['shuffle_limit'])
-        pi_shuffle = ClassObject.get_peth(shuffle=True)  # peth object
+        pi_shuffle = ClassObject.get_note_peth(shuffle=True)  # peth object
         pi_shuffle.get_fr()  # get firing rates
         pi_shuffle.get_pcc()  # get pcc
         for context, pcc in pi_shuffle.pcc.items():
@@ -562,7 +579,6 @@ class ClusterInfo:
         -------
         NoteInfo : class object
         """
-        from analysis.parameters import pre_motor_win_size, post_song_win_size
         from analysis.functions import find_str
         import numpy as np
 
@@ -587,9 +603,8 @@ class ClusterInfo:
         spk_ts = np.hstack(self.spk_ts)
         note_spk_ts_list = []
         for onset, offset in zip(note_onsets, note_offsets):
-            # note_spk_ts_list.append(spk_ts[np.where((spk_ts >= onset - pre_motor_win_size) & (spk_ts <= offset))])
             note_spk_ts_list.append(
-                spk_ts[np.where((spk_ts >= onset + pre_buffer) & (spk_ts <= offset + post_buffer))])
+                spk_ts[np.where((spk_ts >= onset - pre_buffer) & (spk_ts <= offset + post_buffer))])
 
         # Organize data into a dictionary
         note_info = {
@@ -688,7 +703,10 @@ class NoteInfo:
 
         return note_spk_ts_warp_list
 
-    def get_peth(self, time_warp=True, shuffle=False, pre_evt_buffer=None, duration=None):
+    def get_note_peth(self, time_warp=True, shuffle=False, pre_evt_buffer=None, duration=None,
+                      bin_size=None,
+                      nb_bins=None
+                      ):
         """
         Get peri-event time histograms for single syllable
         Parameters
@@ -696,7 +714,8 @@ class NoteInfo:
         time_warp : perform piecewise linear transform
         shuffle : add jitter to spike timestamps
         duration : duration of the peth
-
+        bin_size : size of single bin (in ms) (take values from peth_parm by default)
+        nb_bins : number of time bins (take values from peth_parm by default)
         Returns
         -------
         PethInfo : class object
@@ -705,15 +724,27 @@ class NoteInfo:
 
         if shuffle:
             peth, time_bin, peth_parm = \
-                get_peth(self.onsets, self.spk_ts_jittered, pre_evt_buffer=pre_evt_buffer, duration=duration)
+                get_peth(self.onsets, self.spk_ts_jittered,
+                         pre_evt_buffer=pre_evt_buffer, duration=duration,
+                         bin_size=bin_size,
+                         nb_bins=nb_bins
+                         )
         else:
             if time_warp:  # peth calculated from time-warped spikes by default
-                # peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
+                # peth, time_bin = get_note_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
                 peth, time_bin, peth_parm = \
-                    get_peth(self.onsets, self.spk_ts_warp, pre_evt_buffer=pre_evt_buffer, duration=duration)
+                    get_peth(self.onsets, self.spk_ts_warp,
+                             pre_evt_buffer=pre_evt_buffer, duration=duration,
+                             bin_size = bin_size,
+                             nb_bins = nb_bins
+                             )
             else:
                 peth, time_bin, peth_parm = \
-                    get_peth(self.onsets, self.spk_ts, pre_evt_buffer=pre_evt_buffer, duration=duration)
+                    get_peth(self.onsets, self.spk_ts,
+                             pre_evt_buffer=pre_evt_buffer, duration=duration,
+                             bin_size=bin_size,
+                             nb_bins=nb_bins
+                             )
 
         peth_dict['peth'] = peth
         peth_dict['time_bin'] = time_bin
@@ -1059,7 +1090,7 @@ class MotifInfo(ClusterInfo):
             peth, time_bin, peth_parm = get_peth(self.onsets, self.spk_ts_jittered)
         else:
             if time_warp:  # peth calculated from time-warped spikes by default
-                # peth, time_bin = get_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
+                # peth, time_bin = get_note_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
                 peth, time_bin, peth_parm = get_peth(self.onsets, self.spk_ts_warp)
             else:
                 peth, time_bin, peth_parm = get_peth(self.onsets, self.spk_ts)
