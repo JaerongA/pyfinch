@@ -341,13 +341,25 @@ class ClusterInfo:
         self.spk_ts = spk_list  # analysis timestamps in ms
         # print("spk_ts, spk_wf, nb_spk attributes added")
 
-    def analyze_waveform(self, interpolate=True):
+    def analyze_waveform(self, interpolate=True, interp_factor=None):
         """
         Perform waveform analysis
+        Parameters
+        ----------
+        interpolate : bool
+            Set to true if waveform interpolation is needed
+        interp_factor : int
+            Factor by which to increase the sampling frequency of the waveform
+            e.g., 100 if you want to increase the data points by 100 fold
+
         """
         from analysis.functions import get_half_width
-        from analysis.parameters import sample_rate, interp_factor
+        from analysis.parameters import sample_rate
         import numpy as np
+
+        if not interp_factor:
+            from analysis.parameters import interp_factor
+            interp_factor = interp_factor
 
         self.avg_wf = np.nanmean(self.spk_wf, axis=0)
         self.wf_ts = np.arange(0, self.avg_wf.shape[0]) / sample_rate[self.format] * 1E3  # x-axis in ms
@@ -387,7 +399,7 @@ class ClusterInfo:
         # print("avg_wf, spk_height (uv), spk_width (us), wf_ts (ms) added")
 
     def get_conditional_spk(self):
-
+        """Get spike timestamps from different contexts"""
         conditional_spk = {}
         conditional_spk['U'] = [spk_ts for spk_ts, context in zip(self.spk_ts, self.contexts) if context == 'U']
         conditional_spk['D'] = [spk_ts for spk_ts, context in zip(self.spk_ts, self.contexts) if context == 'D']
@@ -439,6 +451,9 @@ class ClusterInfo:
         Add a random temporal jitter to the spike
         Parameters
         ----------
+        shuffle_limit : int
+            shuffling limit (in ms)
+            e.g., If set to 5, any integer values between -5 to 5 drawn from uniform distribution will be added to the spike timestamp
         reproducible : bool
             make the results reproducible by setting the seed as equal to index
         """
