@@ -1,10 +1,9 @@
 """
-By Jaerong
-Calculates a analysis signal-to-noise ratio (SNR) relative to the background (raw neural trace)
+Plots spike waveform
+Calculates signal-to-noise ratio (SNR) relative to the background (raw neural trace)
 """
 from analysis.functions import get_snr
-from analysis.parameters import *
-from analysis.spike import *
+from analysis.spike import ClusterInfo, NeuralData
 from util import save
 from util.draw import *
 from database.load import ProjectLoader, DBInfo
@@ -13,14 +12,20 @@ from database.load import ProjectLoader, DBInfo
 def plot_waveform(axis, wf_ts, spk_wf,
                   wf_ts_interp=None,
                   avg_wf_interp=None,
-                  spk_proportion=0.1,
+                  spk_proportion=None,
                   deflection_range=None,
                   avg_wf=True,
                   scale_bar=True
                   ):
     import numpy as np
+    import matplotlib.pyplot as plt
 
-    # select the waveforms to plot
+    if not spk_proportion:
+        from analysis.parameters import spk_proportion
+        spk_proportion = spk_proportion
+
+    # Randomly select proportions of waveforms to plot
+    np.random.seed(seed=42)
     wf_to_plot = spk_wf[np.random.choice(spk_wf.shape[0], size=int(spk_wf.shape[0] * spk_proportion), replace=False)]
 
     for wf in wf_to_plot:
@@ -29,7 +34,7 @@ def plot_waveform(axis, wf_ts, spk_wf,
     remove_right_top(axis)
 
     if avg_wf:
-        if wf_ts_interp.any() and avg_wf_interp.any():
+        if wf_ts_interp and avg_wf_interp:
             axis.plot(wf_ts_interp, avg_wf_interp, color='r', lw=2)  # indicate the avg waveform
         else:
             axis.plot(wf_ts, np.nanmean(spk_wf, axis=0), color='r', lw=2)  # indicate the avg waveform
@@ -40,7 +45,10 @@ def plot_waveform(axis, wf_ts, spk_wf,
 
     if bool(deflection_range):
         for ind in deflection_range:
-            axis.axvline(x=wf_ts_interp[ind], color='r', linewidth=1, ls='--')
+            if wf_ts_interp:
+                axis.axvline(x=wf_ts_interp[ind], color='r', linewidth=1, ls='--')
+            else:
+                axis.axvline(x=wf_ts[ind], color='r', linewidth=1, ls='--')
 
     if scale_bar:
         # Plot a scale bar
@@ -52,20 +60,18 @@ def plot_waveform(axis, wf_ts, spk_wf,
 
 
 # Parameters
-save_fig = True
-update_db = True
-update = True
-save_wf_values = True
-dir_name = 'WaveformAnalysis'
+save_fig = False
+update_db = False
+update = False
+save_wf_values = False
+save_folder_name = 'WaveformAnalysis'
 fig_ext = '.png'  # .png or .pdf
 
 # Load database
 db = ProjectLoader().load_db()
 
 # SQL statement
-#query = "SELECT * FROM cluster"
-# query = "SELECT * FROM cluster WHERE ephysOK"
-query = "SELECT * FROM cluster WHERE id = 4 "
+query = "SELECT * FROM cluster WHERE id = 96"
 db.execute(query)
 
 # Loop through db
@@ -79,7 +85,7 @@ for row in db.cur.fetchall():
     format = cluster_db.format
 
     ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
-    ci.analyze_waveform()  # get waveform features
+    ci.analyze_waveform(interpolate=False)  # get waveform features
     nd = NeuralData(path, channel_nb, format, update=update)  # raw neural data
 
     # Calculate the SNR (signal-to-noise ratio in dB)
@@ -90,10 +96,8 @@ for row in db.cur.fetchall():
     fig = plt.figure(figsize=(7, 5))
     fig.suptitle(ci.name)
     ax = plt.subplot(121)
-    plot_waveform(ax, ci.wf_ts, ci.spk_wf,
-                  ci.wf_ts_interp, ci.avg_wf_interp,
-                  spk_proportion,
-                  ci.deflection_range  # demarcate the deflection point
+    plot_waveform(ax, wf_ts=ci.wf_ts, spk_wf=ci.spk_wf,
+                  deflection_range=ci.deflection_range  # demarcate the deflection point
                   )
 
     # Print out text
@@ -121,29 +125,20 @@ for row in db.cur.fetchall():
 
     # Save results
     if save_fig:
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', dir_name)
-        save.save_fig(fig, save_path, ci.name, fig_ext=fig_ext, open_folder=True)
-
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', save_folder_name)
+        save.save_fig(fig, save_path, ci.name, fig_ext=fig_ext)
     else:
         plt.show()
+
     # Print avg_spk_wf to csv
-    if save_wf_values:
-        import pandas as pd
-        df = pd.DataFrame(ci.avg_wf_interp)
-        # csv_path = C:\Users\dreill03\Box\AreaX\Analysis\WaveformAnalysis\AverageWaveforms
-        # df.to_csv(ProjectLoader().path / dir_name_2 + ci.name + 'ave_wf.csv', index=False)
-        df.to_csv(r'C:\Users\dreill03\Box\AreaX\Analysis\WaveformAnalysis\AverageWaveforms\ave_wf.csv')
-
-#        save_path = save.make_dir(ProjectLoader().path / dir_name_2)
-#        saveDKR.save_csv(save_path, ci.name, csv_ext='.csv', open_folder=True)
-    else:
-        print(ci.avg_wf_interp)
-
+    # if save_wf_values:
+    #     import pandas as pd
+    #     df = pd.DataFrame(ci.avg_wf_interp)
+    #     df.to_csv(r'C:\Users\dreill03\Box\AreaX\Analysis\WaveformAnalysis\AverageWaveforms\ave_wf.csv')
+    # else:
+    #     print(ci.avg_wf_interp)
 
 # Convert db to csv
 if update_db:
     db.to_csv('cluster')
 print('Done!')
-
-
-df = db.to_dataframe("SELECT DISTINCT birdID, taskName FROM cluster")
