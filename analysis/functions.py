@@ -1,9 +1,7 @@
 """
-By Jaerong
-A collection of functions used for song analysis
+A collection of functions used for song & neural analysis
 """
 
-# from analysis.parameters import *
 from matplotlib.pylab import psd
 from util import save
 from util.draw import *
@@ -47,7 +45,7 @@ def read_not_mat(notmat, unit='ms'):
         contexts = None
 
     # units are in ms by default, but convert to second with the argument
-    if unit is 'second':
+    if unit == 'second':
         onsets /= 1E3
         offsets /= 1E3
         intervals /= 1E3
@@ -103,7 +101,7 @@ def demarcate_bout(target, intervals):
     if isinstance(target, str):
         if len(ind):
             for i, item in enumerate(ind):
-                if i is not 0:
+                if i != 0:
                     bout_labeling += '*' + target[ind[i - 1] + 1:ind[i] + 1]
                 else:
                     bout_labeling = target[:item + 1]
@@ -115,7 +113,7 @@ def demarcate_bout(target, intervals):
     elif isinstance(target, np.ndarray):
         if len(ind):
             for i, item in enumerate(ind):
-                if i is 0:
+                if i == 0:
                     bout_labeling = target[:item + 1]
                 else:
                     bout_labeling = np.append(bout_labeling, '*')
@@ -475,7 +473,7 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
     if context_selection:  # 'U' or 'D' and not None
 
         for note in list(pre_motor_spk_dict.keys()):
-            if note is not 'pre_motor_win':
+            if note != 'pre_motor_win':
                 context_arr = np.array(list(pre_motor_spk_dict[note]['context']))
                 ind = np.where(context_arr == context_selection)[0]
                 pre_motor_spk_dict[note]['nb_spk'] = pre_motor_spk_dict[note]['nb_spk'][ind]
@@ -531,11 +529,11 @@ def get_ff(data, sample_rate, ff_low, ff_high, ff_harmonic=1):
     -------
     ff : float
     """
-    from analysis.functions import para_interp
     from scipy.signal import find_peaks
     import statsmodels.tsa.stattools as smt
     import matplotlib.pyplot as plt
     import numpy as np
+    from util.functions import para_interp
 
     # Get peak of the auto-correlogram
     corr = smt.ccf(data, data, adjusted=False)
@@ -584,7 +582,8 @@ def normalize_from_pre(df, var_name: str, note: str):
     return norm_val
 
 
-def add_pre_normalized_col(df, col_name_to_normalize, col_name_to_add, save_path=None, csv_name=None, save_csv=False):
+def add_pre_normalized_col(df, col_name_to_normalize, col_name_to_add,
+                           save_path=None, csv_name=None, save_csv=False):
     """Normalize relative to pre-deafening mean"""
     import numpy as np
 
@@ -637,3 +636,29 @@ def get_spectrogram(timestamp, data, sample_rate, freq_range=[300, 8000]):
     spect, spect_freq, _ = spectrogram(data, sample_rate, freq_range=freq_range)
     spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram
     return spect_time, spect, spect_freq
+
+
+def align_waveform(spk_wf):
+    """Align spike waveforms relative to the max location of the average waveform"""
+    import numpy as np
+
+    aligned_wf = np.empty((spk_wf.shape[0], spk_wf.shape[1]))
+    aligned_wf[:] = np.nan
+
+    template_max_ind = np.argmin(spk_wf.mean(axis=0))
+    for ind, wf in enumerate(spk_wf):
+
+        new_wf = np.empty((spk_wf.shape[1]))
+        new_wf[:] = np.nan
+        max_ind = np.argmin(wf)
+
+        if template_max_ind != max_ind:
+            max_diff = max_ind - template_max_ind
+            if max_diff > 0:
+                new_wf[:-max_diff] = wf[max_diff:]
+            else:
+                new_wf[abs(max_diff):] = wf[:max_diff]
+            aligned_wf[ind] = new_wf
+        else:
+            aligned_wf[ind] = wf
+    return aligned_wf
