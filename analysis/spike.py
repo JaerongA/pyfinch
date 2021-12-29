@@ -341,7 +341,10 @@ class ClusterInfo:
         self.spk_ts = spk_list  # analysis timestamps in ms
         # print("spk_ts, spk_wf, nb_spk attributes added")
 
-    def analyze_waveform(self, interpolate=True, interp_factor=None):
+    def analyze_waveform(self,
+                         interpolate=True, interp_factor=None,
+                         align_wf=True
+                         ):
         """
         Perform waveform analysis
         Parameters
@@ -351,20 +354,18 @@ class ClusterInfo:
         interp_factor : int
             Factor by which to increase the sampling frequency of the waveform
             e.g., 100 if you want to increase the data points by 100 fold
+        align_wf : bool
+            align all spike waveforms relative to the max location
 
         """
-        from analysis.functions import get_half_width
+        from analysis.functions import align_waveform, get_half_width
         from analysis.parameters import sample_rate
         import numpy as np
 
-        if not interp_factor:
-            from analysis.parameters import interp_factor
-            interp_factor = interp_factor
+        if align_wf:
+            self.spk_wf = align_waveform(self.spk_wf)
 
-        self.avg_wf = np.nanmean(self.spk_wf, axis=0)
-        self.wf_ts = np.arange(0, self.avg_wf.shape[0]) / sample_rate[self.format] * 1E3  # x-axis in ms
-
-        def _get_spk_profile(wf_ts, avg_wf, interpolate=True):
+        def _get_spk_profile(wf_ts, avg_wf, interpolate=interpolate):
             spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
             if interpolate:
                 spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
@@ -374,6 +375,13 @@ class ClusterInfo:
                         1 / sample_rate[self.format]) * 1E6  # in microseconds
             deflection_range, half_width = get_half_width(wf_ts, avg_wf)  # get the half width from the peak deflection
             return spk_height, spk_width, half_width, deflection_range
+
+        if not interp_factor:
+            from analysis.parameters import interp_factor
+            interp_factor = interp_factor
+
+        self.avg_wf = np.nanmean(self.spk_wf, axis=0)
+        self.wf_ts = np.arange(0, self.avg_wf.shape[0]) / sample_rate[self.format] * 1E3  # x-axis in ms
 
         if interpolate:  # interpolate the waveform to increase sampling frequency
             from scipy import interpolate
