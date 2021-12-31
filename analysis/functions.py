@@ -153,7 +153,7 @@ def get_nb_bouts(song_note: str, bout_labeling: str):
     return nb_bouts
 
 
-def get_snr(avg_wf, raw_neural_trace):
+def get_snr(avg_wf, raw_neural_trace, filter_crit=5):
     """
     Calculate signal-to-noise ratio of the spike
     Parameters
@@ -162,17 +162,23 @@ def get_snr(avg_wf, raw_neural_trace):
         averaged spike waveform of a neuron
     raw_neural_trace : array
         raw neural signal
+
     Returns
     -------
     snr : float
         signal-to-noise ratio
     """
-
     import numpy as np
+    from scipy.signal import hilbert
 
-    snr = 10 * np.log10(np.var(avg_wf) / np.var(raw_neural_trace))  # in dB
-    snr = round(snr, 3)
-    return snr
+    # Get signal envelop of the raw trace and filter out ranges that are too large (e.g., motor artifacts)
+    signal = hilbert(raw_neural_trace)
+    envelope = np.abs(signal)
+    crit = envelope.mean() + envelope.std() * filter_crit
+    raw_neural_trace[envelope > crit] = np.nan
+
+    snr = 10 * np.log10(np.nanvar(avg_wf) / np.nanvar(raw_neural_trace))  # in dB
+    return round(snr, 5)
 
 
 def get_half_width(wf_ts, avg_wf):
