@@ -4,9 +4,9 @@ def change_cbin_names(data_path=None):
     """
     Change the name of the .cbin & .rec files to fit the format (b14r74_190913_161407_Undir) used in the current analysis
 
-    Args:
-        data_path: string
-
+    Parameters
+    ----------
+    data_path : str
     """
 
     import os
@@ -63,10 +63,9 @@ def convert2syllable(data_path=None):
     """
     Rename variables (labels -> syllables) to avoid the clash with the
     reserved keyword (labels) in newer version of MATLAB
-
-    Args:
-        data_path: string
-
+    Parameters
+    ----------
+    data_path : str
     """
     from pathlib import Path
     import scipy.io
