@@ -3,13 +3,6 @@ Analyze spike waveform metrics
 Calculates signal-to-noise ratio (SNR) relative to the background (raw neural trace)
 Save results to unit_profile table
 """
-from analysis.functions import get_snr
-from analysis.spike import ClusterInfo, NeuralData
-from database.load import ProjectLoader, DBInfo
-import matplotlib.pyplot as plt
-import numpy as np
-from util import save
-from util.draw import remove_right_top, set_fig_size
 
 
 def plot_waveform(ax, wf_ts, spk_wf,
@@ -20,6 +13,7 @@ def plot_waveform(ax, wf_ts, spk_wf,
                   avg_wf=True,
                   scale_bar=True
                   ):
+
     """
     Plot individual & avg waveforms
     Parameters
@@ -38,6 +32,8 @@ def plot_waveform(ax, wf_ts, spk_wf,
         plot the scale bar
 
     """
+    import numpy as np
+    from util.draw import remove_right_top
 
     # Randomly select proportions of waveforms to plot
     np.random.seed(seed=42)
@@ -73,84 +69,121 @@ def plot_waveform(ax, wf_ts, spk_wf,
         ax.text(0.15, ax.get_ylim()[0] * 1.05, '500 µs')
         ax.axis('off')
 
-def analyze_waveform():
-    pass
 
+def main(query,
+         spk_proportion=0.5,
+         interpolate=True,
+         align_wf=True,
+         filter_crit=5,
+         update=True,
+         save_fig=True,
+         update_db=True,
+         save_folder_name='Waveform',
+         view_folder=True,
+         fig_ext='.png'
+         ):
 
+    from analysis.functions import get_snr
+    from analysis.spike import ClusterInfo, NeuralData
+    from database.load import ProjectLoader, DBInfo
+    import matplotlib.pyplot as plt
+    from util import save
+    from util.draw import set_fig_size
 
+    font_size = 10
 
+    # Load database
+    db = ProjectLoader().load_db()
+    db.execute(query)
 
-# Parameters
-save_fig = True
-update_db = True
-update = False
-save_folder_name = 'Waveform'
-fig_ext = '.png'  # .png or .pdf
-font_size = 10
-spk_proportion = 0.5  # proportion of waveforms to plot
-interpolate = False  # interpolate spike waveform to artificially increase the number of data points
-align_wf = True
-filter_crit = 5  # neural data envelope threshold (in s.d), filter out values exceeding this threshold
+    # Loop through db
+    for row in db.cur.fetchall():
 
-# Load database
-db = ProjectLoader().load_db()
+        # Load cluster info from db
+        cluster_db = DBInfo(row)
+        name, path = cluster_db.load_cluster_db()
+        unit_nb = int(cluster_db.unit[-2:])
+        channel_nb = int(cluster_db.channel[-2:])
+        format = cluster_db.format
 
-# SQL statement
-query = "SELECT * FROM cluster WHERE analysisOK"
-db.execute(query)
+        ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
+        ci.analyze_waveform(interpolate=True, interp_factor=100, align_wf=align_wf)  # get waveform features
+        nd = NeuralData(path, channel_nb, format, update=False)  # raw neural data
 
-# Loop through db
-for row in db.cur.fetchall():
+        # Calculate the SNR (signal-to-noise ratio in dB)
+        # variance of the signal (waveform) divided by the variance of the total neural trace
+        snr = get_snr(ci.avg_wf, nd.data, filter_crit=filter_crit)
+        del nd
 
-    # Load cluster info from db
-    cluster_db = DBInfo(row)
-    name, path = cluster_db.load_cluster_db()
-    unit_nb = int(cluster_db.unit[-2:])
-    channel_nb = int(cluster_db.channel[-2:])
-    format = cluster_db.format
+        # Plot the individual waveforms
+        fig = plt.figure(figsize=(7, 5))
+        fig.suptitle(ci.name)
+        ax = plt.subplot(121)
+        plot_waveform(ax, wf_ts=ci.wf_ts, spk_wf=ci.spk_wf,
+                      spk_proportion=spk_proportion
+                      )
 
-    ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
-    ci.analyze_waveform(interpolate=False, align_wf=align_wf)  # get waveform features
-    nd = NeuralData(path, channel_nb, format, update=update)  # raw neural data
+        # Print out text
+        plt.subplot(122)
+        plt.axis('off')
+        plt.text(0.1, 0.8, 'SNR = {} dB'.format(snr), fontsize=font_size)
+        plt.text(0.1, 0.6, 'Spk Height = {:.2f} µV'.format(ci.spk_height), fontsize=font_size)
+        plt.text(0.1, 0.4, 'Spk Width = {:.2f} µs'.format(ci.spk_width), fontsize=font_size)
+        plt.text(0.1, 0.2, '# of Spk = {}'.format(ci.nb_spk), fontsize=font_size)
+        plt.text(0.1, 0.0, f"Proportion = {int(spk_proportion * 100)} %", fontsize=font_size)
+        set_fig_size(4.2, 2.5)  # set the physical size of the save_fig in inches (width, height)
 
-    # Calculate the SNR (signal-to-noise ratio in dB)
-    # variance of the signal (waveform) divided by the variance of the total neural trace
-    snr = get_snr(ci.avg_wf, nd.data, filter_crit=filter_crit)
+        # Save results to database
+        if update_db:
+            db.cur.execute(f"UPDATE unit_profile SET nbSpk=({ci.nb_spk}) WHERE clusterID=({cluster_db.id})")
+            db.cur.execute(f"UPDATE unit_profile SET spkHeight=({ci.spk_height}) WHERE clusterID=({cluster_db.id})")
+            db.cur.execute(f"UPDATE unit_profile SET spkWidth=({ci.spk_width}) WHERE clusterID=({cluster_db.id})")
+            db.cur.execute(f"UPDATE unit_profile SET SNR=({snr}) WHERE clusterID=({cluster_db.id})")
+            db.conn.commit()
 
-    # Plot the individual waveforms
-    fig = plt.figure(figsize=(7, 5))
-    fig.suptitle(ci.name)
-    ax = plt.subplot(121)
-    plot_waveform(ax, wf_ts=ci.wf_ts, spk_wf=ci.spk_wf,
-                  spk_proportion=spk_proportion
-                  )
+        # Save results
+        if save_fig:
+            save_path = save.make_dir(ProjectLoader().path / 'Analysis', save_folder_name)
+            save.save_fig(fig, save_path, ci.name, fig_ext=fig_ext, view_folder=view_folder)
+        else:
+            plt.show()
 
-    # Print out text
-    plt.subplot(122)
-    plt.axis('off')
-    plt.text(0.1, 0.8, 'SNR = {} dB'.format(snr), fontsize=font_size)
-    plt.text(0.1, 0.6, 'Spk Height = {:.2f} µV'.format(ci.spk_height), fontsize=font_size)
-    plt.text(0.1, 0.4, 'Spk Width = {:.2f} µs'.format(ci.spk_width), fontsize=font_size)
-    plt.text(0.1, 0.2, '# of Spk = {}'.format(ci.nb_spk), fontsize=font_size)
-    plt.text(0.1, 0.0, f"Proportion = {int(spk_proportion * 100)} %" , fontsize=font_size)
-    set_fig_size(4.2, 2.5)  # set the physical size of the save_fig in inches (width, height)
-
-    # Save results to database
+    # Convert db to csv
     if update_db:
-        db.cur.execute(f"UPDATE unit_profile SET nbSpk=({ci.nb_spk}) WHERE clusterID=({cluster_db.id})")
-        db.cur.execute(f"UPDATE unit_profile SET spkHeight=({ci.spk_height}) WHERE clusterID=({cluster_db.id})")
-        db.cur.execute(f"UPDATE unit_profile SET spkWidth=({ci.spk_width}) WHERE clusterID=({cluster_db.id})")
-        db.cur.execute(f"UPDATE unit_profile SET SNR=({snr}) WHERE clusterID=({cluster_db.id})")
-        db.conn.commit()
+        db.to_csv('unit_profile')
+    print('Done!')
 
-    # Save results
-    if save_fig:
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', save_folder_name)
-        save.save_fig(fig, save_path, ci.name, fig_ext=fig_ext)
-    else:
-        plt.show()
 
-# Convert db to csv
-if update_db:
-    db.to_csv('cluster')
-print('Done!')
+if __name__ == '__main__':
+
+    from database.load import create_db
+
+    # Parameters
+    spk_proportion = 0.5  # proportion of waveforms to plot (0 to 1)
+    interpolate = True  # interpolate spike waveform to artificially increase the number of data points
+    align_wf = True  # align waveform first to calculate waveform metrics
+    filter_crit = 5  # neural data envelope threshold (in s.d), filter out values exceeding this threshold
+    update = False
+    save_fig = True
+    update_db = True
+    view_folder = True
+    fig_ext = '.png'  # .png or .pdf
+
+    # Create a new db to store results
+    if update_db:
+        db = create_db('create_pcc.sql')
+
+    # SQL statement
+    query = "SELECT * FROM cluster"
+
+    main(query,
+         spk_proportion=spk_proportion,
+         interpolate=interpolate,
+         align_wf=align_wf,
+         filter_crit=filter_crit,
+         update=update,
+         save_fig=save_fig,
+         update_db=update_db,
+         view_folder=view_folder,
+         fig_ext=fig_ext
+         )
