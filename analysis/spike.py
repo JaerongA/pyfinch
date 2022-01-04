@@ -342,21 +342,20 @@ class ClusterInfo:
         # print("spk_ts, spk_wf, nb_spk attributes added")
 
     def analyze_waveform(self,
-                         interpolate=True, interp_factor=None,
-                         align_wf=True
+                         align_wf=True,
+                         interpolate=True, interp_factor=None
                          ):
         """
         Perform waveform analysis
         Parameters
         ----------
+        align_wf : bool
+            align all spike waveforms relative to the max location
         interpolate : bool
             Set to true if waveform interpolation is needed
         interp_factor : int
             Factor by which to increase the sampling frequency of the waveform
             e.g., 100 if you want to increase the data points by 100 fold
-        align_wf : bool
-            align all spike waveforms relative to the max location
-
         """
         from analysis.functions import align_waveform, get_half_width
         from analysis.parameters import sample_rate
@@ -1623,10 +1622,10 @@ class NeuralData:
         import numpy as np
 
         self.path = path
-        self.channel = channel_nb
+        self.channel_nb = str(channel_nb).zfill(2)
         self.format = format  # format of the file (e.g., rhd), this info should be in the database
 
-        file_name = self.path / f"NeuralData_Ch{self.channel}.npy"
+        file_name = self.path / f"NeuralData_Ch{self.channel_nb}.npy"
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
             data_info = self.load_neural_data()
             # Save event_info as a numpy object
@@ -1652,7 +1651,7 @@ class NeuralData:
         print("")
         print("Load neural data")
         # List .rhd files
-        rhd_files = list(self.path.glob('*.rhd'))
+        files = list(self.path.glob(f'*.{self.format}'))
 
         # Initialize
         timestamp_concat = np.array([], dtype=np.float64)
@@ -1661,27 +1660,35 @@ class NeuralData:
         # Store values in these lists
         file_list = []
 
-        # Loop through Intan .rhd files
-        for file in rhd_files:
+        if self.format == 'cbin':
+            # if the neural data is in .cbin format, read from .mat files that has contains concatenated data
+            # currently does not have files to extract data from .cbin files in python
+            import scipy.io
+            mat_file = list(self.path.glob(f'*Ch{self.channel_nb}(merged).mat'))[0]
+            timestamp_concat = scipy.io.loadmat(mat_file)['t_amplifier'][0].astype(np.float64)
+            amplifier_data_concat = scipy.io.loadmat(mat_file)['amplifier_data'][0].astype(np.float64)
+        else:
+            # Loop through Intan .rhd files
+            for file in files:
 
-            # Load data file
-            print('Loading... ' + file.stem)
-            file_list.append(file.name)
-            intan = read_rhd(file)  # note that the timestamp is in second
-            # Concatenate timestamps
-            intan['t_amplifier'] -= intan['t_amplifier'][0]  # start from t = 0
-            if timestamp_concat.size == 0:
-                timestamp_concat = np.append(timestamp_concat, intan['t_amplifier'])
-            else:
-                intan['t_amplifier'] += (timestamp_concat[-1] + (1 / sample_rate[self.format]))
-                timestamp_concat = np.append(timestamp_concat, intan['t_amplifier'])
+                # Load data file
+                print('Loading... ' + file.stem)
+                file_list.append(file.name)
+                intan = read_rhd(file)  # note that the timestamp is in second
+                # Concatenate timestamps
+                intan['t_amplifier'] -= intan['t_amplifier'][0]  # start from t = 0
+                if timestamp_concat.size == 0:
+                    timestamp_concat = np.append(timestamp_concat, intan['t_amplifier'])
+                else:
+                    intan['t_amplifier'] += (timestamp_concat[-1] + (1 / sample_rate[self.format]))
+                    timestamp_concat = np.append(timestamp_concat, intan['t_amplifier'])
 
-            # Concatenate neural data
-            for ind, ch in enumerate(intan['amplifier_channels']):
-                if self.channel == int(ch['native_channel_name'][-2:]):
-                    amplifier_data_concat = np.append(amplifier_data_concat, intan['amplifier_data'][ind, :])
+                # Concatenate neural data
+                for ind, ch in enumerate(intan['amplifier_channels']):
+                    if self.channel == int(ch['native_channel_name'][-2:]):
+                        amplifier_data_concat = np.append(amplifier_data_concat, intan['amplifier_data'][ind, :])
 
-        timestamp_concat *= 1E3  # convert to microsecond
+            timestamp_concat *= 1E3  # convert to microsecond
 
         # Organize data into a dictionary
         data_info = {
@@ -1690,7 +1697,7 @@ class NeuralData:
             'data': amplifier_data_concat,
             'sample_rate': sample_rate[self.format]
         }
-        file_name = self.path / f"NeuralData_Ch{self.channel}.npy"
+        file_name = self.path / f"NeuralData_Ch{self.channel_nb}.npy"
         np.save(file_name, data_info)
 
         return data_info
