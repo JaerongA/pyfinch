@@ -144,9 +144,16 @@ def total_nb_notes_in_bout(note: str, bout: str):
 
 
 def get_nb_bouts(song_note: str, bout_labeling: str):
-    """ Count the number of bouts (only includes those having at least one song note)
-    INPUT1: song_note (e.g., abcd, syllables that are part of a motif)
-    INPUT2: bout_labeling (e.g., iiiiiiiiabcdjiiiabcdji*, syllables that are demarcated by * (bout))
+    """
+    Count the number of bouts (only includes those having at least one song note)
+    Parameters
+    ----------
+    song_note : str
+        syllables that are part of a motif (e.g., abcd)
+    bout_labeling : str
+        syllables that are demarcated by * (bout) (e.g., iiiiiiiiabcd*jiiiabcdji*)
+    Returns
+    -------
     """
     nb_bouts = len([bout for bout in bout_labeling.split('*')[:-1] if
                     unique_nb_notes_in_bout(song_note, bout)])
@@ -155,7 +162,7 @@ def get_nb_bouts(song_note: str, bout_labeling: str):
 
 def get_snr(avg_wf, raw_neural_trace, filter_crit=5):
     """
-    Calculate signal-to-noise ratio of the spike
+    Calculate signal-to-noise ratio of sorted spike relative to the background neural trace
     Parameters
     ----------
     avg_wf : array
@@ -172,13 +179,17 @@ def get_snr(avg_wf, raw_neural_trace, filter_crit=5):
     from scipy.signal import hilbert
 
     # Get signal envelop of the raw trace and filter out ranges that are too large (e.g., motor artifacts)
-    signal = hilbert(raw_neural_trace)
-    envelope = np.abs(signal)
-    crit = envelope.mean() + envelope.std() * filter_crit
+    envelope = np.abs(hilbert(raw_neural_trace))
+
+    envelope_crit = envelope.mean() + envelope.std() * filter_crit
+    waveform_crit = abs(avg_wf).mean() + abs(avg_wf).std() * filter_crit
+
+    crit = max(envelope_crit, waveform_crit)
     raw_neural_trace[envelope > crit] = np.nan
 
+    # plt.plot(raw_neural_trace), plt.show()
     snr = 10 * np.log10(np.nanvar(avg_wf) / np.nanvar(raw_neural_trace))  # in dB
-    return round(snr, 5)
+    return round(snr, 3)
 
 
 def get_half_width(wf_ts, avg_wf):
@@ -189,8 +200,7 @@ def get_half_width(wf_ts, avg_wf):
         deflection_baseline = np.abs(avg_wf).mean() + np.abs(avg_wf).std(
             axis=0)  # the waveform baseline. Finds values above the baseline
     else:
-        deflection_baseline = avg_wf.mean() - avg_wf.std(
-            axis=0)  # the waveform baseline. Finds values below the baseline
+        deflection_baseline = avg_wf.mean() - avg_wf.std(axis=0)  # the waveform baseline. Finds values below the baseline
 
     diff_ind = []
     for ind in np.where(np.diff(avg_wf > deflection_baseline))[0]:  # below mean amp
@@ -216,6 +226,7 @@ def get_half_width(wf_ts, avg_wf):
     trough_ind = peak_trough_ind.max()
 
     deflection_range = []
+    half_width = np.nan
 
     for ind, _ in enumerate(diff_ind):
         if ind < len(diff_ind) - 1:
@@ -223,9 +234,11 @@ def get_half_width(wf_ts, avg_wf):
             if range[0] < peak_ind < range[1]:
                 deflection_range = range
                 break
-
-    half_width = (wf_ts[deflection_range[1]] - wf_ts[deflection_range[0]]) / 2
-    half_width *= 1E3  # convert to microsecond
+    if deflection_range:
+        # sometimes half-width cannot be properly estimated unless the signal is interpolated
+        # in such cases, the function will just return nan
+        half_width = (wf_ts[deflection_range[1]] - wf_ts[deflection_range[0]]) / 2
+        half_width *= 1E3  # convert to microsecond
     return deflection_range, round(half_width, 3)
 
 
@@ -651,12 +664,25 @@ def align_waveform(spk_wf):
     aligned_wf = np.empty((spk_wf.shape[0], spk_wf.shape[1]))
     aligned_wf[:] = np.nan
 
-    template_max_ind = np.argmin(spk_wf.mean(axis=0))
+    max_first = False  # max value (peak) comes first
+
+    avg_wf = spk_wf.mean(axis=0)
+    if np.argmin(avg_wf) < np.argmax(avg_wf):  # inverted waveform (peak comes first in extra-cellular recording)
+        max_first = True
+
+    if max_first:
+        template_max_ind = np.argmin(avg_wf)
+    else:
+        template_max_ind = np.argmax(avg_wf)
+
     for ind, wf in enumerate(spk_wf):
 
         new_wf = np.empty((spk_wf.shape[1]))
         new_wf[:] = np.nan
-        max_ind = np.argmin(wf)
+        if max_first:
+            max_ind = np.argmin(wf)
+        else:
+            max_ind = np.argmax(wf)
 
         if template_max_ind != max_ind:
             max_diff = max_ind - template_max_ind
