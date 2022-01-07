@@ -6,7 +6,9 @@ import seaborn as sns
 from util import save
 from util.draw import remove_right_top
 import warnings
+
 warnings.filterwarnings('ignore')
+save_folder_name = 'Results'
 
 def get_nb_cluster(ax):
     """
@@ -262,9 +264,8 @@ def plot_regression(x, y, color='k', size=None, save_fig=False, fig_ext='.png',
         plt.show()
 
 
-
 def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
-                        title=None, x_label=None, y_label=None,
+                        title='', x_label=None, y_label=None,
                         col_order=None,
                         y_lim=None,
                         jitter=0.1, alpha=0.5,
@@ -272,7 +273,6 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
                         legend_ok=False,
                         **kwargs
                         ):
-    import math
     import numpy as np
     from scipy import stats
     from util.stats import get_sig
@@ -315,17 +315,16 @@ def plot_bar_comparison(ax, dependent_var, group_var, hue_var=None,
         ax.set_title(f"{title} \n\n {msg1} \n {msg2}", size=10)
 
     if y_lim:
-        plt.ylim(y_lim[0], y_lim[1])
-    # else:
-    #     ax.set_ylim([0, myround(math.ceil(y), base=10)])
+        ax.set_ylim(y_lim[0], y_lim[1])
+
     ax.spines['right'].set_visible(False), ax.spines['top'].set_visible(False)
 
     if 'xtick_label' in kwargs:
         ax.set_xticklabels(kwargs['xtick_label'])
 
     if legend_ok and hue_var is not None:
-        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-    else:
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    elif legend_ok == False and hue_var is not None:
         ax.get_legend().remove()
 
 
@@ -562,9 +561,10 @@ def plot_per_day_block(df, ind_var_name, dep_var_name,
                        title=None, y_label=None, y_lim=None,
                        plot_type='bar',  # {bar, box}
                        post_hoc=False,
-                       view_folder=True,
                        fig_name='Untitled',
-                       save_fig=True, fig_ext='.png'
+                       view_folder=True,
+                       save_fig=True, save_folder_name=save_folder_name,
+                       fig_ext='.png'
                        ):
     """Plot bar plot and violin plot for values per day block and run one-way ANOVA"""
 
@@ -644,7 +644,72 @@ def plot_per_day_block(df, ind_var_name, dep_var_name,
 
     # Save figure
     if save_fig:
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', save_folder_name)
+        save.save_fig(fig, save_path, fig_name, view_folder=view_folder, fig_ext=fig_ext)
+    else:
+        plt.show()
+
+
+def plot_line_across_blocks(df_block, variable,
+                            title=None,
+                            y_lim=None, fig_size=(4, 3),
+                            y_label=None,
+                            fig_name='Untitled',
+                            view_folder=True,
+                            save_fig=False, save_folder_name=save_folder_name,
+                            fig_ext='.png'
+                            ):
+    """
+    Plot line plot with connecting lines across day block and run one-way ANOVA
+    df_block should have a block column and block-averaged variable column
+    """
+
+    fig, ax = plt.subplots(1, 1, figsize=fig_size)
+    plt.suptitle(title, y=1, fontsize=12)
+    sns.lineplot('block10days', variable, hue='birdID', marker='o', data=df_block, ax=ax)
+    remove_right_top(ax)
+    ax.set_xlabel(''), ax.set_ylabel(y_label)
+    ax.set_ylim(y_lim)
+
+    if len(df_block['block10days'].unique()) == 4:
+        day_block_label_list = ['Predeafening', 'Day 4-10', 'Day 11-20', 'Day >= 21']
+        ax.set_xticks([0, 1, 2, 3])
+
+    elif len(df_block['block10days'].unique()) == 5:
+        day_block_label_list = ['Predeafening', 'Day 4-10', 'Day 11-20', 'Day 21-30', 'Day >= 31']
+        ax.set_xticks([0, 1, 2, 3, 4])
+
+    ax.set_xticklabels(day_block_label_list, rotation=45)
+    ax.legend(loc='center left', bbox_to_anchor=(1.1, 0.5))
+
+    # Run one-way ANOVA
+    import scipy.stats as stats
+    from util.stats import get_sig
+
+    if len(df_block['block10days'].unique()) == 4:
+        f_val, p_val = stats.f_oneway(
+            df_block[variable][df_block['block10days'] == 0],
+            df_block[variable][df_block['block10days'] == 1],
+            df_block[variable][df_block['block10days'] == 2],
+            df_block[variable][df_block['block10days'] == 3],
+        )
+    elif  len(df_block['block10days'].unique()) == 5:
+        f_val, p_val = stats.f_oneway(
+            df_block[variable][df_block['block10days'] == 0],
+            df_block[variable][df_block['block10days'] == 1],
+            df_block[variable][df_block['block10days'] == 2],
+            df_block[variable][df_block['block10days'] == 3],
+            df_block[variable][df_block['block10days'] == 4]
+        )
+
+    sig = get_sig(p_val)  # print out asterisk
+
+    msg = f"""F ={f_val: 0.3f}, p ={p_val: 0.3f} (One-way ANOVA) ({sig})"""
+    # print(msg)
+    ax.text(0, -0.5, msg, transform=ax.transAxes)
+    plt.tight_layout()
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', save_folder_name)
         save.save_fig(fig, save_path, fig_name, view_folder=view_folder, fig_ext=fig_ext)
     else:
         plt.show()
