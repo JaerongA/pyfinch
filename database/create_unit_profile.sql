@@ -11,14 +11,13 @@ CREATE TABLE IF NOT EXISTS unit_profile(
             unit           STRING,
             region         STRING,
 
-            SNR                      REAL,
-            spkHeight                REAL,
-            spkWidth                 REAL,
-            spkHalfWidth             REAL,
             nbSpk                    INT,
             baselineFR               REAL,
             motifFRUndir             REAL,
             motifFRDir               REAL,
+            spkHeight                REAL,
+            spkWidth                 REAL,
+            SNR                      REAL,
 
             unitCategoryUndir        STRING,
             unitCategoryDir          STRING,
@@ -40,19 +39,6 @@ CREATE TABLE IF NOT EXISTS unit_profile(
             burstMeanNbSpkDir        REAL,
             burstFractionDir         REAL,
             burstIndexDir            REAL,
-
---             withinRefPropBaseline    REAL,
---             isiPeakLatencyBaseline   REAL,
---             isiCVBaseline            REAL,
---
---             withinRefPropUndir       REAL,
---             isiPeakLatencyUndir      REAL,
---             isiCVUndir               REAL,
---
---             withinRefPropDir         REAL,
---             isiPeakLatencyDir        REAL,
---             isiCVDir                 REAL,
-
             FOREIGN KEY(clusterID) REFERENCES cluster(id));
 
 INSERT OR IGNORE INTO unit_profile (clusterID, birdID, taskName, taskSession, site, channel, unit, region)
