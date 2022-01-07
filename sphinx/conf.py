@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'PyFinch'
+project = 'pyfinch'
 copyright = '2020, Jaerong Ahn'
 author = 'Jaerong Ahn'
 
