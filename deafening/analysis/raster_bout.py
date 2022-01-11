@@ -1,5 +1,4 @@
 """
-By Jaerong
 Plot spectrograms & rasters for demarcated song bout
 """
 
@@ -8,24 +7,26 @@ def plot_raster_bouts(query,
                       bout_nb=None,
                       update=False,
                       save_fig=True,
-                      view_folder=False,
+                      view_folder=True,
                       fig_ext='.png'
                       ):
-
     from analysis.spike import AudioData, BoutInfo, ClusterInfo, NeuralData
     from analysis.parameters import bout_buffer, freq_range, bout_color
-    from util import save
-    from util.draw import remove_right_top
+    from database.load import ProjectLoader, DBInfo
     import matplotlib.pyplot as plt
     import matplotlib.colors as colors
     import numpy as np
-    from database.load import ProjectLoader, DBInfo
+    from util import save
+    from util.draw import remove_right_top
     from scipy import stats
     import warnings
     warnings.filterwarnings('ignore')
 
+    # Make save path
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', save_folder_name, add_date=False)
+
     # Parameters
-    save_dir_name = 'RasterBouts'
     font_size = 12  # figure font size
     rec_yloc = 0.05
     rect_height = 0.2
@@ -62,8 +63,6 @@ def plot_raster_bouts(query,
 
         for bout_ind, (file, onsets, offsets, syllables, context) in enumerate(list_zip):
 
-            # if not bout_ind:
-            #     continue
             # If you want to plot a specific bout, specify its number
             # Otherwise, plot them all
             if isinstance(bout_nb, int):
@@ -73,7 +72,7 @@ def plot_raster_bouts(query,
             # Convert from string to array of floats
             onsets = np.asarray(list(map(float, onsets)))
             offsets = np.asarray(list(map(float, offsets)))
-            #spks = spks - onsets[0]
+            # spks = spks - onsets[0]
 
             # bout start and end
             start = onsets[0] - bout_buffer
@@ -161,7 +160,7 @@ def plot_raster_bouts(query,
 
             # Save results
             if save_fig:
-                save_path = save.make_dir(ProjectLoader().path / 'Analysis', save_dir_name)
+                save_path2 = save.make_dir(save_path / ci.name, add_date=False)
                 save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, view_folder=view_folder)
             else:
                 plt.show()
@@ -170,13 +169,13 @@ def plot_raster_bouts(query,
 
 
 if __name__ == '__main__':
-
     # Parameters
     bout_nb = None  # bout index you want to plot (None by default)
-    update = True  # Update the cache file per cluster
-    save_fig = False
+    update = False  # Update the cache file per cluster
+    save_fig = True
     view_folder = True  # open the folder where the result figures are saved
     fig_ext = '.png'  # set to '.pdf' for vector output (.png by default)
+    save_folder_name = 'RasterBouts'
 
     # SQL statement
     # query = "SELECT * FROM cluster WHERE analysisOK = 1"
