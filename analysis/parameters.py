@@ -1,7 +1,7 @@
 """
-By Jaerong
-Key parameters for analyzing neural data
+store key parameters for data analysis
 """
+
 import numpy as np
 
 # Song parameters
@@ -12,7 +12,7 @@ freq_range = [300, 8000]  # frequency range for bandpass filter for spectrogram 
 # Set syllable colors
 note_color = {'Intro': ['k', 'gray', 'darkseagreen', 'olive'],
               'Motif': ['r', 'b', 'lime', 'm', 'brown', 'purple', 'saddlebrown'],
-              'Call': ['teal', 'darkgrey', 'darkgray', 'indigo']}
+              'Call': ['teal', 'darkgrey', 'indigo', 'darkgray', ]}
 
 bout_color = {'i': 'k', 'j': 'gray', 'k': 'darkseagreen',  # intro notes
               'a': 'r', 'b': 'b', 'c': 'lime', 'd': 'm', 'e': 'brown', 'f': 'purple', 'g': 'saddlebrown',  # motif notes
@@ -69,12 +69,8 @@ corr_shuffle = {
 # Add a random spike jitter
 jitter_limit = 5  # maximum amount of jitter (in ms)
 
-# Waveform analysis
-interp_factor = 100  # factor by which to increase the sampling frequency
-spk_proportion = 0.2  # proportion of waveforms to plot
-
 # Bout raster plot
-bout_buffer = 1000  # in ms
+bout_buffer = 500  # in ms
 
 # Note temporal buffer (for single syllable)
 note_buffer = 10  # in ms
@@ -94,35 +90,13 @@ peth_shuffle = {'shuffle_limit': 10,  # in ms (50 for motif, 10 for syllable)
 
 alpha = 0.05  # for stat significance
 
-# def get_syl_color():
-#     # color for each syllable
-#     import numpy as np
-#     syl_color = np.zeros((5, 3))  # colors for song notes
-#     syl_color[0, :] = [247, 198, 199]
-#     syl_color[1, :] = [186, 229, 247]
-#     syl_color[2, :] = [187, 255, 195]
-#     syl_color[3, :] = [249, 170, 249]
-#     syl_color[4, :] = [255, 127.5, 0]
-#     syl_color = syl_color / 255
-#     return syl_color
-
-# note_color = []
-#
-# for i, note in enumerate(note_seq[:-1]):
-#     if note in song_note:
-#         note_color.append(motif_color.pop(0))
-#     elif note in intro_notes:
-#         note_color.append(intro_color.pop(0))
-#     elif note in calls:
-#         note_color.append(call_color.pop(0))
-#     else:
-#         note_color.append(intro_color.pop(0))
-#
-# note_color.append('y')  # for stop at the end
-
 # Sequence analysis
 cmap_list = ["YlGnBu", "PiYG",  ]
 sequence_color = {'song_note': ['r', 'b', 'lime', 'm', 'darkorange', 'purple', 'saddlebrown'],
                   'intro': ['k', 'gray', 'darkseagreen', 'olive'],
                   'call': ['teal', 'darkslategray', 'darkgray','indigo']
                   }
+
+# Waveform analysis
+interp_factor = 100  # factor by which to increase the sampling frequency
+spk_proportion = 0.2  # proportion of waveforms to plot (0 to 1 (all waveforms))
