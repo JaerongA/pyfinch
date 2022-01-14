@@ -1,5 +1,4 @@
 """
-By Jaerong
 Plot spike correlograms
 """
 

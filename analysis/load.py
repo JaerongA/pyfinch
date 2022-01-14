@@ -1,5 +1,4 @@
 """
-By Jaerong
 load neural data (from .rhd or .txt)
 """
 

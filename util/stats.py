@@ -1,5 +1,4 @@
 """
-By Jaerong
 Functions for statistical testing
 """
 
@@ -97,3 +96,20 @@ def signed_rank_test(arr1, arr2):
     msg = msg1 + ', ' + msg2
     return z, pval, msg, sig
 
+
+def two_sample_ks_test(arr1, arr2, alternative='two-sided'):
+    """Performs Kolmogorov-Smirnov test to compare two distributions"""
+    from scipy import stats
+    import numpy as np
+
+    # Remove nan if any
+    arr1 = arr1[~np.isnan(arr1)]
+    arr2 = arr2[~np.isnan(arr2)]
+
+    stat, pval = stats.ks_2samp(arr1, arr2, alternative=alternative)
+    sig = get_sig(pval)  # print out asterisk
+    if pval < 0.001:  # mark significance
+        msg = 'p < 0.001'
+    else:
+        msg = (f"p={pval :.3f}")
+    return pval, msg, sig

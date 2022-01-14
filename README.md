@@ -1,2 +1,2 @@
 # pyfinch
-Python Toolbox for behavioral &amp; neural  analysis
+python toolbox for analyzing zebra finch song &amp; neural data

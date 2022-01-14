@@ -92,6 +92,10 @@ def main(query,
 
     font_size = 10
 
+    # Create a new db to store results
+    if update_db:
+        create_db('create_unit_profile.sql')
+
     # Load database
     db = ProjectLoader().load_db()
     db.execute(query)
@@ -168,10 +172,6 @@ if __name__ == '__main__':
     update_db = True
     view_folder = True
     fig_ext = '.png'  # .png or .pdf
-
-    # Create a new db to store results
-    if update_db:
-        db = create_db('create_pcc.sql')
 
     # SQL statement
     query = "SELECT * FROM cluster"

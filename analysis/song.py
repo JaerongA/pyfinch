@@ -1,5 +1,4 @@
 """
-By Jaerong
 A package for song analysis
 """
 
@@ -57,7 +56,8 @@ def load_song(dir, format='wav'):
         timestamp_serialized = np.append(timestamp_serialized, timestamp)
 
         # File information (name, start & end timestamp of each file)
-        file_list.append(os.path.relpath(file, ProjectLoader().path))
+        # file_list.append(os.path.relpath(file, ProjectLoader().path))
+        file_list.append(file.stem)
         file_start_list.append(timestamp_serialized[start_ind])  # in ms
         file_end_list.append(timestamp_serialized[-1])  # in ms
 

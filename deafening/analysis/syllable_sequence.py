@@ -2,6 +2,12 @@
 Syllable sequence analysis and calculates transition entropy
 """
 
+from analysis.song import SongInfo
+from database.load import ProjectLoader, DBInfo
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+from util import save
 
 def nb_song_note_in_bout(song_notes, bout):
     # returns the number of song notes within a bout
@@ -175,11 +181,11 @@ def get_song_stereotypy(sequence_linearity, sequence_consistency):
     return song_stereotypy
 
 
-def get_syllable_sequence(query, update_db=False, save_fig=None, view_folder=True, fig_ext='.png'):
+def main(query, update_db=False, save_fig=None, view_folder=True, fig_ext='.png'):
     """Main function"""
 
     # Parameters
-    nb_row = 10
+    nb_row = 10  # for plotting
     cmap = "gist_heat_r"  # for heatmap
     font_size = 12
 
@@ -189,7 +195,7 @@ def get_syllable_sequence(query, update_db=False, save_fig=None, view_folder=Tru
 
     # Make database
     if update_db:
-        with open('database/create_song_sequence.sql', 'r') as sql_file:
+        with open('../../database/create_song_sequence.sql', 'r') as sql_file:
             db.conn.executescript(sql_file.read())
 
     # Loop through db
@@ -296,7 +302,7 @@ def get_syllable_sequence(query, update_db=False, save_fig=None, view_folder=Tru
 
         # Save results
         if save_fig:
-            save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'SequenceAnalysis')
+            save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'SequenceAnalysis', add_date=False)
             save.save_fig(fig, save_path, si.name, fig_ext=fig_ext, view_folder=view_folder)
         else:
             plt.show()
@@ -338,13 +344,6 @@ def get_syllable_sequence(query, update_db=False, save_fig=None, view_folder=Tru
 
 
 if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-    import numpy as np
-    import seaborn as sns
-
-    from analysis.song import SongInfo
-    from database.load import ProjectLoader, DBInfo
-    from util import save
 
     # Parameters
     update_db = False
@@ -355,9 +354,9 @@ if __name__ == '__main__':
     # SQL statement
     query = "SELECT * FROM song"
 
-    get_syllable_sequence(query,
-                          update_db=update_db,
-                          save_fig=save_fig,
-                          view_folder=view_folder,
-                          fig_ext=fig_ext
-                          )
+    main(query,
+         update_db=update_db,
+         save_fig=save_fig,
+         view_folder=view_folder,
+         fig_ext=fig_ext
+         )

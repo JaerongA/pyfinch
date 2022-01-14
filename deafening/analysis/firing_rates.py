@@ -1,75 +1,74 @@
 """
-Compare motif firing rates between different conditions
-Get values from unit_profile table
-Run firing_rates.py to calculate motif firing rates
+Run firing rate analysis
+Get mean firing rates per condition
+Get firing rates from song motif (including pre-motor windows)
+Stores the results in the unit_profile table
 """
 
-from database.load import ProjectLoader
-from deafening.plot import plot_bar_comparison, plot_per_day_block
-import matplotlib.pyplot as plt
-from util import save
 
-# Load database
-db = ProjectLoader().load_db()
-# SQL statement
-query = """SELECT unit.*, cluster.taskSessionDeafening, cluster.taskSessionPostDeafening, cluster.dph, cluster.block10days
-    FROM unit_profile unit INNER JOIN cluster ON cluster.id = unit.clusterID"""
+def get_firing_rates(query, add_pre_motor=False, update=False, update_db=False):
+    from analysis.parameters import nb_note_crit
+    from analysis.spike import BaselineInfo, MotifInfo
+    from database.load import ProjectLoader, DBInfo
 
-df = db.to_dataframe(query)
-df.dropna(subset=['motifFRUndir'], inplace=True)  # Drop out NaNs
+    # Load database
+    db = ProjectLoader().load_db()
+    # SQL statement
+    db.execute(query)
 
-# Compare firing rates pre vs. post-deafening
-# Parameters
-nb_row = 3
-nb_col = 3
-save_fig = False
-fig_ext = '.png'
+    # Loop through db
+    for row in db.cur.fetchall():
 
-# Plot the results
-fig, ax = plt.subplots(figsize=(9, 4))
-plt.suptitle('Firing Rates', y=.9, fontsize=20)
+        # Load cluster info from db
+        cluster_db = DBInfo(row)
+        name, path = cluster_db.load_cluster_db()
+        unit_nb = int(cluster_db.unit[-2:])
+        channel_nb = int(cluster_db.channel[-2:])
+        format = cluster_db.format
+        motif = cluster_db.motif
 
-# Baseline FR
-ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['baselineFR'], df['taskName'],
-                    hue_var=df['birdID'],
-                    title='Baseline', y_label='Firing Rates (Hz)',
-                    col_order=("Predeafening", "Postdeafening"),
-                    )
+        # Load class object
+        bi = BaselineInfo(path, channel_nb, unit_nb, format, name, update=update)
+        mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
 
-# Undir
-ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['motifFRUndir'], df['taskName'],
-                    hue_var=df['birdID'],
-                    title='Undir',
-                    col_order=("Predeafening", "Postdeafening"),
-                    )
+        # Get number of motifs
+        nb_motifs = mi.nb_motifs(motif)
+        nb_motifs.pop('All', None)
 
-# Dir
-ax = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['motifFRDir'], df['taskName'],
-                    hue_var=df['birdID'],
-                    title='Dir',
-                    col_order=("Predeafening", "Postdeafening"),
-                    legend_ok=True
-                    )
-fig.tight_layout()
+        # Calculate firing rates
+        mi.get_mean_fr(add_pre_motor=add_pre_motor)
 
-# Save results
-if save_fig:
-    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
-    save.save_fig(fig, save_path, 'Firing Rates', fig_ext=fig_ext)
-else:
-    plt.show()
+        # Save results to database
+        if update_db:
+            db.cur.execute(f"""UPDATE unit_profile SET baselineFR = ({bi.mean_fr}) WHERE clusterID = {cluster_db.id}""")
+            if 'U' in mi.mean_fr and nb_motifs['U'] >= nb_note_crit:
+                db.cur.execute(f"""UPDATE unit_profile SET motifFRUndir = ({mi.mean_fr['U']}) WHERE clusterID = {cluster_db.id}""")
+            if 'D' in mi.mean_fr and nb_motifs['D'] >= nb_note_crit:
+                db.cur.execute(f"""UPDATE unit_profile SET motifFRDir = ({mi.mean_fr['D']}) WHERE clusterID = {cluster_db.id}""")
+            db.cur.execute(query)
+            db.conn.commit()
 
-# Plot motif FR per day blocks
-plot_per_day_block(df, ind_var_name='block10days', dep_var_name='motifFRUndir',
-                   title='Motif FR (Undir) per day block',
-                   y_label='FR (Hz)', y_lim=[0, 70],
-                   view_folder=True,
-                   fig_name='MotifFR_per_day_block',
-                   save_fig=False, fig_ext='.png'
-                   )
+    # Convert db to csv
+    if update_db:
+        db.to_csv('unit_profile')
+    print('Done!')
 
 
+if __name__ == '__main__':
 
+    from database.load import create_db
+
+    # Parameters
+    update = False
+    update_db = True
+    add_pre_motor = True # Add spikes from the pre-motor window
+
+    # Create & Load database
+    if update_db:
+        db = create_db('create_unit_profile.sql')
+
+    # SQL statement (select from cluster db)
+    query = "SELECT * FROM cluster WHERE analysisOK = 1"
+    # query = "SELECT * FROM cluster WHERE id=96"
+
+    get_firing_rates(query, add_pre_motor=add_pre_motor, update=update, update_db=update_db)

@@ -1,5 +1,4 @@
 """
-By Jaerong
 Get correlation between entropy and number of spikes per syllable
 v2 computes values from 50 ms prior to onset to 50 ms prior to offset
 """
@@ -31,7 +30,7 @@ correlation_parm = 'ev'  # {'spectral_entropy' : 'spectro_temporal_entropy' : 'e
 db = ProjectLoader().load_db()
 
 # Make database
-with open('database/create_entropy_spk_corr.sql', 'r') as sql_file:
+with open('../../database/create_entropy_spk_corr.sql', 'r') as sql_file:
     db.conn.executescript(sql_file.read())
 
 # Make save path

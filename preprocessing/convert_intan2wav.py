@@ -9,7 +9,7 @@ from pathlib import Path
 from math import ceil
 from scipy.signal import hilbert
 from matplotlib import collections as mc
-from song.parameters import *
+from analysis.parameters import *
 from util.functions import find_data_path
 
 # def find_data_path():

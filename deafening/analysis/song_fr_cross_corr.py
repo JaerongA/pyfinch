@@ -9,6 +9,7 @@ from database.load import DBInfo, ProjectLoader, create_db
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
+from math import ceil
 import numpy as np
 from scipy import stats
 from util import save
@@ -16,7 +17,6 @@ import seaborn as sns
 from util.functions import myround
 from util.draw import remove_right_top
 import warnings
-
 warnings.filterwarnings('ignore')
 
 
@@ -106,7 +106,7 @@ def get_song_fr_cross_corr(query,
                            gaussian_std=1,
                            update=False,
                            save_fig=True,
-                           save_folder_name=None,
+                           save_folder_name='SongFR_CrossCorr',
                            update_db=True,
                            view_folder=False,
                            fig_ext='.png'):
@@ -114,6 +114,10 @@ def get_song_fr_cross_corr(query,
     rec_yloc = 0.05
     text_yloc = 0.5  # text height
     font_size = 10
+
+    # Create a new db to store results
+    if update_db:
+        db = create_db('create_song_fr_cross_corr.sql')
 
     # Load database
     db = ProjectLoader().load_db()
@@ -241,7 +245,14 @@ def get_song_fr_cross_corr(query,
         ax_corr.set_ylabel('Cross-correlation', fontsize=font_size)
         ax_corr.set_xlabel('Time (ms)', fontsize=font_size)
         ax_corr.set_xlim([-100, 100])
-        ax_corr.axvline(x=lags[corr.argmax()], color='r', linewidth=1, ls='--')  # mark the peak location
+        # ax_corr.axvline(x=lags[corr.argmax()], color='r', linewidth=1, ls='--')  # mark the peak location
+
+        ax_min, ax_max = get_ax_lim(ax_corr, base=10)
+        ax_corr.set_ylim([ax_min, ax_max])
+        ax_corr.set_yticks([ax_min, ax_max])
+        ax_corr.set_yticklabels([ax_min, ax_max])
+
+
         remove_right_top(ax_corr)
         del corr, lags
 
@@ -340,21 +351,16 @@ if __name__ == '__main__':
     update_db = False
     save_fig = False
     view_folder = True  # open the folder where the result figures are saved
-    fig_ext = '.png'  # set to '.pdf' for vector output (.png by default)
-
-    # Create a new db to store results
-    if update_db:
-        db = create_db('create_song_fr_cross_corr.sql')
+    fig_ext = '.pdf'  # set to '.pdf' for vector output (.png by default)
 
     # SQL statement
-    query = "SELECT * FROM cluster WHERE analysisOK"
+    query = "SELECT * FROM cluster WHERE analysisOK AND id=34"
 
     get_song_fr_cross_corr(query,
                            motif_nb=motif_nb,
                            gaussian_std=gaussian_std,
                            save_fig=save_fig,
-                           save_folder_name='SongFR_CrossCorr',
                            update_db=update_db,
                            view_folder=view_folder,
-                           fig_ext='.png'
+                           fig_ext=fig_ext
                            )

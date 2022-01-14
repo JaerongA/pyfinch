@@ -16,7 +16,8 @@ note_color = {'Intro': ['k', 'gray', 'darkseagreen', 'olive'],
 
 bout_color = {'i': 'k', 'j': 'gray', 'k': 'darkseagreen',  # intro notes
               'a': 'r', 'b': 'b', 'c': 'lime', 'd': 'm', 'e': 'brown', 'f': 'purple', 'g': 'saddlebrown',  # motif notes
-              'm': 'teal', 'n': 'darkgrey', 'l': 'darkgray', 'o': 'indigo'  # calls
+              'm': 'teal', 'n': 'darkgrey', 'l': 'darkgray', 'o': 'indigo',  # calls
+              'A': 'w'
               }
 
 # Define baseline period 1 sec window & 2 sec prior to syllable onset

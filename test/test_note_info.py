@@ -236,7 +236,7 @@ for row in db.cur.fetchall():
         remove_right_top(ax_raster)
 
         # Get firing rates
-        pi = ni.get_peth()
+        pi = ni.get_note_peth()
         pi.get_fr()  # get firing rates
 
         # Plot mean firing rates

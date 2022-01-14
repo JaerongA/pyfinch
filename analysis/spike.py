@@ -1685,7 +1685,7 @@ class NeuralData:
 
                 # Concatenate neural data
                 for ind, ch in enumerate(intan['amplifier_channels']):
-                    if self.channel == int(ch['native_channel_name'][-2:]):
+                    if int(self.channel_nb) == int(ch['native_channel_name'][-2:]):
                         amplifier_data_concat = np.append(amplifier_data_concat, intan['amplifier_data'][ind, :])
 
             timestamp_concat *= 1E3  # convert to microsecond
@@ -1724,6 +1724,12 @@ class NeuralData:
         ind = np.where((self.timestamp >= start) & (self.timestamp <= end))
         return self.timestamp[ind], self.data[ind]
 
+    @property
+    def open_folder(self):
+
+        from util.functions import open_folder
+
+        open_folder(self.path)
 
 class Correlogram():
     """

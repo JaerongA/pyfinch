@@ -1,10 +1,7 @@
 """
-By Jaerong
 plot raster & peth per syllable
 calculate PCC across different time windows
 """
-import numpy as np
-from matplotlib import pyplot as plt
 
 
 def get_raster_syllable(query,
@@ -18,9 +15,11 @@ def get_raster_syllable(query,
 
     from analysis.parameters import freq_range, peth_parm, note_color, tick_width, tick_length
     from analysis.spike import ClusterInfo, AudioData
+    from database.load import create_db, DBInfo, ProjectLoader
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
-    from database.load import DBInfo, ProjectLoader
+    from matplotlib import pyplot as plt
+    import numpy as np
     from util import save
     from util.draw import remove_right_top
     from util.functions import find_str, myround
@@ -34,6 +33,10 @@ def get_raster_syllable(query,
     font_size = 12
     marker_size = 0.4  # for spike count
     nb_note_crit = 10  # minimum number of notes for analysis
+
+    # Create & Load database
+    if update_db:
+        db = create_db('create_syllable_pcc_window.sql')
 
     # Load database
     # SQL statement
@@ -252,7 +255,7 @@ def get_raster_syllable(query,
             remove_right_top(ax_raster)
 
             # Draw peri-event histogram (PETH)
-            pi = ni.get_peth()  # PETH object (PethInfo)
+            pi = ni.get_note_peth()  # PETH object (PethInfo)
             pi.get_fr()  # get firing rates
 
             # Plot mean firing rates
@@ -303,15 +306,15 @@ def get_raster_syllable(query,
             # ax_peth.add_patch(rectangle)
 
             # Calculate pairwise cross-correlation across different time_windows
-            pi_pre = ni.get_peth(pre_evt_buffer=buffer_size, duration=ni.median_dur - buffer_size)  # pre-motor window
+            pi_pre = ni.get_note_peth(pre_evt_buffer=buffer_size, duration=ni.median_dur - buffer_size)  # pre-motor window
             pi_pre.get_fr()
             pi_pre.get_pcc()
 
-            pi_syllable = ni.get_peth(pre_evt_buffer=0, duration=ni.median_dur)  # pre-motor window
+            pi_syllable = ni.get_note_peth(pre_evt_buffer=0, duration=ni.median_dur)  # pre-motor window
             pi_syllable.get_fr()
             pi_syllable.get_pcc()
 
-            pi_post = ni.get_peth(pre_evt_buffer=-buffer_size, duration=ni.median_dur + buffer_size)  # pre-motor window
+            pi_post = ni.get_note_peth(pre_evt_buffer=-buffer_size, duration=ni.median_dur + buffer_size)  # pre-motor window
             pi_post.get_fr()
             pi_post.get_pcc()
 
@@ -461,25 +464,19 @@ def get_raster_syllable(query,
 
 if __name__ == '__main__':
 
-    from database.load import create_db
-
     # Parameter
     update = False  # Set True for recreating a cache file
     save_fig = True
     update_db = True  # save results to DB
     fig_ext = '.png'  # .png or .pdf
-
-    # Create & Load database
-    if update_db:
-        db = create_db('create_syllable_pcc_window.sql')
+    target_note = None  # None if you want to plot all notes
 
     # SQL statement
     query = "SELECT * FROM cluster WHERE analysisOK"
-    #query = "SELECT * FROM cluster WHERE id>16"
 
     get_raster_syllable(query,
                         buffer_size=40,  # in ms
-                        #target_note='b',
+                        target_note=target_note,
                         save_fig=save_fig,
                         update_db=update_db,
                         fig_ext=fig_ext)

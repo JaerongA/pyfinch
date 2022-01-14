@@ -8,7 +8,7 @@ def make_dir(parent_path, *dir_name, add_date=True):
     Make a new directory
     Parameters
     ----------
-    parent_path : str
+    parent_path : path
     dir_name : str
          (optional), if not exists, files will be saved in parent_dir
     add_date : bool

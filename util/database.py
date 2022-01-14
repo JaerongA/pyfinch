@@ -1,5 +1,4 @@
 """
-By Jaerong
 Create & import database for the project
 """
 import sqlite3 as lite

@@ -1,85 +1,181 @@
 """
-By Jaerong
-Analyze unit profiles such as burst fraction
+Get unit profiles such as spike correlograms or burstiness
 """
 
-from database.load import ProjectLoader
+from analysis.parameters import spk_corr_parm
+from analysis.spike import BaselineInfo, BurstingInfo, Correlogram, MotifInfo
+from database.load import ProjectLoader, DBInfo
 import matplotlib.pyplot as plt
-from deafening.plot import plot_bar_comparison, plot_per_day_block
 from util import save
 
-# Parameters
-nb_row = 3
-nb_col = 5
-save_fig = False
-fig_ext = '.png'
+
+def print_out_text(ax, peak_latency,
+                   firing_rates,
+                   burst_mean_duration, burst_freq, burst_mean_spk, burst_fraction,
+                   category,
+                   burst_index
+                   ):
+    font_size = 12
+    txt_xloc = 0
+    txt_yloc = 1
+    txt_inc = 0.15
+    ax.set_ylim([0, 1])
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f"Peak Latency = {round(peak_latency, 3)} (ms)", fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f"Firing Rates = {round(firing_rates, 3)} Hz", fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f'Burst Duration = {round(burst_mean_duration, 3)}', fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f'Burst Freq = {round(burst_freq, 3)} Hz', fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f'Burst MeanSpk = {round(burst_mean_spk, 3)}', fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f'Burst Fraction = {round(burst_fraction, 3)} (%)', fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, 'Category = {}'.format(category), fontsize=font_size)
+    txt_yloc -= txt_inc
+    ax.text(txt_xloc, txt_yloc, f'Burst Index = {round(burst_index, 3)}', fontsize=font_size)
+    ax.axis('off')
+
+
+# Parameter
+nb_row = 8
+nb_col = 3
+normalize = False  # normalize correlogram
+update = False
+save_fig = True
+update_db = True  # save results to DB
+fig_ext = '.png'  # .png or .pdf
+dpi = 600
 
 # Load database
 db = ProjectLoader().load_db()
-# # SQL statement
-df = db.to_dataframe(
-    f"SELECT unit.*, cluster.taskSession, cluster.taskSessionDeafening, cluster.taskSessionPostDeafening, cluster.dph, cluster.block10days "
-    f"FROM unit_profile unit INNER JOIN cluster ON cluster.id = unit.clusterID WHERE cluster.analysisOK=TRUE")
-df.set_index('clusterID')
+with open('../../database/create_unit_profile.sql', 'r') as sql_file:
+    db.conn.executescript(sql_file.read())
 
-# Plot the results
-fig, ax = plt.subplots(figsize=(14, 4))
-plt.suptitle('Bursting Analysis', y=.95, fontsize=15)
+# SQL statement
+# query = "SELECT * FROM cluster WHERE id <= 14"
+query = "SELECT * FROM cluster WHERE analysisOK=True"
+db.execute(query)
 
-# Burst Fraction
-# df['pairwiseCorrUndir'].replace('', np.nan, inplace=True)  # replace empty values with nans to prevent an error
-ax = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['burstFractionUndir'], df['taskName'], hue_var=df['birdID'],
-                    title='Burst Fraction', y_label='Burst Fraction (%)',
-                    y_lim=[0, 80],
-                    col_order=("Predeafening", "Postdeafening"),
-                    )
 
-# Burst Duration
-ax = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['burstDurationUndir'], df['taskName'], hue_var=df['birdID'],
-                    title='Burst Duration', y_label='Burst Duration (ms)',
-                    y_lim=[0, 10],
-                    col_order=("Predeafening", "Postdeafening"),
-                    )
+# Loop through db
+for row in db.cur.fetchall():
 
-# Burst Freq
-ax = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['burstFreqUndir'], df['taskName'], hue_var=df['birdID'],
-                    title='Burst Freq', y_label='Burst Freq (Hz)',
-                    y_lim=[0, 12],
-                    col_order=("Predeafening", "Postdeafening"),
-                    )
+    # Load cluster info from db
+    cluster_db = DBInfo(row)
+    name, path = cluster_db.load_cluster_db()
+    unit_nb = int(cluster_db.unit[-2:])
+    channel_nb = int(cluster_db.channel[-2:])
+    format = cluster_db.format
+    motif = cluster_db.motif
 
-# Nb of spk per burst
-ax = plt.subplot2grid((nb_row, nb_col), (1, 3), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['burstMeanNbSpkUndir'], df['taskName'], hue_var=df['birdID'],
-                    title='# of spk per burst', y_label='# of spk',
-                    y_lim=[0, 5],
-                    col_order=("Predeafening", "Postdeafening"),
-                    )
+    mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
+    bi = BaselineInfo(path, channel_nb, unit_nb, cluster_db.songNote, format, name, update=True)  # bout object
 
-# Burst index
-ax = plt.subplot2grid((nb_row, nb_col), (1, 4), rowspan=2, colspan=1)
-plot_bar_comparison(ax, df['burstIndexUndir'], df['taskName'], hue_var=df['birdID'],
-                    title='Burst index', y_label='Burst index',
-                    y_lim=[0, 0.3],
-                    col_order=("Predeafening", "Postdeafening"),
-                    )
+    # Calculate firing rates
+    mi.get_mean_fr()
 
-fig.tight_layout()
+    # Get correlogram
+    correlogram = mi.get_correlogram(mi.spk_ts, mi.spk_ts)
+    correlogram['B'] = bi.get_correlogram(bi.spk_ts, bi.spk_ts)  # add baseline correlogram
 
-# Save results
-if save_fig:
-    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
-    save.save_fig(fig, save_path, 'UnitProfile', fig_ext=fig_ext)
-else:
-    plt.show()
+    corr_b = corr_u = corr_d = None
 
-# Plot burst fraction per day blocks
-plot_per_day_block(df, ind_var_name='block10days', dep_var_name='burstFractionUndir',
-                   title='Burst Fraction (Undir) per day block',
-                   y_label='Burst Fraction (%)', y_lim=[0, 100],
-                   fig_name='BurstFraction_Undir_per_day_block',
-                   save_fig=False, fig_ext='.png'
-                   )
+    # Get correlogram object per condition
+    if 'B' in correlogram.keys():
+        corr_b = Correlogram(correlogram['B'])  # Baseline
+    if 'U' in correlogram.keys():
+        corr_u = Correlogram(correlogram['U'])  # Undirected
+    if 'D' in correlogram.keys():
+        corr_d = Correlogram(correlogram['D'])  # Directed
+
+    # Get jittered correlogram for getting the baseline
+    correlogram_jitter = mi.get_jittered_corr()
+    correlogram_jitter['B'] = bi.get_jittered_corr()
+
+    for key, value in correlogram_jitter.items():
+        if key == 'B':
+            corr_b.category(value)
+        elif key == 'U':
+            corr_u.category(value)
+        elif key == 'D':
+            corr_d.category(value)
+
+    # Define burst info object
+    burst_info_b = burst_info_u = burst_info_d = None
+
+    burst_info_b = BurstingInfo(bi)
+    burst_info_u = BurstingInfo(mi, 'U')
+    burst_info_d = BurstingInfo(mi, 'D')
+
+    # Plot the results
+    fig = plt.figure(figsize=(11, 6))
+    fig.set_dpi(dpi)
+    plt.suptitle(mi.name, y=.93)
+
+    if corr_b:
+        ax1 = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=3, colspan=1)
+        corr_b.plot_corr(ax1, spk_corr_parm['time_bin'], correlogram['B'], 'Baseline', xlabel='Time (ms)', ylabel='Count',normalize=normalize)
+        ax_txt1 = plt.subplot2grid((nb_row, nb_col), (5, 0), rowspan=3, colspan=1)
+        print_out_text(ax_txt1, corr_b.peak_latency, bi.mean_fr,
+                       burst_info_b.mean_duration, burst_info_b.freq, burst_info_b.mean_nb_spk,
+                       burst_info_b.fraction, corr_b.category, corr_b.burst_index)
+
+    if corr_u:
+        ax2 = plt.subplot2grid((nb_row, nb_col), (1, 1), rowspan=3, colspan=1)
+        corr_u.plot_corr(ax2, spk_corr_parm['time_bin'], correlogram['U'], 'Undir', xlabel='Time (ms)', normalize=normalize)
+        ax_txt2 = plt.subplot2grid((nb_row, nb_col), (5, 1), rowspan=3, colspan=1)
+        print_out_text(ax_txt2, corr_u.peak_latency, mi.mean_fr['U'],
+                       burst_info_u.mean_duration, burst_info_u.freq, burst_info_u.mean_nb_spk,
+                       burst_info_u.fraction, corr_u.category, corr_u.burst_index)
+
+    if corr_d:
+        ax3 = plt.subplot2grid((nb_row, nb_col), (1, 2), rowspan=3, colspan=1)
+        corr_d.plot_corr(ax3, spk_corr_parm['time_bin'], correlogram['D'], 'Dir', xlabel='Time (ms)', normalize=normalize)
+        ax_txt3 = plt.subplot2grid((nb_row, nb_col), (5, 2), rowspan=3, colspan=1)
+        print_out_text(ax_txt3, corr_d.peak_latency, mi.mean_fr['D'],
+                       burst_info_d.mean_duration, burst_info_d.freq, burst_info_d.mean_nb_spk,
+                       burst_info_d.fraction, corr_d.category, corr_d.burst_index)
+
+    # Save results to database
+    if update_db:
+        # Baseline
+        if corr_b:
+            db.cur.execute(f"UPDATE unit_profile SET burstDurationBaseline = ('{burst_info_b.mean_duration}') WHERE clusterID = ({cluster_db.id})")
+            db.cur.execute(f"UPDATE unit_profile SET burstFreqBaseline = ('{burst_info_b.freq}') WHERE clusterID = ({cluster_db.id})")
+            db.cur.execute(f"UPDATE unit_profile SET burstMeanNbSpkBaseline = ('{burst_info_b.mean_nb_spk}') WHERE clusterID = ({cluster_db.id})")
+            db.cur.execute(f"UPDATE unit_profile SET burstFractionBaseline = ('{burst_info_b.fraction}') WHERE clusterID = ({cluster_db.id})")
+            db.cur.execute(f"UPDATE unit_profile SET burstIndexBaseline = ('{corr_b.burst_index}') WHERE clusterID = ({cluster_db.id})")
+
+        # Undir
+        if corr_u:
+            db.cur.execute(f"UPDATE unit_profile SET burstDurationUndir = ('{burst_info_u.mean_duration}') WHERE clusterID = ({cluster_db.id})")
+            db.cur.execute(f"UPDATE unit_profile SET burstFreqUndir = ('{burst_info_u.freq}') WHERE clusterID = ({cluster_db.id})")
+            db.cur.execute(f"UPDATE unit_profile SET burstMeanNbSpkUndir = ('{burst_info_u.mean_nb_spk}') WHERE clusterID = ({cluster_db.id})")
+            db.cur.execute(f"UPDATE unit_profile SET burstFractionUndir = ('{burst_info_u.fraction}') WHERE clusterID = ({cluster_db.id})")
+            db.cur.execute("UPDATE {} SET {} = ? WHERE {} = ?".format('unit_profile', 'unitCategoryUndir', 'clusterID'), (corr_u.category, cluster_db.id))
+            db.cur.execute(f"UPDATE unit_profile SET burstIndexUndir = ('{corr_u.burst_index}') WHERE clusterID = ({cluster_db.id})")
+
+        # Dir
+        if corr_d:
+            db.cur.execute(f"UPDATE unit_profile SET burstDurationDir = ('{burst_info_d.mean_duration}') WHERE clusterID = ({cluster_db.id})")
+            db.cur.execute(f"UPDATE unit_profile SET burstFreqDir = ('{burst_info_d.freq}') WHERE clusterID = ({cluster_db.id})")
+            db.cur.execute(f"UPDATE unit_profile SET burstMeanNbSpkDir = ('{burst_info_d.mean_nb_spk}') WHERE clusterID = ({cluster_db.id})")
+            db.cur.execute(f"UPDATE unit_profile SET burstFractionDir = ('{burst_info_d.fraction}') WHERE clusterID = ({cluster_db.id})")
+            db.cur.execute("UPDATE {} SET {} = ? WHERE {} = ?".format('unit_profile', 'unitCategoryDir', 'clusterID'), (corr_d.category, cluster_db.id))
+            db.cur.execute(f"UPDATE unit_profile SET burstIndexDir = ('{corr_d.burst_index}') WHERE clusterID = ({cluster_db.id})")
+        db.conn.commit()
+
+    # Save results
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'UnitProfiling')
+        save.save_fig(fig, save_path, mi.name, fig_ext=fig_ext, dpi=dpi, view_folder=True)
+    else:
+        plt.show()
+
+# Convert db to csv
+if update_db:
+    db.to_csv('unit_profile')
+    print('Done!')

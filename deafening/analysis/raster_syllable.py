@@ -271,8 +271,8 @@ def get_raster_syllable(query,
             remove_right_top(ax_raster)
 
             # Draw peri-event histogram (PETH)
-            pi = ni.get_peth(duration=note_duration)  # PETH object (PethInfo)
-            # pi = ni.get_peth()  # PETH object (PethInfo)
+            pi = ni.get_note_peth(duration=note_duration)  # PETH object (PethInfo)
+            # pi = ni.get_note_peth()  # PETH object (PethInfo)
             pi.get_fr()  # get firing rates
 
             # Plot mean firing rates
@@ -550,7 +550,6 @@ if __name__ == '__main__':
 
     # SQL statement
     query = "SELECT * FROM cluster WHERE analysisOK"
-    # query = "SELECT * FROM cluster WHERE id = 96"
 
     get_raster_syllable(query,
                         # target_note = 'a',

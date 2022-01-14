@@ -1,5 +1,4 @@
 """
-By Jaerong
 Get correlation between fundamental frequency and spike number
 """
 

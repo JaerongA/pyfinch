@@ -6,6 +6,23 @@ import sqlite3
 from configparser import ConfigParser
 
 
+def create_db(sql_file_name: str):
+    """
+    Create a new sql table from .slq file in /database
+    Parameters
+    ----------
+    sql_file_name : str
+        name of the sql file to create
+
+    """
+    # from database.load import ProjectLoader
+    # Load database
+    db = ProjectLoader().load_db()
+    # Make database
+    with open(f"database/{sql_file_name}", 'r') as sql_file:
+        db.conn.executescript(sql_file.read())
+
+
 class ProjectLoader:
 
     def __init__(self):
@@ -178,19 +195,3 @@ class DBInfo:
         song_path = project_path / self.birdID / self.taskName / task_session
         song_path = Path(song_path)
         return song_name, song_path
-
-def create_db(sql_file_name: str):
-    """
-    Create a new sql table from .slq file in /database
-    Parameters
-    ----------
-    sql_file_name : str
-        name of the sql file to create
-
-    """
-    # from database.load import ProjectLoader
-    # Load database
-    db = ProjectLoader().load_db()
-    # Make database
-    with open(f"database/{sql_file_name}", 'r') as sql_file:
-        db.conn.executescript(sql_file.read())

@@ -7,14 +7,15 @@ Stores the results to ff_result table
 
 def get_syllable_ff(query,
                     update=False,
-                    nb_note_crit=None,
+                    update_db=False,
                     save_fig=None,
                     view_folder=False,
-                    update_db=False,
                     fig_ext='.png'):
+
     from analysis.functions import get_ff
-    from analysis.parameters import note_buffer, freq_range
+    from analysis.parameters import note_buffer, freq_range, nb_note_crit
     from analysis.song import AudioInfo, SongInfo
+    from database.load import create_db, DBInfo, ProjectLoader
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
     import matplotlib.pyplot as plt
@@ -22,6 +23,15 @@ def get_syllable_ff(query,
     import pandas as pd
     from util import save
     from util.draw import remove_right_top
+
+    # Make save path
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', save_folder_name, add_date=False)
+
+    # Create & Load database
+    if update_db:
+        # Assumes that song, ff database have been created
+        db = create_db('create_ff_result.sql')
 
     # Load database
     db = ProjectLoader().load_db()
@@ -121,6 +131,7 @@ def get_syllable_ff(query,
                     df = df.append(temp_df, ignore_index=True)
 
                     if save_fig:
+
                         # Parameters
                         font_size = 8
                         # Get spectrogram
@@ -234,30 +245,19 @@ def get_syllable_ff(query,
 
 if __name__ == '__main__':
 
-    from database.load import create_db, DBInfo, ProjectLoader
-    from util import save
-
     # Parameter
     save_fig = True  # save spectrograms with FF
     view_folder = False  # view the folder where figures are stored
+    save_folder_name = 'FF'
     update_db = True  # save results to DB
     fig_ext = '.png'  # .png or .pdf
-    nb_note_crit = 10
-
-    # Make save path
-    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'FF', add_date=False)
-
-    # Create & Load database
-    if update_db:
-        # Assumes that song, ff database have been created
-        db = create_db('create_ff_result.sql')
 
     # SQL statement
     query = "SELECT * FROM song WHERE id>=80"
 
     get_syllable_ff(query,
-                    nb_note_crit=nb_note_crit,
+                    update_db=update_db,
                     save_fig=save_fig,
                     view_folder=view_folder,
-                    update_db=update_db,
-                    fig_ext=fig_ext)
+                    fig_ext=fig_ext
+                    )

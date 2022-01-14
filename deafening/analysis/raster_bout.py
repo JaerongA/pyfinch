@@ -1,13 +1,10 @@
 """
-Plot spectrograms & rasters for demarcated song bout
+Plot spectrograms & rasters for demarcated song bouts
 """
 
 
 def plot_raster_bouts(query,
-                      bout_nb=None,
-                      update=False,
-                      save_fig=True,
-                      view_folder=True,
+                      bout_nb='All',
                       fig_ext='.png'
                       ):
     from analysis.spike import AudioData, BoutInfo, ClusterInfo, NeuralData
@@ -161,7 +158,7 @@ def plot_raster_bouts(query,
             # Save results
             if save_fig:
                 save_path2 = save.make_dir(save_path / ci.name, add_date=False)
-                save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, view_folder=view_folder)
+                save.save_fig(fig, save_path2, fig_name, fig_ext=fig_ext, view_folder=view_folder)
             else:
                 plt.show()
 
@@ -170,21 +167,18 @@ def plot_raster_bouts(query,
 
 if __name__ == '__main__':
     # Parameters
-    bout_nb = None  # bout index you want to plot (None by default)
-    update = False  # Update the cache file per cluster
-    save_fig = True
+    bout_nb = 3  # bout index you want to plot (if set None, plot all bouts)
+    update = False  # update .json cache files
+    save_fig = True  # save output figures
     view_folder = True  # open the folder where the result figures are saved
-    fig_ext = '.png'  # set to '.pdf' for vector output (.png by default)
+    fig_ext = '.pdf'  # set to '.pdf' for vector output (.png by default)
     save_folder_name = 'RasterBouts'
 
     # SQL statement
-    # query = "SELECT * FROM cluster WHERE analysisOK = 1"
-    query = "SELECT * FROM cluster WHERE id = 6"
+    # query = "SELECT * FROM cluster WHERE analysisOK=1"
+    query = "SELECT * FROM cluster WHERE id=43"
 
-    plot_raster_bouts(query,
+    plot_raster_bouts(query=query,
                       bout_nb=bout_nb,
-                      update=update,
-                      save_fig=save_fig,
-                      view_folder=view_folder,
                       fig_ext=fig_ext
                       )

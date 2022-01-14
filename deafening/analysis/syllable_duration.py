@@ -1,17 +1,10 @@
 """
-By Jaerong (2020/06/04)
 Syllable duration for all syllables regardless of it type
 Calculation based on EventInfo.m
 """
 
 
 def get_duration(query):
-    """
-    Input: SQL query
-    calculate the syllable duration from .not.mat and store the data in .csv
-    """
-    # global save_dir
-
     from analysis.functions import get_note_type
     from analysis.song import SongInfo
     from database.load import ProjectLoader, DBInfo
@@ -39,7 +32,7 @@ def get_duration(query):
         df = pd.DataFrame()
 
         # Organize results
-        note_types = get_note_type(''.join(si.syllables).replace('*', ''), song_db) # Type of the syllables
+        note_types = get_note_type(''.join(si.syllables).replace('*', ''), song_db)  # Type of the syllables
         nb_notes = len(''.join(si.syllables).replace('*', ''))
         durations = []
         for duration in [list(map(float, duration[duration != '*'])) for duration in si.durations]:
@@ -56,7 +49,7 @@ def get_duration(query):
                                 'Context': ''.join([len(syllable.replace('*', '')) * context for syllable, context
                                                     in zip(si.syllables, si.contexts)]),
                                 'SyllableType': note_types,
-                                'Syllable': list(''.join(si.syllables).replace('*','')),
+                                'Syllable': list(''.join(si.syllables).replace('*', '')),
                                 'Duration': durations,
                                 })
         df = df.append(temp_df, ignore_index=True)
@@ -67,8 +60,8 @@ def get_duration(query):
         df.to_csv(outputfile, index=True, header=True)  # save the dataframe to .cvs format
         print('Done!')
 
-def load_data(data_file, context='ALL', syl_type='ALL'):
 
+def load_data(data_file, context='ALL', syl_type='ALL'):
     import pandas as pd
 
     # Load syllable duration .csv data
@@ -94,6 +87,7 @@ if __name__ == '__main__':
 
     # Check if the data .csv exists
     from database.load import ProjectLoader
+
     data_file = ProjectLoader().path / 'Analysis' / 'SyllableDuration' / 'SyllableDuration.csv'
 
     if not data_file.exists():
@@ -103,9 +97,8 @@ if __name__ == '__main__':
         # query = "SELECT * FROM song WHERE id BETWEEN 1 AND 16"
         get_duration(query)
         df = load_data(data_file, context='ALL', syl_type='ALL')
-    else: # Get the syllable duration data if it already exists
+    else:  # Get the syllable duration data if it already exists
         df = load_data(data_file, context='ALL', syl_type='ALL')
-
 
     # Plot the results
     import matplotlib.pyplot as plt
@@ -114,6 +107,7 @@ if __name__ == '__main__':
     from util.functions import unique
     from util import save
     from database.load import ProjectLoader
+
     fig_ext = '.png'
 
     bird_list = unique(df['BirdID'].tolist())

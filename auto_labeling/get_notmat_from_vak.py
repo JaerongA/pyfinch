@@ -1,5 +1,4 @@
 """
-By Jaerong
 create .not.mat files based on the output .csv generated from vak
 """
 
@@ -16,7 +15,6 @@ def unique(list):
 
 
 def main(csv_path):
-
     csv_path = Path(csv_path)
 
     # Save new .not.mat in this folder
@@ -27,14 +25,13 @@ def main(csv_path):
     file_list = unique(df['audio_file'].tolist())
 
     for audio_file in file_list:
-
         temp_df = df.loc[(df['audio_file'] == audio_file)]
 
         print('Processing...  ' + audio_file)
         notmat_file = audio_file + '.not.mat'
         syllables = np.array(''.join(map(str, temp_df.label)))  # syllables
-        onsets = np.array(temp_df.onset_s).reshape(-1,1) * 1E3  # syllable onset timestamp
-        offsets = np.array(temp_df.offset_s).reshape(-1,1) * 1E3  # syllable offset timestamp
+        onsets = np.array(temp_df.onset_s).reshape(-1, 1) * 1E3  # syllable onset timestamp
+        offsets = np.array(temp_df.offset_s).reshape(-1, 1) * 1E3  # syllable offset timestamp
         mdict = {'syllables': syllables,
                  'onsets': onsets,
                  'offsets': offsets}
@@ -46,7 +43,6 @@ def main(csv_path):
 
 
 if __name__ == '__main__':
-
     csv_path = 'H:/Box/Data/BMI/TestSet/results/k71o7_annotation_results.csv'  # vak prediction output
 
     main(csv_path)

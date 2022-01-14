@@ -1,5 +1,4 @@
 """
-By Jaerong
 Shuffle spikes with different parameters and see how the proportion of syllables having significant PCC changes
 """
 
@@ -16,7 +15,7 @@ def create_db():
     from database.load import ProjectLoader
 
     db = ProjectLoader().load_db()
-    with open('database/create_syllable_pcc_shuffle.sql', 'r') as sql_file:
+    with open('../../database/create_syllable_pcc_shuffle.sql', 'r') as sql_file:
         db.conn.executescript(sql_file.read())
 
 
@@ -80,7 +79,7 @@ for row in db.cur.fetchall():
             continue
 
         # GET PETH and firing rates
-        pi = ni.get_peth()
+        pi = ni.get_note_peth()
         pi.get_fr()  # get firing rates
 
         # Calculate pairwise cross-correlation
@@ -129,7 +128,7 @@ for row in db.cur.fetchall():
         for ind, shuffle_limit in enumerate(peth_shuffle['shuffle_limit']):
             for iter in range(peth_shuffle['shuffle_iter']):
                 ni.jitter_spk_ts(shuffle_limit)
-                pi_shuffle = ni.get_peth(shuffle=True)  # peth object
+                pi_shuffle = ni.get_note_peth(shuffle=True)  # peth object
                 pi_shuffle.get_fr()  # get firing rates
                 pi_shuffle.get_pcc()  # get pcc
                 for context, pcc in pi_shuffle.pcc.items():
