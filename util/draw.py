@@ -1,10 +1,21 @@
 """
-Helper functions for drawing a save_fig
+Helper functions for drawing a figure
 """
 
 
 def set_fig_size(w, h, ax=None):
-    """ w, h: width, height in inches """
+    """
+    set size of a figure
+    Parameters
+    ----------
+    w : float
+        width in inches
+    h : float
+        height in inches
+    ax : axis object
+    Returns
+    -------
+    """
     import matplotlib.pyplot as plt
 
     if not ax: ax = plt.gca()
@@ -18,22 +29,27 @@ def set_fig_size(w, h, ax=None):
 
 
 def remove_right_top(ax):
-    """Remove top and right axis"""
+    """
+    Remove top and right axis
+    Parameters
+    ----------
+    ax : axis object
+    """
     ax.spines['right'].set_visible(False), ax.spines['top'].set_visible(False)
 
 
-def get_ax_lim(ax, base=10):
+def get_ax_lim(ax_min, ax_max, base=10):
     """
     Get axis limit
     Parameters
     ----------
-    ax : axis object
+    ax_min : float
+    ax_max : float
     base : int
         default = 10
     """
     from math import ceil, floor
 
-    ax_min, ax_max = ax.get_ylim()[0], ax.get_ylim()[1]
     ax_min = floor(ax_min * base) / base
     ax_max = ceil(ax_max * base) / base
     return ax_min, ax_max
