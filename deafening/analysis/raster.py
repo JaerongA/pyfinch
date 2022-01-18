@@ -1,7 +1,7 @@
 """
-plot raster & peth for motif
-calculate spike temporal precision metrics such as pcc
-store results in pcc table
+Plot raster & peth for motif
+Calculate spike temporal precision metrics such as pcc
+Store results in pcc table
 """
 
 
@@ -38,10 +38,9 @@ def get_raster(query,
     update_db : bool
         Set True to update results to database
     """
-
     from analysis.parameters import peth_parm, freq_range, tick_length, tick_width, note_color, nb_note_crit
     from analysis.spike import MotifInfo, AudioData
-    from database.load import DBInfo, ProjectLoader
+    from database.load import create_db, DBInfo, ProjectLoader
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
     import matplotlib.pyplot as plt
@@ -51,6 +50,10 @@ def get_raster(query,
     from util.draw import remove_right_top
     import warnings
     warnings.filterwarnings('ignore')
+
+    # Create & Load database
+    if update_db:
+        create_db('create_unit_profile.sql')
 
     # parameters
     rec_yloc = 0.05
@@ -562,20 +565,14 @@ def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
 
 if __name__ == '__main__':
 
-    from database.load import create_db
-
     # Parameters
     shuffled_baseline = False  # Get PETH from shuffled spikes for getting pcc baseline
     time_warp = True  # Perform piece-wise linear time-warping
     update = False  # Update the cache file per cluster
     save_fig = True  # Save the figure
-    update_db = True
+    update_db = False
     view_folder = False  # open the folder where the result figures are saved
-    fig_ext = '.png'  # set to '.pdf' for vector output (.png by default)
-
-    # Create a new db to store results
-    if update_db:
-        db = create_db('create_pcc.sql')
+    fig_ext = '.pdf'  # set to '.pdf' for vector output (.png by default)
 
     # SQL statement
     query = "SELECT * FROM cluster WHERE analysisOK"
