@@ -9,13 +9,12 @@ from database.load import DBInfo, ProjectLoader, create_db
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
-from math import ceil
 import numpy as np
 from scipy import stats
 from util import save
 import seaborn as sns
 from util.functions import myround
-from util.draw import remove_right_top
+from util.draw import remove_right_top, get_ax_lim
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -94,22 +93,14 @@ def get_cross_corr_heatmap(note_onsets, note_offsets, fr_mat):
         if not fr_mat[motif_run, :].sum():  # skip if fr = 0
             continue
         corr, lags = get_cross_corr(fr_mat[motif_run, :], binary_song, lag_lim=100)
-        corr_mat = np.vstack([corr_mat, corr]) if corr_mat.size else corr  # place the first trial on the top
+        corr_mat = np.vstack([corr, corr_mat]) if corr_mat.size else corr  # place the first trial at the bottom
 
     peak_latency = lags[corr_mat.mean(axis=0).argmax()]
     max_cross_corr = corr_mat.mean(axis=0).max()
     return corr_mat, lags, peak_latency, max_cross_corr
 
 
-def get_song_fr_cross_corr(query,
-                           motif_nb=0,
-                           gaussian_std=1,
-                           update=False,
-                           save_fig=True,
-                           save_folder_name='SongFR_CrossCorr',
-                           update_db=True,
-                           view_folder=False,
-                           fig_ext='.png'):
+def main():
     # parameters
     rec_yloc = 0.05
     text_yloc = 0.5  # text height
@@ -174,7 +165,7 @@ def get_song_fr_cross_corr(query,
         ax_spect = plt.subplot(gs[1:3, 0:6])
         spect_time = spect_time - spect_time[0] - peth_parm['buffer']  # starts from zero
         ax_spect.pcolormesh(spect_time, spect_freq, spect,
-                            cmap='hot_r',
+                            cmap='hot_r', rasterized=True,
                             norm=colors.SymLogNorm(linthresh=0.05,
                                                    linscale=0.03,
                                                    vmin=0.3,
@@ -246,13 +237,10 @@ def get_song_fr_cross_corr(query,
         ax_corr.set_xlabel('Time (ms)', fontsize=font_size)
         ax_corr.set_xlim([-100, 100])
         # ax_corr.axvline(x=lags[corr.argmax()], color='r', linewidth=1, ls='--')  # mark the peak location
-
-        ax_min, ax_max = get_ax_lim(ax_corr, base=10)
-        ax_corr.set_ylim([ax_min, ax_max])
+        ax_min, ax_max = get_ax_lim(ax_corr.get_ylim()[0], ax_corr.get_ylim()[1], base=10)
         ax_corr.set_yticks([ax_min, ax_max])
         ax_corr.set_yticklabels([ax_min, ax_max])
-
-
+        ax_corr.set_ylim([ax_min, ax_max])
         remove_right_top(ax_corr)
         del corr, lags
 
@@ -261,6 +249,7 @@ def get_song_fr_cross_corr(query,
 
         from mpl_toolkits.axes_grid1.inset_locator import inset_axes
         ax_heatmap = plt.subplot(gs[14:16, 1:5])
+
         cax = inset_axes(ax_heatmap,
                          width="3%",
                          height="100%",
@@ -270,15 +259,17 @@ def get_song_fr_cross_corr(query,
                          )
         cax.set_frame_on(True)
 
+        ax_min, ax_max = get_ax_lim(corr_mat.min(), corr_mat.max(), base=10)
         sns.heatmap(corr_mat,
-                    # vmin=0.5, vmax=1,
+                    vmin=ax_min, vmax=ax_max,
                     cmap='binary',
                     ax=ax_heatmap,
-                    cbar_ax=cax
+                    cbar_kws={'ticks': [ax_min, ax_max]},
+                    cbar_ax=cax, rasterized=True
                     )
         ax_heatmap.set_title('All renditions')
         ax_heatmap.set_yticks([0, corr_mat.shape[0]])
-        ax_heatmap.set_yticklabels([0, corr_mat.shape[0]])
+        ax_heatmap.set_yticklabels([corr_mat.shape[0], 0], rotation=0)
         ax_heatmap.set_ylabel('Renditions')
         ax_heatmap.set_xticks([])
         remove_right_top(ax_heatmap)
@@ -290,6 +281,10 @@ def get_song_fr_cross_corr(query,
         ax_corr_mean.set_xlabel('Time (ms)', fontsize=font_size)
         ax_corr_mean.set_xlim([-100, 100])
         ax_corr_mean.axvline(x=peak_latency, color='r', linewidth=1, ls='--')  # mark the peak location
+        ax_min, ax_max = get_ax_lim(ax_corr_mean.get_ylim()[0], ax_corr_mean.get_ylim()[1], base=10)
+        ax_corr_mean.set_yticks([ax_min, ax_max])
+        ax_corr_mean.set_yticklabels([ax_min, ax_max])
+        ax_corr_mean.set_ylim([ax_min, ax_max])
         remove_right_top(ax_corr_mean)
 
         # Print out results on the figure
@@ -346,21 +341,15 @@ if __name__ == '__main__':
 
     # Parameters
     update = False  # Update the cache file per cluster
-    motif_nb = 0
-    gaussian_std = 8
+    motif_nb = 7
+    gaussian_std = 8  # gaussian kernel for smoothing firing rates
     update_db = False
     save_fig = False
     view_folder = True  # open the folder where the result figures are saved
-    fig_ext = '.pdf'  # set to '.pdf' for vector output (.png by default)
+    save_folder_name = 'SongFR_CrossCorr'
+    fig_ext = '.png'  # set to '.pdf' for vector output (.png by default)
 
     # SQL statement
-    query = "SELECT * FROM cluster WHERE analysisOK AND id=34"
+    query = "SELECT * FROM cluster WHERE analysisOK AND id=66"
 
-    get_song_fr_cross_corr(query,
-                           motif_nb=motif_nb,
-                           gaussian_std=gaussian_std,
-                           save_fig=save_fig,
-                           update_db=update_db,
-                           view_folder=view_folder,
-                           fig_ext=fig_ext
-                           )
+    main()
