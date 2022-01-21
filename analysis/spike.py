@@ -1,5 +1,5 @@
 """
-main package for neural analysis
+Module for neural analysis
 """
 
 def load_audio(dir, format='wav'):
@@ -246,7 +246,25 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
 class ClusterInfo:
 
     def __init__(self, path, channel_nb, unit_nb, format='rhd', *name, update=False, time_unit='ms'):
-
+        """
+        Load information about cluster
+        Parameters
+        ----------
+        path : path
+            path that contains recording files for the cluster
+        channel_nb : int
+            number of the channel that recorded the cluster
+        unit_nb : int
+            number id of the cluster (needed because multiple neurons could have been recorded in the same session & channel)
+        format : str
+            'rhd' by default (Intan)
+        name : name of the cluster
+            e.g., ('096-g70r40-Predeafening-D07(20191106)-S03-Ch17-Cluster01')
+        update : bool
+            If not exists, create a .npz cache file in the same folder so that it doesn't read from the raw data every time the class is called.
+        time_unit : str
+            'ms' by default
+        """
         from analysis.song import load_song
         import numpy as np
 
@@ -347,6 +365,7 @@ class ClusterInfo:
                          ):
         """
         Perform waveform analysis
+
         Parameters
         ----------
         align_wf : bool
@@ -514,7 +533,6 @@ class ClusterInfo:
         ----------
         add_premotor_spk : bool
             add spikes from the premotor window for calculation
-
         """
 
         import numpy as np
@@ -543,7 +561,7 @@ class ClusterInfo:
 
     @property
     def nb_files(self):
-
+        """Number of files used for constructing the class"""
         nb_files = {}
         nb_files['U'] = len([context for context in self.contexts if context == 'U'])
         nb_files['D'] = len([context for context in self.contexts if context == 'D'])
@@ -552,6 +570,7 @@ class ClusterInfo:
         return nb_files
 
     def nb_bouts(self, song_note):
+        """Number of files used for constructing the class"""
 
         from analysis.functions import get_nb_bouts
 
@@ -1547,8 +1566,6 @@ class AudioData:
     Create an object that has concatenated audio signal and its timestamps
     Get all data by default; specify time range if needed
     """
-    import numpy as np
-
     def __init__(self, path, format='.wav', update=False):
 
         import numpy as np
