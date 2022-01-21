@@ -2,9 +2,22 @@
 plot raster & peth per syllable
 """
 
+from analysis.functions import get_spectral_entropy
+from analysis.parameters import freq_range, peth_parm, note_color, tick_width, tick_length, nb_note_crit
+from analysis.spike import ClusterInfo, AudioData, pcc_shuffle_test
+import matplotlib.colors as colors
+import matplotlib.gridspec as gridspec
+from matplotlib import pyplot as plt
+import numpy as np
+from database.load import create_db, DBInfo, ProjectLoader
+from util import save
+from util.draw import remove_right_top
+from util.functions import find_str, myround
+import warnings
+warnings.filterwarnings('ignore')
+
 
 def get_raster_syllable(query,
-                        target_note='all',
                         update=False,
                         save_fig=None,
                         update_db=None,
@@ -14,20 +27,12 @@ def get_raster_syllable(query,
                         shuffled_baseline=False,
                         plot_hist=False,
                         fig_ext='.png'):
+
     global note_duration
-    from analysis.functions import get_spectral_entropy
-    from analysis.parameters import freq_range, peth_parm, note_color, tick_width, tick_length, nb_note_crit
-    from analysis.spike import ClusterInfo, AudioData, pcc_shuffle_test
-    import matplotlib.colors as colors
-    import matplotlib.gridspec as gridspec
-    from matplotlib import pyplot as plt
-    import numpy as np
-    from database.load import DBInfo, ProjectLoader
-    from util import save
-    from util.draw import remove_right_top
-    from util.functions import find_str, myround
-    import warnings
-    warnings.filterwarnings('ignore')
+
+    # Create & Load database
+    if update_db:
+        db = create_db('create_syllable_pcc.sql')
 
     # parameters
     rec_yloc = 0.05
@@ -65,7 +70,7 @@ def get_raster_syllable(query,
 
         for note in notes:
             # Load note object
-            ni = ci.get_note_info(note, pre_buffer=-50, post_buffer=+50)  # this will be used for plotting raster
+            ni = ci.get_note_info(note, pre_buffer=pre_buffer, post_buffer=post_buffer)  # this will be used for plotting raster
             if not ni:  # the target note does not exist
                 print("The note does not exist!")
                 continue
@@ -332,7 +337,7 @@ def get_raster_syllable(query,
 
             # Firing rates (includes the pre-motor window)
             # Load NoteInfo class again to calculate firing rates from a different window
-            ni = ci.get_note_info(note, pre_buffer=-50, post_buffer=0)  # this will be used for plotting raster
+            ni = ci.get_note_info(note, pre_buffer=pre_buffer, post_buffer=post_buffer)  # this will be used for plotting raster
             for i, (k, v) in enumerate(ni.mean_fr.items()):
                 if v is not np.nan:
                     ax_txt.text(txt_xloc, txt_yloc, f"FR ({k}) = {v}", fontsize=font_size)
@@ -531,28 +536,23 @@ def get_raster_syllable(query,
 
 if __name__ == '__main__':
 
-    from database.load import create_db
-
     # Parameter
-    update = False  # Set True for recreating a cache file
-    save_fig = True
-    update_db = True  # save results to DB
+    pre_buffer = 50  # time window before syllable onset (in ms)
+    post_buffer = 0   # time window after syllable offset (in ms)
     time_warp = True  # spike time warping
-    entropy = True  # calculate entropy & entropy variance
+    update = False  # Set True for recreating a cache file
+    save_fig = False
+    update_db = False  # save results to DB
+    entropy = False  # calculate entropy & entropy variance
     entropy_mode = 'spectral'  # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
-    shuffled_baseline = False
-    plot_hist = False
+    shuffled_baseline = False  # get pcc shuffling baseline
+    plot_hist = False  # draw histogram of the shuffled pcc values
     fig_ext = '.png'  # .png or .pdf
-
-    # Create & Load database
-    if update_db:
-        db = create_db('create_syllable_pcc.sql')
-
+    target_note = 'a'
     # SQL statement
-    query = "SELECT * FROM cluster WHERE analysisOK"
+    query = "SELECT * FROM cluster WHERE id=96"
 
     get_raster_syllable(query,
-                        # target_note = 'a',
                         update=update,
                         save_fig=save_fig,
                         update_db=update_db,
