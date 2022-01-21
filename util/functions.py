@@ -3,17 +3,17 @@ A collection of utility functions used for analysis
 """
 
 
-def unique(list):
+def unique(list) -> list:
     """
     Extract unique strings from the list in the order they appear
+    Parameters
+    ----------
+    list : list
 
-    Args:
-        list: list
-            list of strings
-
-    Returns:
-        list:
-            list of unique, ordered strings
+    Returns
+    -------
+    list
+        list of unique, ordered string
     """
     seen = set()
     return [x for x in list if not (x in seen or seen.add(x))]
@@ -56,12 +56,19 @@ def find_data_path():
     return Path(data_dir)
 
 
-def list_files(dir: str, ext: str):
+def list_files(dir: str, ext: str) -> list:
     """
     Return the list of files in the current directory
-        Input1: directory name (path)
-        Input2: file extension (str) (e.g., .wav, .rhd etc)
-        Output: list of file path (list)
+
+    Parameters
+    ----------
+    dir : path
+    ext : str
+        file extension (e.g., .wav, .rhd etc)
+
+    Returns
+    -------
+    files : list
     """
     files = [file for file in dir.rglob('*' + ext)]
     return files
@@ -73,17 +80,19 @@ def open_folder(path):
     webbrowser.open(path)
 
 
-def myround(x, base=5):
+def myround(x : int, base=5) -> int:
     """
     Round to the next multiple of the base
-    Args:
-        x: int
-            input value
-        base: int
-            base value (by default at 5)
 
-    Returns: int
-
+    Parameters
+    ----------
+    x : int
+        input value
+    base : int
+        base value (5 by default)
+    Returns
+    -------
+    int
     """
     return base * round(x / base)
 
@@ -92,16 +101,20 @@ def extract_ind(timestamp, range):
     """
     Extract timestamp indices from array from the specified range
 
-    Args:
-        timestamp: array
-        range: list [start end]
+    Parameters
+    ----------
+    timestamp : arr
+    range : list
+        [start end]
 
-    Returns:
-        ind: array
-            index of the array
-        new_array: array
-            array within the range
+    Returns
+    -------
+    ind : arr
+        index of the array
+    array :  arr
+        array within the range
     """
+
     import numpy as np
     start = range[0]
     end = range[1]
@@ -138,10 +151,11 @@ def exists(var):
 def para_interp(x, y):
     """
     Get max value by performing parabolic interpolation given three data points
+
     Parameters
     ----------
-    x : array
-    y : array
+    x : arr
+    y : arr
 
     Returns
     -------
