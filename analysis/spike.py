@@ -665,7 +665,7 @@ class ClusterInfo:
 
     @property
     def open_folder(self):
-
+        """Open the data folder"""
         from util.functions import open_folder
 
         open_folder(self.path)
@@ -682,11 +682,44 @@ class NoteInfo:
         for key in note_dict:
             setattr(self, key, note_dict[key])
 
-        # Get PLW (piecewise linear warping)
+        # Perform PLW (piecewise linear warping)
         self.spk_ts_warp = self.piecewise_linear_warping()
 
     def __repr__(self):
         return str([key for key in self.__dict__.keys()])
+
+    def select_context(self, target_context : str,
+                       keep_median_duration=True
+                       ):
+        """
+        Select one context
+        Parameters
+        ----------
+        target_context : str
+            'U' or 'D'
+        keep_median_duration : bool
+            Normally medial note duration is calculated using all syllables regardless of the context
+            one may prefer to use this median to reduce variability when calculating pcc
+            if set False, new median duration will be calculated using the selected notes
+        """
+        import numpy as np
+
+        zipped_list = \
+            list(zip(self.contexts, self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp))
+        zipped_list = list(filter(lambda x: x[0] == target_context, zipped_list))  # filter context
+        unzipped_object = zip(*zipped_list)
+        self.contexts, self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp = \
+            list(unzipped_object)
+        self.contexts = ''.join(self.contexts)
+        self.onsets = np.array(self.onsets)
+        self.offsets = np.array(self.offsets)
+        self.durations = np.array(self.durations)
+        self.spk_ts = np.array(self.spk_ts)
+        self.spk_ts_warp = np.array(self.spk_ts_warp)
+
+        if not keep_median_duration:
+            import numpy as np
+            self.median_dur = np.median(self.median_dur, axis=0)
 
     def get_entropy(self, normalize=True, mode='spectral'):
         """
