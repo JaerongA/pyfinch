@@ -17,16 +17,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def get_raster_syllable(query,
-                        update=False,
-                        save_fig=None,
-                        update_db=None,
-                        time_warp=True,
-                        entropy=False,  # calculate entropy & entropy variance
-                        entropy_mode='spectral',  # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
-                        shuffled_baseline=False,
-                        plot_hist=False,
-                        fig_ext='.png'):
+def get_raster_syllable():
 
     global note_duration
 
@@ -63,10 +54,10 @@ def get_raster_syllable(query,
         audio = AudioData(path)  # audio object
 
         # Loop through note
-        if target_note == 'all':
+        if TARGET_NOTE == 'all':
             notes = cluster_db.songNote
         else:
-            notes = target_note
+            notes = TARGET_NOTE
 
         for note in notes:
             # Load note object
@@ -75,10 +66,15 @@ def get_raster_syllable(query,
                 print("The note does not exist!")
                 continue
 
+            # Select context
+            if NOTE_CONTEXT:
+                ni.select_context(target_context=NOTE_CONTEXT)
+
             # Skip if there are not enough motifs per condition
             if np.prod([nb[1] < nb_note_crit for nb in ni.nb_note.items()]):
                 print("Not enough notes!")
                 continue
+
 
             # Plot figure
             fig = plt.figure(figsize=(7, 10), dpi=500)
@@ -108,13 +104,12 @@ def get_raster_syllable(query,
             ax_spect = plt.subplot(gs[1:3, 0:5])
             spect_time = spect_time - spect_time[0] - peth_parm['buffer']  # starts from zero
             ax_spect.pcolormesh(spect_time, spect_freq, spect,  # data
-                                cmap='hot_r',
+                                cmap='hot_r', rasterized=True,
                                 norm=colors.SymLogNorm(linthresh=0.05,
                                                        linscale=0.03,
                                                        vmin=0.5,
                                                        vmax=100
                                                        ))
-
             remove_right_top(ax_spect)
             ax_spect.set_xlim(-peth_parm['buffer'], duration + peth_parm['buffer'])
             ax_spect.set_ylim(freq_range[0], freq_range[1])
@@ -136,6 +131,7 @@ def get_raster_syllable(query,
                 ax_se.plot(spect_time, se['array'], 'k', linewidth=3)
                 ax_se.set_ylim(0, 1)
                 ax_se.spines['top'].set_visible(False)
+            del spect
 
             # Plot syllable duration
             ax_syl = plt.subplot(gs[0, 0:5], sharex=ax_spect)
@@ -180,7 +176,7 @@ def get_raster_syllable(query,
                 rectangle = plt.Rectangle((0, note_ind), note_duration, rec_height,
                                           fill=True,
                                           linewidth=1,
-                                          alpha=0.15,
+                                          alpha=0.15, rasterized=True,
                                           facecolor=note_color['Motif'][find_str(cluster_db.songNote, note)[0]])
                 ax_raster.add_patch(rectangle)
 
@@ -209,75 +205,74 @@ def get_raster_syllable(query,
             remove_right_top(ax_raster)
 
             # Plot sorted raster
-            ax_raster = plt.subplot(gs[7:9, 0:5], sharex=ax_spect)
+            if not NOTE_CONTEXT:
+                ax_raster = plt.subplot(gs[7:9, 0:5], sharex=ax_spect)
 
-            # Sort trials based on context
-            sort_ind = np.array([i[0] for i in sorted(enumerate(ni.contexts), key=lambda x: x[1], reverse=True)])
-            contexts_sorted = np.array(list(ni.contexts))[sort_ind].tolist()
-            # ni.onsets = note_onsets
-            onsets_sorted = np.array(ni.onsets)[sort_ind].tolist()
-            if time_warp:
-                spk_ts_sorted = np.array(ni.spk_ts_warp)[sort_ind].tolist()
-            else:
-                # ni.spk_ts = note_spk_ts_list
-                spk_ts_sorted = np.array(ni.spk_ts)[sort_ind].tolist()
-
-            zipped_lists = zip(contexts_sorted, spk_ts_sorted, onsets_sorted)
-            # zipped_lists = zip(ni.contexts, ni.spk_ts, ni.onsets)
-
-            pre_context = ''  # for marking  context change
-            context_change = np.array([])
-
-            for note_ind, (context, spk_ts, onset) in enumerate(zipped_lists):
-
-                spk = spk_ts - onset
-                # print(len(spk))
-                # print("spk ={}, nb = {}".format(spk, len(spk)))
-                # print('')
-                ax_raster.eventplot(spk, colors='k', lineoffsets=line_offsets[note_ind],
-                                    linelengths=tick_length, linewidths=tick_width, orientation='horizontal')
-
-                # Demarcate the note
+                # Sort trials based on context
+                sort_ind = np.array([i[0] for i in sorted(enumerate(ni.contexts), key=lambda x: x[1], reverse=True)])
+                contexts_sorted = np.array(list(ni.contexts))[sort_ind].tolist()
+                # ni.onsets = note_onsets
+                onsets_sorted = np.array(ni.onsets)[sort_ind].tolist()
                 if time_warp:
-                    note_duration = ni.median_dur
+                    spk_ts_sorted = np.array(ni.spk_ts_warp)[sort_ind].tolist()
                 else:
-                    note_duration = ni.durations[note_ind]
+                    # ni.spk_ts = note_spk_ts_list
+                    spk_ts_sorted = np.array(ni.spk_ts)[sort_ind].tolist()
 
-                rectangle = plt.Rectangle((0, note_ind), note_duration, rec_height,
-                                          fill=True,
-                                          linewidth=1,
-                                          alpha=0.15,
-                                          facecolor=note_color['Motif'][find_str(cluster_db.songNote, note)[0]])
-                ax_raster.add_patch(rectangle)
+                zipped_lists = zip(contexts_sorted, spk_ts_sorted, onsets_sorted)
 
-                # Demarcate song block (undir vs dir) with a horizontal line
-                if pre_context != context:
-                    ax_raster.axhline(y=note_ind, color='k', ls='-', lw=0.3)
-                    context_change = np.append(context_change, note_ind)
-                    if pre_context:
-                        ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
-                                       ((context_change[-1] - context_change[-2]) / 3) + context_change[-2],
-                                       pre_context,
-                                       size=6)
-                pre_context = context
+                pre_context = ''  # for marking  context change
+                context_change = np.array([])
 
-            # Demarcate the last block
-            ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
-                           ((ax_raster.get_ylim()[1] - context_change[-1]) / 3) + context_change[-1],
-                           pre_context,
-                           size=6)
+                for note_ind, (context, spk_ts, onset) in enumerate(zipped_lists):
 
-            ax_raster.set_yticks([0, sum(ni.nb_note.values())])
-            ax_raster.set_yticklabels([0, sum(ni.nb_note.values())])
-            ax_raster.set_ylim([0, sum(ni.nb_note.values())])
-            ax_raster.set_ylabel('Trial #', fontsize=font_size)
-            ax_raster.set_title('Sorted raster', size=font_size)
-            plt.setp(ax_raster.get_xticklabels(), visible=False)
-            remove_right_top(ax_raster)
+                    spk = spk_ts - onset
+                    # print(len(spk))
+                    # print("spk ={}, nb = {}".format(spk, len(spk)))
+                    # print('')
+                    ax_raster.eventplot(spk, colors='k', lineoffsets=line_offsets[note_ind],
+                                        linelengths=tick_length, linewidths=tick_width, orientation='horizontal')
+
+                    # Demarcate the note
+                    if time_warp:
+                        note_duration = ni.median_dur
+                    else:
+                        note_duration = ni.durations[note_ind]
+
+                    rectangle = plt.Rectangle((0, note_ind), note_duration, rec_height,
+                                              fill=True,
+                                              linewidth=1,
+                                              alpha=0.15,
+                                              facecolor=note_color['Motif'][find_str(cluster_db.songNote, note)[0]])
+                    ax_raster.add_patch(rectangle)
+
+                    # Demarcate song block (undir vs dir) with a horizontal line
+                    if pre_context != context:
+                        ax_raster.axhline(y=note_ind, color='k', ls='-', lw=0.3)
+                        context_change = np.append(context_change, note_ind)
+                        if pre_context:
+                            ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
+                                           ((context_change[-1] - context_change[-2]) / 3) + context_change[-2],
+                                           pre_context,
+                                           size=6)
+                    pre_context = context
+
+                # Demarcate the last block
+                ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
+                               ((ax_raster.get_ylim()[1] - context_change[-1]) / 3) + context_change[-1],
+                               pre_context,
+                               size=6)
+
+                ax_raster.set_yticks([0, sum(ni.nb_note.values())])
+                ax_raster.set_yticklabels([0, sum(ni.nb_note.values())])
+                ax_raster.set_ylim([0, sum(ni.nb_note.values())])
+                ax_raster.set_ylabel('Trial #', fontsize=font_size)
+                ax_raster.set_title('Sorted raster', size=font_size)
+                plt.setp(ax_raster.get_xticklabels(), visible=False)
+                remove_right_top(ax_raster)
 
             # Draw peri-event histogram (PETH)
             pi = ni.get_note_peth(duration=note_duration)  # PETH object (PethInfo)
-            # pi = ni.get_note_peth()  # PETH object (PethInfo)
             pi.get_fr()  # get firing rates
 
             # Plot mean firing rates
@@ -338,6 +333,10 @@ def get_raster_syllable(query,
             # Firing rates (includes the pre-motor window)
             # Load NoteInfo class again to calculate firing rates from a different window
             ni = ci.get_note_info(note, pre_buffer=pre_buffer, post_buffer=post_buffer)  # this will be used for plotting raster
+
+            if NOTE_CONTEXT:
+                ni.select_context(target_context=NOTE_CONTEXT)
+
             for i, (k, v) in enumerate(ni.mean_fr.items()):
                 if v is not np.nan:
                     ax_txt.text(txt_xloc, txt_yloc, f"FR ({k}) = {v}", fontsize=font_size)
@@ -540,7 +539,7 @@ if __name__ == '__main__':
     pre_buffer = 50  # time window before syllable onset (in ms)
     post_buffer = 0   # time window after syllable offset (in ms)
     time_warp = True  # spike time warping
-    update = False  # Set True for recreating a cache file
+    update = False  # set True for recreating a cache file
     save_fig = False
     update_db = False  # save results to DB
     entropy = False  # calculate entropy & entropy variance
@@ -548,15 +547,10 @@ if __name__ == '__main__':
     shuffled_baseline = False  # get pcc shuffling baseline
     plot_hist = False  # draw histogram of the shuffled pcc values
     fig_ext = '.png'  # .png or .pdf
-    target_note = 'a'
-    # SQL statement
-    query = "SELECT * FROM cluster WHERE id=96"
+    TARGET_NOTE = 'c'  # notes to plot (set to 'all' to plot all syllables)
+    NOTE_CONTEXT= 'U'  # context to plot ('U', 'D', set to None if you want to plot both)
 
-    get_raster_syllable(query,
-                        update=update,
-                        save_fig=save_fig,
-                        update_db=update_db,
-                        entropy=entropy,
-                        entropy_mode='spectral',
-                        shuffled_baseline=shuffled_baseline,
-                        fig_ext=fig_ext)
+    # SQL statement
+    query = "SELECT * FROM cluster WHERE analysisOK"
+
+    get_raster_syllable()
