@@ -718,7 +718,6 @@ class NoteInfo:
         self.spk_ts_warp = np.array(self.spk_ts_warp)
 
         if not keep_median_duration:
-            import numpy as np
             self.median_dur = np.median(self.median_dur, axis=0)
 
     def get_entropy(self, normalize=True, mode='spectral'):
@@ -889,7 +888,7 @@ class NoteInfo:
 class MotifInfo(ClusterInfo):
     """
     Class object for motif information
-    Child class of ClusterInfo
+    child class of ClusterInfo
     """
 
     def __init__(self, path, channel_nb, unit_nb, motif, format='rhd', *name, update=False):
@@ -916,8 +915,15 @@ class MotifInfo(ClusterInfo):
         for key in motif_info:
             setattr(self, key, motif_info[key])
 
-    def load_motif(self):
+        if hasattr(self, 'spk_wf'):
+            self.delete_wf()
 
+    def delete_wf(self):
+        """Delete waveform attribute (not needed for this)"""
+        delattr(self, 'spk_wf')
+
+    def load_motif(self):
+        """Load motif info"""
         from analysis.parameters import peth_parm
         import numpy as np
         from util.functions import find_str
@@ -977,6 +983,7 @@ class MotifInfo(ClusterInfo):
         # Set the dictionary values to class attributes
         for key in motif_info:
             setattr(self, key, motif_info[key])
+
         # Get duration
         note_duration_list, median_duration_list = self.get_note_duration()
         self.note_durations = note_duration_list
