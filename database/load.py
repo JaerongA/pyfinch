@@ -1,5 +1,4 @@
 """
-By Jaerong
 Load project information and read from the project database
 """
 import sqlite3
@@ -13,13 +12,11 @@ def create_db(sql_file_name: str):
     ----------
     sql_file_name : str
         name of the sql file to create
-
     """
-    # from database.load import ProjectLoader
     # Load database
     db = ProjectLoader().load_db()
     # Make database
-    with open(f"database/{sql_file_name}", 'r') as sql_file:
+    with open(f"../database/{sql_file_name}", 'r') as sql_file:
         db.conn.executescript(sql_file.read())
 
 
@@ -56,31 +53,32 @@ class Database:
         self.cur = self.conn.cursor()
 
     def execute(self, query):
-        # Get column names
+
         self.cur.execute(query)
 
-    def create_col(self, table, col_name, type):
+    def create_col(self, table: str, col_name: str, type: str):
         """
-        Create a new column
-        Args:
-            table: str
-                db table name
-            col_name: str
-                name of the column you like to create
-            type: str
-                data type for the column (e.g, TEXT, INT)
-
+        Create a new column in table
+        Parameters
+        ----------
+        table : str
+            table name to add the column
+        col_name : str
+            column name
+        type : str
+            data type for the column (e.g., TEXT, INT)
         """
         if col_name not in self.col_names(table):
             self.cur.execute("ALTER TABLE {} ADD COLUMN {} {}".format(table, col_name, type))
 
     def col_names(self, table) -> list:
+        """Get column names"""
         self.cur.execute(f"PRAGMA table_info({table})")
         columns = self.cur.fetchall()
         return [x[1] for x in columns]
 
     def update(self, table, col_name, condition_col=None, condition_value=None, value=None):
-
+        """Update values to table"""
         if condition_col is not None:
             self.cur.execute("UPDATE {} SET {} = ? WHERE {} = ?".format(table, col_name, condition_col),
                              (value, condition_value))
@@ -116,6 +114,16 @@ class Database:
             webbrowser.open(self.dir)
 
     def to_dataframe(self, query):
+        """
+        Convert to pandas dataframe according to the query statement
+        Parameters
+        ----------
+        query : str
+            SQL query statement
+        Returns
+        -------
+        df : dataframe
+        """
         import pandas as pd
         df = pd.read_sql_query(query, self.conn)
         return df
@@ -125,7 +133,6 @@ class DBInfo:
     def __init__(self, db):
 
         # Set all database fields as attributes
-
         self.channel = None
         for key in db.keys():
             # dic[col] = database[col]
