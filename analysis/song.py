@@ -1,6 +1,9 @@
 """
-A package for song analysis
+Module for song analysis
 """
+
+from database.load import ProjectLoader
+import numpy as np
 
 
 def load_song(dir, format='wav'):
@@ -8,9 +11,6 @@ def load_song(dir, format='wav'):
     Obtain event info & serialized timestamps for song & neural analysis
     """
     from analysis.functions import demarcate_bout, read_not_mat
-    from database.load import ProjectLoader
-    import numpy as np
-    import os
     from scipy.io import wavfile
     from util.functions import list_files
 
@@ -89,14 +89,12 @@ class SongInfo:
 
     def __init__(self, path, name=None, update=False):
 
-        import numpy as np
-
         self.path = path
         if name:
             self.name = name
         else:
             self.name = self.path
-        self.print_name()
+        self.__print_name()
 
         # Load song
         file_name = self.path / "SongInfo.npy"
@@ -114,7 +112,7 @@ class SongInfo:
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
-    def print_name(self):
+    def __print_name(self):
         print('')
         print('Load song info {self.name}'.format(self=self))
 
@@ -133,8 +131,8 @@ class SongInfo:
         open_folder(self.path)
 
     @property
-    def nb_files(self):
-
+    def nb_files(self) -> int:
+        """Number of files"""
         nb_files = {}
         nb_files['U'] = len([context for context in self.contexts if context == 'U'])
         nb_files['D'] = len([context for context in self.contexts if context == 'D'])
@@ -142,8 +140,17 @@ class SongInfo:
 
         return nb_files
 
-    def nb_bouts(self, song_note):
+    def nb_bouts(self, song_note: str):
+        """
+        Return number
+        Parameters
+        ----------
+        song_note
 
+        Returns
+        -------
+
+        """
         from analysis.functions import get_nb_bouts
 
         nb_bouts = {}
@@ -475,41 +482,50 @@ class AudioInfo:
 
         return get_spectral_entropy(spect, normalize=normalize, mode=mode)
 
-    class FundamentalFreq:
-        def __init__self(self, note):
+class FundamentalFreq:
+    """Class object for analyzing fundamental frequency of a syllable"""
+    def __init__self(self, note=None,
+                     crit=None, parameter=None, onset=None, offset=None,
+                     low=None, high=None, harmonic=1
+                     ):
 
-            from database.load import ProjectLoader
-            self.note = note
-            self.crit = None
-            self.parameter = None  # {'percent_from_start', 'ms_from_start', 'ms_from_end'}
-            self.onset = None
-            self.offset = None
-            self.low = None
-            self.high = None
-            self.harmonic = None
-            self.value = None  # Fundamental Frequency (FF) value
+        self.note = note
+        self.crit = crit
+        self.parameter = None  # {'percent_from_start', 'ms_from_start', 'ms_from_end'}
+        self.onset = None
+        self.offset = None
+        self.low = None
+        self.high = None
+        self.harmonic = None
+        self.value = None  # Fundamental Frequency (FF) value
 
-        def load_from_db(self, birdID, ff_note):
-            """Load info from the database if exists"""
-            from database.load import ProjectLoader
-            query = f"SELECT ffNote, ffParameter, ffCriterion, ffLow, ffHigh, ffDuration, harmonic " \
-                    f"FROM ff " \
-                    f"WHERE birdID='{birdID}' AND ffNote='{ff_note}'"
-            db = ProjectLoader().load_db().execute(query)
+    def load_from_db(self, birdID, ff_note):
+        """Load info from the database if exists"""
+        from database.load import ProjectLoader
+        query = f"SELECT ffNote, ffParameter, ffCriterion, ffLow, ffHigh, ffDuration, harmonic " \
+                f"FROM ff " \
+                f"WHERE birdID='{birdID}' AND ffNote='{ff_note}'"
+        db = ProjectLoader().load_db().execute(query)
 
-            ff_info = {data[0]: {'parameter': data[1],
-                                 'crit': data[2],
-                                 'low': data[3],  # lower limit of frequency
-                                 'high': data[4],  # upper limit of frequency
-                                 'duration': data[5],
-                                 'harmonic': data[6]  # 1st or 2nd harmonic detection
-                                 } for data in db.cur.fetchall()  # ff duration
-                       }
+        ff_info = {data[0]: {'parameter': data[1],
+                             'crit': data[2],
+                             'low': data[3],  # lower limit of frequency
+                             'high': data[4],  # upper limit of frequency
+                             'duration': data[5],
+                             'harmonic': data[6]  # 1st or 2nd harmonic detection
+                             } for data in db.cur.fetchall()  # ff duration
+                   }
 
-            # Set the dictionary values to class attributes
-            for key in ff_info:
-                setattr(self, key, ff_info[key])
+        # Set the dictionary values to class attributes
+        for key in ff_info:
+            setattr(self, key, ff_info[key])
 
-        def get_ts(self, note_onset, note_offset):
-            """Get onset and offset timestamp of FF portion based on note onset & offset"""
-            pass
+    def get_ts(self, note_onset, note_offset):
+        """Get onset and offset timestamp of FF portion based on note onset & offset"""
+        pass
+
+class SyllableNetwork:
+
+    def __init__(self):
+        pass
+
