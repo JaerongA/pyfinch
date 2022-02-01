@@ -98,72 +98,6 @@ def plot_scatter_diagonal(df, x, y, hue=None,
         plt.show()
 
 
-def plot_by_day_per_syllable(fr_criteria=0,
-                             save_fig=False,
-                             fig_ext='.png'):
-    """
-    Plot daily pcc per syllable per bird
-    Parameters
-    ----------
-    fr_criteria : 0 (default)
-        only plot the pcc for syllable having higher firing rates than criteria
-    save_fig : bool
-        save figure
-    """
-    from database.load import ProjectLoader
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-
-    db = ProjectLoader().load_db()
-
-    # # SQL statement
-    df = db.to_dataframe(f"SELECT * FROM syllable WHERE frUndir >= {fr_criteria}")
-    df.set_index('syllableID')
-    # Plot the results
-
-    circ_size = 1
-
-    bird_list = sorted(set(df['birdID'].to_list()))
-    fig, axes = plt.subplots(2, 5, figsize=(20, 8))
-    fig.subplots_adjust(hspace=.3, wspace=.2, top=0.9)
-
-    fig.get_axes()[0].annotate(f"PCC syllable (Undir) FR >= {fr_criteria}", (0.5, 0.97),
-                               xycoords='figure fraction',
-                               ha='center',
-                               fontsize=16)
-    axes = axes.ravel()
-
-    for bird, ax_ind in zip(bird_list, range(len(bird_list))):
-
-        temp_df = df.loc[df['birdID'] == bird]
-        # print(bird, ax_ind)
-        # range =  [temp_df['taskSessionDeafening'].min(), temp_df['taskSessionDeafening'].max()]
-        # sns.lineplot(x='taskSessionDeafening', y='pccUndir', hue='note',
-        sns.lineplot(x='taskSessionDeafening', y='entropyUndir', hue='note',
-                     data=temp_df, ci=None, marker='o', mew=circ_size, ax=axes[ax_ind])
-        remove_right_top(axes[ax_ind])
-        axes[ax_ind].set_title(bird)
-        if ax_ind >= 5:
-            axes[ax_ind].set_xlabel('Days from deafening')
-        else:
-            axes[ax_ind].set_xlabel('')
-
-        if (ax_ind == 0) or (ax_ind == 5):
-            axes[ax_ind].set_ylabel('PCC')
-        else:
-            axes[ax_ind].set_ylabel('')
-
-        axes[ax_ind].set_xlim([-17, 70])
-        # axes[ax_ind].set_ylim([-0.1, 0.6])
-
-    # Save figure
-    if save_fig:
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'Results')
-        save.save_fig(fig, save_path, f'pcc_syllable_day(fr_over_{fr_criteria})', fig_ext=fig_ext)
-    else:
-        plt.show()
-
-
 def plot_regression(x, y, color='k', size=None, save_fig=False, fig_ext='.png',
                     view_folder=True,
                     **kwargs):
@@ -423,7 +357,7 @@ def plot_across_days_per_note(df, x, y,
     fig, axes = plt.subplots(2, 5, figsize=(20, 8))
     fig.subplots_adjust(hspace=.3, wspace=.2, top=0.9)
     if title:
-        fig.get_axes()[0].annotate(f"{title}", (0.5, 0.97),
+        fig.get_axes()[0].annotate(f"{title}", (0.5, 0.9),
                                    xycoords='figure fraction',
                                    ha='center',
                                    fontsize=16)
@@ -531,6 +465,7 @@ def plot_paired_data(df, x, y,
         ax.set_ylim(y_lim)
     ax.set_xlabel(x_label), ax.set_ylabel(y_label)
     remove_right_top(ax)
+    fig.tight_layout()
 
     # 2 sample t-test (independent)
     group_var = df_mean[x]
@@ -551,6 +486,7 @@ def plot_paired_data(df, x, y,
     from scipy.stats import ranksums
     stat, pval = stats.ranksums(group1, group2)
     msg = f"ranksum p-val = {pval : .3f}"
+
     if save_fig:
         save.save_fig(fig, save_path, fig_name, view_folder=view_folder, fig_ext=fig_ext)
     else:
