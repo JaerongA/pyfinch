@@ -1,2 +1,3 @@
 # pyfinch
-python toolbox for analyzing zebra finch song &amp; neural data
+
+python library for analyzing neural & bioacoustic signals from songbirds
