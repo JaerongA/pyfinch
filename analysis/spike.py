@@ -1,12 +1,23 @@
 """
 Module for neural analysis
 """
+import numpy as np
 
-def load_audio(dir, format='wav'):
+
+def load_audio(dir, format='wav') -> dict:
     """
     Load and concatenate all audio files (e.g., .wav) in the input dir (path)
+    Parameters
+    ----------
+    dir : path
+    format : str
+        file extension (e.g., '.wav')
+
+    Returns
+    -------
+    audio_info : dict
     """
-    import numpy as np
+
     from scipy.io import wavfile
     from util.functions import list_files
 
@@ -82,7 +93,6 @@ def get_peth(evt_ts_list: list, spk_ts_list: list,
     from analysis.parameters import peth_parm
     import copy
     import math
-    import numpy as np
 
     parameter = peth_parm.copy()
 
@@ -505,7 +515,6 @@ class ClusterInfo:
 
         from analysis.parameters import corr_shuffle
         from collections import defaultdict
-        import numpy as np
 
         correlogram_jitter = defaultdict(list)
 
@@ -1805,8 +1814,7 @@ class Correlogram():
                                   spk_corr_parm['bin_size'])
         if self.data.sum():
             self.peak_ind = np.min(
-                np.abs(
-                    np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center  # index of the peak
+                np.abs(np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center  # index of the peak
             self.peak_latency = self.time_bin[self.peak_ind] - 1
             self.peak_value = self.data[self.peak_ind]
             burst_range = np.arange(corr_center - (1000 / burst_hz) - 1, corr_center + (1000 / burst_hz),
@@ -1818,19 +1826,18 @@ class Correlogram():
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
-    def category(self, correlogram_jitter):
+    def category(self, correlogram_jitter: np.ndarray) -> str:
         """
         Get bursting category of a neuron based on autocorrelogram
         Parameters
         ----------
-        correlogram_jitter : array
+        correlogram_jitter : np.ndarray
             Random time-jittered correlogram for baseline setting
         Returns
             Category of a neuron ('Bursting' or 'Nonbursting')
         -------
         """
         from analysis.parameters import corr_burst_crit
-        import numpy as np
 
         corr_mean = correlogram_jitter.mean(axis=0)
 
@@ -1863,12 +1870,15 @@ class Correlogram():
         Plot correlogram
         Parameters
         ----------
-        ax : axis to plot the figure
-        time_bin : array
-        correlogram : array
+        ax : axis object
+            axis to plot the figure
+        time_bin : np.ndarray
+        correlogram : np.ndarray
         title : str
-        font_size : title font size
-        normalize : normalize the correlogram
+        font_size : int
+            title font size
+        normalize : bool
+            normalize the correlogram
         """
         import matplotlib.pyplot as plt
         import numpy as np
@@ -1876,9 +1886,9 @@ class Correlogram():
         from util.functions import myround
 
         if correlogram.sum():
-            ax.bar(time_bin, correlogram, color='k')
+            ax.bar(time_bin, correlogram, color='k', rasterized=True)
             ymax = max([self.baseline.max(), correlogram.max()])
-            ymax = myround(ymax, base=10)
+            round(ymax / 10) * 10
             ax.set_ylim(0, ymax)
             plt.yticks([0, ax.get_ylim()[1]], [str(0), str(int(ymax))])
             ax.set_title(title, size=font_size)
