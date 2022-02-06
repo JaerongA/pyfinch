@@ -2,15 +2,19 @@
 A collection of functions used for song & neural analysis
 """
 
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from matplotlib.pylab import psd
 from util import save
-from util.draw import *
-from util.functions import *
-from util.spect import *
+from util.draw import remove_right_top
+from util.functions import normalize, extract_ind, find_str, unique
+from util.spect import spectrogram
 
 
 def read_not_mat(notmat, unit='ms'):
-    """ read from .not.mat files generated from uisonganal
+    """
+    Read from .not.mat files generated from uisonganal
     Parameters
     ----------
     notmat : path
@@ -54,7 +58,7 @@ def read_not_mat(notmat, unit='ms'):
     return onsets, offsets, intervals, durations, syllables, contexts
 
 
-def get_note_type(syllables, song_db) -> list:
+def get_note_type(syllables: str, song_db) -> list:
     """
     Function to determine the category of the syllable
     Parameters
@@ -80,7 +84,8 @@ def get_note_type(syllables, song_db) -> list:
 
 
 def demarcate_bout(target, intervals):
-    """ Demarcate the song bout with an asterisk (*) from a string of syllables
+    """
+    Demarcate the song bout with an asterisk (*) from a string of syllables
     Parameters
     ----------
     target : str or numpy array
@@ -93,7 +98,6 @@ def demarcate_bout(target, intervals):
         demarcated syllable string (e.g., 'iiiabc*abckn*')
     """
     from analysis.parameters import bout_crit
-    import numpy as np
 
     ind = np.where(intervals > bout_crit)[0]
     bout_labeling = target
@@ -127,14 +131,14 @@ def demarcate_bout(target, intervals):
     return bout_labeling
 
 
-def unique_nb_notes_in_bout(note: str, bout: str):
-    """ returns the unique number of notes within a single bout string """
+def unique_nb_notes_in_bout(note: str, bout: str) -> int:
+    """Returns the unique number of notes within a single bout string """
     nb_song_note_in_bout = len([note for note in note if note in bout])
     return nb_song_note_in_bout
 
 
-def total_nb_notes_in_bout(note: str, bout: str):
-    """ returns the total number of song notes from a list of song bouts"""
+def total_nb_notes_in_bout(note: str, bout: str) -> int:
+    """Returns the total number of song notes from a list of song bouts"""
     notes = []
     nb_notes = []
     for note in note:
@@ -165,17 +169,18 @@ def get_snr(avg_wf, raw_neural_trace, filter_crit=5):
     Calculate signal-to-noise ratio of sorted spike relative to the background neural trace
     Parameters
     ----------
-    avg_wf : array
+    avg_wf : np.ndarray
         averaged spike waveform of a neuron
     raw_neural_trace : array
         raw neural signal
+    filter_crit : int
+        filtering criteria
 
     Returns
     -------
     snr : float
         signal-to-noise ratio
     """
-    import numpy as np
     from scipy.signal import hilbert
 
     # Get signal envelop of the raw trace and filter out ranges that are too large (e.g., motor artifacts)
@@ -193,14 +198,13 @@ def get_snr(avg_wf, raw_neural_trace, filter_crit=5):
 
 
 def get_half_width(wf_ts, avg_wf):
-    import numpy as np
-
     # Find the negative (or positive if inverted) deflection
     if np.argmin(avg_wf) > np.argmax(avg_wf):  # inverted waveform (peak comes first in extra-cellular recording)
         deflection_baseline = np.abs(avg_wf).mean() + np.abs(avg_wf).std(
             axis=0)  # the waveform baseline. Finds values above the baseline
     else:
-        deflection_baseline = avg_wf.mean() - avg_wf.std(axis=0)  # the waveform baseline. Finds values below the baseline
+        deflection_baseline = avg_wf.mean() - avg_wf.std(
+            axis=0)  # the waveform baseline. Finds values below the baseline
 
     diff_ind = []
     for ind in np.where(np.diff(avg_wf > deflection_baseline))[0]:  # below mean amp
@@ -246,7 +250,6 @@ def get_psd_mat(data_path, save_path,
                 save_psd=False, update=False, open_folder=False, add_date=False,
                 nfft=2 ** 10, fig_ext='.png'):
     from analysis.parameters import freq_range
-    import numpy as np
     from scipy.io import wavfile
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
@@ -375,7 +378,6 @@ def get_basis_psd(psd_list, notes, song_note=None, num_note_crit_basis=30):
     psd_list_basis : list
     note_list_basis : list
     """
-    import numpy as np
 
     psd_dict = {}
     psd_list_basis = []
@@ -429,7 +431,6 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
 
     from analysis.parameters import pre_motor_win_size
     from database.load import ProjectLoader
-    import numpy as np
 
     # Create a new database (song_syllable)
     db = ProjectLoader().load_db()
@@ -503,8 +504,7 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
 
 
 def get_spectral_entropy(psd_array, normalize=True, mode=None):
-    import numpy as np
-
+    """Calculate spectral entropy and it variance"""
     if mode == 'spectral':
         # Get time resolved version of the spectral entropy
         psd_array = psd_array.mean(axis=1)  # time-averaged spectrogram
@@ -550,14 +550,13 @@ def get_ff(data, sample_rate, ff_low, ff_high, ff_harmonic=1):
     """
     from scipy.signal import find_peaks
     import statsmodels.tsa.stattools as smt
-    import matplotlib.pyplot as plt
     import numpy as np
     from util.functions import para_interp
 
     # Get peak of the auto-correlogram
     corr = smt.ccf(data, data, adjusted=False)
     corr_win = corr[3: round(sample_rate / ff_low)]
-    peak_ind, property = find_peaks(corr_win, height=0)
+    peak_ind, property_ = find_peaks(corr_win, height=0)
 
     # Plot auto-correlation (for debugging)
     # plt.plot(corr_win)
@@ -568,7 +567,7 @@ def get_ff(data, sample_rate, ff_low, ff_high, ff_harmonic=1):
     ff_list = []
     ff = None
     # loop through the peak until FF is found in the desired range
-    for ind in property['peak_heights'].argsort()[::-1]:
+    for ind in property_['peak_heights'].argsort()[::-1]:
         if not (peak_ind[ind] == 0 or (
                 peak_ind[ind] == len(corr_win))):  # if the peak is not in first and last indices
             target_peak_ind = peak_ind[ind]
@@ -601,10 +600,9 @@ def normalize_from_pre(df, var_name: str, note: str):
     return norm_val
 
 
-def add_pre_normalized_col(df, col_name_to_normalize, col_name_to_add,
+def add_pre_normalized_col(df: pd.DataFrame, col_name_to_normalize, col_name_to_add,
                            save_path=None, csv_name=None, save_csv=False):
     """Normalize relative to pre-deafening mean"""
-    import numpy as np
 
     df[col_name_to_add] = np.nan
 
@@ -625,7 +623,7 @@ def add_pre_normalized_col(df, col_name_to_normalize, col_name_to_add,
     return df
 
 
-def get_bird_colors(birds):
+def get_bird_colors(birds: list) -> dict:
     """
     Get separate colors for different birds
     Parameters
@@ -649,7 +647,6 @@ def get_bird_colors(birds):
 
 def get_spectrogram(timestamp, data, sample_rate, freq_range=[300, 8000]):
     """Calculate spectrogram"""
-    import numpy as np
     from util.spect import spectrogram
 
     spect, spect_freq, _ = spectrogram(data, sample_rate, freq_range=freq_range)
@@ -657,9 +654,8 @@ def get_spectrogram(timestamp, data, sample_rate, freq_range=[300, 8000]):
     return spect_time, spect, spect_freq
 
 
-def align_waveform(spk_wf):
+def align_waveform(spk_wf: np.ndarray) -> np.ndarray:
     """Align spike waveforms relative to the max location of the average waveform"""
-    import numpy as np
 
     aligned_wf = np.empty((spk_wf.shape[0], spk_wf.shape[1]))
     aligned_wf[:] = np.nan
