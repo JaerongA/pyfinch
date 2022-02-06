@@ -1,6 +1,5 @@
-config.ini
 .idea/
 __pycache__/
 venv/
 .ipynb_checkpoints
-#/deafening
+/deafening
