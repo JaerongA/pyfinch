@@ -30,7 +30,7 @@ correlation_parm = 'ev'  # {'spectral_entropy' : 'spectro_temporal_entropy' : 'e
 db = ProjectLoader().load_db()
 
 # Make database
-with open('../../database/create_entropy_spk_corr.sql', 'r') as sql_file:
+with open('../database/create_entropy_spk_corr.sql', 'r') as sql_file:
     db.conn.executescript(sql_file.read())
 
 # Make save path

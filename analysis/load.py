@@ -1,5 +1,5 @@
 """
-load neural data (from .rhd or .txt)
+load data (from .rhd, .txt, .wav, etc)
 """
 
 

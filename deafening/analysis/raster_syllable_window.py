@@ -469,14 +469,14 @@ if __name__ == '__main__':
     save_fig = True
     update_db = True  # save results to DB
     fig_ext = '.png'  # .png or .pdf
-    target_note = None  # None if you want to plot all notes
+    TARGET_NOTE = None  # None if you want to plot all notes
 
     # SQL statement
     query = "SELECT * FROM cluster WHERE analysisOK"
 
     get_raster_syllable(query,
                         buffer_size=40,  # in ms
-                        target_note=target_note,
+                        target_note=TARGET_NOTE,
                         save_fig=save_fig,
                         update_db=update_db,
                         fig_ext=fig_ext)

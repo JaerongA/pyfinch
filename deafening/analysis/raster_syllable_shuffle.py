@@ -15,7 +15,7 @@ def create_db():
     from database.load import ProjectLoader
 
     db = ProjectLoader().load_db()
-    with open('../../database/create_syllable_pcc_shuffle.sql', 'r') as sql_file:
+    with open('../database/create_syllable_pcc_shuffle.sql', 'r') as sql_file:
         db.conn.executescript(sql_file.read())
 
 

@@ -341,13 +341,13 @@ if __name__ == '__main__':
 
     # Parameters
     update = False  # Update the cache file per cluster
-    motif_nb = 7
+    motif_nb = 24
     gaussian_std = 8  # gaussian kernel for smoothing firing rates
     update_db = False
-    save_fig = False
+    save_fig = True
     view_folder = True  # open the folder where the result figures are saved
     save_folder_name = 'SongFR_CrossCorr'
-    fig_ext = '.png'  # set to '.pdf' for vector output (.png by default)
+    fig_ext = '.pdf'  # set to '.pdf' for vector output (.png by default)
 
     # SQL statement
     query = "SELECT * FROM cluster WHERE analysisOK AND id=66"

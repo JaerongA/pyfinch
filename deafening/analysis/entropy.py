@@ -1,7 +1,6 @@
 """
 Calculate entropy, entropy variance per syllable
 Stores the results in individual_syllable, syllable table
-Figures saved in /Analysis/Entropy
 """
 
 
@@ -223,7 +222,7 @@ if __name__ == '__main__':
     save_fig = True  # save the result figure
     view_folder = True  # view the folder where figures are stored
     update_db = False  # save results to DB
-    save_folder_name = 'Entropy'
+    save_folder_name = 'Entropy'  # figures saved to analysis/save_folder_name
     entropy_color = 'm'
     cmap = 'Greys'
     fig_ext = '.pdf'  # .png or .pdf

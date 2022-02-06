@@ -54,7 +54,7 @@ def two_sample_ttest(arr1, arr2):
     tval, pval = stats.ttest_ind(arr1, arr2, nan_policy='omit')
     sig = get_sig(pval)  # print out asterisk
     degree_of_freedom = len(arr1) + len(arr2) - 2
-    msg1= f"t({degree_of_freedom})={tval : 3f}"
+    msg1= f"t({degree_of_freedom}) = {tval : 3f}"
     if pval < 0.001:  # mark significance
         msg2 = 'p < 0.001'
     else:
@@ -73,7 +73,7 @@ def rank_sum_test(arr1, arr2):
     arr2 = arr2[~np.isnan(arr2)]
     z, pval = ranksums(arr1, arr2)
     sig = get_sig(pval)  # print out asterisk
-    msg1 = f"Z={z : .3f}"
+    msg1 = f"Z = {z : .3f}"
     if pval < 0.001:  # mark significance
         msg2 = 'p < 0.001'
     else:

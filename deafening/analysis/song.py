@@ -21,7 +21,7 @@ def analyze_song(query, update_cache=False, update_db=True):
 
     # Load database
     db = ProjectLoader().load_db()
-    with open('../../database/create_song_table.sql', 'r') as sql_file:
+    with open('../database/create_song_table.sql', 'r') as sql_file:
         db.conn.executescript(sql_file.read())
 
     db.execute(query)

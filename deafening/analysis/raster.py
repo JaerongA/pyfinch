@@ -3,48 +3,78 @@ Plot raster & peth for motif
 Calculate spike temporal precision metrics such as pcc
 Store results in pcc table
 """
+import matplotlib.pyplot as plt
+import numpy as np
 
 
-def get_raster(query,
-               shuffled_baseline=False,
-               norm_method=None,
-               time_warp=True,
-               update=False,
-               save_fig=True,
-               save_folder_name='Raster',
-               update_db=True,
-               view_folder=False,
-               fig_ext='.png',
-               ):
+def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
     """
-    Plot raster & peri-event histogram
-
+    Test whether pcc value is significant compared to the baseline pcc computed using shuffled spikes
     Parameters
     ----------
-    query : str
-        SQL selection statement from cluster database
-    shuffled_baseline : bool
-        Get PETH from shuffled spikes for getting pcc baseline
-    norm_method : bool
-        Set True to normalize firing rates
-    fig_ext : str
-        Figure extension ('.png' or '.pdf' for vectorized figure)
-    time_warp : bool
-        Set True to perform piecewise linear warping
-    update : bool
-        Update cluster cache file
-    save_fig : bool
-        Set True to save figure
-    update_db : bool
-        Set True to update results to database
+    MotifInfo : class object
+    PethInfo : class objet
+    plot_hist : bool
+        plot pcc histogram if True
+
+    Returns
+    -------
+    p_sig : dict
+        dictionary contains significance for difference contexts
     """
+    from analysis.parameters import peth_shuffle
+    from collections import defaultdict
+    from functools import partial
+    import scipy.stats as stats
+
+    pcc_shuffle = defaultdict(partial(np.ndarray, 0))
+    for _ in range(peth_shuffle['shuffle_iter']):
+        MotifInfo.jitter_spk_ts(peth_shuffle['shuffle_limit'])
+        pi_shuffle = MotifInfo.get_note_peth(shuffle=True)  # peth object
+        pi_shuffle.get_fr()  # get firing rates
+        pi_shuffle.get_pcc()  # get pcc
+        for context, pcc in pi_shuffle.pcc.items():
+            pcc_shuffle[context] = np.append(pcc_shuffle[context], pcc['mean'])
+
+    # One-sample t-test (one-sided)
+    p_val = {}
+    p_sig = {}
+    alpha = 0.05
+
+    for context in pcc_shuffle.keys():
+        (_, p_val[context]) = stats.ttest_1samp(a=pcc_shuffle[context], popmean=PethInfo.pcc[context]['mean'],
+                                                nan_policy='omit', alternative='less')
+    for context, value in p_val.items():
+        p_sig[context] = value < alpha
+
+    # Plot histogram
+    if plot_hist:
+        from util.draw import remove_right_top
+
+        fig, axes = plt.subplots(1, 2, figsize=(6, 3))
+        plt.suptitle('PCC shuffle distribution', y=.98, fontsize=10)
+        for axis, context in zip(axes, pcc_shuffle.keys()):
+            axis.set_title(context)
+            axis.hist(pcc_shuffle[context], color='k')
+            axis.set_xlim([-0.1, 0.6])
+            axis.set_xlabel('PCC'), axis.set_ylabel('Count')
+            if p_sig[context]:
+                axis.axvline(x=PethInfo.pcc[context]['mean'], color='r', linewidth=1, ls='--')
+            else:
+                axis.axvline(x=PethInfo.pcc[context]['mean'], color='k', linewidth=1, ls='--')
+            remove_right_top(axis)
+        plt.tight_layout()
+        plt.show()
+
+    return p_sig
+
+
+def main():
     from analysis.parameters import peth_parm, freq_range, tick_length, tick_width, note_color, nb_note_crit
     from analysis.spike import MotifInfo, AudioData
     from database.load import create_db, DBInfo, ProjectLoader
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
-    import matplotlib.pyplot as plt
-    import numpy as np
     from util import save
     from util.functions import myround
     from util.draw import remove_right_top
@@ -80,6 +110,7 @@ def get_raster(query,
 
         # Load class object
         mi = MotifInfo(path, channel_nb, unit_nb, motif, format, name, update=update)  # cluster object
+
         audio = AudioData(path, update=update)  # audio object
 
         # Get number of motifs
@@ -125,7 +156,7 @@ def get_raster(query,
         ax_spect = plt.subplot(gs[1:3, 0:4])
         spect_time = spect_time - spect_time[0] - peth_parm['buffer']  # starts from zero
         ax_spect.pcolormesh(spect_time, spect_freq, spect,
-                            cmap='hot_r',
+                            cmap='hot_r', rasterized=True,
                             norm=colors.SymLogNorm(linthresh=0.05,
                                                    linscale=0.03,
                                                    vmin=0.5,
@@ -133,7 +164,8 @@ def get_raster(query,
                                                    ))
 
         remove_right_top(ax_spect)
-        ax_spect.set_xlim(-peth_parm['buffer'], duration + peth_parm['buffer'])
+        x_max = myround(duration + peth_parm['buffer'], base=100)
+        ax_spect.set_xlim(-peth_parm['buffer'], x_max)
         ax_spect.set_ylim(freq_range[0], freq_range[1])
         ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
         plt.yticks(freq_range, [str(freq_range[0]), str(freq_range[1])])
@@ -189,14 +221,14 @@ def get_raster(query,
                     rectangle = plt.Rectangle((0, motif_ind), dur, rec_height,
                                               fill=True,
                                               linewidth=1,
-                                              alpha=0.15,
+                                              alpha=0.15, rasterized=True,
                                               facecolor=note_color['Motif'][i])
                 elif not i % 2:
                     # print("i is {}, color is {}".format(i, i-k))
                     rectangle = plt.Rectangle((sum(note_duration[:i]), motif_ind), note_duration[i], rec_height,
                                               fill=True,
                                               linewidth=1,
-                                              alpha=0.15,
+                                              alpha=0.15, rasterized=True,
                                               facecolor=note_color['Motif'][i - k])
                     k += 1
                 ax_raster.add_patch(rectangle)
@@ -204,7 +236,7 @@ def get_raster(query,
             # Demarcate song block (undir vs dir) with a horizontal line
             if pre_context != context:
                 ax_raster.axhline(y=motif_ind, color='k', ls='-', lw=0.3)
-                context_change = np.append(context_change, (motif_ind))
+                context_change = np.append(context_change, motif_ind)
                 if pre_context:
                     ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
                                    ((context_change[-1] - context_change[-2]) / 3) + context_change[-2],
@@ -266,14 +298,14 @@ def get_raster(query,
                     rectangle = plt.Rectangle((0, motif_ind), dur, rec_height,
                                               fill=True,
                                               linewidth=1,
-                                              alpha=0.15,
+                                              alpha=0.15, rasterized=True,
                                               facecolor=note_color['Motif'][i])
                 elif not i % 2:
                     # print("i is {}, color is {}".format(i, i-k))
                     rectangle = plt.Rectangle((sum(note_duration[:i]), motif_ind), note_duration[i], rec_height,
                                               fill=True,
                                               linewidth=1,
-                                              alpha=0.15,
+                                              alpha=0.15, rasterized=True,
                                               facecolor=note_color['Motif'][i - k])
                     k += 1
                 ax_raster.add_patch(rectangle)
@@ -282,7 +314,7 @@ def get_raster(query,
             if pre_context != context:
 
                 ax_raster.axhline(y=motif_ind, color='k', ls='-', lw=0.3)
-                context_change = np.append(context_change, (motif_ind))
+                context_change = np.append(context_change, motif_ind)
                 if pre_context:
                     ax_raster.text(ax_raster.get_xlim()[1] + 0.2,
                                    ((context_change[-1] - context_change[-2]) / 3) + context_change[-2],
@@ -320,7 +352,7 @@ def get_raster(query,
 
         plt.legend(loc='center left', bbox_to_anchor=(0.98, 0.5), prop={'size': 6})  # print out legend
 
-        if norm_method:  # Normalize FR
+        if normalize_fr:  # Normalize FR
             ax_peth.set_ylabel('Norm. FR', fontsize=font_size)
         else:  # Raw FR
             ax_peth.set_ylabel('FR', fontsize=font_size)
@@ -512,75 +544,22 @@ def get_raster(query,
     print('Done!')
 
 
-def pcc_shuffle_test(MotifInfo, PethInfo, plot_hist=False):
-    from analysis.parameters import peth_shuffle
-    # from analysis.spike import MotifInfo
-    from collections import defaultdict
-    from functools import partial
-    import scipy.stats as stats
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    pcc_shuffle = defaultdict(partial(np.ndarray, 0))
-    for iter in range(peth_shuffle['shuffle_iter']):
-        MotifInfo.jitter_spk_ts(peth_shuffle['shuffle_limit'])
-        pi_shuffle = MotifInfo.get_note_peth(shuffle=True)  # peth object
-        pi_shuffle.get_fr()  # get firing rates
-        pi_shuffle.get_pcc()  # get pcc
-        for context, pcc in pi_shuffle.pcc.items():
-            pcc_shuffle[context] = np.append(pcc_shuffle[context], pcc['mean'])
-
-    # One-sample t-test (one-sided)
-    p_val = {}
-    p_sig = {}
-    alpha = 0.05
-
-    for context in pcc_shuffle.keys():
-        (_, p_val[context]) = stats.ttest_1samp(a=pcc_shuffle[context], popmean=PethInfo.pcc[context]['mean'],
-                                                nan_policy='omit', alternative='less')
-    for context, value in p_val.items():
-        p_sig[context] = value < alpha
-
-    # Plot histogram
-    if plot_hist:
-        from util.draw import remove_right_top
-
-        fig, axes = plt.subplots(1, 2, figsize=(6, 3))
-        plt.suptitle('PCC shuffle distribution', y=.98, fontsize=10)
-        for axis, context in zip(axes, pcc_shuffle.keys()):
-            axis.set_title(context)
-            axis.hist(pcc_shuffle[context], color='k')
-            axis.set_xlim([-0.1, 0.6])
-            axis.set_xlabel('PCC'), axis.set_ylabel('Count')
-            if p_sig[context]:
-                axis.axvline(x=PethInfo.pcc[context]['mean'], color='r', linewidth=1, ls='--')
-            else:
-                axis.axvline(x=PethInfo.pcc[context]['mean'], color='k', linewidth=1, ls='--')
-            remove_right_top(axis)
-        plt.tight_layout()
-        plt.show()
-
-    return p_sig
-
-
 if __name__ == '__main__':
-
     # Parameters
-    shuffled_baseline = False  # Get PETH from shuffled spikes for getting pcc baseline
-    time_warp = True  # Perform piece-wise linear time-warping
-    update = False  # Update the cache file per cluster
+    time_warp = True  # perform piece-wise linear time-warping
+    update = False  # Update the cache file (.npz) per cluster
+    normalize_fr = True  # Set True to normalize firing rates
+    shuffled_baseline = False  # get PETH from shuffled spikes for getting pcc baseline
+    save_folder_name = 'Raster'  # Folder name to save figures
     save_fig = True  # Save the figure
-    update_db = False
-    view_folder = False  # open the folder where the result figures are saved
+    update_db = False  # update database
+    view_folder = True  # open the folder where the result figures are saved
     fig_ext = '.pdf'  # set to '.pdf' for vector output (.png by default)
+    NOTE_CONTEXT= 'U'  # context to plot ('U', 'D', set to None if you want to plot both)
 
     # SQL statement
-    query = "SELECT * FROM cluster WHERE analysisOK"
+    # Select from cluster table
+    query = "SELECT * FROM cluster WHERE birdID='w16w14' AND analysisOK AND id>=33"
+    # query = "SELECT * FROM cluster WHERE id=33"
 
-    get_raster(query, shuffled_baseline=shuffled_baseline, time_warp=time_warp,
-               update=update,
-               save_fig=save_fig,
-               update_db=update_db,
-               view_folder=view_folder,
-               fig_ext=fig_ext
-               )
+    main()

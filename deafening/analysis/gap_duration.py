@@ -3,10 +3,7 @@ Analyze syllable gap durations
 """
 
 
-def main(query,
-         update=False,
-         update_db=False,
-         ):
+def main():
     from analysis.functions import find_str
     from analysis.song import SongInfo
     from collections import defaultdict
@@ -16,7 +13,7 @@ def main(query,
 
     # Create & Load database
     if update_db:
-        db = create_db('create_gap_duration.sql')
+        create_db('create_gap_duration.sql')
 
     # Load song database
     db = ProjectLoader().load_db()
@@ -72,7 +69,4 @@ if __name__ == '__main__':
     # SQL statement
     query = "SELECT * FROM song"
 
-    main(query,
-         update=update,
-         update_db=update_db,
-         )
+    main()

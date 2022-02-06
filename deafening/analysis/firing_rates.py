@@ -4,12 +4,15 @@ Get mean firing rates per condition
 Get firing rates from song motif (including pre-motor windows)
 Stores the results in the unit_profile table
 """
+from analysis.parameters import nb_note_crit
+from analysis.spike import BaselineInfo, MotifInfo
+from database.load import ProjectLoader, DBInfo, create_db
 
+def get_firing_rates():
 
-def get_firing_rates(query, add_pre_motor=False, update=False, update_db=False):
-    from analysis.parameters import nb_note_crit
-    from analysis.spike import BaselineInfo, MotifInfo
-    from database.load import ProjectLoader, DBInfo
+    # Create & Load database
+    if update_db:
+        create_db('create_unit_profile.sql')
 
     # Load database
     db = ProjectLoader().load_db()
@@ -56,19 +59,12 @@ def get_firing_rates(query, add_pre_motor=False, update=False, update_db=False):
 
 if __name__ == '__main__':
 
-    from database.load import create_db
-
     # Parameters
     update = False
-    update_db = True
-    add_pre_motor = True # Add spikes from the pre-motor window
-
-    # Create & Load database
-    if update_db:
-        db = create_db('create_unit_profile.sql')
+    update_db = False
+    add_pre_motor = True  # add spikes from the pre-motor window
 
     # SQL statement (select from cluster db)
-    query = "SELECT * FROM cluster WHERE analysisOK = 1"
-    # query = "SELECT * FROM cluster WHERE id=96"
+    query = "SELECT * FROM cluster WHERE analysisOK"
 
-    get_firing_rates(query, add_pre_motor=add_pre_motor, update=update, update_db=update_db)
+    get_firing_rates()

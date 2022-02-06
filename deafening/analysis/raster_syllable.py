@@ -19,9 +19,7 @@ warnings.filterwarnings('ignore')
 
 def get_raster_syllable():
 
-    global note_duration
-
-    # Create & Load database
+    # Create & load database
     if update_db:
         db = create_db('create_syllable_pcc.sql')
 
@@ -33,9 +31,8 @@ def get_raster_syllable():
     marker_size = 0.4  # for spike count
 
     # Load database
-    # SQL statement
-    # Create a new database (syllable)
     db = ProjectLoader().load_db()
+    # SQL statement
     db.execute(query)
 
     # Loop through db
@@ -394,6 +391,10 @@ def get_raster_syllable():
                 txt_yloc -= txt_inc
             txt_yloc -= txt_inc
 
+            # Syllable duration
+            txt_yloc -= txt_inc
+            ax_txt.text(txt_xloc, txt_yloc, f"Duration = {note_duration : 0.3f} (ms)", fontsize=font_size)
+
             # Print out syllable entropy (if exists)
             if entropy:
                 txt_xloc = 1.8
@@ -415,7 +416,7 @@ def get_raster_syllable():
 
             # Save results to database
             if update_db:  # only use values from time-warped data
-                query = "INSERT OR IGNORE INTO " \
+                sql = "INSERT OR IGNORE INTO " \
                         "syllable_pcc (clusterID, birdID, taskName, taskSession, taskSessionDeafening, taskSessionPostDeafening, dph, block10days, note)" \
                         "VALUES({}, '{}', '{}', {}, {}, {}, {}, {}, '{}')".format(cluster_db.id, cluster_db.birdID,
                                                                                   cluster_db.taskName,
@@ -425,7 +426,7 @@ def get_raster_syllable():
                                                                                   cluster_db.dph,
                                                                                   cluster_db.block10days,
                                                                                   note)
-                db.cur.execute(query)
+                db.cur.execute(sql)
 
                 if 'U' in ni.nb_note:
                     db.cur.execute(
@@ -522,7 +523,7 @@ def get_raster_syllable():
 
             # Save results
             if save_fig:
-                save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'RasterSyllable')
+                save_path = save.make_dir(ProjectLoader().path / 'Analysis', save_folder_name)
                 save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, view_folder=True)
             else:
                 plt.show()
@@ -540,17 +541,18 @@ if __name__ == '__main__':
     post_buffer = 0   # time window after syllable offset (in ms)
     time_warp = True  # spike time warping
     update = False  # set True for recreating a cache file
-    save_fig = False
     update_db = False  # save results to DB
     entropy = False  # calculate entropy & entropy variance
     entropy_mode = 'spectral'  # computes time-resolved version of entropy ('spectral' or 'spectro_temporal')
     shuffled_baseline = False  # get pcc shuffling baseline
     plot_hist = False  # draw histogram of the shuffled pcc values
     fig_ext = '.png'  # .png or .pdf
-    TARGET_NOTE = 'c'  # notes to plot (set to 'all' to plot all syllables)
+    save_fig = True
+    save_folder_name = 'RasterSyllable'
+    TARGET_NOTE = 'all'  # notes to plot (set to 'all' to plot all syllables)
     NOTE_CONTEXT= 'U'  # context to plot ('U', 'D', set to None if you want to plot both)
 
     # SQL statement
-    query = "SELECT * FROM cluster WHERE analysisOK"
+    query = "SELECT * FROM cluster WHERE id=96"
 
     get_raster_syllable()

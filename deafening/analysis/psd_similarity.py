@@ -555,7 +555,7 @@ for bird_id in bird_to_use:
             ax_txt.axis('off')
 
             if update_db:
-                with open('../../database/create_spk_corr.sql', 'r') as sql_file:
+                with open('../database/create_spk_corr.sql', 'r') as sql_file:
                     db.conn.executescript(sql_file.read())
                 db.cur.execute("INSERT OR IGNORE INTO spk_corr (clusterID) VALUES (?)", (row["id"],))
                 db.cur.execute(

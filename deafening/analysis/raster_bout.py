@@ -31,7 +31,7 @@ def plot_raster_bouts(query,
     nb_row = 13
     nb_col = 1
     tick_length = 1
-    tick_width = 1
+    tick_width = 0.5
 
     # Load database
     db = ProjectLoader().load_db()
@@ -84,7 +84,7 @@ def plot_raster_bouts(query,
             spect_time, spect, spect_freq = audio.spectrogram(timestamp, data)
 
             # Plot figure
-            fig = plt.figure(figsize=(8, 7))
+            fig = plt.figure(figsize=(6, 5))
             fig.tight_layout()
             fig_name = f"{file} - Bout # {bout_ind}"
             print("Processing... " + fig_name)
@@ -93,10 +93,9 @@ def plot_raster_bouts(query,
             # Plot spectrogram
             ax_spect = plt.subplot2grid((nb_row, nb_col), (2, 0), rowspan=2, colspan=1)
             spect_time = spect_time - spect_time[0] - bout_buffer
-            # spect_time = spect_time - spect_time[0] - bout_buffer
 
             ax_spect.pcolormesh(spect_time, spect_freq, spect,
-                                cmap='hot_r',
+                                cmap='hot_r', rasterized=True,
                                 norm=colors.SymLogNorm(linthresh=0.05,
                                                        linscale=0.03,
                                                        vmin=0.5,
@@ -167,16 +166,16 @@ def plot_raster_bouts(query,
 
 if __name__ == '__main__':
     # Parameters
-    bout_nb = 3  # bout index you want to plot (if set None, plot all bouts)
+    bout_nb = 4  # bout index you want to plot (if set None, plot all bouts)
     update = False  # update .json cache files
     save_fig = True  # save output figures
     view_folder = True  # open the folder where the result figures are saved
-    fig_ext = '.pdf'  # set to '.pdf' for vector output (.png by default)
+    fig_ext = '.png'  # set to '.pdf' for vector output (.png by default)
     save_folder_name = 'RasterBouts'
 
     # SQL statement
     # query = "SELECT * FROM cluster WHERE analysisOK=1"
-    query = "SELECT * FROM cluster WHERE id=43"
+    query = "SELECT * FROM cluster WHERE id=33"
 
     plot_raster_bouts(query=query,
                       bout_nb=bout_nb,
