@@ -6,9 +6,7 @@ from contextlib import suppress
 
 import matplotlib.pyplot as plt
 
-from analysis.parameters import *
-from analysis.spike import *
-from database.load import ProjectLoader
+from pyfinch.database.load import ProjectLoader
 
 # Parameter
 normalize = False

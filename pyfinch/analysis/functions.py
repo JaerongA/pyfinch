@@ -6,15 +6,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.pylab import psd
-from util import save
-from util.draw import remove_right_top
-from util.functions import normalize, extract_ind, find_str, unique
-from util.spect import spectrogram
+from pyfinch.util import save
+from pyfinch.util.draw import remove_right_top
+from pyfinch.util.functions import normalize, extract_ind, find_str, unique
+from pyfinch.util.spect import spectrogram
 
 
 def read_not_mat(notmat, unit='ms'):
     """
     Read from .not.mat files generated from uisonganal
+
     Parameters
     ----------
     notmat : path
@@ -24,6 +25,7 @@ def read_not_mat(notmat, unit='ms'):
 
     Returns
     -------
+
     onsets : array
         time stamp for syllable onset (in ms)
     offsets : array
@@ -61,6 +63,7 @@ def read_not_mat(notmat, unit='ms'):
 def get_note_type(syllables: str, song_db) -> list:
     """
     Function to determine the category of the syllable
+
     Parameters
     ----------
     syllables : str
@@ -83,9 +86,10 @@ def get_note_type(syllables: str, song_db) -> list:
     return type_str
 
 
-def demarcate_bout(target, intervals):
+def demarcate_bout(target, intervals: int):
     """
     Demarcate the song bout with an asterisk (*) from a string of syllables
+
     Parameters
     ----------
     target : str or numpy array
@@ -97,7 +101,7 @@ def demarcate_bout(target, intervals):
     bout_labeling : str
         demarcated syllable string (e.g., 'iiiabc*abckn*')
     """
-    from analysis.parameters import bout_crit
+    from pyfinch.analysis import bout_crit
 
     ind = np.where(intervals > bout_crit)[0]
     bout_labeling = target
@@ -167,11 +171,12 @@ def get_nb_bouts(song_note: str, bout_labeling: str):
 def get_snr(avg_wf, raw_neural_trace, filter_crit=5):
     """
     Calculate signal-to-noise ratio of sorted spike relative to the background neural trace
+
     Parameters
     ----------
     avg_wf : np.ndarray
         averaged spike waveform of a neuron
-    raw_neural_trace : array
+    raw_neural_trace : np.ndarray
         raw neural signal
     filter_crit : int
         filtering criteria
@@ -198,7 +203,18 @@ def get_snr(avg_wf, raw_neural_trace, filter_crit=5):
 
 
 def get_half_width(wf_ts, avg_wf):
-    # Find the negative (or positive if inverted) deflection
+    """
+    Find the negative (or positive if inverted) deflection
+
+    Parameters
+    ----------
+    wf_ts
+    avg_wf
+
+    Returns
+    -------
+
+    """
     if np.argmin(avg_wf) > np.argmax(avg_wf):  # inverted waveform (peak comes first in extra-cellular recording)
         deflection_baseline = np.abs(avg_wf).mean() + np.abs(avg_wf).std(
             axis=0)  # the waveform baseline. Finds values above the baseline
@@ -249,7 +265,7 @@ def get_half_width(wf_ts, avg_wf):
 def get_psd_mat(data_path, save_path,
                 save_psd=False, update=False, open_folder=False, add_date=False,
                 nfft=2 ** 10, fig_ext='.png'):
-    from analysis.parameters import freq_range
+    from ..analysis.parameters import freq_range
     from scipy.io import wavfile
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
@@ -422,15 +438,17 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
     context_selection : str
         select data from a certain context ('U' or 'D')
     npy_update : bool
+    npy_update : bool
         make new .npy file
+
     Returns
     -------
     pre_motor_spk_dict : dict
     """
     # Get number of spikes from pre-motor window per note
 
-    from analysis.parameters import pre_motor_win_size
-    from database.load import ProjectLoader
+    from pyfinch.analysis import pre_motor_win_size
+    from pyfinch.database.load import ProjectLoader
 
     # Create a new database (song_syllable)
     db = ProjectLoader().load_db()
@@ -647,7 +665,7 @@ def get_bird_colors(birds: list) -> dict:
 
 def get_spectrogram(timestamp, data, sample_rate, freq_range=[300, 8000]):
     """Calculate spectrogram"""
-    from util.spect import spectrogram
+    from pyfinch.util.spect import spectrogram
 
     spect, spect_freq, _ = spectrogram(data, sample_rate, freq_range=freq_range)
     spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram

@@ -1,5 +1,5 @@
-from analysis.functions import get_half_width
-from analysis.parameters import *
+from pyfinch.analysis import get_half_width
+from pyfinch.analysis import *
 from scipy import interpolate
 import numpy as np
 import matplotlib.pyplot as plt

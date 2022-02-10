@@ -90,7 +90,7 @@ def get_peth(evt_ts_list: list, spk_ts_list: list,
     Get peri-event histogram & firing rates
     for song peth event_ts indicates syllable onset
     """
-    from analysis.parameters import peth_parm
+    from pyfinch.analysis import peth_parm
     import copy
     import math
 
@@ -205,7 +205,7 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
     p_sig : dict
         True if the pcc is significantly above the baseline
     """
-    from analysis.parameters import peth_shuffle
+    from pyfinch.analysis import peth_shuffle
     from collections import defaultdict
     from functools import partial
     import scipy.stats as stats
@@ -275,7 +275,7 @@ class ClusterInfo:
         time_unit : str
             'ms' by default
         """
-        from analysis.song import load_song
+        from pyfinch.analysis import load_song
         import numpy as np
 
         self.path = path
@@ -386,8 +386,8 @@ class ClusterInfo:
             Factor by which to increase the sampling frequency of the waveform
             e.g., 100 if you want to increase the data points by 100 fold
         """
-        from analysis.functions import align_waveform, get_half_width
-        from analysis.parameters import sample_rate
+        from pyfinch.analysis import align_waveform, get_half_width
+        from pyfinch.analysis import sample_rate
         import numpy as np
 
         if align_wf:
@@ -405,7 +405,7 @@ class ClusterInfo:
             return spk_height, spk_width, half_width, deflection_range
 
         if not interp_factor:
-            from analysis.parameters import interp_factor
+            from pyfinch.analysis import interp_factor
             interp_factor = interp_factor
 
         self.avg_wf = np.nanmean(self.spk_wf, axis=0)
@@ -445,7 +445,7 @@ class ClusterInfo:
     def get_correlogram(self, ref_spk_list, target_spk_list, normalize=False):
         """Get analysis auto- or cross-correlogram"""
 
-        from analysis.parameters import spk_corr_parm
+        from pyfinch.analysis import spk_corr_parm
         import math
         import numpy as np
 
@@ -494,7 +494,7 @@ class ClusterInfo:
             make the results reproducible by setting the seed as equal to index
         """
 
-        from analysis.parameters import corr_shuffle
+        from pyfinch.analysis import corr_shuffle
         import numpy as np
 
         spk_ts_jittered_list = []
@@ -513,7 +513,7 @@ class ClusterInfo:
 
     def get_jittered_corr(self):
 
-        from analysis.parameters import corr_shuffle
+        from pyfinch.analysis import corr_shuffle
         from collections import defaultdict
 
         correlogram_jitter = defaultdict(list)
@@ -581,7 +581,7 @@ class ClusterInfo:
     def nb_bouts(self, song_note):
         """Number of files used for constructing the class"""
 
-        from analysis.functions import get_nb_bouts
+        from pyfinch.analysis import get_nb_bouts
 
         nb_bouts = {}
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
@@ -597,7 +597,7 @@ class ClusterInfo:
 
     def nb_motifs(self, motif):
 
-        from analysis.functions import find_str
+        from pyfinch.analysis import find_str
 
         nb_motifs = {}
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
@@ -629,7 +629,7 @@ class ClusterInfo:
         -------
         NoteInfo : class object
         """
-        from analysis.functions import find_str
+        from pyfinch.analysis import find_str
         import numpy as np
 
         syllables = ''.join(self.syllables)
@@ -734,8 +734,8 @@ class NoteInfo:
         Calculate syllable entropy from all renditions and get the average
         Two versions : spectro-temporal entropy & spectral entropy
         """
-        from analysis.parameters import nb_note_crit
-        from analysis.functions import get_spectral_entropy, get_spectrogram, find_str
+        from pyfinch.analysis import nb_note_crit
+        from pyfinch.analysis import get_spectral_entropy, get_spectrogram, find_str
         import numpy as np
 
         entropy_mean = {}
@@ -841,7 +841,7 @@ class NoteInfo:
         This version limit the jittered timestamp within the motif window
         """
 
-        from analysis.parameters import pre_motor_win_size
+        from pyfinch.analysis import pre_motor_win_size
         import numpy as np
 
         spk_ts_jittered_list = []
@@ -867,7 +867,7 @@ class NoteInfo:
     @property
     def nb_note(self):
         """Get number of notes per context"""
-        from analysis.functions import find_str
+        from pyfinch.analysis import find_str
 
         nb_note = {}
         for context in ['U', 'D']:
@@ -877,7 +877,7 @@ class NoteInfo:
     @property
     def mean_fr(self):
         """Get mean firing rates for the note (includes pre-motor window) per context"""
-        from analysis.parameters import nb_note_crit, pre_motor_win_size
+        from pyfinch.analysis import nb_note_crit, pre_motor_win_size
         import numpy as np
         from util.functions import find_str
 
@@ -933,7 +933,7 @@ class MotifInfo(ClusterInfo):
 
     def load_motif(self):
         """Load motif info"""
-        from analysis.parameters import peth_parm
+        from pyfinch.analysis import peth_parm
         import numpy as np
         from util.functions import find_str
 
@@ -1101,7 +1101,7 @@ class MotifInfo(ClusterInfo):
         -------
 
         """
-        from analysis.parameters import peth_parm
+        from pyfinch.analysis import peth_parm
         import numpy as np
 
         fr_dict = {}
@@ -1136,7 +1136,7 @@ class MotifInfo(ClusterInfo):
         This version limit the jittered timestamp within the motif window
         """
 
-        from analysis.parameters import pre_motor_win_size
+        from pyfinch.analysis import pre_motor_win_size
         import numpy as np
 
         spk_ts_jittered_list = []
@@ -1235,7 +1235,7 @@ class PethInfo():
         #     peth = peth[:, ind]
         #     time_bin = time_bin[ind]
 
-        from analysis.parameters import peth_parm, gauss_std, nb_note_crit
+        from pyfinch.analysis import peth_parm, gauss_std, nb_note_crit
         import numpy as np
         from scipy.ndimage import gaussian_filter1d
 
@@ -1269,7 +1269,7 @@ class PethInfo():
 
     def get_pcc(self):
         """Get pairwise cross-correlation"""
-        from analysis.parameters import nb_note_crit
+        from pyfinch.analysis import nb_note_crit
 
         pcc_dict = {}
         for k, v in self.fr.items():  # loop through different conditions in peth dict
@@ -1303,7 +1303,7 @@ class PethInfo():
         sparseness : dict
         """
 
-        from analysis.parameters import gauss_std, nb_note_crit
+        from pyfinch.analysis import gauss_std, nb_note_crit
         import math
         import numpy as np
 
@@ -1345,7 +1345,7 @@ class PethInfo():
 
     def get_spk_count(self):
 
-        from analysis.parameters import peth_parm, spk_count_parm
+        from pyfinch.analysis import peth_parm, spk_count_parm
         import numpy as np
 
         win_size = spk_count_parm['win_size']
@@ -1482,7 +1482,7 @@ class BaselineInfo(ClusterInfo):
     def __init__(self, path, channel_nb, unit_nb, format='rhd', *name, update=False):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
 
-        from analysis.parameters import baseline
+        from pyfinch.analysis import baseline
         import numpy as np
         from util.functions import find_str
 
@@ -1568,7 +1568,7 @@ class BaselineInfo(ClusterInfo):
         """Override the parent method
         combine correlogram from undir and dir since no contextual differentiation is needed in baseline"""
 
-        from analysis.parameters import spk_corr_parm
+        from pyfinch.analysis import spk_corr_parm
         import numpy as np
 
         correlogram_all = super().get_correlogram(ref_spk_list, target_spk_list, normalize=False)
@@ -1583,7 +1583,7 @@ class BaselineInfo(ClusterInfo):
 
     def get_jittered_corr(self):
 
-        from analysis.parameters import corr_shuffle
+        from pyfinch.analysis import corr_shuffle
         import numpy as np
 
         correlogram_jitter = []
@@ -1659,7 +1659,7 @@ class AudioData:
     def spectrogram(self, timestamp, data, freq_range=[300, 8000]):
         """Calculate spectrogram"""
         import numpy as np
-        from util.spect import spectrogram
+        from pyfinch.util.spect import spectrogram
 
         spect, spect_freq, _ = spectrogram(data, self.sample_rate, freq_range=freq_range)
         spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram
@@ -1677,7 +1677,7 @@ class AudioData:
         -------
         array of spectral entropy
         """
-        from analysis.functions import get_spectral_entropy
+        from pyfinch.analysis import get_spectral_entropy
 
         return get_spectral_entropy(spect, normalize=normalize, mode=mode)
 
@@ -1710,8 +1710,8 @@ class NeuralData:
         Load and concatenate all neural data files (e.g., .rhd) in the input dir (path)
         """
 
-        from analysis.load import read_rhd
-        from analysis.parameters import sample_rate
+        from pyfinch.analysis import read_rhd
+        from pyfinch.analysis import sample_rate
         import numpy as np
 
         print("")
@@ -1804,7 +1804,7 @@ class Correlogram():
 
     def __init__(self, correlogram):
 
-        from analysis.parameters import spk_corr_parm, burst_hz
+        from pyfinch.analysis import spk_corr_parm, burst_hz
         import numpy as np
 
         corr_center = round(correlogram.shape[0] / 2) + 1  # center of the correlogram
@@ -1837,7 +1837,7 @@ class Correlogram():
             Category of a neuron ('Bursting' or 'Nonbursting')
         -------
         """
-        from analysis.parameters import corr_burst_crit
+        from pyfinch.analysis import corr_burst_crit
 
         corr_mean = correlogram_jitter.mean(axis=0)
 
@@ -1914,7 +1914,7 @@ class BurstingInfo:
 
     def __init__(self, ClassInfo, *input_context):
 
-        from analysis.parameters import burst_hz
+        from pyfinch.analysis import burst_hz
         import numpy as np
 
         # ClassInfo can be BaselineInfo, MotifInfo etc
@@ -2023,7 +2023,7 @@ class ISI:
         isi : array
             Inter-spike interval array
         """
-        from analysis.parameters import isi_win, isi_scale, isi_bin
+        from pyfinch.analysis import isi_win, isi_scale, isi_bin
         import numpy as np
 
         self.data = isi

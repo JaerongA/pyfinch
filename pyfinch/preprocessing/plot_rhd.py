@@ -2,7 +2,7 @@
 load & plot the neural data (.rhd)
 """
 import os
-from load_intan_rhd_format.load_intan_rhd_format import read_rhd
+from util.load_intan_rhd_format import read_rhd
 import matplotlib.pyplot as plt
 
 # summary_df, nb_cluster = load.summary(load.config())  # load cluster summary file

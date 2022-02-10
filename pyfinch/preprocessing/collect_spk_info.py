@@ -4,7 +4,7 @@ Collect SpkInfo.mat files for spike info analysis
 
 def main():
 
-    from database.load import ProjectLoader, DBInfo
+    from pyfinch.database.load import ProjectLoader, DBInfo
     import shutil
     from util import save
 

@@ -1,5 +1,4 @@
 """
-By Jaerong (2020/07/08)
 A function that differentially labels undir and dir files by tagging the string at the file name (e.g., _Dir, _Undir)
 """
 

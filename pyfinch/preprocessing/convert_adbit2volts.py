@@ -1,5 +1,4 @@
 """
-By Jaerong
 In some sessions, the raw data were mistakenly loaded as ADBit values in Offline Sorter.
 It significantly decreased the amplitude of the waveform of those clusters isolated under that setting.
 This program converts the amplitude of those clusters by using ADbit value
@@ -22,7 +21,7 @@ def main(query):
     Input: SQL query
     Batch process from the database
     """
-    from database import load
+    from pyfinch.database import load
     import numpy as np
     from pathlib import Path
 

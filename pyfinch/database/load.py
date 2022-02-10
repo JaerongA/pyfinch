@@ -16,7 +16,7 @@ def create_db(sql_file_name: str):
     # Load database
     db = ProjectLoader().load_db()
     # Make database
-    with open(f"../database/{sql_file_name}", 'r') as sql_file:
+    with open(f"/{sql_file_name}", 'r') as sql_file:
         db.conn.executescript(sql_file.read())
 
 

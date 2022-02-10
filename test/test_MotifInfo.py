@@ -1,17 +1,17 @@
 import unittest
-from analysis.spike import MotifInfo
-from database.load import ProjectLoader
-from analysis.spike import *
-from analysis.parameters import *
+from pyfinch.analysis import MotifInfo
+from pyfinch.database.load import ProjectLoader
+from pyfinch.analysis import *
+from pyfinch.analysis import *
 from scipy.io import wavfile
 from song.parameters import *
 from pathlib import Path
-from analysis.load import read_rhd
+from pyfinch.analysis import read_rhd
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 from util import save
-from util.spect import *
+from pyfinch.util.spect import *
 from util.draw import *
 import math
 

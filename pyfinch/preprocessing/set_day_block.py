@@ -1,10 +1,6 @@
 """Compare motif firing rates between different conditions"""
 
-from database.load import ProjectLoader
-import matplotlib.pyplot as plt
-from util import save
-from deafening.plot import plot_bar_comparison
-
+from pyfinch.database.load import ProjectLoader
 
 # Load database
 db = ProjectLoader().load_db()

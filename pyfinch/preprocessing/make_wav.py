@@ -1,5 +1,4 @@
 """
-By Jaerong
 Convert audio files with no extension (Mimi's data) into .wav format
 e.g., undir.20120128.1850 -> k27o36_120128_1850_Undir.wav
 undir.20120128.1855.not

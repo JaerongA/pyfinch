@@ -2,12 +2,12 @@
 
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
-from analysis.parameters import *
-from analysis.spike import *
-from database.load import DBInfo, ProjectLoader
+from pyfinch.analysis import *
+from pyfinch.analysis import *
+from pyfinch.database.load import DBInfo, ProjectLoader
 from util import save
 from util.draw import *
-from analysis.parameters import pre_motor_win_size
+from pyfinch.analysis import pre_motor_win_size
 
 # parameters
 rec_yloc = 0.05

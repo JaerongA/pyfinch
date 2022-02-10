@@ -2,7 +2,6 @@
 Module for song analysis
 """
 
-from database.load import ProjectLoader
 import numpy as np
 
 
@@ -10,7 +9,7 @@ def load_song(dir, format='wav'):
     """
     Obtain event info & serialized timestamps for song & neural analysis
     """
-    from analysis.functions import demarcate_bout, read_not_mat
+    from pyfinch.analysis import demarcate_bout, read_not_mat
     from scipy.io import wavfile
     from util.functions import list_files
 
@@ -151,7 +150,7 @@ class SongInfo:
         -------
 
         """
-        from analysis.functions import get_nb_bouts
+        from pyfinch.analysis import get_nb_bouts
 
         nb_bouts = {}
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
@@ -167,7 +166,7 @@ class SongInfo:
 
     def nb_motifs(self, motif):
 
-        from analysis.functions import find_str
+        from pyfinch.analysis import find_str
 
         nb_motifs = {}
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
@@ -184,7 +183,7 @@ class SongInfo:
         """Mean number of intro notes per song bout
         Only counts from bouts having at least one song note
         """
-        from analysis.functions import unique_nb_notes_in_bout
+        from pyfinch.analysis import unique_nb_notes_in_bout
         from statistics import mean
 
         mean_nb_intro_notes = {}
@@ -206,7 +205,7 @@ class SongInfo:
         Get the proportion per bout and then average
         only counts from bouts having at least one song note"""
 
-        from analysis.functions import unique_nb_notes_in_bout, total_nb_notes_in_bout
+        from pyfinch.analysis import unique_nb_notes_in_bout, total_nb_notes_in_bout
         import numpy as np
 
         song_call_prop = {}
@@ -229,7 +228,7 @@ class SongInfo:
     def get_motif_info(self, motif: str):
         """Get information about song motif for the songs recorded in the session"""
 
-        from analysis.functions import find_str
+        from pyfinch.analysis import find_str
 
         # Store values here
         file_list = []
@@ -422,7 +421,7 @@ class AudioInfo:
 
     def load_notmat(self):
         """Load the .not.mat file"""
-        from analysis.functions import read_not_mat
+        from pyfinch.analysis import read_not_mat
 
         notmat_file = self.path.with_suffix('.wav.not.mat')
         self.onsets, self.offsets, self.intervals, self.durations, self.syllables, self.context \
@@ -460,7 +459,7 @@ class AudioInfo:
     def spectrogram(self, timestamp, data, freq_range=[300, 8000]):
         """Calculate spectrogram"""
         import numpy as np
-        from util.spect import spectrogram
+        from pyfinch.util.spect import spectrogram
 
         spect, spect_freq, _ = spectrogram(data, self.sample_rate, freq_range=freq_range)
         spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram
@@ -478,7 +477,7 @@ class AudioInfo:
         -------
         array of spectral entropy
         """
-        from analysis.functions import get_spectral_entropy
+        from pyfinch.analysis import get_spectral_entropy
 
         return get_spectral_entropy(spect, normalize=normalize, mode=mode)
 
@@ -501,7 +500,7 @@ class FundamentalFreq:
 
     def load_from_db(self, birdID, ff_note):
         """Load info from the database if exists"""
-        from database.load import ProjectLoader
+        from pyfinch.database.load import ProjectLoader
         query = f"SELECT ffNote, ffParameter, ffCriterion, ffLow, ffHigh, ffDuration, harmonic " \
                 f"FROM ff " \
                 f"WHERE birdID='{birdID}' AND ffNote='{ff_note}'"
