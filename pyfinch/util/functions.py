@@ -6,13 +6,14 @@ A collection of utility functions used for analysis
 def unique(list) -> list:
     """
     Extract unique strings from the list in the order they appear
+
     Parameters
     ----------
     list : list
 
     Returns
     -------
-    list
+    list : list
         list of unique, ordered string
     """
     seen = set()
@@ -90,6 +91,7 @@ def myround(x : int, base=5) -> int:
         input value
     base : int
         base value (5 by default)
+
     Returns
     -------
     int
@@ -141,6 +143,7 @@ def exists(var):
     ----------
     var : str
         Note that the argument should be in parenthesis
+
     Returns
     -------
     bool

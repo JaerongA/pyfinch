@@ -3,61 +3,13 @@ A collection of functions used for song & neural analysis
 """
 
 import matplotlib.pyplot as plt
+from matplotlib.pylab import psd
 import numpy as np
 import pandas as pd
-from matplotlib.pylab import psd
-from pyfinch.util import save
-from pyfinch.util.draw import remove_right_top
-from pyfinch.util.functions import normalize, extract_ind, find_str, unique
-from pyfinch.util.spect import spectrogram
-
-
-def read_not_mat(notmat, unit='ms'):
-    """
-    Read from .not.mat files generated from uisonganal
-
-    Parameters
-    ----------
-    notmat : path
-        Name of the .not.mat file (path)
-    unit : (optional)
-        milli-second by default. Convert to seconds when specified
-
-    Returns
-    -------
-
-    onsets : array
-        time stamp for syllable onset (in ms)
-    offsets : array
-        time stamp for syllable offset (in ms)
-    intervals : array
-        temporal interval between syllables (i.e. syllable gaps) (in ms)
-    durations : array
-        durations of each syllable (in ms)
-    syllables : str
-        song syllables
-    contexts : str
-        social context ('U' for undirected and 'D' for directed)
-    """
-    import scipy.io
-    onsets = scipy.io.loadmat(notmat)['onsets'].transpose()[0]  # syllable onset timestamp
-    offsets = scipy.io.loadmat(notmat)['offsets'].transpose()[0]  # syllable offset timestamp
-    intervals = onsets[1:] - offsets[:-1]  # syllable gap durations (interval)
-    durations = offsets - onsets  # duration of each syllable
-    syllables = scipy.io.loadmat(notmat)['syllables'][0]  # Load the syllable info
-    contexts = notmat.name.split('.')[0].split('_')[-1][
-        0].upper()  # extract 'U' (undirected) or 'D' (directed) from the file name
-    if contexts not in ['U', 'D']:  # if the file was not tagged with Undir or Dir
-        contexts = None
-
-    # units are in ms by default, but convert to second with the argument
-    if unit == 'second':
-        onsets /= 1E3
-        offsets /= 1E3
-        intervals /= 1E3
-        durations /= 1E3
-
-    return onsets, offsets, intervals, durations, syllables, contexts
+from ..util import save
+from ..util.draw import remove_right_top
+from ..util.functions import normalize, extract_ind, find_str, unique
+from ..util.spect import spectrogram
 
 
 def get_note_type(syllables: str, song_db) -> list:
@@ -101,7 +53,7 @@ def demarcate_bout(target, intervals: int):
     bout_labeling : str
         demarcated syllable string (e.g., 'iiiabc*abckn*')
     """
-    from pyfinch.analysis import bout_crit
+    from ..analysis.parameters import bout_crit
 
     ind = np.where(intervals > bout_crit)[0]
     bout_labeling = target
@@ -154,12 +106,14 @@ def total_nb_notes_in_bout(note: str, bout: str) -> int:
 def get_nb_bouts(song_note: str, bout_labeling: str):
     """
     Count the number of bouts (only includes those having at least one song note)
+
     Parameters
     ----------
     song_note : str
         syllables that are part of a motif (e.g., abcd)
     bout_labeling : str
         syllables that are demarcated by * (bout) (e.g., iiiiiiiiabcd*jiiiabcdji*)
+
     Returns
     -------
     """
@@ -265,6 +219,7 @@ def get_half_width(wf_ts, avg_wf):
 def get_psd_mat(data_path, save_path,
                 save_psd=False, update=False, open_folder=False, add_date=False,
                 nfft=2 ** 10, fig_ext='.png'):
+
     from ..analysis.parameters import freq_range
     from scipy.io import wavfile
     import matplotlib.colors as colors
@@ -378,6 +333,7 @@ def get_psd_mat(data_path, save_path,
 def get_basis_psd(psd_list, notes, song_note=None, num_note_crit_basis=30):
     """
     Get avg psd from the training set (will serve as a basis)
+
     Parameters
     ----------
     psd_list : list
@@ -447,8 +403,8 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
     """
     # Get number of spikes from pre-motor window per note
 
-    from pyfinch.analysis import pre_motor_win_size
-    from pyfinch.database.load import ProjectLoader
+    from ..analysis.parameters import pre_motor_win_size
+    from ..database.load import ProjectLoader
 
     # Create a new database (song_syllable)
     db = ProjectLoader().load_db()

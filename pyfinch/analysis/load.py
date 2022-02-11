@@ -1,6 +1,55 @@
 """
 load data (from .rhd, .txt, .wav, etc)
 """
+import numpy as np
+
+
+def read_not_mat(notmat, unit='ms'):
+    """
+    Read from .not.mat files generated from uisonganal
+
+    Parameters
+    ----------
+    notmat : path
+        Name of the .not.mat file (path)
+    unit : (optional)
+        milli-second by default. Convert to seconds when specified
+
+    Returns
+    -------
+
+    onsets : np.ndarray
+        time stamp for syllable onset (in ms)
+    offsets : np.ndarray
+        time stamp for syllable offset (in ms)
+    intervals : np.ndarray
+        temporal interval between syllables (i.e. syllable gaps) (in ms)
+    durations : np.ndarray
+        durations of each syllable (in ms)
+    syllables : str
+        song syllables
+    contexts : str
+        social context ('U' for undirected and 'D' for directed)
+    """
+    import scipy.io
+    onsets = scipy.io.loadmat(notmat)['onsets'].transpose()[0]  # syllable onset timestamp
+    offsets = scipy.io.loadmat(notmat)['offsets'].transpose()[0]  # syllable offset timestamp
+    intervals = onsets[1:] - offsets[:-1]  # syllable gap durations (interval)
+    durations = offsets - onsets  # duration of each syllable
+    syllables = scipy.io.loadmat(notmat)['syllables'][0]  # Load the syllable info
+    contexts = notmat.name.split('.')[0].split('_')[-1][
+        0].upper()  # extract 'U' (undirected) or 'D' (directed) from the file name
+    if contexts not in ['U', 'D']:  # if the file was not tagged with Undir or Dir
+        contexts = None
+
+    # units are in ms by default, but convert to second with the argument
+    if unit == 'second':
+        onsets /= 1E3
+        offsets /= 1E3
+        intervals /= 1E3
+        durations /= 1E3
+
+    return onsets, offsets, intervals, durations, syllables, contexts
 
 
 def read_spk_txt(spk_txt_file, *unit_nb, unit='second'):
@@ -11,7 +60,6 @@ def read_spk_txt(spk_txt_file, *unit_nb, unit='second'):
     Disregard the first column since it is always 1
     Column 3 to 35 stores waveforms
     """
-    import numpy as np
 
     spk_info = np.loadtxt(spk_txt_file, delimiter='\t', skiprows=1)  # skip header
 
@@ -39,3 +87,137 @@ def read_rhd(filename):
     intan = read_rhd(filename)
     return intan
 
+
+def load_song(dir, format='wav'):
+    """
+    Obtain event info & serialized timestamps for song & neural analysis
+    """
+    from ..analysis.functions import demarcate_bout
+    from scipy.io import wavfile
+    from ..util.functions import list_files
+
+    # List all audio files in the dir
+    if not dir.stem == 'Songs':
+        song_dir = [folder for folder in dir.rglob('Songs')]  # find the folder that has song data (not calls)
+    else:
+        song_dir = [dir]
+
+    audio_files = []
+    for data_dir in song_dir:
+        audio_files += (list_files(data_dir, format))
+
+    # Initialize
+    timestamp_serialized = np.array([], dtype=np.float32)
+
+    # Store values in these lists
+    file_list = []
+    file_start_list = []
+    file_end_list = []
+    onset_list = []
+    offset_list = []
+    duration_list = []
+    syllable_list = []
+    context_list = []
+
+    # Loop through Intan .rhd files
+    for file in audio_files:
+
+        # Load audio files
+        print('Loading... ' + file.stem)
+        sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
+        length = data.shape[0] / sample_rate
+        timestamp = np.linspace(0., length, data.shape[0]) * 1E3  # start from t = 0 in ms
+
+        # Load the .not.mat file
+        notmat_file = file.with_suffix('.wav.not.mat')
+        onsets, offsets, intervals, durations, syllables, contexts = read_not_mat(notmat_file, unit='ms')
+        start_ind = timestamp_serialized.size  # start of the file
+
+        if timestamp_serialized.size:
+            timestamp += (timestamp_serialized[-1] + (1 / sample_rate))
+        timestamp_serialized = np.append(timestamp_serialized, timestamp)
+
+        # File information (name, start & end timestamp of each file)
+        # file_list.append(os.path.relpath(file, ProjectLoader().path))
+        file_list.append(file.stem)
+        file_start_list.append(timestamp_serialized[start_ind])  # in ms
+        file_end_list.append(timestamp_serialized[-1])  # in ms
+
+        onsets += timestamp[0]
+        offsets += timestamp[0]
+
+        # Demarcate song bouts
+        onset_list.append(demarcate_bout(onsets, intervals))
+        offset_list.append(demarcate_bout(offsets, intervals))
+        duration_list.append(demarcate_bout(durations, intervals))
+        syllable_list.append(demarcate_bout(syllables, intervals))
+        context_list.append(contexts)
+
+    # Organize event-related info into a single dictionary object
+    song_info = {
+        'files': file_list,
+        'file_start': file_start_list,
+        'file_end': file_end_list,
+        'onsets': onset_list,
+        'offsets': offset_list,
+        'durations': duration_list,
+        'syllables': syllable_list,
+        'contexts': context_list
+    }
+    return song_info
+
+
+def load_audio(dir, format='wav') -> dict:
+    """
+    Load and concatenate all audio files (e.g., .wav) in the input dir (path)
+
+    Parameters
+    ----------
+    dir : path
+    format : str
+        file extension (e.g., '.wav')
+
+    Returns
+    -------
+    audio_info : dict
+    """
+
+    from scipy.io import wavfile
+    from ..util.functions import list_files
+
+    # List all audio files in the dir
+    files = list_files(dir, format)
+
+    # Initialize
+    timestamp_concat = np.array([], dtype=np.float64)
+    data_concat = np.array([], dtype=np.float64)
+
+    # Store values in these lists
+    file_list = []
+
+    # Loop through audio files
+    for file in files:
+        # Load data file
+        print('Loading... ' + file.stem)
+        sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
+
+        # Add timestamp info
+        data_concat = np.append(data_concat, data)
+
+        # Store results
+        file_list.append(file.name)
+
+    # Create timestamps
+    timestamp_concat = np.arange(0, data_concat.shape[0] / sample_rate, (1 / sample_rate)) * 1E3
+
+    # Organize data into a dictionary
+    audio_info = {
+        'files': file_list,
+        'timestamp': timestamp_concat,
+        'data': data_concat,
+        'sample_rate': sample_rate
+    }
+    file_name = dir / "AudioData.npy"
+    np.save(file_name, audio_info)
+
+    return audio_info
