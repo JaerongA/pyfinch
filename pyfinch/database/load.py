@@ -1,6 +1,7 @@
 """
 Load project information and read from the project database
 """
+
 import sqlite3
 from configparser import ConfigParser
 
@@ -8,11 +9,13 @@ from configparser import ConfigParser
 def create_db(sql_file_name: str):
     """
     Create a new sql table from .slq file in /database
+
     Parameters
     ----------
     sql_file_name : str
         name of the sql file to create
     """
+
     # Load database
     db = ProjectLoader().load_db()
     # Make database
@@ -59,6 +62,7 @@ class Database:
     def create_col(self, table: str, col_name: str, type: str):
         """
         Create a new column in table
+
         Parameters
         ----------
         table : str
@@ -90,6 +94,7 @@ class Database:
     def to_csv(self, table, add_date=True, open_folder=True):
         """
         Convert database to csv
+
         Parameters
         ----------
         table : str
@@ -116,10 +121,12 @@ class Database:
     def to_dataframe(self, query):
         """
         Convert to pandas dataframe according to the query statement
+
         Parameters
         ----------
         query : str
             SQL query statement
+
         Returns
         -------
         df : dataframe
@@ -130,6 +137,7 @@ class Database:
 
 
 class DBInfo:
+
     def __init__(self, db):
 
         # Set all database fields as attributes

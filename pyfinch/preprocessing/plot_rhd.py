@@ -1,6 +1,7 @@
 """
 load & plot the neural data (.rhd)
 """
+
 import os
 from util.load_intan_rhd_format import read_rhd
 import matplotlib.pyplot as plt

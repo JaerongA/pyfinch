@@ -3,15 +3,18 @@ Plot note stats (distribution of syllable duration)
 """
 
 
-def get_notestat(data_path=None, save_fig=False):
+def plot_notestat(data_path=None, save_path=None, save_fig=False, ext='.png'):
     """
     Plot syllable durations to view distributions & detect outliers
     This should done after each syllable segmentation with uisonganal.m
+    Labeling files should exist in .not.mat format in the data path
 
-    Args:
-        data_path: string
-        save_fig : bool
-            Save the figure if set True
+    Parameters
+    ----------
+    data_path : path
+        The folder that contains labeling .not.mat files
+    save_fig : bool
+        If true, save result figure. If False, just display it
 
     """
 
@@ -19,10 +22,10 @@ def get_notestat(data_path=None, save_fig=False):
     from pathlib import Path
     import pandas as pd
     import seaborn as sns
-    from song.analysis import read_not_mat
-    from util.draw import remove_right_top
-    from util.functions import myround, open_folder, find_data_path
-    from util import save
+    from ..analysis.load import read_not_mat
+    from ..utils.draw import remove_right_top
+    from ..utils.functions import myround, open_folder, find_data_path
+    from ..utils import save
     import math
 
     # Find data path
@@ -81,13 +84,15 @@ def get_notestat(data_path=None, save_fig=False):
     fig.tight_layout()
 
     if save_fig:
-        save_fig(fig, data_path, data_path.name, ext='.png')
-    # plt.show()
+        save_fig(fig, data_path, data_path.name, ext=ext)
+
     open_folder(data_path)
     print("Done!")
 
 
-if __name__ == '__main__':
-
-    data_path = r"H:\Box\Data\BMI\g20r5\BMI"
-    get_notestat(data_path, save_fig=True)
+    # Save results
+    if save_fig:
+        save_path = save.make_dir(ProjectLoader().path / 'Analysis', save_folder_name)
+        save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, view_folder=True)
+    else:
+        plt.show()

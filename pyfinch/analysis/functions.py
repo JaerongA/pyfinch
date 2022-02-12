@@ -2,14 +2,13 @@
 A collection of functions used for song & neural analysis
 """
 
-import matplotlib.pyplot as plt
-from matplotlib.pylab import psd
 import numpy as np
 import pandas as pd
-from ..util import save
-from ..util.draw import remove_right_top
-from ..util.functions import normalize, extract_ind, find_str, unique
-from ..util.spect import spectrogram
+
+from ..utils import save
+from ..utils.draw import remove_right_top
+from ..utils.functions import normalize, extract_ind, find_str, unique
+from ..utils.spect import spectrogram
 
 
 def get_note_type(syllables: str, song_db) -> list:
@@ -221,9 +220,12 @@ def get_psd_mat(data_path, save_path,
                 nfft=2 ** 10, fig_ext='.png'):
 
     from ..analysis.parameters import freq_range
-    from scipy.io import wavfile
+    from .load import read_not_mat
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
+    import matplotlib.pyplot as plt
+    from matplotlib.pylab import psd
+    from scipy.io import wavfile
 
     # Parameters
     note_buffer = 20  # in ms before and after each note
@@ -507,6 +509,7 @@ def get_spectral_entropy(psd_array, normalize=True, mode=None):
 def get_ff(data, sample_rate, ff_low, ff_high, ff_harmonic=1):
     """
     Calculate fundamental frequency (FF) from the FF segment
+
     Parameters
     ----------
     data : array
@@ -518,6 +521,7 @@ def get_ff(data, sample_rate, ff_low, ff_high, ff_harmonic=1):
         Upper limit
     ff_harmonic :  int (1 by default)
         harmonic detection
+
     Returns
     -------
     ff : float
@@ -525,7 +529,7 @@ def get_ff(data, sample_rate, ff_low, ff_high, ff_harmonic=1):
     from scipy.signal import find_peaks
     import statsmodels.tsa.stattools as smt
     import numpy as np
-    from util.functions import para_interp
+    from ..utils.functions import para_interp
 
     # Get peak of the auto-correlogram
     corr = smt.ccf(data, data, adjusted=False)
@@ -621,7 +625,7 @@ def get_bird_colors(birds: list) -> dict:
 
 def get_spectrogram(timestamp, data, sample_rate, freq_range=[300, 8000]):
     """Calculate spectrogram"""
-    from pyfinch.util.spect import spectrogram
+    from pyfinch.utils.spect import spectrogram
 
     spect, spect_freq, _ = spectrogram(data, sample_rate, freq_range=freq_range)
     spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram

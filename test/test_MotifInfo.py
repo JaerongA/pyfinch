@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 from util import save
-from pyfinch.util.spect import *
+from pyfinch.utils.spect import *
 from util.draw import *
 import math
 

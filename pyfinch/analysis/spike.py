@@ -138,6 +138,7 @@ def jitter_spk_ts(spk_ts_list, shuffle_limit, reproducible=True):
 def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
     """
     Run statistical test to see if baseline pairwise cross-correlation obtained by spike time shuffling
+
     Parameters
     ----------
     ClassObject : class object (e.g., NoteInfo, MotifInfo)
@@ -178,7 +179,7 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
 
     # Plot histogram
     if plot_hist:
-        from util.draw import remove_right_top
+        from ..utils.draw import remove_right_top
 
         fig, axes = plt.subplots(1, 2, figsize=(6, 3))
         plt.suptitle('PCC shuffle distribution', y=.98, fontsize=10)
@@ -203,6 +204,7 @@ class ClusterInfo:
     def __init__(self, path, channel_nb, unit_nb, format='rhd', *name, update=False, time_unit='ms'):
         """
         Load information about cluster
+
         Parameters
         ----------
         path : path
@@ -240,7 +242,7 @@ class ClusterInfo:
         else:
             self.name = self.path
 
-        self.print_name()
+        self._print_name()
 
         # Load events
         file_name = self.path / "ClusterInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
@@ -262,12 +264,12 @@ class ClusterInfo:
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
-    def print_name(self):
+    def _print_name(self):
         print('')
         print('Load cluster {self.name}'.format(self=self))
 
     def list_files(self, ext: str):
-        from util.functions import list_files
+        from ..utils.functions import list_files
 
         return list_files(self.path, ext)
 
@@ -386,8 +388,8 @@ class ClusterInfo:
 
         return conditional_spk
 
-    def get_correlogram(self, ref_spk_list, target_spk_list, normalize=False):
-        """Get analysis auto- or cross-correlogram"""
+    def get_correlogram(self, ref_spk_list, target_spk_list, normalize=False) -> dict:
+        """Get auto- or cross-correlogram"""
 
         from ..analysis.parameters import spk_corr_parm
         import math
@@ -438,8 +440,6 @@ class ClusterInfo:
             make the results reproducible by setting the seed as equal to index
         """
 
-        from ..analysis.parameters import corr_shuffle
-
         spk_ts_jittered_list = []
         for ind, spk_ts in enumerate(self.spk_ts):
             np.random.seed()
@@ -454,8 +454,8 @@ class ClusterInfo:
             spk_ts_jittered_list.append(spk_ts + jitter)
         self.spk_ts_jittered = spk_ts_jittered_list
 
-    def get_jittered_corr(self):
-
+    def get_jittered_corr(self) -> dict:
+        """Get correlogram based time-jittered spikes"""
         from ..analysis.parameters import corr_shuffle
         from collections import defaultdict
 
@@ -481,6 +481,7 @@ class ClusterInfo:
     def get_isi(self, add_premotor_spk=False):
         """
         Get inter-spike interval
+
         Parameters
         ----------
         add_premotor_spk : bool
@@ -555,8 +556,19 @@ class ClusterInfo:
 
         return nb_bouts
 
-    def nb_motifs(self, motif):
+    def nb_motifs(self, motif: str):
+        """
+        Returns the number of motifs per context
 
+        Parameters
+        ----------
+        motf : str
+            Define song motif (e.g., 'abcd')
+
+        Returns
+        -------
+        nb_motifs : dict
+        """
         from ..analysis.functions import find_str
 
         nb_motifs = {}
@@ -590,7 +602,7 @@ class ClusterInfo:
         -------
         NoteInfo : class object
         """
-        from ..util.functions import find_str
+        from ..utils.functions import find_str
         import numpy as np
 
         syllables = ''.join(self.syllables)
@@ -636,14 +648,14 @@ class ClusterInfo:
     @property
     def open_folder(self):
         """Open the data folder"""
-        from ..util.functions import open_folder
+        from ..utils.functions import open_folder
 
         open_folder(self.path)
 
 
 class NoteInfo:
     """
-    Contains information about a single note syllable and its associated spikes
+    Class for storing information about a single note syllable and its associated spikes
     """
 
     def __init__(self, note_dict):
@@ -663,6 +675,7 @@ class NoteInfo:
                        ):
         """
         Select one context
+
         Parameters
         ----------
         target_context : str
@@ -827,9 +840,9 @@ class NoteInfo:
         self.spk_ts_jittered = spk_ts_jittered_list
 
     @property
-    def nb_note(self):
-        """Get number of notes per context"""
-        from ..util.functions import find_str
+    def nb_note(self) -> dict:
+        """Returns number of notes per context"""
+        from ..utils.functions import find_str
 
         nb_note = {}
         for context in ['U', 'D']:
@@ -837,10 +850,10 @@ class NoteInfo:
         return nb_note
 
     @property
-    def mean_fr(self):
-        """Get mean firing rates for the note (includes pre-motor window) per context"""
+    def mean_fr(self) -> dict:
+        """Returns mean firing rates for the note (includes pre-motor window) per context"""
         from ..analysis.parameters import nb_note_crit, pre_motor_win_size
-        from ..util.functions import find_str
+        from ..utils.functions import find_str
 
         note_spk = {}
         note_fr = {}
@@ -863,8 +876,6 @@ class MotifInfo(ClusterInfo):
 
     def __init__(self, path, channel_nb, unit_nb, motif, format='rhd', *name, update=False):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
-
-        import numpy as np
 
         self.motif = motif
         if name:
@@ -894,8 +905,8 @@ class MotifInfo(ClusterInfo):
 
     def load_motif(self):
         """Load motif info"""
-        from ..analysis.parameterss import peth_parm
-        from ..util.functions import find_str
+        from ..analysis.parameters import peth_parm
+        from ..utils.functions import find_str
 
         # Store values here
         file_list = []
@@ -967,7 +978,7 @@ class MotifInfo(ClusterInfo):
 
         return motif_info
 
-    def print_name(self):
+    def _print_name(self):
         print('')
         print('Load motif {self.name}'.format(self=self))
 
@@ -979,7 +990,7 @@ class MotifInfo(ClusterInfo):
 
     @property
     def open_folder(self):
-        from util.functions import open_folder
+        from ..utils.functions import open_folder
         open_folder(self.path)
 
     def get_note_duration(self):
@@ -1016,7 +1027,7 @@ class MotifInfo(ClusterInfo):
         """
         import copy
         import numpy as np
-        from util.functions import extract_ind
+        from ..utils.functions import extract_ind
 
         spk_ts_warped_list = []
         list_zip = zip(self.note_durations, self.onsets, self.offsets, self.spk_ts)
@@ -1052,12 +1063,12 @@ class MotifInfo(ClusterInfo):
     def get_mean_fr(self, add_pre_motor=False):
         """
         Calculate mean firing rates during motif
+
         Parameters
         ----------
         add_pre_motor : bool
             Set True if you want to include spikes from the pre-motor window for calculating firing rates
             (False by default)
-        -------
 
         """
         from ..analysis.parameters import peth_parm
@@ -1120,6 +1131,7 @@ class MotifInfo(ClusterInfo):
     def get_peth(self, time_warp=True, shuffle=False):
         """
         Get peri-event time histogram & raster during song motif
+
         Parameters
         ----------
         time_warp : bool
@@ -1152,14 +1164,15 @@ class MotifInfo(ClusterInfo):
 
 
 class PethInfo():
-    def __init__(self, peth_dict):
+    def __init__(self, peth_dict: dict):
         """
-        Args:
-            peth_dict : dict
-                    "peth" : array  (nb of trials (motifs) x time bins)
-                    numbers indicate analysis counts in that bin
-                "contexts" : list of strings
-                    social contexts
+        Class object for peri-event time histogram (PETH)
+
+        Parameters
+        ----------
+        peth_dict : dict
+            "peth" : array  (nb of trials (motifs) x time bins), numbers indicate analysis counts in that bin
+            "contexts" : list of strings, social contexts
         """
 
         # Set the dictionary values to class attributes
@@ -1375,7 +1388,7 @@ class BoutInfo(ClusterInfo):
         for key in bout_info:
             setattr(self, key, bout_info[key])
 
-    def print_name(self):
+    def _print_name(self):
         print('')
         print('Load bout {self.name}'.format(self=self))
 
@@ -1385,7 +1398,7 @@ class BoutInfo(ClusterInfo):
     def load_bouts(self):
         # Store values here
         import numpy as np
-        from ..util.functions import find_str
+        from ..utils.functions import find_str
 
         file_list = []
         spk_list = []
@@ -1444,7 +1457,7 @@ class BaselineInfo(ClusterInfo):
 
         from ..analysis.parameters import baseline
         import numpy as np
-        from util.functions import find_str
+        from ..utils.functions import find_str
 
         if name:
             self.name = name[0]
@@ -1520,13 +1533,15 @@ class BaselineInfo(ClusterInfo):
         for key in baseline_info:
             setattr(self, key, baseline_info[key])
 
-    def print_name(self):
+    def _print_name(self):
         print('')
         print('Load baseline {self.name}'.format(self=self))
 
     def get_correlogram(self, ref_spk_list, target_spk_list, normalize=False):
-        """Override the parent method
-        combine correlogram from undir and dir since no contextual differentiation is needed in baseline"""
+        """
+        Override the parent method
+        combine correlogram from undir and dir since no contextual differentiation is needed in baseline
+        """
 
         from ..analysis.parameters import spk_corr_parm
         import numpy as np
@@ -1556,6 +1571,7 @@ class BaselineInfo(ClusterInfo):
         return np.array(correlogram_jitter)
 
     def get_isi(self):
+        """Get inter-spike interval"""
         return get_isi(self.spk_ts)
 
     @property
@@ -1576,7 +1592,7 @@ class AudioData:
     Get all data by default; specify time range if needed
     """
     def __init__(self, path, format='.wav', update=False):
-
+        from ..analysis.load import load_audio
         import numpy as np
 
         self.path = path
@@ -1597,16 +1613,16 @@ class AudioData:
 
     @property
     def open_folder(self):
-        from util.functions import open_folder
+        from ..utils.functions import open_folder
         open_folder(self.path)
 
-    def extract(self, time_range):
+    def extract(self, time_range: list):
         """
         Extracts data from the specified range
-        Args:
-            time_range: list
 
-        Returns:
+        Parameters
+        ----------
+        time_range : list
         """
         import numpy as np
 
@@ -1619,7 +1635,7 @@ class AudioData:
     def spectrogram(self, timestamp, data, freq_range=[300, 8000]):
         """Calculate spectrogram"""
         import numpy as np
-        from ..util.spect import spectrogram
+        from ..utils.spect import spectrogram
 
         spect, spect_freq, _ = spectrogram(data, self.sample_rate, freq_range=freq_range)
         spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram
@@ -1647,8 +1663,6 @@ class AudioData:
 class NeuralData:
     def __init__(self, path, channel_nb, format='rhd', update=False):
 
-        import numpy as np
-
         self.path = path
         self.channel_nb = str(channel_nb).zfill(2)
         self.format = format  # format of the file (e.g., rhd), this info should be in the database
@@ -1674,7 +1688,6 @@ class NeuralData:
 
         from ..analysis.load import read_rhd
         from ..analysis.parameters import sample_rate
-        import numpy as np
 
         print("")
         print("Load neural data")
@@ -1730,9 +1743,10 @@ class NeuralData:
 
         return data_info
 
-    def extract(self, time_range):
+    def extract(self, time_range: list):
         """
         Extracts data from the specified range
+
         Parameters
         ----------
         time_range : list
@@ -1744,8 +1758,6 @@ class NeuralData:
         data : arr
         """
 
-        import numpy as np
-
         start = time_range[0]
         end = time_range[-1]
 
@@ -1755,7 +1767,7 @@ class NeuralData:
     @property
     def open_folder(self):
 
-        from util.functions import open_folder
+        from ..utils.functions import open_folder
 
         open_folder(self.path)
 
@@ -1790,13 +1802,15 @@ class Correlogram():
     def category(self, correlogram_jitter: np.ndarray) -> str:
         """
         Get bursting category of a neuron based on autocorrelogram
+
         Parameters
         ----------
         correlogram_jitter : np.ndarray
             Random time-jittered correlogram for baseline setting
+
         Returns
-            Category of a neuron ('Bursting' or 'Nonbursting')
         -------
+            Category of a neuron ('Bursting' or 'Nonbursting')
         """
         from ..analysis.parameters import corr_burst_crit
 
@@ -1829,6 +1843,7 @@ class Correlogram():
                   baseline=True):
         """
         Plot correlogram
+
         Parameters
         ----------
         ax : axis object
@@ -1843,8 +1858,8 @@ class Correlogram():
         """
         import matplotlib.pyplot as plt
         import numpy as np
-        from util.draw import remove_right_top
-        from util.functions import myround
+        from ..utils.draw import remove_right_top
+        from ..utils.functions import myround
 
         if correlogram.sum():
             ax.bar(time_bin, correlogram, color='k', rasterized=True)
@@ -1980,6 +1995,7 @@ class ISI:
         """
         Parameters
         ----------
+
         isi : array
             Inter-spike interval array
         """
@@ -2000,9 +2016,7 @@ class ISI:
     def plot(self, ax,
              *title,
              font_size=10):
-        import matplotlib.pyplot as plt
-        from util.draw import remove_right_top
-        import math
+        from ..utils.draw import remove_right_top
 
         ax.bar(self.time_bin, self.hist, color='k')
         # ax.set_ylim([0, myround(math.ceil(ax.get_ylim()[1]), base=5)])

@@ -2,12 +2,12 @@
 Extracts the audio signal (board_adc_data) from .rhd and convert it into .wav
 """
 
-from ..util.intan.load_intan_rhd_format import read_rhd
+from ..utils.intan.load_intan_rhd_format import read_rhd
 import matplotlib.pyplot as plt
 from pathlib import Path
 from math import ceil
 from matplotlib import collections as mc
-from ..util.functions import find_data_path
+from ..utils.functions import find_data_path
 
 # def find_data_path():
 #     """Find the data dir and return it"""

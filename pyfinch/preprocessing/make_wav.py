@@ -3,9 +3,10 @@ Convert audio files with no extension (Mimi's data) into .wav format
 e.g., undir.20120128.1850 -> k27o36_120128_1850_Undir.wav
 undir.20120128.1855.not
 """
+
 ##TODO: this file contains a bug, needs to be fixed before use (.not.mat name doesn't match) (2021/04/11 Jaerong)
 from pathlib import Path
-from util.functions import find_data_path
+from ..utils.functions import find_data_path
 
 data_path = Path(r"C:\Users\jahn02\Box\Data\Deafening Project\o25w75\Predeafening\D01(20120208)\01\Undir")
 bird_id = 'o25w75'

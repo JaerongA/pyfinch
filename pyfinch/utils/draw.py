@@ -6,6 +6,7 @@ Helper functions for drawing a figure
 def set_fig_size(w, h, ax=None):
     """
     set size of a figure
+
     Parameters
     ----------
     w : float
@@ -13,8 +14,6 @@ def set_fig_size(w, h, ax=None):
     h : float
         height in inches
     ax : axis object
-    Returns
-    -------
     """
     import matplotlib.pyplot as plt
 
@@ -31,6 +30,7 @@ def set_fig_size(w, h, ax=None):
 def remove_right_top(ax):
     """
     Remove top and right axis
+
     Parameters
     ----------
     ax : axis object
@@ -41,6 +41,7 @@ def remove_right_top(ax):
 def get_ax_lim(ax_min, ax_max, base=10):
     """
     Get axis limit
+
     Parameters
     ----------
     ax_min : float

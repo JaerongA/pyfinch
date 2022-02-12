@@ -11,7 +11,7 @@ def change_cbin_names(data_path=None):
 
     import os
     from pathlib import Path
-    from util.functions import find_data_path
+    from ..utils.functions import find_data_path
 
     # Find data path
     if data_path:
@@ -69,7 +69,7 @@ def convert2syllable(data_path=None):
     """
     from pathlib import Path
     import scipy.io
-    from util.functions import find_data_path
+    from ..utils.functions import find_data_path
 
     if data_path:
         data_path = Path(data_path)

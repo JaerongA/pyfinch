@@ -1,5 +1,4 @@
 """
-By Jaerong
 Change the name of the .cbin & .rec files to fit the format (b14r74_190913_161407_Undir) used in the current analysis
 """
 
@@ -7,7 +6,7 @@ Change the name of the .cbin & .rec files to fit the format (b14r74_190913_16140
 def main(data_path=None):
     import os
     from pathlib import Path
-    from util.functions import find_data_path
+    from ..utils.functions import find_data_path
 
     if data_path is None:
         data_path = find_data_path()

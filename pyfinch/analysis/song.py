@@ -5,10 +5,11 @@ Module for song analysis
 import numpy as np
 
 
-
 class SongInfo:
 
     def __init__(self, path, name=None, update=False):
+
+        from ..analysis.load import load_song
 
         self.path = path
         if name:
@@ -37,8 +38,8 @@ class SongInfo:
         print('')
         print('Load song info {self.name}'.format(self=self))
 
-    def list_files(self, ext='wav'):
-        from util.functions import list_files
+    def list_files(self, ext='.wav'):
+        from ..utils.functions import list_files
         return list_files(self.path, ext)
 
     def __len__(self):
@@ -47,7 +48,7 @@ class SongInfo:
     @property
     def open_folder(self):
 
-        from util.functions import open_folder
+        from ..utils.functions import open_folder
 
         open_folder(self.path)
 
@@ -63,16 +64,18 @@ class SongInfo:
 
     def nb_bouts(self, song_note: str):
         """
-        Return number
+        Return the number of bouts
+
         Parameters
         ----------
-        song_note
+        song_note : str
+            song notes (e.g., 'abcd')
 
         Returns
         -------
-
+        nb_bouts : dict
         """
-        from pyfinch.analysis import get_nb_bouts
+        from ..analysis.functions import get_nb_bouts
 
         nb_bouts = {}
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
@@ -88,7 +91,7 @@ class SongInfo:
 
     def nb_motifs(self, motif):
 
-        from pyfinch.analysis import find_str
+        from ..analysis.functions import find_str
 
         nb_motifs = {}
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
@@ -102,10 +105,11 @@ class SongInfo:
         return nb_motifs
 
     def mean_nb_intro(self, intro_note, song_note):
-        """Mean number of intro notes per song bout
-        Only counts from bouts having at least one song note
         """
-        from pyfinch.analysis import unique_nb_notes_in_bout
+        Return the mean number of intro notes per song bout
+        only counts from bouts having at least one song note
+        """
+        from ..analysis.functions import unique_nb_notes_in_bout
         from statistics import mean
 
         mean_nb_intro_notes = {}
@@ -123,11 +127,13 @@ class SongInfo:
         return mean_nb_intro_notes
 
     def song_call_prop(self, call: str, song_note: str):
-        """Calculate the proportion of call notes per song bout
+        """
+        Calculate the proportion of call notes per song bout
         Get the proportion per bout and then average
-        only counts from bouts having at least one song note"""
+        only counts from bouts having at least one song note
+        """
 
-        from pyfinch.analysis import unique_nb_notes_in_bout, total_nb_notes_in_bout
+        from ..analysis.functions import unique_nb_notes_in_bout, total_nb_notes_in_bout
         import numpy as np
 
         song_call_prop = {}
@@ -150,7 +156,7 @@ class SongInfo:
     def get_motif_info(self, motif: str):
         """Get information about song motif for the songs recorded in the session"""
 
-        from pyfinch.analysis import find_str
+        from ..analysis.functions import find_str
 
         # Store values here
         file_list = []
@@ -201,8 +207,7 @@ class SongInfo:
 class BoutInfo(SongInfo):
     """
     Get song & spike information for a song bout
-    Child clas
-    s of SongInfo
+    Child class of SongInfo
     """
 
     def __init__(self, path, song_note, name=None, update=False):
@@ -220,7 +225,7 @@ class BoutInfo(SongInfo):
         # Load bout info
         file_name = self.path / "BoutInfo.npy"
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
-            bout_info = self.load_bouts()
+            bout_info = self._load_bouts()
             # Save info dict as a numpy object
             np.save(file_name, bout_info)
         else:
@@ -237,9 +242,9 @@ class BoutInfo(SongInfo):
     def __len__(self):
         return len(self.files)
 
-    def load_bouts(self):
+    def _load_bouts(self):
         # Store values here
-        from util.functions import find_str
+        from ..utils.functions import find_str
 
         file_list = []
         spk_list = []
@@ -343,7 +348,7 @@ class AudioInfo:
 
     def load_notmat(self):
         """Load the .not.mat file"""
-        from pyfinch.analysis import read_not_mat
+        from ..analysis.load import read_not_mat
 
         notmat_file = self.path.with_suffix('.wav.not.mat')
         self.onsets, self.offsets, self.intervals, self.durations, self.syllables, self.context \
@@ -354,12 +359,13 @@ class AudioInfo:
 
     @property
     def open_folder(self):
-        from util.functions import open_folder
+        from ..utils.functions import open_folder
         open_folder(self.dir)
 
     def extract(self, time_range):
         """
         Extracts data from the specified range
+
         Parameters
         ----------
         time_range : list
@@ -367,8 +373,8 @@ class AudioInfo:
 
         Returns
         -------
-        timestamp : arr
-        data : arr
+        timestamp : np.ndarray
+        data : np.ndarray
         """
         import numpy as np
 
@@ -380,8 +386,7 @@ class AudioInfo:
 
     def spectrogram(self, timestamp, data, freq_range=[300, 8000]):
         """Calculate spectrogram"""
-        import numpy as np
-        from pyfinch.util.spect import spectrogram
+        from ..utils.spect import spectrogram
 
         spect, spect_freq, _ = spectrogram(data, self.sample_rate, freq_range=freq_range)
         spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram
@@ -390,16 +395,18 @@ class AudioInfo:
     def get_spectral_entropy(self, spect, normalize=True, mode=None):
         """
         Calculate spectral entropy
+
         Parameters
         ----------
         normalize : bool
             Get normalized spectral entropy
-        mode : {'spectral', ''spectro_temporal'}
+        mode : str
+            Select one from the following {'spectral', ''spectro_temporal'}
         Returns
         -------
         array of spectral entropy
         """
-        from pyfinch.analysis import get_spectral_entropy
+        from ..analysis.functions import get_spectral_entropy
 
         return get_spectral_entropy(spect, normalize=normalize, mode=mode)
 

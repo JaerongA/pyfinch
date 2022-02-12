@@ -6,6 +6,7 @@ Utility functions to make output directories & save output files
 def make_dir(parent_path, *dir_name, add_date=True):
     """
     Make a new directory
+
     Parameters
     ----------
     parent_path : path
@@ -61,7 +62,7 @@ def save_fig(fig, save_path, title, fig_ext='.png', view_folder=False, dpi=None)
 
     import matplotlib.pyplot as plt
     import matplotlib
-    from util.functions import open_folder
+    from .functions import open_folder
 
     # Make the text in .pdf editable
     # pdf.fonttype : 42 # Output Type 3 (Type3) or Type 42 (TrueType)

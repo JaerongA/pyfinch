@@ -1,5 +1,4 @@
 """
-By Jaerong (06/29/2020)
 This program copy/pastes SpkInfo.mat from each cell root to the destination folder (InformationAnalysis)
 """
 

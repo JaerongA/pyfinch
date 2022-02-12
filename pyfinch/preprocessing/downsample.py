@@ -3,7 +3,7 @@
 import librosa
 from pathlib import Path
 import soundfile as sf
-from util.functions import find_data_path
+from ..utils.functions import find_data_path
 
 target_sr = 32000  # target sampling rate
 
