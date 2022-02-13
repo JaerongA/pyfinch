@@ -2,4 +2,5 @@
 
 python library for analyzing neural & bioacoustics signals from songbirds
 
-https://pyfinch.readthedocs.io/en/latest/
+
+Documentation available at https://pyfinch.readthedocs.io
