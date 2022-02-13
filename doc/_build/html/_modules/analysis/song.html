@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>analysis.song &mdash; pyfinch  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> pyfinch
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pyfinch</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyfinch</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>analysis.song</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for analysis.song</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module for song analysis</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="SongInfo"><a class="viewcode-back" href="../../analysis.html#analysis.song.SongInfo">[docs]</a><span class="k">class</span> <span class="nc">SongInfo</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="kn">from</span> <span class="nn">..analysis.load</span> <span class="kn">import</span> <span class="n">load_song</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__print_name</span><span class="p">()</span>
+
+        <span class="c1"># Load song</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;SongInfo.npy&quot;</span>
+        <span class="k">if</span> <span class="n">update</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">file_name</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>  <span class="c1"># if .npy doesn&#39;t exist or want to update the file</span>
+            <span class="n">song_info</span> <span class="o">=</span> <span class="n">load_song</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="c1"># Save song_info as a numpy object</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">song_info</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">song_info</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="c1"># Set the dictionary values to class attributes</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">song_info</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">song_info</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># print attributes</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">([</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+
+    <span class="k">def</span> <span class="nf">__print_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Load song info </span><span class="si">{self.name}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">=</span><span class="bp">self</span><span class="p">))</span>
+
+<div class="viewcode-block" id="SongInfo.list_files"><a class="viewcode-back" href="../../analysis.html#analysis.song.SongInfo.list_files">[docs]</a>    <span class="k">def</span> <span class="nf">list_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;.wav&#39;</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">..utils.functions</span> <span class="kn">import</span> <span class="n">list_files</span>
+        <span class="k">return</span> <span class="n">list_files</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">ext</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">open_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="kn">from</span> <span class="nn">..utils.functions</span> <span class="kn">import</span> <span class="n">open_folder</span>
+
+        <span class="n">open_folder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nb_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Number of files&quot;&quot;&quot;</span>
+        <span class="n">nb_files</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">nb_files</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">context</span> <span class="k">for</span> <span class="n">context</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span> <span class="k">if</span> <span class="n">context</span> <span class="o">==</span> <span class="s1">&#39;U&#39;</span><span class="p">])</span>
+        <span class="n">nb_files</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">context</span> <span class="k">for</span> <span class="n">context</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span> <span class="k">if</span> <span class="n">context</span> <span class="o">==</span> <span class="s1">&#39;D&#39;</span><span class="p">])</span>
+        <span class="n">nb_files</span><span class="p">[</span><span class="s1">&#39;All&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nb_files</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">nb_files</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">nb_files</span>
+
+<div class="viewcode-block" id="SongInfo.nb_bouts"><a class="viewcode-back" href="../../analysis.html#analysis.song.SongInfo.nb_bouts">[docs]</a>    <span class="k">def</span> <span class="nf">nb_bouts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">song_note</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of bouts</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        song_note : str</span>
+<span class="sd">            song notes (e.g., &#39;abcd&#39;)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        nb_bouts : dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">..analysis.functions</span> <span class="kn">import</span> <span class="n">get_nb_bouts</span>
+
+        <span class="n">nb_bouts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">syllable_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">syllable</span> <span class="k">for</span> <span class="n">syllable</span><span class="p">,</span> <span class="n">context</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllables</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">)</span> <span class="k">if</span> <span class="n">context</span> <span class="o">==</span> <span class="s1">&#39;U&#39;</span><span class="p">]</span>
+        <span class="n">syllables</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">syllable_list</span><span class="p">)</span>
+        <span class="n">nb_bouts</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_nb_bouts</span><span class="p">(</span><span class="n">song_note</span><span class="p">,</span> <span class="n">syllables</span><span class="p">)</span>
+
+        <span class="n">syllable_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">syllable</span> <span class="k">for</span> <span class="n">syllable</span><span class="p">,</span> <span class="n">context</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllables</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">)</span> <span class="k">if</span> <span class="n">context</span> <span class="o">==</span> <span class="s1">&#39;D&#39;</span><span class="p">]</span>
+        <span class="n">syllables</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">syllable_list</span><span class="p">)</span>
+        <span class="n">nb_bouts</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_nb_bouts</span><span class="p">(</span><span class="n">song_note</span><span class="p">,</span> <span class="n">syllables</span><span class="p">)</span>
+        <span class="n">nb_bouts</span><span class="p">[</span><span class="s1">&#39;All&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nb_bouts</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">nb_bouts</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">nb_bouts</span></div>
+
+<div class="viewcode-block" id="SongInfo.nb_motifs"><a class="viewcode-back" href="../../analysis.html#analysis.song.SongInfo.nb_motifs">[docs]</a>    <span class="k">def</span> <span class="nf">nb_motifs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">motif</span><span class="p">):</span>
+
+        <span class="kn">from</span> <span class="nn">..analysis.functions</span> <span class="kn">import</span> <span class="n">find_str</span>
+
+        <span class="n">nb_motifs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">syllable_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">syllable</span> <span class="k">for</span> <span class="n">syllable</span><span class="p">,</span> <span class="n">context</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllables</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">)</span> <span class="k">if</span> <span class="n">context</span> <span class="o">==</span> <span class="s1">&#39;U&#39;</span><span class="p">]</span>
+        <span class="n">syllables</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">syllable_list</span><span class="p">)</span>
+        <span class="n">nb_motifs</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">find_str</span><span class="p">(</span><span class="n">syllables</span><span class="p">,</span> <span class="n">motif</span><span class="p">))</span>
+
+        <span class="n">syllable_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">syllable</span> <span class="k">for</span> <span class="n">syllable</span><span class="p">,</span> <span class="n">context</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllables</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">)</span> <span class="k">if</span> <span class="n">context</span> <span class="o">==</span> <span class="s1">&#39;D&#39;</span><span class="p">]</span>
+        <span class="n">syllables</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">syllable_list</span><span class="p">)</span>
+        <span class="n">nb_motifs</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">find_str</span><span class="p">(</span><span class="n">syllables</span><span class="p">,</span> <span class="n">motif</span><span class="p">))</span>
+        <span class="n">nb_motifs</span><span class="p">[</span><span class="s1">&#39;All&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nb_motifs</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">nb_motifs</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">nb_motifs</span></div>
+
+<div class="viewcode-block" id="SongInfo.mean_nb_intro"><a class="viewcode-back" href="../../analysis.html#analysis.song.SongInfo.mean_nb_intro">[docs]</a>    <span class="k">def</span> <span class="nf">mean_nb_intro</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intro_note</span><span class="p">,</span> <span class="n">song_note</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the mean number of intro notes per song bout</span>
+<span class="sd">        only counts from bouts having at least one song note</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">..analysis.functions</span> <span class="kn">import</span> <span class="n">unique_nb_notes_in_bout</span>
+        <span class="kn">from</span> <span class="nn">statistics</span> <span class="kn">import</span> <span class="n">mean</span>
+
+        <span class="n">mean_nb_intro_notes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">mean_nb_intro_notes</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean_nb_intro_notes</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">context1</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">):</span>
+            <span class="n">syllable_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">syllable</span> <span class="k">for</span> <span class="n">syllable</span><span class="p">,</span> <span class="n">context2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllables</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">)</span> <span class="k">if</span>
+                             <span class="n">context2</span> <span class="o">==</span> <span class="n">context1</span><span class="p">]</span>
+            <span class="n">syllables</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">syllable_list</span><span class="p">)</span>
+            <span class="n">bout_list</span> <span class="o">=</span> <span class="n">syllables</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># eliminate demarcate marker</span>
+            <span class="n">bout_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">bout</span> <span class="k">for</span> <span class="n">bout</span> <span class="ow">in</span> <span class="n">bout_list</span> <span class="k">if</span>
+                         <span class="n">unique_nb_notes_in_bout</span><span class="p">(</span><span class="n">song_note</span><span class="p">,</span> <span class="n">bout</span><span class="p">)]</span>  <span class="c1"># eliminate bouts having no song note</span>
+            <span class="k">if</span> <span class="n">bout_list</span><span class="p">:</span>
+                <span class="n">mean_nb_intro_notes</span><span class="p">[</span><span class="n">context1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">intro_note</span><span class="p">),</span> <span class="n">bout_list</span><span class="p">))),</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mean_nb_intro_notes</span></div>
+
+<div class="viewcode-block" id="SongInfo.song_call_prop"><a class="viewcode-back" href="../../analysis.html#analysis.song.SongInfo.song_call_prop">[docs]</a>    <span class="k">def</span> <span class="nf">song_call_prop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">song_note</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the proportion of call notes per song bout</span>
+<span class="sd">        Get the proportion per bout and then average</span>
+<span class="sd">        only counts from bouts having at least one song note</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">from</span> <span class="nn">..analysis.functions</span> <span class="kn">import</span> <span class="n">unique_nb_notes_in_bout</span><span class="p">,</span> <span class="n">total_nb_notes_in_bout</span>
+
+        <span class="n">song_call_prop</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">song_call_prop</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">song_call_prop</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">context1</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">):</span>
+            <span class="n">syllable_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">syllable</span> <span class="k">for</span> <span class="n">syllable</span><span class="p">,</span> <span class="n">context2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllables</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">)</span> <span class="k">if</span>
+                             <span class="n">context2</span> <span class="o">==</span> <span class="n">context1</span><span class="p">]</span>
+            <span class="n">syllables</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">syllable_list</span><span class="p">)</span>
+            <span class="n">bout_list</span> <span class="o">=</span> <span class="n">syllables</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># eliminate demarcate marker</span>
+            <span class="n">bout_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">bout</span> <span class="k">for</span> <span class="n">bout</span> <span class="ow">in</span> <span class="n">bout_list</span> <span class="k">if</span>
+                         <span class="n">unique_nb_notes_in_bout</span><span class="p">(</span><span class="n">song_note</span><span class="p">,</span> <span class="n">bout</span><span class="p">)]</span>  <span class="c1"># eliminate bouts having no song note</span>
+            <span class="k">if</span> <span class="n">bout_list</span><span class="p">:</span>
+                <span class="n">nb_calls_per_bout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">total_nb_notes_in_bout</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">bout_list</span><span class="p">)))</span>
+                <span class="n">total_nb_notes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">bout</span><span class="p">)</span> <span class="k">for</span> <span class="n">bout</span> <span class="ow">in</span> <span class="n">bout_list</span><span class="p">])</span>
+                <span class="n">song_call_prop</span><span class="p">[</span><span class="n">context1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">nb_calls_per_bout</span> <span class="o">/</span> <span class="n">total_nb_notes</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="mi">4</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">song_call_prop</span></div>
+
+<div class="viewcode-block" id="SongInfo.get_motif_info"><a class="viewcode-back" href="../../analysis.html#analysis.song.SongInfo.get_motif_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_motif_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">motif</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get information about song motif for the songs recorded in the session&quot;&quot;&quot;</span>
+
+        <span class="kn">from</span> <span class="nn">..analysis.functions</span> <span class="kn">import</span> <span class="n">find_str</span>
+
+        <span class="c1"># Store values here</span>
+        <span class="n">file_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">onset_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">offset_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">duration_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">context_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">list_zip</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">onsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">syllables</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">file</span><span class="p">,</span> <span class="n">onsets</span><span class="p">,</span> <span class="n">offsets</span><span class="p">,</span> <span class="n">syllables</span><span class="p">,</span> <span class="n">context</span> <span class="ow">in</span> <span class="n">list_zip</span><span class="p">:</span>
+            <span class="n">onsets</span> <span class="o">=</span> <span class="n">onsets</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">offsets</span> <span class="o">=</span> <span class="n">offsets</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+            <span class="c1"># Find motifs</span>
+            <span class="n">motif_ind</span> <span class="o">=</span> <span class="n">find_str</span><span class="p">(</span><span class="n">syllables</span><span class="p">,</span> <span class="n">motif</span><span class="p">)</span>
+
+            <span class="c1"># Get syllable, analysis time stamps</span>
+            <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">motif_ind</span><span class="p">:</span>
+                <span class="c1"># start (first syllable) and stop (last syllable) index of a motif</span>
+                <span class="n">start_ind</span> <span class="o">=</span> <span class="n">ind</span>
+                <span class="n">stop_ind</span> <span class="o">=</span> <span class="n">ind</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">motif</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+                <span class="n">motif_onset</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">onsets</span><span class="p">[</span><span class="n">start_ind</span><span class="p">])</span>
+                <span class="n">motif_offset</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">offsets</span><span class="p">[</span><span class="n">stop_ind</span><span class="p">])</span>
+
+                <span class="n">onsets_in_motif</span> <span class="o">=</span> <span class="n">onsets</span><span class="p">[</span><span class="n">start_ind</span><span class="p">:</span><span class="n">stop_ind</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># list of motif onset timestamps</span>
+                <span class="n">offsets_in_motif</span> <span class="o">=</span> <span class="n">offsets</span><span class="p">[</span><span class="n">start_ind</span><span class="p">:</span><span class="n">stop_ind</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># list of motif offset timestamps</span>
+
+                <span class="n">file_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+                <span class="n">duration_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">motif_offset</span> <span class="o">-</span> <span class="n">motif_onset</span><span class="p">)</span>
+                <span class="n">onset_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onsets_in_motif</span><span class="p">)</span>
+                <span class="n">offset_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offsets_in_motif</span><span class="p">)</span>
+                <span class="n">context_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+        <span class="c1"># Organize event-related info into a single dictionary object</span>
+        <span class="n">motif_info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;files&#39;</span><span class="p">:</span> <span class="n">file_list</span><span class="p">,</span>
+            <span class="s1">&#39;onsets&#39;</span><span class="p">:</span> <span class="n">onset_list</span><span class="p">,</span>
+            <span class="s1">&#39;offsets&#39;</span><span class="p">:</span> <span class="n">offset_list</span><span class="p">,</span>
+            <span class="s1">&#39;durations&#39;</span><span class="p">:</span> <span class="n">duration_list</span><span class="p">,</span>  <span class="c1"># this is motif durations</span>
+            <span class="s1">&#39;contexts&#39;</span><span class="p">:</span> <span class="n">context_list</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">MotifInfo</span><span class="p">(</span><span class="n">motif_info</span><span class="p">,</span> <span class="n">motif</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BoutInfo"><a class="viewcode-back" href="../../analysis.html#analysis.song.BoutInfo">[docs]</a><span class="k">class</span> <span class="nc">BoutInfo</span><span class="p">(</span><span class="n">SongInfo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get song &amp; spike information for a song bout</span>
+<span class="sd">    Child class of SongInfo</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">song_note</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">song_note</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">song_note</span> <span class="o">=</span> <span class="n">song_note</span>
+
+        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># Load bout info</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;BoutInfo.npy&quot;</span>
+        <span class="k">if</span> <span class="n">update</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">file_name</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>  <span class="c1"># if .npy doesn&#39;t exist or want to update the file</span>
+            <span class="n">bout_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_bouts</span><span class="p">()</span>
+            <span class="c1"># Save info dict as a numpy object</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">bout_info</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bout_info</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="c1"># Set the dictionary values to class attributes</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">bout_info</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">bout_info</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+<div class="viewcode-block" id="BoutInfo.print_name"><a class="viewcode-back" href="../../analysis.html#analysis.song.BoutInfo.print_name">[docs]</a>    <span class="k">def</span> <span class="nf">print_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Load bout </span><span class="si">{self.name}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">=</span><span class="bp">self</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_load_bouts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Store values here</span>
+        <span class="kn">from</span> <span class="nn">..utils.functions</span> <span class="kn">import</span> <span class="n">find_str</span>
+
+        <span class="n">file_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">spk_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">onset_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">offset_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">syllable_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">duration_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">context_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">list_zip</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">onsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">syllables</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">file</span><span class="p">,</span> <span class="n">spks</span><span class="p">,</span> <span class="n">onsets</span><span class="p">,</span> <span class="n">offsets</span><span class="p">,</span> <span class="n">syllables</span><span class="p">,</span> <span class="n">context</span> <span class="ow">in</span> <span class="n">list_zip</span><span class="p">:</span>
+
+            <span class="n">bout_ind</span> <span class="o">=</span> <span class="n">find_str</span><span class="p">(</span><span class="n">syllables</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bout_ind</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">ind</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">start_ind</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">start_ind</span> <span class="o">=</span> <span class="n">bout_ind</span><span class="p">[</span><span class="n">ind</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">stop_ind</span> <span class="o">=</span> <span class="n">bout_ind</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+
+                <span class="n">bout_onset</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">onsets</span><span class="p">[</span><span class="n">start_ind</span><span class="p">])</span>
+                <span class="n">bout_offset</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">offsets</span><span class="p">[</span><span class="n">stop_ind</span><span class="p">])</span>
+
+                <span class="n">onsets_in_bout</span> <span class="o">=</span> <span class="n">onsets</span><span class="p">[</span><span class="n">start_ind</span><span class="p">:</span><span class="n">stop_ind</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># list of bout onset timestamps</span>
+                <span class="n">offsets_in_bout</span> <span class="o">=</span> <span class="n">offsets</span><span class="p">[</span><span class="n">start_ind</span><span class="p">:</span><span class="n">stop_ind</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># list of bout offset timestamps</span>
+
+                <span class="n">file_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+                <span class="n">duration_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bout_offset</span> <span class="o">-</span> <span class="n">bout_onset</span><span class="p">)</span>
+                <span class="n">onset_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onsets_in_bout</span><span class="p">)</span>
+                <span class="n">offset_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offsets_in_bout</span><span class="p">)</span>
+                <span class="n">syllable_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">syllables</span><span class="p">[</span><span class="n">start_ind</span><span class="p">:</span><span class="n">stop_ind</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+                <span class="n">context_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+        <span class="c1"># Organize event-related info into a single dictionary object</span>
+        <span class="n">bout_info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;files&#39;</span><span class="p">:</span> <span class="n">file_list</span><span class="p">,</span>
+            <span class="s1">&#39;spk_ts&#39;</span><span class="p">:</span> <span class="n">spk_list</span><span class="p">,</span>
+            <span class="s1">&#39;onsets&#39;</span><span class="p">:</span> <span class="n">onset_list</span><span class="p">,</span>
+            <span class="s1">&#39;offsets&#39;</span><span class="p">:</span> <span class="n">offset_list</span><span class="p">,</span>
+            <span class="s1">&#39;durations&#39;</span><span class="p">:</span> <span class="n">duration_list</span><span class="p">,</span>  <span class="c1"># this is bout durations</span>
+            <span class="s1">&#39;syllables&#39;</span><span class="p">:</span> <span class="n">syllable_list</span><span class="p">,</span>
+            <span class="s1">&#39;contexts&#39;</span><span class="p">:</span> <span class="n">context_list</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">bout_info</span></div>
+
+
+<div class="viewcode-block" id="MotifInfo"><a class="viewcode-back" href="../../analysis.html#analysis.song.MotifInfo">[docs]</a><span class="k">class</span> <span class="nc">MotifInfo</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Child class of SongInfo&quot;&quot;&quot;</span>
+
+    <span class="c1"># def __init__(self, path, motif=None, name=None, update=False):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">motif_info</span><span class="p">,</span> <span class="n">motif</span><span class="p">):</span>
+
+        <span class="c1"># Set the dictionary values to class attributes</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">motif_info</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">motif_info</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">motif</span> <span class="o">=</span> <span class="n">motif</span>
+
+<div class="viewcode-block" id="MotifInfo.get_motif_duration"><a class="viewcode-back" href="../../analysis.html#analysis.song.MotifInfo.get_motif_duration">[docs]</a>    <span class="k">def</span> <span class="nf">get_motif_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get mean motif duration and its cv per context&quot;&quot;&quot;</span>
+
+        <span class="n">motif_dur</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;U&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+                     <span class="s1">&#39;cv&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;U&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}}</span>
+
+        <span class="k">for</span> <span class="n">context1</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">):</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">duration</span> <span class="k">for</span> <span class="n">context2</span><span class="p">,</span> <span class="n">duration</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">durations</span><span class="p">)</span>
+                                 <span class="k">if</span> <span class="n">context2</span> <span class="o">==</span> <span class="n">context1</span><span class="p">])</span>
+            <span class="n">motif_dur</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">][</span><span class="n">context1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">duration</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="n">motif_dur</span><span class="p">[</span><span class="s1">&#39;cv&#39;</span><span class="p">][</span><span class="n">context1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">duration</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">/</span> <span class="n">duration</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">motif_dur</span></div>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># print attributes</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">([</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span></div>
+
+
+<div class="viewcode-block" id="AudioInfo"><a class="viewcode-back" href="../../analysis.html#analysis.song.AudioInfo">[docs]</a><span class="k">class</span> <span class="nc">AudioInfo</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create an audio object from a single audio file (e.g., .wav)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;.wav&#39;</span><span class="p">):</span>
+
+        <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">wavfile</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">filepath</span>  <span class="c1"># path object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">.</span><span class="n">stem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dir</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">.</span><span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="nb">format</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">wavfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>  <span class="c1"># note that the timestamp is in second</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1E3</span>  <span class="c1"># start from t = 0 in ms</span>
+
+<div class="viewcode-block" id="AudioInfo.load_notmat"><a class="viewcode-back" href="../../analysis.html#analysis.song.AudioInfo.load_notmat">[docs]</a>    <span class="k">def</span> <span class="nf">load_notmat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load the .not.mat file&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">..analysis.load</span> <span class="kn">import</span> <span class="n">read_not_mat</span>
+
+        <span class="n">notmat_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.wav.not.mat&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">intervals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">durations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">syllables</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span> \
+            <span class="o">=</span> <span class="n">read_not_mat</span><span class="p">(</span><span class="n">notmat_file</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;ms&#39;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># print attributes</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">([</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">open_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">..utils.functions</span> <span class="kn">import</span> <span class="n">open_folder</span>
+        <span class="n">open_folder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AudioInfo.extract"><a class="viewcode-back" href="../../analysis.html#analysis.song.AudioInfo.extract">[docs]</a>    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_range</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extracts data from the specified range</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        time_range : list</span>
+<span class="sd">            list of time stamps [start, end]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        timestamp : np.ndarray</span>
+<span class="sd">        data : np.ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">time_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&gt;=</span> <span class="n">start</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="AudioInfo.spectrogram"><a class="viewcode-back" href="../../analysis.html#analysis.song.AudioInfo.spectrogram">[docs]</a>    <span class="k">def</span> <span class="nf">spectrogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">freq_range</span><span class="o">=</span><span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">8000</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate spectrogram&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">..utils.spect</span> <span class="kn">import</span> <span class="n">spectrogram</span>
+
+        <span class="n">spect</span><span class="p">,</span> <span class="n">spect_freq</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">freq_range</span><span class="o">=</span><span class="n">freq_range</span><span class="p">)</span>
+        <span class="n">spect_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">timestamp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">timestamp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">spect</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># timestamp for spectrogram</span>
+        <span class="k">return</span> <span class="n">spect_time</span><span class="p">,</span> <span class="n">spect</span><span class="p">,</span> <span class="n">spect_freq</span></div>
+
+<div class="viewcode-block" id="AudioInfo.get_spectral_entropy"><a class="viewcode-back" href="../../analysis.html#analysis.song.AudioInfo.get_spectral_entropy">[docs]</a>    <span class="k">def</span> <span class="nf">get_spectral_entropy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spect</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate spectral entropy</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        normalize : bool</span>
+<span class="sd">            Get normalized spectral entropy</span>
+<span class="sd">        mode : str</span>
+<span class="sd">            Select one from the following {&#39;spectral&#39;, &#39;&#39;spectro_temporal&#39;}</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array of spectral entropy</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">..analysis.functions</span> <span class="kn">import</span> <span class="n">get_spectral_entropy</span>
+
+        <span class="k">return</span> <span class="n">get_spectral_entropy</span><span class="p">(</span><span class="n">spect</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="FundamentalFreq"><a class="viewcode-back" href="../../analysis.html#analysis.song.FundamentalFreq">[docs]</a><span class="k">class</span> <span class="nc">FundamentalFreq</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class object for analyzing fundamental frequency of a syllable&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__self</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">note</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">crit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">onset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">low</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">harmonic</span><span class="o">=</span><span class="mi">1</span>
+                     <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="n">note</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crit</span> <span class="o">=</span> <span class="n">crit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># {&#39;percent_from_start&#39;, &#39;ms_from_start&#39;, &#39;ms_from_end&#39;}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onset</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">harmonic</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Fundamental Frequency (FF) value</span>
+
+<div class="viewcode-block" id="FundamentalFreq.load_from_db"><a class="viewcode-back" href="../../analysis.html#analysis.song.FundamentalFreq.load_from_db">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">birdID</span><span class="p">,</span> <span class="n">ff_note</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load info from the database if exists&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">..database.load</span> <span class="kn">import</span> <span class="n">ProjectLoader</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT ffNote, ffParameter, ffCriterion, ffLow, ffHigh, ffDuration, harmonic &quot;</span> \
+                <span class="sa">f</span><span class="s2">&quot;FROM ff &quot;</span> \
+                <span class="sa">f</span><span class="s2">&quot;WHERE birdID=&#39;</span><span class="si">{</span><span class="n">birdID</span><span class="si">}</span><span class="s2">&#39; AND ffNote=&#39;</span><span class="si">{</span><span class="n">ff_note</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">ProjectLoader</span><span class="p">()</span><span class="o">.</span><span class="n">load_db</span><span class="p">()</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+        <span class="n">ff_info</span> <span class="o">=</span> <span class="p">{</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="p">{</span><span class="s1">&#39;parameter&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                             <span class="s1">&#39;crit&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                             <span class="s1">&#39;low&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>  <span class="c1"># lower limit of frequency</span>
+                             <span class="s1">&#39;high&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>  <span class="c1"># upper limit of frequency</span>
+                             <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                             <span class="s1">&#39;harmonic&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>  <span class="c1"># 1st or 2nd harmonic detection</span>
+                             <span class="p">}</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>  <span class="c1"># ff duration</span>
+                   <span class="p">}</span>
+
+        <span class="c1"># Set the dictionary values to class attributes</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ff_info</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">ff_info</span><span class="p">[</span><span class="n">key</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="FundamentalFreq.get_ts"><a class="viewcode-back" href="../../analysis.html#analysis.song.FundamentalFreq.get_ts">[docs]</a>    <span class="k">def</span> <span class="nf">get_ts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">note_onset</span><span class="p">,</span> <span class="n">note_offset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get onset and offset timestamp of FF portion based on note onset &amp; offset&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="SyllableNetwork"><a class="viewcode-back" href="../../analysis.html#analysis.song.SyllableNetwork">[docs]</a><span class="k">class</span> <span class="nc">SyllableNetwork</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Jaerong Ahn.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -19,7 +19,7 @@ def get_jittered_corr(ClassObject):
     correlogram_jitter = []
 
     for iter in range(corr_shuffle['shuffle_iter']):
-        ClassObject.jitter_spk_ts()
+        ClassObject.jitter_spk_ts(,
         corr_temp = ClassObject.get_correlogram(ClassObject.spk_ts_jittered, ClassObject.spk_ts_jittered)
         correlogram_jitter.append(corr_temp['U'])
     correlogram_jitter = np.array(correlogram_jitter)

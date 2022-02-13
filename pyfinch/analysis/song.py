@@ -134,7 +134,6 @@ class SongInfo:
         """
 
         from ..analysis.functions import unique_nb_notes_in_bout, total_nb_notes_in_bout
-        import numpy as np
 
         song_call_prop = {}
         song_call_prop['U'] = song_call_prop['D'] = None
@@ -212,8 +211,6 @@ class BoutInfo(SongInfo):
 
     def __init__(self, path, song_note, name=None, update=False):
         super().__init__(path, song_note, name, update=False)
-
-        import numpy as np
 
         self.song_note = song_note
 
@@ -310,8 +307,6 @@ class MotifInfo:
     def get_motif_duration(self):
         """Get mean motif duration and its cv per context"""
 
-        import numpy as np
-
         motif_dur = {'mean': {'U': None, 'D': None},
                      'cv': {'U': None, 'D': None}}
 
@@ -335,7 +330,7 @@ class AudioInfo:
     """
 
     def __init__(self, filepath, format='.wav'):
-        import numpy as np
+
         from scipy.io import wavfile
 
         self.path = filepath  # path object
@@ -376,7 +371,6 @@ class AudioInfo:
         timestamp : np.ndarray
         data : np.ndarray
         """
-        import numpy as np
 
         start = time_range[0]
         end = time_range[-1]
@@ -410,13 +404,14 @@ class AudioInfo:
 
         return get_spectral_entropy(spect, normalize=normalize, mode=mode)
 
+
 class FundamentalFreq:
     """Class object for analyzing fundamental frequency of a syllable"""
+
     def __init__self(self, note=None,
                      crit=None, parameter=None, onset=None, offset=None,
                      low=None, high=None, harmonic=1
                      ):
-
         self.note = note
         self.crit = crit
         self.parameter = None  # {'percent_from_start', 'ms_from_start', 'ms_from_end'}
@@ -429,7 +424,8 @@ class FundamentalFreq:
 
     def load_from_db(self, birdID, ff_note):
         """Load info from the database if exists"""
-        from pyfinch.database.load import ProjectLoader
+        from ..database.load import ProjectLoader
+
         query = f"SELECT ffNote, ffParameter, ffCriterion, ffLow, ffHigh, ffDuration, harmonic " \
                 f"FROM ff " \
                 f"WHERE birdID='{birdID}' AND ffNote='{ff_note}'"
@@ -452,8 +448,8 @@ class FundamentalFreq:
         """Get onset and offset timestamp of FF portion based on note onset & offset"""
         pass
 
+
 class SyllableNetwork:
 
     def __init__(self):
         pass
-

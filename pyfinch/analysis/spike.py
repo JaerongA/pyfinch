@@ -2,11 +2,13 @@
 Module for neural analysis
 """
 import numpy as np
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple
 
 
 def get_isi(spk_ts_list: list):
     """
     Get inter-analysis interval of spikes
+
     Parameters
     ----------
     spk_ts_list : list
@@ -86,13 +88,16 @@ def get_peth(evt_ts_list: list, spk_ts_list: list,
 def get_pcc(fr_array):
     """
     Get pairwise cross-correlation
-    Args:
-        fr_array: arr (trials x time_bin)
 
-    Returns:
-        pcc_dict : dict
+    Parameters
+    ----------
+    fr_array : np.ndarray
+        trial x time_bin
+
+    Returns
+    -------
+    pcc_dict : dict
     """
-    import numpy as np
 
     pcc_dict = {}
     pcc_arr = np.array([])
@@ -112,6 +117,7 @@ def get_pcc(fr_array):
 def jitter_spk_ts(spk_ts_list, shuffle_limit, reproducible=True):
     """
     Add a random temporal jitter to the spike
+
     Parameters
     ----------
     reproducible : bool
@@ -264,7 +270,7 @@ class ClusterInfo:
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
 
-    def _print_name(self):
+    def _print_name(self) -> None:
         print('')
         print('Load cluster {self.name}'.format(self=self))
 
@@ -273,17 +279,21 @@ class ClusterInfo:
 
         return list_files(self.path, ext)
 
-    def _load_spk(self, time_unit, delimiter='\t'):
+    def _load_spk(self, time_unit, delimiter='\t') -> None:
         """
         Load spike information
-        Args:
-            time_unit: unit # (in the cluster file)
-            delimiter: delimiter of the cluster file (tab (\t) by default)
 
-        Returns:
+        Parameters
+        ----------
+        time_unit : str
+            time unit (e.g., 'ms')
+        delimiter : str
+            delimiter of the cluster file (tab (\t) by default)
+
+        Returns
+        -------
             sets spk_wf, spk_ts, nb_spk as attributes
         """
-        import numpy as np
 
         spk_txt_file = list(self.path.glob('*' + self.channel_nb + '(merged).txt'))
         if not spk_txt_file:
@@ -380,7 +390,7 @@ class ClusterInfo:
 
         # print("avg_wf, spk_height (uv), spk_width (us), wf_ts (ms) added")
 
-    def get_conditional_spk(self):
+    def get_conditional_spk(self) -> dict:
         """Get spike timestamps from different contexts"""
         conditional_spk = {}
         conditional_spk['U'] = [spk_ts for spk_ts, context in zip(self.spk_ts, self.contexts) if context == 'U']
@@ -390,7 +400,6 @@ class ClusterInfo:
 
     def get_correlogram(self, ref_spk_list, target_spk_list, normalize=False) -> dict:
         """Get auto- or cross-correlogram"""
-
         from ..analysis.parameters import spk_corr_parm
         import math
 
@@ -515,12 +524,12 @@ class ClusterInfo:
     @property
     def nb_files(self) -> dict:
         """
-        Returns the number of files per context
+        Return the number of files per context
 
         Returns
         -------
-
         nb_files : dict
+            Number of files per context ('U', 'D', 'All')
         """
         nb_files = {}
         nb_files['U'] = len([context for context in self.contexts if context == 'U'])
@@ -646,7 +655,7 @@ class ClusterInfo:
         return NoteInfo(note_info)  # return note info
 
     @property
-    def open_folder(self):
+    def open_folder(self) -> None:
         """Open the data folder"""
         from ..utils.functions import open_folder
 
@@ -886,7 +895,7 @@ class MotifInfo(ClusterInfo):
         # Load motif info
         file_name = self.path / "MotifInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
-            motif_info = self.load_motif()
+            motif_info = self._load_motif()
             # Save info dict as a numpy object
             np.save(file_name, motif_info)
         else:
@@ -897,13 +906,13 @@ class MotifInfo(ClusterInfo):
             setattr(self, key, motif_info[key])
 
         if hasattr(self, 'spk_wf'):
-            self.delete_wf()
+            self._delete_wf()
 
-    def delete_wf(self):
+    def _delete_wf(self):
         """Delete waveform attribute (not needed for this)"""
         delattr(self, 'spk_wf')
 
-    def load_motif(self):
+    def _load_motif(self):
         """Load motif info"""
         from ..analysis.parameters import peth_parm
         from ..utils.functions import find_str
@@ -1099,7 +1108,7 @@ class MotifInfo(ClusterInfo):
         # print("mean_fr added")
         self.mean_fr = fr_dict
 
-    def jitter_spk_ts(self, shuffle_limit):
+    def jitter_spk_ts(self, shuffle_limit: int, **kwargs):
         """
         Add a random temporal jitter to the spike
         This version limit the jittered timestamp within the motif window
@@ -1593,7 +1602,6 @@ class AudioData:
     """
     def __init__(self, path, format='.wav', update=False):
         from ..analysis.load import load_audio
-        import numpy as np
 
         self.path = path
         self.format = format

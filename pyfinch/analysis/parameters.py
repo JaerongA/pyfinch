@@ -6,25 +6,26 @@ If one were to play with a range of different parameters, take it out and use it
 """
 
 import numpy as np
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Sequence
 
 # Song parameters
-sample_rate = {'rhd': 30000, 'cbin': 32000, 'recorder': 44000}  # sampling rate for audio signal (Hz)
-bout_crit = 500  # the temporal criterion for separating song bouts (in ms)
-freq_range = [300, 8000]  # frequency range for bandpass filter for spectrogram (Hz)
+sample_rate: Dict[str, int] = {'rhd': 30000, 'cbin': 32000, 'recorder': 44000}  # sampling rate for audio signal (Hz)
+bout_crit: int = 500  # the temporal criterion for separating song bouts (in ms)
+freq_range: List = [300, 8000]  # frequency range for bandpass filter for spectrogram (Hz)
 
 # Set syllable colors
-note_color = {'Intro': ['k', 'gray', 'darkseagreen', 'olive'],
-              'Motif': ['r', 'b', 'lime', 'm', 'brown', 'purple', 'saddlebrown'],
-              'Call': ['teal', 'darkgrey', 'indigo', 'darkgray', ]}
+note_color: Dict[str, List[str]] = {'Intro': ['k', 'gray', 'darkseagreen', 'olive'],
+                                    'Motif': ['r', 'b', 'lime', 'm', 'brown', 'purple', 'saddlebrown'],
+                                    'Call': ['teal', 'darkgrey', 'indigo', 'darkgray', ]}
 
-bout_color = {'i': 'k', 'j': 'gray', 'k': 'darkseagreen',  # intro notes
-              'a': 'r', 'b': 'b', 'c': 'lime', 'd': 'm', 'e': 'brown', 'f': 'purple', 'g': 'saddlebrown',  # motif notes
-              'm': 'teal', 'n': 'darkgrey', 'l': 'darkgray', 'o': 'indigo',  # calls
-              'A': 'w'
-              }
+bout_color: Dict[str, str] = {'i': 'k', 'j': 'gray', 'k': 'darkseagreen',  # intro notes
+                              'a': 'r', 'b': 'b', 'c': 'lime', 'd': 'm', 'e': 'brown', 'f': 'purple', 'g': 'saddlebrown',  # motif notes
+                              'm': 'teal', 'n': 'darkgrey', 'l': 'darkgray', 'o': 'indigo',  # calls
+                              'A': 'w'
+                              }
 
 # Define baseline period 1 sec window & 2 sec prior to syllable onset
-baseline = {'time_win': 1000, 'time_buffer': 2000}  # in ms
+baseline: Dict[str, int] = {'time_win': 1000, 'time_buffer': 2000}  # in ms
 
 # For analysis correlogram
 spk_corr_parm = {'bin_size': 1, 'lag': 100}  # in ms
@@ -64,9 +65,9 @@ isi_bin = np.arange(0, isi_win, 1 / isi_scale)
 
 # Correlogram
 corr_shuffle = {
-                'shuffle_limit': 5,  # in ms
-                'shuffle_iter': 100  # bootstrap iterations
-                }
+    'shuffle_limit': 5,  # in ms
+    'shuffle_iter': 100  # bootstrap iterations
+}
 
 # shuffling_iter = 100  # shuffling iteration for obtaining baseline
 
@@ -84,8 +85,7 @@ pre_motor_win_size = 50  # in ms
 post_song_win_size = 50  # in ms
 
 nb_note_crit = 10  # minimum number of notes for analysis
-fr_crit = 10 # minimum firing rates criterion (in Hz)
-
+fr_crit = 10  # minimum firing rates criterion (in Hz)
 
 # Spike shuffling parameter for peth for getting baseline PCC
 peth_shuffle = {'shuffle_limit': 10,  # in ms (50 for motif, 10 for syllable)
@@ -95,10 +95,10 @@ peth_shuffle = {'shuffle_limit': 10,  # in ms (50 for motif, 10 for syllable)
 alpha = 0.05  # for stat significance
 
 # Sequence analysis
-cmap_list = ["YlGnBu", "PiYG",  ]
+cmap_list = ["YlGnBu", "PiYG", ]
 sequence_color = {'song_note': ['r', 'b', 'lime', 'm', 'darkorange', 'purple', 'saddlebrown'],
                   'intro': ['k', 'gray', 'darkseagreen', 'olive'],
-                  'call': ['teal', 'darkslategray', 'darkgray','indigo']
+                  'call': ['teal', 'darkslategray', 'darkgray', 'indigo']
                   }
 
 # Waveform analysis

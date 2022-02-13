@@ -2,6 +2,8 @@
 A collection of functions used for song & neural analysis
 """
 
+from typing import List, Dict, Optional
+
 import numpy as np
 import pandas as pd
 
@@ -11,18 +13,19 @@ from ..utils.functions import normalize, extract_ind, find_str, unique
 from ..utils.spect import spectrogram
 
 
-def get_note_type(syllables: str, song_db) -> list:
+def get_note_type(syllables: str, song_db: Dict[str, str]) -> List[str]:
     """
-    Function to determine the category of the syllable
+    Returns the category of the syllable (e.g, motif, intro notes, calls)
 
     Parameters
     ----------
     syllables : str
-    song_db : db
+        syllable in single letter (e.g., 'a', 'i')
+    song_db : Dict[str]
 
     Returns
     -------
-    type_str : list
+    type_str : List[str]
     """
     type_str = []
     for syllable in syllables:
@@ -121,7 +124,7 @@ def get_nb_bouts(song_note: str, bout_labeling: str):
     return nb_bouts
 
 
-def get_snr(avg_wf, raw_neural_trace, filter_crit=5):
+def get_snr(avg_wf, raw_neural_trace, filter_crit: Optional[int] = 5):
     """
     Calculate signal-to-noise ratio of sorted spike relative to the background neural trace
 
@@ -155,18 +158,21 @@ def get_snr(avg_wf, raw_neural_trace, filter_crit=5):
     return round(snr, 3)
 
 
-def get_half_width(wf_ts, avg_wf):
+def get_half_width(wf_ts: np.ndarray, avg_wf: np.ndarray):
     """
     Find the negative (or positive if inverted) deflection
 
     Parameters
     ----------
-    wf_ts
-    avg_wf
+    wf_ts : np.ndarray
+        waveform timestamp
+    avg_wf : np.ndarray
+        averaged waveform
 
     Returns
     -------
-
+    deflection_range : list
+    half_width : float
     """
     if np.argmin(avg_wf) > np.argmax(avg_wf):  # inverted waveform (peak comes first in extra-cellular recording)
         deflection_baseline = np.abs(avg_wf).mean() + np.abs(avg_wf).std(
@@ -218,7 +224,7 @@ def get_half_width(wf_ts, avg_wf):
 def get_psd_mat(data_path, save_path,
                 save_psd=False, update=False, open_folder=False, add_date=False,
                 nfft=2 ** 10, fig_ext='.png'):
-
+    """Get matrix of power spectral density"""
     from ..analysis.parameters import freq_range
     from .load import read_not_mat
     import matplotlib.colors as colors
@@ -528,7 +534,6 @@ def get_ff(data, sample_rate, ff_low, ff_high, ff_harmonic=1):
     """
     from scipy.signal import find_peaks
     import statsmodels.tsa.stattools as smt
-    import numpy as np
     from ..utils.functions import para_interp
 
     # Get peak of the auto-correlogram
@@ -579,7 +584,7 @@ def normalize_from_pre(df, var_name: str, note: str):
 
 
 def add_pre_normalized_col(df: pd.DataFrame, col_name_to_normalize, col_name_to_add,
-                           save_path=None, csv_name=None, save_csv=False):
+                           save_path=None, csv_name=None, save_csv=False) -> pd.DataFrame:
     """Normalize relative to pre-deafening mean"""
 
     df[col_name_to_add] = np.nan
@@ -613,7 +618,6 @@ def get_bird_colors(birds: list) -> dict:
     bird_color : dict
     """
     import matplotlib.cm as cm
-    import numpy as np
 
     x = np.arange(10)
     ys = [i + x + (i * x) ** 2 for i in range(10)]
@@ -623,9 +627,9 @@ def get_bird_colors(birds: list) -> dict:
     return bird_color
 
 
-def get_spectrogram(timestamp, data, sample_rate, freq_range=[300, 8000]):
+def get_spectrogram(timestamp, data, sample_rate: int, freq_range: Optional[list]=[300, 8000]):
     """Calculate spectrogram"""
-    from pyfinch.utils.spect import spectrogram
+    from ..utils.spect import spectrogram
 
     spect, spect_freq, _ = spectrogram(data, sample_rate, freq_range=freq_range)
     spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram
@@ -633,7 +637,19 @@ def get_spectrogram(timestamp, data, sample_rate, freq_range=[300, 8000]):
 
 
 def align_waveform(spk_wf: np.ndarray) -> np.ndarray:
-    """Align spike waveforms relative to the max location of the average waveform"""
+    """
+    Shift the individual spike waveforms relative to the max location of the average waveform
+
+    Parameters
+    ----------
+    spk_wf : np.ndarray
+        spike waveform matrix (spike id x waveform)
+
+    Returns
+    -------
+    aligned_wf : np.ndarray
+        aligned spike waveforms
+    """
 
     aligned_wf = np.empty((spk_wf.shape[0], spk_wf.shape[1]))
     aligned_wf[:] = np.nan

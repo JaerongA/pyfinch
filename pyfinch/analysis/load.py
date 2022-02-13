@@ -1,5 +1,5 @@
 """
-load data (from .rhd, .txt, .wav, etc)
+Load data (from .rhd, .txt, .wav, etc)
 """
 import numpy as np
 
@@ -12,12 +12,11 @@ def read_not_mat(notmat, unit='ms'):
     ----------
     notmat : path
         Name of the .not.mat file (path)
-    unit : (optional)
-        milli-second by default. Convert to seconds when specified
+    unit : {'ms', 'second'}
+        timescale
 
     Returns
     -------
-
     onsets : np.ndarray
         time stamp for syllable onset (in ms)
     offsets : np.ndarray
@@ -52,13 +51,29 @@ def read_not_mat(notmat, unit='ms'):
     return onsets, offsets, intervals, durations, syllables, contexts
 
 
-def read_spk_txt(spk_txt_file, *unit_nb, unit='second'):
+def read_spk_txt(spk_txt_file, *unit_nb, time_unit='second'):
     """
-    Read the output .txt from the Offline Sorter
-    Column header of the input .txt
-    ['Channel', 'Unit', 'Timestamp']
-    Disregard the first column since it is always 1
-    Column 3 to 35 stores waveforms
+    Read the output .txt from the Offline Sorter.
+    column header of the input .txt -> ['Channel', 'Unit', 'Timestamp']
+    disregard the first column since it is always 1
+    column 3 to 35 stores waveforms
+
+    Parameters
+    ----------
+    spk_txt_file : str
+        Name of the spk txt file
+    unit_nb : int
+        Number of the sorted unit. If not specified (default), it will read data from all recorded units.
+    time_unit :
+
+    Returns
+    -------
+    spk_ts : np.ndarray
+        Spike timestamps
+    spk_waveform : np.ndarray
+        Spike waveform (spk id x waveform)
+    nb_spk : int
+        Number of spikes
     """
 
     spk_info = np.loadtxt(spk_txt_file, delimiter='\t', skiprows=1)  # skip header
@@ -72,7 +87,7 @@ def read_spk_txt(spk_txt_file, *unit_nb, unit='second'):
     nb_spk = spk_waveform.shape[0]  # total number of spikes
 
     # units are in second by default, but convert to  millisecond with the argument
-    if unit == 'ms':
+    if time_unit == 'ms':
         spk_ts *= 1E3
 
     return spk_ts, spk_waveform, nb_spk
@@ -91,6 +106,7 @@ def read_rhd(filename):
 def load_song(dir, format='wav') -> dict:
     """
     Obtain event info & serialized timestamps for song & neural analysis
+    Search all files in the sub-directory and read from the associated .not.mat files to add the info into a single files
 
     Parameters
     ----------

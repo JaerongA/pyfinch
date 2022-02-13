@@ -2,6 +2,8 @@
 A collection of utility functions used for analysis
 """
 
+import numpy as np
+
 
 def unique(list) -> list:
     """
@@ -99,25 +101,24 @@ def myround(x : int, base=5) -> int:
     return base * round(x / base)
 
 
-def extract_ind(timestamp, range):
+def extract_ind(timestamp: np.ndarray, range: list):
     """
     Extract timestamp indices from array from the specified range
 
     Parameters
     ----------
-    timestamp : arr
+    timestamp : np.ndarray
     range : list
         [start end]
 
     Returns
     -------
-    ind : arr
+    ind : np.ndarray
         index of the array
-    array :  arr
+    array :  np.ndarray
         array within the range
     """
 
-    import numpy as np
     start = range[0]
     end = range[1]
 
@@ -126,11 +127,10 @@ def extract_ind(timestamp, range):
     return ind, new_array
 
 
-def normalize(array):
+def normalize(array: np.ndarray) -> np.ndarray:
     """
     Normalizes an array by its average and sd
     """
-    import numpy as np
 
     return (np.array(array) - np.average(array)) / np.std(array)
 
@@ -157,8 +157,8 @@ def para_interp(x, y):
 
     Parameters
     ----------
-    x : arr
-    y : arr
+    x : np.ndarray
+    y : np.ndarray
 
     Returns
     -------
@@ -167,7 +167,6 @@ def para_interp(x, y):
     y_max : float
         estimated max value
     """
-    import numpy as np
 
     x = np.vstack((x ** 2, x))
     x = np.vstack((x, np.array([1, 1, 1]))).T

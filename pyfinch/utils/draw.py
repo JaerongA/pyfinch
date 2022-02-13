@@ -1,5 +1,5 @@
 """
-Helper functions for drawing a figure
+Helper functions for drawing figures
 """
 
 
@@ -46,8 +46,12 @@ def get_ax_lim(ax_min, ax_max, base=10):
     ----------
     ax_min : float
     ax_max : float
-    base : int
-        default = 10
+    base : int, default = 10
+
+    Returns
+    -------
+    ax_min : float
+    ax_max : float
     """
     from math import ceil, floor
 
