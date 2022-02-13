@@ -1,13 +1,11 @@
 """
-A collection of functions used for song & neural analysis
+Functions used for song & neural analysis
 """
 
+from typing import List, Dict, Optional
 
 import numpy as np
 import pandas as pd
-from typing import List, Dict, Optional
-
-# from ..utils.functions import normalize, extract_ind, find_str, unique
 
 
 def get_note_type(syllables: str, song_db: Dict[str, str]) -> List[str]:
@@ -43,7 +41,7 @@ def demarcate_bout(target, intervals: int):
 
     Parameters
     ----------
-    target : str or numpy array
+    target : str or np.ndarray
     intervals_ms : int
         syllable gap duration in ms
 
@@ -612,7 +610,8 @@ def add_pre_normalized_col(df: pd.DataFrame, col_name_to_normalize, col_name_to_
 
 def get_bird_colors(birds: list) -> dict:
     """
-    Get separate colors for different birds
+    Assign different colors for different birds in the input list
+
     Parameters
     ----------
     birds : list
@@ -631,7 +630,7 @@ def get_bird_colors(birds: list) -> dict:
     return bird_color
 
 
-def get_spectrogram(timestamp, data, sample_rate: int, freq_range: Optional[list]=[300, 8000]):
+def get_spectrogram(timestamp, data, sample_rate: int, freq_range: Optional[list] = [300, 8000]):
     """Calculate spectrogram"""
     from ..utils.spect import spectrogram
 
@@ -652,7 +651,7 @@ def align_waveform(spk_wf: np.ndarray) -> np.ndarray:
     Returns
     -------
     aligned_wf : np.ndarray
-        aligned spike waveforms
+        aligned spike waveforms (spike id x waveform)
     """
 
     aligned_wf = np.empty((spk_wf.shape[0], spk_wf.shape[1]))
@@ -687,4 +686,5 @@ def align_waveform(spk_wf: np.ndarray) -> np.ndarray:
             aligned_wf[ind] = new_wf
         else:
             aligned_wf[ind] = wf
+
     return aligned_wf

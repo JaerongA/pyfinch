@@ -1,5 +1,5 @@
 """
-Functions for statistical testing
+Utility functions for statistical testing
 """
 
 

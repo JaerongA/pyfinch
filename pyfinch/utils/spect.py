@@ -1,12 +1,10 @@
 """
-functions for making spectrogram
+Utility functions for drawing spectrograms
 
-filters adapted from SciPy cookbook
-https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html
-spectrogram adapted from code by Kyle Kastner and Tim Sainburg
+Spectrogram adapted from code by Kyle Kastner and Tim Sainburg
 https://github.com/timsainb/python_spectrograms_and_inversion
 
-Taken from vak library by David Nicholson https://github.com/NickleDave/vak
+by David Nicholson https://github.com/NickleDave/vak
 """
 
 

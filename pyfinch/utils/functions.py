@@ -1,22 +1,21 @@
 """
-A collection of utility functions used for analysis
+Utility functions used for analysis
 """
 
 import numpy as np
 
 
-def unique(list) -> list:
+def unique(input_list: list) -> list:
     """
     Extract unique strings from the list in the order they appear
 
     Parameters
     ----------
-    list : list
+    input_list : list
 
     Returns
     -------
-    list : list
-        list of unique, ordered string
+    list of unique, ordered string
     """
     seen = set()
     return [x for x in list if not (x in seen or seen.add(x))]
@@ -77,13 +76,13 @@ def list_files(dir: str, ext: str) -> list:
     return files
 
 
-def open_folder(path):
+def open_folder(path) -> None:
     """Open the directory in win explorer"""
     import webbrowser
     webbrowser.open(path)
 
 
-def myround(x : int, base=5) -> int:
+def myround(x: int, base=5) -> int:
     """
     Round to the next multiple of the base
 
@@ -130,12 +129,21 @@ def extract_ind(timestamp: np.ndarray, range: list):
 def normalize(array: np.ndarray) -> np.ndarray:
     """
     Normalizes an array by its average and sd
+
+    Parameters
+    ----------
+    array : np.ndarray
+        Input array
+
+    Returns
+    -------
+    np.ndarray
     """
 
     return (np.array(array) - np.average(array)) / np.std(array)
 
 
-def exists(var):
+def exists(var) -> bool:
     """
     Check if a variable exists
 
@@ -150,6 +158,7 @@ def exists(var):
     """
 
     return var in globals()
+
 
 def para_interp(x, y):
     """

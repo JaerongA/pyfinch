@@ -1,7 +1,10 @@
 """
-Store key parameters for data analysis
+Store key parameters for data analysis.
+
 Only the parameters that are used routinely are listed here, but can be changed.
+
 Please note that the changed parameter affect values in other programs.
+
 If one were to play with a range of different parameters, take it out and use it as a local variable in a script.
 """
 

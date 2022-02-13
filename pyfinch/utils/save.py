@@ -41,9 +41,10 @@ def make_dir(parent_path, *dir_name, add_date=True):
     return save_path
 
 
-def save_fig(fig, save_path, title, fig_ext='.png', view_folder=False, dpi=None):
+def save_fig(fig, save_path, title, fig_ext='.png',
+             view_folder=False, dpi=None) -> None:
     """
-    Function for saving figures
+    Save figure
 
     Parameters
     ----------
@@ -81,7 +82,7 @@ def save_fig(fig, save_path, title, fig_ext='.png', view_folder=False, dpi=None)
         open_folder(save_path)
 
 
-def save2json(filename, data):
+def save2json(filename, data) -> None:
     """
     Save data in .json format
 

@@ -1,11 +1,11 @@
 """
-Helper functions for drawing figures
+Utility functions for drawing figures
 """
 
 
 def set_fig_size(w, h, ax=None):
     """
-    set size of a figure
+    Set figure size
 
     Parameters
     ----------

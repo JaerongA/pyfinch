@@ -6,7 +6,7 @@ import numpy as np
 
 def read_not_mat(notmat, unit='ms'):
     """
-    Read from .not.mat files generated from uisonganal
+    Read from .not.mat files generated from uisonganal.m
 
     Parameters
     ----------
@@ -103,14 +103,14 @@ def read_rhd(filename):
     return intan
 
 
-def load_song(dir, format='wav') -> dict:
+def load_song(data_path, format='wav') -> dict:
     """
     Obtain event info & serialized timestamps for song & neural analysis
     Search all files in the sub-directory and read from the associated .not.mat files to add the info into a single files
 
     Parameters
     ----------
-    dir : path
+    data_path : path
 
     format : str
         file extension (e.g., '.wav')
@@ -120,10 +120,10 @@ def load_song(dir, format='wav') -> dict:
     from ..utils.functions import list_files
 
     # List all audio files in the dir
-    if not dir.stem == 'Songs':
-        song_dir = [folder for folder in dir.rglob('Songs')]  # find the folder that has song data (not calls)
+    if not data_path.stem == 'Songs':
+        song_dir = [folder for folder in data_path.rglob('Songs')]  # find the folder that has song data (not calls)
     else:
-        song_dir = [dir]
+        song_dir = [data_path]
 
     audio_files = []
     for data_dir in song_dir:
@@ -190,13 +190,13 @@ def load_song(dir, format='wav') -> dict:
     return song_info
 
 
-def load_audio(dir, format='wav') -> dict:
+def load_audio(data_path, format='wav') -> dict:
     """
     Load and concatenate all audio files (e.g., .wav) in the input dir (path)
 
     Parameters
     ----------
-    dir : path
+    data_path : path
 
     format : str
         file extension (e.g., '.wav')
@@ -210,7 +210,7 @@ def load_audio(dir, format='wav') -> dict:
     from ..utils.functions import list_files
 
     # List all audio files in the dir
-    files = list_files(dir, format)
+    files = list_files(data_path, format)
 
     # Initialize
     timestamp_concat = np.array([], dtype=np.float64)
@@ -241,7 +241,7 @@ def load_audio(dir, format='wav') -> dict:
         'data': data_concat,
         'sample_rate': sample_rate
     }
-    file_name = dir / "AudioData.npy"
+    file_name = data_path / "AudioData.npy"
     np.save(file_name, audio_info)
 
     return audio_info
