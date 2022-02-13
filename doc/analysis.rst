@@ -1,8 +1,12 @@
 analysis package
 ================
 
-Submodules
-----------
+
+.. automodule:: analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 analysis.functions module
 -------------------------
@@ -48,14 +52,6 @@ analysis.waveform module
 ------------------------
 
 .. automodule:: analysis.waveform
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: analysis
    :members:
    :undoc-members:
    :show-inheritance:

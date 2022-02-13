@@ -9,8 +9,6 @@ Subpackages
 
    utils.intan
 
-Submodules
-----------
 
 utils.draw module
 -----------------

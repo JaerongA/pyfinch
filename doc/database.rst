@@ -1,9 +1,6 @@
 database package
 ================
 
-Submodules
-----------
-
 database.load module
 --------------------
 

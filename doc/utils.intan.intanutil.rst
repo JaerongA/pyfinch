@@ -1,9 +1,6 @@
 utils.intan.intanutil package
 =============================
 
-Submodules
-----------
-
 utils.intan.intanutil.data\_to\_result module
 ---------------------------------------------
 

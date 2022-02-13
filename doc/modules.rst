@@ -6,5 +6,4 @@ pyfinch
 
    analysis
    database
-   preprocessing
    utils

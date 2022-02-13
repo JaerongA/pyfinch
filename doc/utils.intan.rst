@@ -9,8 +9,6 @@ Subpackages
 
    utils.intan.intanutil
 
-Submodules
-----------
 
 utils.intan.load\_intan\_rhd\_format module
 -------------------------------------------
