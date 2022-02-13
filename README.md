@@ -1,3 +1,3 @@
-# pyfinch
+# pyfinchCancel changes
 
-python library for analyzing neural & bioacoustic signals from songbirds
+python library for analyzing neural & bioacoustics signals from songbirds
