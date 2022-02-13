@@ -1126,7 +1126,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	var hasCompare, subWindow,
 		doc = node ? node.ownerDocument || node : preferredDoc;
 
-	// Return early if docs is invalid or already selected
+	// Return early if doc is invalid or already selected
 	// Support: IE 11+, Edge 17 - 18+
 	// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
 	// two documents; shallow comparisons work.
@@ -3108,7 +3108,7 @@ jQuery.fn.extend( {
 			this,
 
 			// If this is a positional/relative selector, check membership in the returned set
-			// so $("p:first").is("p:last") won't return true for a docs with two "p".
+			// so $("p:first").is("p:last") won't return true for a doc with two "p".
 			typeof selector === "string" && rneedsContext.test( selector ) ?
 				jQuery( selector ) :
 				selector || [],

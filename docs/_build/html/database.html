@@ -96,26 +96,6 @@
 <dt class="sig sig-object py" id="database.load.ProjectLoader">
 <em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ProjectLoader</span></span><a class="reference internal" href="_modules/database/load.html#ProjectLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.load.ProjectLoader" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><a class="reference internal" href="#database.load.ProjectLoader.open_folder" title="database.load.ProjectLoader.open_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_folder</span></code></a></dt><dd><p>Open the directory in win explorer</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Methods</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 52%" />
-<col style="width: 48%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>load_db</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 <dl class="py property">
 <dt class="sig sig-object py" id="database.load.ProjectLoader.open_folder">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">open_folder</span></span><a class="headerlink" href="#database.load.ProjectLoader.open_folder" title="Permalink to this definition"></a></dt>
@@ -133,41 +113,6 @@
 <dt class="sig sig-object py" id="database.load.Database">
 <em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/load.html#Database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.load.Database" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#database.load.Database.col_names" title="database.load.Database.col_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">col_names</span></code></a>(table)</p></td>
-<td><p>Get column names</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#database.load.Database.create_col" title="database.load.Database.create_col"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_col</span></code></a>(table, col_name, type)</p></td>
-<td><p>Create a new column in table</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#database.load.Database.to_csv" title="database.load.Database.to_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_csv</span></code></a>(table[, add_date, open_folder])</p></td>
-<td><p>Convert database to csv</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#database.load.Database.to_dataframe" title="database.load.Database.to_dataframe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dataframe</span></code></a>(query)</p></td>
-<td><p>Convert to pandas dataframe according to the query statement</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#database.load.Database.update" title="database.load.Database.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(table, col_name[, condition_col, …])</p></td>
-<td><p>Update values to table</p></td>
-</tr>
-</tbody>
-</table>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 52%" />
-<col style="width: 48%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>execute</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 <dl class="py method">
 <dt class="sig sig-object py" id="database.load.Database.execute">
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/load.html#Database.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.load.Database.execute" title="Permalink to this definition"></a></dt>
@@ -237,21 +182,6 @@
 <dt class="sig sig-object py" id="database.load.DBInfo">
 <em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">DBInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/load.html#DBInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.load.DBInfo" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p class="rubric">Methods</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 66%" />
-<col style="width: 34%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>load_cluster_db</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>load_song_db</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 <dl class="py method">
 <dt class="sig sig-object py" id="database.load.DBInfo.load_cluster_db">
 <span class="sig-name descname"><span class="pre">load_cluster_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database/load.html#DBInfo.load_cluster_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#database.load.DBInfo.load_cluster_db" title="Permalink to this definition"></a></dt>

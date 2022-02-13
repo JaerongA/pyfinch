@@ -65,7 +65,7 @@
              
   <h1>Source code for analysis.load</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">load data (from .rhd, .txt, .wav, etc)</span>
+<span class="sd">Load data (from .rhd, .txt, .wav, etc)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -78,8 +78,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    notmat : path</span>
 <span class="sd">        Name of the .not.mat file (path)</span>
-<span class="sd">    unit : (optional)</span>
-<span class="sd">        milli-second by default. Convert to seconds when specified</span>
+<span class="sd">    unit : {&#39;ms&#39;, &#39;second&#39;}</span>
+<span class="sd">        timescale</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

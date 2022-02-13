@@ -2,15 +2,12 @@
 A collection of functions used for song & neural analysis
 """
 
-from typing import List, Dict, Optional
 
 import numpy as np
 import pandas as pd
+from typing import List, Dict, Optional
 
-from ..utils import save
-from ..utils.draw import remove_right_top
-from ..utils.functions import normalize, extract_ind, find_str, unique
-from ..utils.spect import spectrogram
+# from ..utils.functions import normalize, extract_ind, find_str, unique
 
 
 def get_note_type(syllables: str, song_db: Dict[str, str]) -> List[str]:
@@ -226,6 +223,10 @@ def get_psd_mat(data_path, save_path,
                 nfft=2 ** 10, fig_ext='.png'):
     """Get matrix of power spectral density"""
     from ..analysis.parameters import freq_range
+    from ..utils import save
+    from ..utils.draw import remove_right_top
+    from ..utils.spect import spectrogram
+    from ..utils.functions import normalize, extract_ind
     from .load import read_not_mat
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
@@ -358,6 +359,7 @@ def get_basis_psd(psd_list, notes, song_note=None, num_note_crit_basis=30):
     psd_list_basis : list
     note_list_basis : list
     """
+    from ..utils.functions import find_str, unique
 
     psd_dict = {}
     psd_list_basis = []
@@ -413,6 +415,8 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
 
     from ..analysis.parameters import pre_motor_win_size
     from ..database.load import ProjectLoader
+    from ..utils import save
+    from ..utils.functions import find_str, unique
 
     # Create a new database (song_syllable)
     db = ProjectLoader().load_db()
