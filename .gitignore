@@ -3,7 +3,6 @@ __pycache__/
 venv/
 .ipynb_checkpoints
 deafening
-docs
 build
 dist
 img
