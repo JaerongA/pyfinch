@@ -84,7 +84,7 @@
 <span id="analysis-package"></span><h1>analysis package<a class="headerlink" href="#module-analysis" title="Permalink to this headline"></a></h1>
 <section id="module-analysis.functions">
 <span id="analysis-functions-module"></span><h2>analysis.functions module<a class="headerlink" href="#module-analysis.functions" title="Permalink to this headline"></a></h2>
-<p>A collection of functions used for song &amp; neural analysis</p>
+<p>Functions used for song &amp; neural analysis</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.functions.get_note_type">
 <span class="sig-name descname"><span class="pre">get_note_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syllables</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">song_db</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/analysis/functions.html#get_note_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.get_note_type" title="Permalink to this definition"></a></dt>
@@ -112,7 +112,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>str</em><em> or </em><em>numpy array</em>) – </p></li>
+<li><p><strong>target</strong> (<em>str</em><em> or </em><em>np.ndarray</em>) – </p></li>
 <li><p><strong>intervals_ms</strong> (<em>int</em>) – syllable gap duration in ms</p></li>
 </ul>
 </dd>
@@ -290,15 +290,16 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.functions.get_bird_colors">
 <span class="sig-name descname"><span class="pre">get_bird_colors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birds</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="_modules/analysis/functions.html#get_bird_colors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.get_bird_colors" title="Permalink to this definition"></a></dt>
-<dd><p>Get separate colors for different birds
-:param birds:
-:type birds: list</p>
+<dd><p>Assign different colors for different birds in the input list</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>bird_color</strong></p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>birds</strong> (<em>list</em>) – </p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>bird_color</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -318,7 +319,7 @@
 <dd class="field-odd"><p><strong>spk_wf</strong> (<em>np.ndarray</em>) – spike waveform matrix (spike id x waveform)</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>aligned_wf</strong> – aligned spike waveforms</p>
+<dd class="field-even"><p><strong>aligned_wf</strong> – aligned spike waveforms (spike id x waveform)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -333,7 +334,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.load.read_not_mat">
 <span class="sig-name descname"><span class="pre">read_not_mat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">notmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ms'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/load.html#read_not_mat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.load.read_not_mat" title="Permalink to this definition"></a></dt>
-<dd><p>Read from .not.mat files generated from uisonganal</p>
+<dd><p>Read from .not.mat files generated from uisonganal.m</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -390,13 +391,13 @@ Data are returned in a dictionary, for future extensibility.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.load.load_song">
-<span class="sig-name descname"><span class="pre">load_song</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wav'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="_modules/analysis/load.html#load_song"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.load.load_song" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">load_song</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wav'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="_modules/analysis/load.html#load_song"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.load.load_song" title="Permalink to this definition"></a></dt>
 <dd><p>Obtain event info &amp; serialized timestamps for song &amp; neural analysis
 Search all files in the sub-directory and read from the associated .not.mat files to add the info into a single files</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dir</strong> (<em>path</em>) – </p></li>
+<li><p><strong>data_path</strong> (<em>path</em>) – </p></li>
 <li><p><strong>format</strong> (<em>str</em>) – file extension (e.g., ‘.wav’)</p></li>
 </ul>
 </dd>
@@ -405,12 +406,12 @@ Search all files in the sub-directory and read from the associated .not.mat file
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.load.load_audio">
-<span class="sig-name descname"><span class="pre">load_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wav'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="_modules/analysis/load.html#load_audio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.load.load_audio" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">load_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wav'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="_modules/analysis/load.html#load_audio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.load.load_audio" title="Permalink to this definition"></a></dt>
 <dd><p>Load and concatenate all audio files (e.g., .wav) in the input dir (path)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dir</strong> (<em>path</em>) – </p></li>
+<li><p><strong>data_path</strong> (<em>path</em>) – </p></li>
 <li><p><strong>format</strong> (<em>str</em>) – file extension (e.g., ‘.wav’)</p></li>
 </ul>
 </dd>
@@ -426,10 +427,10 @@ Search all files in the sub-directory and read from the associated .not.mat file
 </section>
 <section id="module-analysis.parameters">
 <span id="analysis-parameters-module"></span><h2>analysis.parameters module<a class="headerlink" href="#module-analysis.parameters" title="Permalink to this headline"></a></h2>
-<p>Store key parameters for data analysis
-Only the parameters that are used routinely are listed here, but can be changed.
-Please note that the changed parameter affect values in other programs.
-If one were to play with a range of different parameters, take it out and use it as a local variable in a script.</p>
+<p>Store key parameters for data analysis.</p>
+<p>Only the parameters that are used routinely are listed here, but can be changed.</p>
+<p>Please note that the changed parameter affect values in other programs.</p>
+<p>If one were to play with a range of different parameters, take it out and use it as a local variable in a script.</p>
 </section>
 <section id="module-analysis.song">
 <span id="analysis-song-module"></span><h2>analysis.song module<a class="headerlink" href="#module-analysis.song" title="Permalink to this headline"></a></h2>

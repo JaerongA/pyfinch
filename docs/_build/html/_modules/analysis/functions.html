@@ -65,15 +65,13 @@
              
   <h1>Source code for analysis.functions</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">A collection of functions used for song &amp; neural analysis</span>
+<span class="sd">Functions used for song &amp; neural analysis</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
-
-<span class="c1"># from ..utils.functions import normalize, extract_ind, find_str, unique</span>
 
 
 <div class="viewcode-block" id="get_note_type"><a class="viewcode-back" href="../../analysis.html#analysis.functions.get_note_type">[docs]</a><span class="k">def</span> <span class="nf">get_note_type</span><span class="p">(</span><span class="n">syllables</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">song_db</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -109,7 +107,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target : str or numpy array</span>
+<span class="sd">    target : str or np.ndarray</span>
 <span class="sd">    intervals_ms : int</span>
 <span class="sd">        syllable gap duration in ms</span>
 
@@ -678,7 +676,8 @@
 
 <div class="viewcode-block" id="get_bird_colors"><a class="viewcode-back" href="../../analysis.html#analysis.functions.get_bird_colors">[docs]</a><span class="k">def</span> <span class="nf">get_bird_colors</span><span class="p">(</span><span class="n">birds</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get separate colors for different birds</span>
+<span class="sd">    Assign different colors for different birds in the input list</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    birds : list</span>
@@ -697,7 +696,7 @@
     <span class="k">return</span> <span class="n">bird_color</span></div>
 
 
-<div class="viewcode-block" id="get_spectrogram"><a class="viewcode-back" href="../../analysis.html#analysis.functions.get_spectrogram">[docs]</a><span class="k">def</span> <span class="nf">get_spectrogram</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">freq_range</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">8000</span><span class="p">]):</span>
+<div class="viewcode-block" id="get_spectrogram"><a class="viewcode-back" href="../../analysis.html#analysis.functions.get_spectrogram">[docs]</a><span class="k">def</span> <span class="nf">get_spectrogram</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">freq_range</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">8000</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Calculate spectrogram&quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">..utils.spect</span> <span class="kn">import</span> <span class="n">spectrogram</span>
 
@@ -718,7 +717,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    aligned_wf : np.ndarray</span>
-<span class="sd">        aligned spike waveforms</span>
+<span class="sd">        aligned spike waveforms (spike id x waveform)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">aligned_wf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">spk_wf</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spk_wf</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
@@ -753,6 +752,7 @@
             <span class="n">aligned_wf</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_wf</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">aligned_wf</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">wf</span>
+
     <span class="k">return</span> <span class="n">aligned_wf</span></div>
 </pre></div>
 

@@ -113,11 +113,11 @@
 </section>
 <section id="module-utils.draw">
 <span id="utils-draw-module"></span><h2>utils.draw module<a class="headerlink" href="#module-utils.draw" title="Permalink to this headline"></a></h2>
-<p>Helper functions for drawing figures</p>
+<p>Utility functions for drawing figures</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.draw.set_fig_size">
 <span class="sig-name descname"><span class="pre">set_fig_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/draw.html#set_fig_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.draw.set_fig_size" title="Permalink to this definition"></a></dt>
-<dd><p>set size of a figure</p>
+<dd><p>Set figure size</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -165,20 +165,20 @@
 </section>
 <section id="module-utils.functions">
 <span id="utils-functions-module"></span><h2>utils.functions module<a class="headerlink" href="#module-utils.functions" title="Permalink to this headline"></a></h2>
-<p>A collection of utility functions used for analysis</p>
+<p>Utility functions used for analysis</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.functions.unique">
-<span class="sig-name descname"><span class="pre">unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/utils/functions.html#unique"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.functions.unique" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/utils/functions.html#unique"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.functions.unique" title="Permalink to this definition"></a></dt>
 <dd><p>Extract unique strings from the list in the order they appear</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>list</strong> (<em>list</em>) – </p>
+<dd class="field-odd"><p><strong>input_list</strong> (<em>list</em>) – </p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>list</strong> – list of unique, ordered string</p>
+<dd class="field-even"><p></p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list</p>
+<dd class="field-odd"><p>list of unique, ordered string</p>
 </dd>
 </dl>
 </dd></dl>
@@ -231,7 +231,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.functions.open_folder">
-<span class="sig-name descname"><span class="pre">open_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/functions.html#open_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.functions.open_folder" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">open_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="_modules/utils/functions.html#open_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.functions.open_folder" title="Permalink to this definition"></a></dt>
 <dd><p>Open the directory in win explorer</p>
 </dd></dl>
 
@@ -280,11 +280,22 @@
 <dt class="sig sig-object py" id="utils.functions.normalize">
 <span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="reference internal" href="_modules/utils/functions.html#normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.functions.normalize" title="Permalink to this definition"></a></dt>
 <dd><p>Normalizes an array by its average and sd</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>array</strong> (<em>np.ndarray</em>) – Input array</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.functions.exists">
-<span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/functions.html#exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.functions.exists" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="_modules/utils/functions.html#exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.functions.exists" title="Permalink to this definition"></a></dt>
 <dd><p>Check if a variable exists</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -347,8 +358,8 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.save.save_fig">
-<span class="sig-name descname"><span class="pre">save_fig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">view_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/save.html#save_fig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.save.save_fig" title="Permalink to this definition"></a></dt>
-<dd><p>Function for saving figures</p>
+<span class="sig-name descname"><span class="pre">save_fig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">view_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="_modules/utils/save.html#save_fig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.save.save_fig" title="Permalink to this definition"></a></dt>
+<dd><p>Save figure</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -365,7 +376,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.save.save2json">
-<span class="sig-name descname"><span class="pre">save2json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/save.html#save2json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.save.save2json" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">save2json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="_modules/utils/save.html#save2json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.save.save2json" title="Permalink to this definition"></a></dt>
 <dd><p>Save data in .json format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -380,12 +391,10 @@
 </section>
 <section id="module-utils.spect">
 <span id="utils-spect-module"></span><h2>utils.spect module<a class="headerlink" href="#module-utils.spect" title="Permalink to this headline"></a></h2>
-<p>functions for making spectrogram</p>
-<p>filters adapted from SciPy cookbook
-<a class="reference external" href="https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html">https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html</a>
-spectrogram adapted from code by Kyle Kastner and Tim Sainburg
+<p>Utility functions for drawing spectrograms</p>
+<p>Spectrogram adapted from code by Kyle Kastner and Tim Sainburg
 <a class="reference external" href="https://github.com/timsainb/python_spectrograms_and_inversion">https://github.com/timsainb/python_spectrograms_and_inversion</a></p>
-<p>Taken from vak library by David Nicholson <a class="reference external" href="https://github.com/NickleDave/vak">https://github.com/NickleDave/vak</a></p>
+<p>by David Nicholson <a class="reference external" href="https://github.com/NickleDave/vak">https://github.com/NickleDave/vak</a></p>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.spect.butter_bandpass">
 <span class="sig-name descname"><span class="pre">butter_bandpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lowcut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highcut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/spect.html#butter_bandpass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.spect.butter_bandpass" title="Permalink to this definition"></a></dt>
@@ -428,7 +437,7 @@ Default is None. If None, no transform is applied.</p></li>
 </section>
 <section id="module-utils.stats">
 <span id="utils-stats-module"></span><h2>utils.stats module<a class="headerlink" href="#module-utils.stats" title="Permalink to this headline"></a></h2>
-<p>Functions for statistical testing</p>
+<p>Utility functions for statistical testing</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.stats.get_sig">
 <span class="sig-name descname"><span class="pre">get_sig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pval</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/stats.html#get_sig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.stats.get_sig" title="Permalink to this definition"></a></dt>
