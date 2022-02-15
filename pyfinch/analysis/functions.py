@@ -10,13 +10,14 @@ import pandas as pd
 
 def get_note_type(syllables: str, song_db: Dict[str, str]) -> List[str]:
     """
-    Returns the category of the syllable (e.g, motif, intro notes, calls)
+    Return the category of the syllable (e.g, motif, intro notes, calls)
 
     Parameters
     ----------
     syllables : str
         syllable in single letter (e.g., 'a', 'i')
     song_db : Dict[str]
+        song database
 
     Returns
     -------
@@ -42,6 +43,7 @@ def demarcate_bout(target, intervals: int):
     Parameters
     ----------
     target : str or np.ndarray
+        target sequence to demarcate
     intervals_ms : int
         syllable gap duration in ms
 
@@ -66,7 +68,6 @@ def demarcate_bout(target, intervals: int):
 
         bout_labeling += '*'  # end with an asterisk
 
-
     elif isinstance(target, np.ndarray):
         if len(ind):
             for i, item in enumerate(ind):
@@ -85,13 +86,13 @@ def demarcate_bout(target, intervals: int):
 
 
 def unique_nb_notes_in_bout(note: str, bout: str) -> int:
-    """Returns the unique number of notes within a single bout string """
+    """Return the unique number of notes within a single bout string """
     nb_song_note_in_bout = len([note for note in note if note in bout])
     return nb_song_note_in_bout
 
 
 def total_nb_notes_in_bout(note: str, bout: str) -> int:
-    """Returns the total number of song notes from a list of song bouts"""
+    """Return the total number of song notes from a list of song bouts"""
     notes = []
     nb_notes = []
     for note in note:
@@ -409,8 +410,6 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
     -------
     pre_motor_spk_dict : dict
     """
-    # Get number of spikes from pre-motor window per note
-
     from ..analysis.parameters import pre_motor_win_size
     from ..database.load import ProjectLoader
     from ..utils import save
