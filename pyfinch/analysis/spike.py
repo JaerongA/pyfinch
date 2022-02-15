@@ -464,7 +464,7 @@ class ClusterInfo:
         self.spk_ts_jittered = spk_ts_jittered_list
 
     def get_jittered_corr(self) -> dict:
-        """Get correlogram based time-jittered spikes"""
+        """Get spike correlogram from time-jittered spikes"""
         from ..analysis.parameters import corr_shuffle
         from collections import defaultdict
 
@@ -496,8 +496,6 @@ class ClusterInfo:
         add_premotor_spk : bool
             add spikes from the premotor window for calculation
         """
-
-        import numpy as np
 
         isi_dict = {}
         list_zip = zip(self.onsets, self.offsets, self.spk_ts)
@@ -538,13 +536,14 @@ class ClusterInfo:
 
         return nb_files
 
-    def nb_bouts(self, song_note: str):
+    def nb_bouts(self, song_note: str) -> dict:
         """
-        Returns the number of bouts per context
+        Return the number of bouts per context
 
         Parameters
         ----------
         song_note : str
+            song motif syllables
 
         Returns
         -------
@@ -565,14 +564,14 @@ class ClusterInfo:
 
         return nb_bouts
 
-    def nb_motifs(self, motif: str):
+    def nb_motifs(self, motif: str) -> dict:
         """
-        Returns the number of motifs per context
+        Return the number of motifs per context
 
         Parameters
         ----------
         motf : str
-            Define song motif (e.g., 'abcd')
+            Song motif (e.g., 'abcd')
 
         Returns
         -------
@@ -592,7 +591,7 @@ class ClusterInfo:
 
         return nb_motifs
 
-    def get_note_info(self, note,
+    def get_note_info(self, target_note,
                       pre_buffer=0, post_buffer=0
                       ):
         """
@@ -601,18 +600,18 @@ class ClusterInfo:
 
         Parameters
         ----------
-        note : str
+        target_note : str
+            Get information from this note
         pre_buffer : int
-            amount of time buffer relative to the event onset (e.g., syllable onset)
+            Amount of time buffer relative to the event onset (e.g., syllable onset)
         post_buffer : int
-            amount of time buffer relative to the event offset (e.g., syllable onset)
+            Amount of time buffer relative to the event offset (e.g., syllable onset)
 
         Returns
         -------
         NoteInfo : class object
         """
         from ..utils.functions import find_str
-        import numpy as np
 
         syllables = ''.join(self.syllables)
         onsets = np.hstack(self.onsets)
@@ -623,13 +622,19 @@ class ClusterInfo:
         for i in range(len(self.contexts)):  # concatenate contexts
             contexts += self.contexts[i] * len(self.syllables[i])
 
-        ind = np.array(find_str(syllables, note))  # note indices
-        if not ind.any():  # note does not exist
+        ind = np.array(find_str(syllables, target_note))  # get note indices
+        if not ind.any():  # skil if the note does not exist
             return
+
         note_onsets = np.asarray(list(map(float, onsets[ind])))
         note_offsets = np.asarray(list(map(float, offsets[ind])))
         note_durations = np.asarray(list(map(float, durations[ind])))
         note_contexts = ''.join(np.asarray(list(contexts))[ind])
+
+        # Get the note that immeidately follows
+        next_notes = ''
+        for i in ind:
+            next_notes += syllables[i + 1]
 
         # Get spike info
         spk_ts = np.hstack(self.spk_ts)
@@ -640,7 +645,8 @@ class ClusterInfo:
 
         # Organize data into a dictionary
         note_info = {
-            'note': note,
+            'note': target_note,
+            'next_notes' : next_notes,
             'onsets': note_onsets,
             'offsets': note_offsets,
             'durations': note_durations,
@@ -674,14 +680,27 @@ class NoteInfo:
             setattr(self, key, note_dict[key])
 
         # Perform PLW (piecewise linear warping)
-        self.spk_ts_warp = self.piecewise_linear_warping()
+        self.spk_ts_warp = self._piecewise_linear_warping()
 
     def __repr__(self):
         return str([key for key in self.__dict__.keys()])
 
+    def select_index(self, index) -> None:
+        """
+        Select only the notes with the matching index
+
+        Parameters
+        ----------
+        index : np.array or list
+            Note indices to keep
+        """
+        zip(self.contexts, self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp)
+
+        pass
+
     def select_context(self, target_context : str,
                        keep_median_duration=True
-                       ):
+                       ) -> None:
         """
         Select one context
 
@@ -694,15 +713,15 @@ class NoteInfo:
             one may prefer to use this median to reduce variability when calculating pcc
             if set False, new median duration will be calculated using the selected notes
         """
-        import numpy as np
 
         zipped_list = \
-            list(zip(self.contexts, self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp))
+            list(zip(self.contexts, self.next_notes, self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp))
         zipped_list = list(filter(lambda x: x[0] == target_context, zipped_list))  # filter context
         unzipped_object = zip(*zipped_list)
-        self.contexts, self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp = \
+        self.contexts, self.next_notes, self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp = \
             list(unzipped_object)
         self.contexts = ''.join(self.contexts)
+        self.next_notes = ''.join(self.next_notes)
         self.onsets = np.array(self.onsets)
         self.offsets = np.array(self.offsets)
         self.durations = np.array(self.durations)
@@ -719,7 +738,6 @@ class NoteInfo:
         """
         from ..analysis.parameters import nb_note_crit
         from ..analysis.functions import get_spectral_entropy, get_spectrogram, find_str
-        import numpy as np
 
         entropy_mean = {}
         entropy_var = {}
@@ -748,10 +766,9 @@ class NoteInfo:
         else:  # spectral entropy (does not have entropy variance)
             return entropy_mean
 
-    def piecewise_linear_warping(self):
+    def _piecewise_linear_warping(self):
         """Perform piecewise linear warping per note"""
         import copy
-        import numpy as np
 
         note_spk_ts_warp_list = []
 
@@ -850,7 +867,7 @@ class NoteInfo:
 
     @property
     def nb_note(self) -> dict:
-        """Returns number of notes per context"""
+        """Return number of notes per context"""
         from ..utils.functions import find_str
 
         nb_note = {}
@@ -860,7 +877,7 @@ class NoteInfo:
 
     @property
     def mean_fr(self) -> dict:
-        """Returns mean firing rates for the note (includes pre-motor window) per context"""
+        """Return mean firing rates for the note (includes pre-motor window) per context"""
         from ..analysis.parameters import nb_note_crit, pre_motor_win_size
         from ..utils.functions import find_str
 
@@ -876,6 +893,12 @@ class NoteInfo:
                 note_fr[context1] = np.nan
         return note_fr
 
+    @property
+    def open_folder(self) -> None:
+        """Open the data folder"""
+        from ..utils.functions import open_folder
+
+        open_folder(self.path)
 
 class MotifInfo(ClusterInfo):
     """
@@ -1185,8 +1208,6 @@ class PethInfo():
         """
 
         # Set the dictionary values to class attributes
-        import numpy as np
-
         for key in peth_dict:
             setattr(self, key, peth_dict[key])
 
@@ -1375,8 +1396,6 @@ class BoutInfo(ClusterInfo):
     def __init__(self, path, channel_nb, unit_nb, song_note, format='rhd', *name, update=False):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
 
-        import numpy as np
-
         self.song_note = song_note
 
         if name:
@@ -1455,7 +1474,6 @@ class BoutInfo(ClusterInfo):
             'syllables': syllable_list,
             'contexts': context_list,
         }
-
         return bout_info
 
 
@@ -1553,7 +1571,6 @@ class BaselineInfo(ClusterInfo):
         """
 
         from ..analysis.parameters import spk_corr_parm
-        import numpy as np
 
         correlogram_all = super().get_correlogram(ref_spk_list, target_spk_list, normalize=False)
         correlogram = np.zeros(len(spk_corr_parm['time_bin']))
@@ -1565,10 +1582,9 @@ class BaselineInfo(ClusterInfo):
 
         return correlogram  # return class object for further analysis
 
-    def get_jittered_corr(self):
-
+    def get_jittered_corr(self) -> np.ndarray:
+        """Get spike correlogram from time-jittered spikes"""
         from ..analysis.parameters import corr_shuffle
-        import numpy as np
 
         correlogram_jitter = []
 
@@ -2004,11 +2020,10 @@ class ISI:
         Parameters
         ----------
 
-        isi : array
+        isi : np.ndarray
             Inter-spike interval array
         """
         from ..analysis.parameters import isi_win, isi_scale, isi_bin
-        import numpy as np
 
         self.data = isi
         self.hist, self.time_bin = np.histogram(np.log10(isi), bins=isi_bin)
