@@ -8,11 +8,3 @@ database.load module
    :members:
    :undoc-members:
    :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: database
-   :members:
-   :undoc-members:
-   :show-inheritance:

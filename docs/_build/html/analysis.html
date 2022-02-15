@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>analysis package &mdash; pyfinch  documentation</title>
@@ -37,7 +37,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">pyfinch</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">analysis package</a><ul>
@@ -87,13 +87,13 @@
 <p>Functions used for song &amp; neural analysis</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.functions.get_note_type">
-<span class="sig-name descname"><span class="pre">get_note_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syllables</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">song_db</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/analysis/functions.html#get_note_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.get_note_type" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the category of the syllable (e.g, motif, intro notes, calls)</p>
+<span class="sig-name descname"><span class="pre">get_note_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syllables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">song_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/analysis/functions.html#get_note_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.get_note_type" title="Permalink to this definition"></a></dt>
+<dd><p>Return the category of the syllable (e.g, motif, intro notes, calls)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>syllables</strong> (<em>str</em>) – syllable in single letter (e.g., ‘a’, ‘i’)</p></li>
-<li><p><strong>song_db</strong> (<em>Dict</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>song_db</strong> (<em>Dict</em><em>[</em><em>str</em><em>]</em>) – song database</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -107,12 +107,12 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.functions.demarcate_bout">
-<span class="sig-name descname"><span class="pre">demarcate_bout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/functions.html#demarcate_bout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.demarcate_bout" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">demarcate_bout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/functions.html#demarcate_bout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.demarcate_bout" title="Permalink to this definition"></a></dt>
 <dd><p>Demarcate the song bout with an asterisk (*) from a string of syllables</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>str</em><em> or </em><em>np.ndarray</em>) – </p></li>
+<li><p><strong>target</strong> (<em>str</em><em> or </em><em>np.ndarray</em>) – target sequence to demarcate</p></li>
 <li><p><strong>intervals_ms</strong> (<em>int</em>) – syllable gap duration in ms</p></li>
 </ul>
 </dd>
@@ -127,19 +127,19 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.functions.unique_nb_notes_in_bout">
-<span class="sig-name descname"><span class="pre">unique_nb_notes_in_bout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bout</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="_modules/analysis/functions.html#unique_nb_notes_in_bout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.unique_nb_notes_in_bout" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the unique number of notes within a single bout string</p>
+<span class="sig-name descname"><span class="pre">unique_nb_notes_in_bout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/analysis/functions.html#unique_nb_notes_in_bout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.unique_nb_notes_in_bout" title="Permalink to this definition"></a></dt>
+<dd><p>Return the unique number of notes within a single bout string</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.functions.total_nb_notes_in_bout">
-<span class="sig-name descname"><span class="pre">total_nb_notes_in_bout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bout</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="_modules/analysis/functions.html#total_nb_notes_in_bout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.total_nb_notes_in_bout" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the total number of song notes from a list of song bouts</p>
+<span class="sig-name descname"><span class="pre">total_nb_notes_in_bout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/analysis/functions.html#total_nb_notes_in_bout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.total_nb_notes_in_bout" title="Permalink to this definition"></a></dt>
+<dd><p>Return the total number of song notes from a list of song bouts</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.functions.get_nb_bouts">
-<span class="sig-name descname"><span class="pre">get_nb_bouts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">song_note</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bout_labeling</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/functions.html#get_nb_bouts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.get_nb_bouts" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_nb_bouts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">song_note</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bout_labeling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/functions.html#get_nb_bouts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.get_nb_bouts" title="Permalink to this definition"></a></dt>
 <dd><p>Count the number of bouts (only includes those having at least one song note)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -153,7 +153,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.functions.get_snr">
-<span class="sig-name descname"><span class="pre">get_snr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">avg_wf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_neural_trace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_crit</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/functions.html#get_snr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.get_snr" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_snr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">avg_wf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_neural_trace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_crit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/functions.html#get_snr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.get_snr" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate signal-to-noise ratio of sorted spike relative to the background neural trace</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -174,7 +174,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.functions.get_half_width">
-<span class="sig-name descname"><span class="pre">get_half_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wf_ts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_wf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/functions.html#get_half_width"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.get_half_width" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_half_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wf_ts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_wf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/functions.html#get_half_width"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.get_half_width" title="Permalink to this definition"></a></dt>
 <dd><p>Find the negative (or positive if inverted) deflection</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -277,19 +277,19 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.functions.normalize_from_pre">
-<span class="sig-name descname"><span class="pre">normalize_from_pre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/functions.html#normalize_from_pre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.normalize_from_pre" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">normalize_from_pre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/functions.html#normalize_from_pre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.normalize_from_pre" title="Permalink to this definition"></a></dt>
 <dd><p>Normalize post-deafening values using pre-deafening values</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.functions.add_pre_normalized_col">
-<span class="sig-name descname"><span class="pre">add_pre_normalized_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_name_to_normalize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_name_to_add</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pandas.core.frame.DataFrame</span><a class="reference internal" href="_modules/analysis/functions.html#add_pre_normalized_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.add_pre_normalized_col" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_pre_normalized_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_name_to_normalize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_name_to_add</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/analysis/functions.html#add_pre_normalized_col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.add_pre_normalized_col" title="Permalink to this definition"></a></dt>
 <dd><p>Normalize relative to pre-deafening mean</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.functions.get_bird_colors">
-<span class="sig-name descname"><span class="pre">get_bird_colors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birds</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="_modules/analysis/functions.html#get_bird_colors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.get_bird_colors" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_bird_colors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/analysis/functions.html#get_bird_colors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.get_bird_colors" title="Permalink to this definition"></a></dt>
 <dd><p>Assign different colors for different birds in the input list</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -306,13 +306,13 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.functions.get_spectrogram">
-<span class="sig-name descname"><span class="pre">get_spectrogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_range</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[300,</span> <span class="pre">8000]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/functions.html#get_spectrogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.get_spectrogram" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_spectrogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[300,</span> <span class="pre">8000]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/functions.html#get_spectrogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.get_spectrogram" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate spectrogram</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.functions.align_waveform">
-<span class="sig-name descname"><span class="pre">align_waveform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spk_wf</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="reference internal" href="_modules/analysis/functions.html#align_waveform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.align_waveform" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">align_waveform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spk_wf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/analysis/functions.html#align_waveform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.functions.align_waveform" title="Permalink to this definition"></a></dt>
 <dd><p>Shift the individual spike waveforms relative to the max location of the average waveform</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -391,7 +391,7 @@ Data are returned in a dictionary, for future extensibility.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.load.load_song">
-<span class="sig-name descname"><span class="pre">load_song</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wav'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="_modules/analysis/load.html#load_song"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.load.load_song" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">load_song</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wav'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/analysis/load.html#load_song"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.load.load_song" title="Permalink to this definition"></a></dt>
 <dd><p>Obtain event info &amp; serialized timestamps for song &amp; neural analysis
 Search all files in the sub-directory and read from the associated .not.mat files to add the info into a single files</p>
 <dl class="field-list simple">
@@ -406,7 +406,7 @@ Search all files in the sub-directory and read from the associated .not.mat file
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.load.load_audio">
-<span class="sig-name descname"><span class="pre">load_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wav'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="_modules/analysis/load.html#load_audio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.load.load_audio" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">load_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wav'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/analysis/load.html#load_audio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.load.load_audio" title="Permalink to this definition"></a></dt>
 <dd><p>Load and concatenate all audio files (e.g., .wav) in the input dir (path)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -437,7 +437,7 @@ Search all files in the sub-directory and read from the associated .not.mat file
 <p>Module for song analysis</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.song.SongInfo">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SongInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/song.html#SongInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.SongInfo" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SongInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/song.html#SongInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.SongInfo" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.song.SongInfo.list_files">
@@ -446,18 +446,18 @@ Search all files in the sub-directory and read from the associated .not.mat file
 
 <dl class="py property">
 <dt class="sig sig-object py" id="analysis.song.SongInfo.open_folder">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">open_folder</span></span><a class="headerlink" href="#analysis.song.SongInfo.open_folder" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">open_folder</span></span><a class="headerlink" href="#analysis.song.SongInfo.open_folder" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="analysis.song.SongInfo.nb_files">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">nb_files</span></span><em class="property"><span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#analysis.song.SongInfo.nb_files" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nb_files</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#analysis.song.SongInfo.nb_files" title="Permalink to this definition"></a></dt>
 <dd><p>Number of files</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.song.SongInfo.nb_bouts">
-<span class="sig-name descname"><span class="pre">nb_bouts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">song_note</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/song.html#SongInfo.nb_bouts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.SongInfo.nb_bouts" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">nb_bouts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">song_note</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/song.html#SongInfo.nb_bouts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.SongInfo.nb_bouts" title="Permalink to this definition"></a></dt>
 <dd><p>Return the number of bouts</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -486,7 +486,7 @@ only counts from bouts having at least one song note</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.song.SongInfo.song_call_prop">
-<span class="sig-name descname"><span class="pre">song_call_prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">song_note</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/song.html#SongInfo.song_call_prop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.SongInfo.song_call_prop" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">song_call_prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">song_note</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/song.html#SongInfo.song_call_prop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.SongInfo.song_call_prop" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the proportion of call notes per song bout
 Get the proportion per bout and then average
 only counts from bouts having at least one song note</p>
@@ -494,7 +494,7 @@ only counts from bouts having at least one song note</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.song.SongInfo.get_motif_info">
-<span class="sig-name descname"><span class="pre">get_motif_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">motif</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/song.html#SongInfo.get_motif_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.SongInfo.get_motif_info" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_motif_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">motif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/song.html#SongInfo.get_motif_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.SongInfo.get_motif_info" title="Permalink to this definition"></a></dt>
 <dd><p>Get information about song motif for the songs recorded in the session</p>
 </dd></dl>
 
@@ -502,7 +502,7 @@ only counts from bouts having at least one song note</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.song.BoutInfo">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">BoutInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">song_note</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/song.html#BoutInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.BoutInfo" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BoutInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">song_note</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/song.html#BoutInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.BoutInfo" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#analysis.song.SongInfo" title="analysis.song.SongInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">analysis.song.SongInfo</span></code></a></p>
 <p>Get song &amp; spike information for a song bout
 Child class of SongInfo</p>
@@ -515,7 +515,7 @@ Child class of SongInfo</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.song.MotifInfo">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MotifInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">motif_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motif</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/song.html#MotifInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.MotifInfo" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MotifInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">motif_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motif</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/song.html#MotifInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.MotifInfo" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Child class of SongInfo</p>
 <dl class="py method">
@@ -528,7 +528,7 @@ Child class of SongInfo</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.song.AudioInfo">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">AudioInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.wav'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/song.html#AudioInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.AudioInfo" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AudioInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.wav'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/song.html#AudioInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.AudioInfo" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Create an audio object from a single audio file (e.g., .wav)</p>
 <dl class="py method">
@@ -539,7 +539,7 @@ Child class of SongInfo</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="analysis.song.AudioInfo.open_folder">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">open_folder</span></span><a class="headerlink" href="#analysis.song.AudioInfo.open_folder" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">open_folder</span></span><a class="headerlink" href="#analysis.song.AudioInfo.open_folder" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -577,11 +577,8 @@ Child class of SongInfo</p>
 <li><p><strong>mode</strong> (<em>str</em>) – Select one from the following {‘spectral’, ‘’spectro_temporal’}</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>array of spectral entropy</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array of spectral entropy</p>
 </dd>
 </dl>
 </dd></dl>
@@ -590,7 +587,7 @@ Child class of SongInfo</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.song.FundamentalFreq">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">FundamentalFreq</span></span><a class="reference internal" href="_modules/analysis/song.html#FundamentalFreq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.FundamentalFreq" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FundamentalFreq</span></span><a class="reference internal" href="_modules/analysis/song.html#FundamentalFreq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.FundamentalFreq" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class object for analyzing fundamental frequency of a syllable</p>
 <dl class="py method">
@@ -609,7 +606,7 @@ Child class of SongInfo</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.song.SyllableNetwork">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SyllableNetwork</span></span><a class="reference internal" href="_modules/analysis/song.html#SyllableNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.SyllableNetwork" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SyllableNetwork</span></span><a class="reference internal" href="_modules/analysis/song.html#SyllableNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.song.SyllableNetwork" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 </dd></dl>
 
@@ -619,7 +616,7 @@ Child class of SongInfo</p>
 <p>Module for neural analysis</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.spike.get_isi">
-<span class="sig-name descname"><span class="pre">get_isi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spk_ts_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#get_isi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.get_isi" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_isi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spk_ts_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#get_isi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.get_isi" title="Permalink to this definition"></a></dt>
 <dd><p>Get inter-analysis interval of spikes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -636,7 +633,7 @@ Child class of SongInfo</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis.spike.get_peth">
-<span class="sig-name descname"><span class="pre">get_peth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evt_ts_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spk_ts_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_evt_buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#get_peth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.get_peth" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_peth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evt_ts_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spk_ts_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_evt_buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#get_peth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.get_peth" title="Permalink to this definition"></a></dt>
 <dd><p>Get peri-event histogram &amp; firing rates
 for song peth event_ts indicates syllable onset</p>
 </dd></dl>
@@ -692,11 +689,11 @@ for song peth event_ts indicates syllable onset</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.spike.ClusterInfo">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ClusterInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rhd'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ms'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ClusterInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rhd'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ms'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.ClusterInfo.list_files">
-<span class="sig-name descname"><span class="pre">list_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo.list_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo.list_files" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">list_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo.list_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo.list_files" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -717,13 +714,13 @@ e.g., 100 if you want to increase the data points by 100 fold</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.ClusterInfo.get_conditional_spk">
-<span class="sig-name descname"><span class="pre">get_conditional_spk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo.get_conditional_spk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo.get_conditional_spk" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_conditional_spk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo.get_conditional_spk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo.get_conditional_spk" title="Permalink to this definition"></a></dt>
 <dd><p>Get spike timestamps from different contexts</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.ClusterInfo.get_correlogram">
-<span class="sig-name descname"><span class="pre">get_correlogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref_spk_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_spk_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo.get_correlogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo.get_correlogram" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_correlogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref_spk_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_spk_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo.get_correlogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo.get_correlogram" title="Permalink to this definition"></a></dt>
 <dd><p>Get auto- or cross-correlogram</p>
 </dd></dl>
 
@@ -744,8 +741,8 @@ e.g., If set to 5, any integer values between -5 to 5 drawn from uniform distrib
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.ClusterInfo.get_jittered_corr">
-<span class="sig-name descname"><span class="pre">get_jittered_corr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo.get_jittered_corr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo.get_jittered_corr" title="Permalink to this definition"></a></dt>
-<dd><p>Get correlogram based time-jittered spikes</p>
+<span class="sig-name descname"><span class="pre">get_jittered_corr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo.get_jittered_corr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo.get_jittered_corr" title="Permalink to this definition"></a></dt>
+<dd><p>Get spike correlogram from time-jittered spikes</p>
 </dd></dl>
 
 <dl class="py method">
@@ -761,7 +758,7 @@ e.g., If set to 5, any integer values between -5 to 5 drawn from uniform distrib
 
 <dl class="py property">
 <dt class="sig sig-object py" id="analysis.spike.ClusterInfo.nb_files">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">nb_files</span></span><em class="property"><span class="pre">:</span> <span class="pre">dict</span></em><a class="headerlink" href="#analysis.spike.ClusterInfo.nb_files" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nb_files</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#analysis.spike.ClusterInfo.nb_files" title="Permalink to this definition"></a></dt>
 <dd><p>Return the number of files per context</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -775,11 +772,11 @@ e.g., If set to 5, any integer values between -5 to 5 drawn from uniform distrib
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.ClusterInfo.nb_bouts">
-<span class="sig-name descname"><span class="pre">nb_bouts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">song_note</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo.nb_bouts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo.nb_bouts" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the number of bouts per context</p>
+<span class="sig-name descname"><span class="pre">nb_bouts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">song_note</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo.nb_bouts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo.nb_bouts" title="Permalink to this definition"></a></dt>
+<dd><p>Return the number of bouts per context</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>song_note</strong> (<em>str</em>) – </p>
+<dd class="field-odd"><p><strong>song_note</strong> (<em>str</em>) – song motif syllables</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>nb_bouts</strong></p>
@@ -792,11 +789,11 @@ e.g., If set to 5, any integer values between -5 to 5 drawn from uniform distrib
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.ClusterInfo.nb_motifs">
-<span class="sig-name descname"><span class="pre">nb_motifs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">motif</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo.nb_motifs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo.nb_motifs" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the number of motifs per context</p>
+<span class="sig-name descname"><span class="pre">nb_motifs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">motif</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo.nb_motifs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo.nb_motifs" title="Permalink to this definition"></a></dt>
+<dd><p>Return the number of motifs per context</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>motf</strong> (<em>str</em>) – Define song motif (e.g., ‘abcd’)</p>
+<dd class="field-odd"><p><strong>motf</strong> (<em>str</em>) – Song motif (e.g., ‘abcd’)</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>nb_motifs</strong></p>
@@ -809,15 +806,15 @@ e.g., If set to 5, any integer values between -5 to 5 drawn from uniform distrib
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.ClusterInfo.get_note_info">
-<span class="sig-name descname"><span class="pre">get_note_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">note</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo.get_note_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo.get_note_info" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_note_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_note</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#ClusterInfo.get_note_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ClusterInfo.get_note_info" title="Permalink to this definition"></a></dt>
 <dd><p>Obtain a class object (NoteInfo) for individual note
 spikes will be collected from note onset (+- pre_buffer) to offset (+- post_buffer)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>note</strong> (<em>str</em>) – </p></li>
-<li><p><strong>pre_buffer</strong> (<em>int</em>) – amount of time buffer relative to the event onset (e.g., syllable onset)</p></li>
-<li><p><strong>post_buffer</strong> (<em>int</em>) – amount of time buffer relative to the event offset (e.g., syllable onset)</p></li>
+<li><p><strong>target_note</strong> (<em>str</em>) – Get information from this note</p></li>
+<li><p><strong>pre_buffer</strong> (<em>int</em>) – Amount of time buffer relative to the event onset (e.g., syllable onset)</p></li>
+<li><p><strong>post_buffer</strong> (<em>int</em>) – Amount of time buffer relative to the event offset (e.g., syllable onset)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -831,7 +828,7 @@ spikes will be collected from note onset (+- pre_buffer) to offset (+- post_buff
 
 <dl class="py property">
 <dt class="sig sig-object py" id="analysis.spike.ClusterInfo.open_folder">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">open_folder</span></span><em class="property"><span class="pre">:</span> <span class="pre">None</span></em><a class="headerlink" href="#analysis.spike.ClusterInfo.open_folder" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">open_folder</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#analysis.spike.ClusterInfo.open_folder" title="Permalink to this definition"></a></dt>
 <dd><p>Open the data folder</p>
 </dd></dl>
 
@@ -839,12 +836,23 @@ spikes will be collected from note onset (+- pre_buffer) to offset (+- post_buff
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.spike.NoteInfo">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">NoteInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">note_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#NoteInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.NoteInfo" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NoteInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">note_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#NoteInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.NoteInfo" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for storing information about a single note syllable and its associated spikes</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="analysis.spike.NoteInfo.select_index">
+<span class="sig-name descname"><span class="pre">select_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/analysis/spike.html#NoteInfo.select_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.NoteInfo.select_index" title="Permalink to this definition"></a></dt>
+<dd><p>Select only the notes with the matching index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>np.array</em><em> or </em><em>list</em>) – Note indices to keep</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.NoteInfo.select_context">
-<span class="sig-name descname"><span class="pre">select_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_context</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_median_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#NoteInfo.select_context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.NoteInfo.select_context" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">select_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_median_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/analysis/spike.html#NoteInfo.select_context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.NoteInfo.select_context" title="Permalink to this definition"></a></dt>
 <dd><p>Select one context</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -863,12 +871,6 @@ if set False, new median duration will be calculated using the selected notes</p
 <span class="sig-name descname"><span class="pre">get_entropy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spectral'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#NoteInfo.get_entropy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.NoteInfo.get_entropy" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate syllable entropy from all renditions and get the average
 Two versions : spectro-temporal entropy &amp; spectral entropy</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="analysis.spike.NoteInfo.piecewise_linear_warping">
-<span class="sig-name descname"><span class="pre">piecewise_linear_warping</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#NoteInfo.piecewise_linear_warping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.NoteInfo.piecewise_linear_warping" title="Permalink to this definition"></a></dt>
-<dd><p>Perform piecewise linear warping per note</p>
 </dd></dl>
 
 <dl class="py method">
@@ -903,27 +905,33 @@ This version limit the jittered timestamp within the motif window</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="analysis.spike.NoteInfo.nb_note">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">nb_note</span></span><em class="property"><span class="pre">:</span> <span class="pre">dict</span></em><a class="headerlink" href="#analysis.spike.NoteInfo.nb_note" title="Permalink to this definition"></a></dt>
-<dd><p>Returns number of notes per context</p>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nb_note</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#analysis.spike.NoteInfo.nb_note" title="Permalink to this definition"></a></dt>
+<dd><p>Return number of notes per context</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="analysis.spike.NoteInfo.mean_fr">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">mean_fr</span></span><em class="property"><span class="pre">:</span> <span class="pre">dict</span></em><a class="headerlink" href="#analysis.spike.NoteInfo.mean_fr" title="Permalink to this definition"></a></dt>
-<dd><p>Returns mean firing rates for the note (includes pre-motor window) per context</p>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean_fr</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#analysis.spike.NoteInfo.mean_fr" title="Permalink to this definition"></a></dt>
+<dd><p>Return mean firing rates for the note (includes pre-motor window) per context</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="analysis.spike.NoteInfo.open_folder">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">open_folder</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#analysis.spike.NoteInfo.open_folder" title="Permalink to this definition"></a></dt>
+<dd><p>Open the data folder</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.spike.MotifInfo">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MotifInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motif</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rhd'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#MotifInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.MotifInfo" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MotifInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motif</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rhd'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#MotifInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.MotifInfo" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#analysis.spike.ClusterInfo" title="analysis.spike.ClusterInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">analysis.spike.ClusterInfo</span></code></a></p>
 <p>Class object for motif information
 child class of ClusterInfo</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="analysis.spike.MotifInfo.open_folder">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">open_folder</span></span><a class="headerlink" href="#analysis.spike.MotifInfo.open_folder" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">open_folder</span></span><a class="headerlink" href="#analysis.spike.MotifInfo.open_folder" title="Permalink to this definition"></a></dt>
 <dd><p>Open the data folder</p>
 </dd></dl>
 
@@ -954,7 +962,7 @@ Based on each median note and gap durations</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.MotifInfo.jitter_spk_ts">
-<span class="sig-name descname"><span class="pre">jitter_spk_ts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shuffle_limit</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#MotifInfo.jitter_spk_ts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.MotifInfo.jitter_spk_ts" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">jitter_spk_ts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shuffle_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#MotifInfo.jitter_spk_ts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.MotifInfo.jitter_spk_ts" title="Permalink to this definition"></a></dt>
 <dd><p>Add a random temporal jitter to the spike
 This version limit the jittered timestamp within the motif window</p>
 </dd></dl>
@@ -983,7 +991,7 @@ This version limit the jittered timestamp within the motif window</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.spike.PethInfo">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">PethInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peth_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#PethInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.PethInfo" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PethInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peth_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#PethInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.PethInfo" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.PethInfo.get_fr">
@@ -1038,7 +1046,7 @@ This version limit the jittered timestamp within the motif window</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.spike.BoutInfo">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">BoutInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">song_note</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rhd'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#BoutInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.BoutInfo" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BoutInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">song_note</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rhd'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#BoutInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.BoutInfo" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#analysis.spike.ClusterInfo" title="analysis.spike.ClusterInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">analysis.spike.ClusterInfo</span></code></a></p>
 <p>Get song &amp; spike information for a song bout
 Child class of ClusterInfo</p>
@@ -1051,7 +1059,7 @@ Child class of ClusterInfo</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.spike.BaselineInfo">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">BaselineInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rhd'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#BaselineInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.BaselineInfo" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaselineInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rhd'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#BaselineInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.BaselineInfo" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#analysis.spike.ClusterInfo" title="analysis.spike.ClusterInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">analysis.spike.ClusterInfo</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.BaselineInfo.get_correlogram">
@@ -1062,8 +1070,8 @@ combine correlogram from undir and dir since no contextual differentiation is ne
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.BaselineInfo.get_jittered_corr">
-<span class="sig-name descname"><span class="pre">get_jittered_corr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#BaselineInfo.get_jittered_corr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.BaselineInfo.get_jittered_corr" title="Permalink to this definition"></a></dt>
-<dd><p>Get correlogram based time-jittered spikes</p>
+<span class="sig-name descname"><span class="pre">get_jittered_corr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/analysis/spike.html#BaselineInfo.get_jittered_corr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.BaselineInfo.get_jittered_corr" title="Permalink to this definition"></a></dt>
+<dd><p>Get spike correlogram from time-jittered spikes</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1074,7 +1082,7 @@ combine correlogram from undir and dir since no contextual differentiation is ne
 
 <dl class="py property">
 <dt class="sig sig-object py" id="analysis.spike.BaselineInfo.mean_fr">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">mean_fr</span></span><a class="headerlink" href="#analysis.spike.BaselineInfo.mean_fr" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean_fr</span></span><a class="headerlink" href="#analysis.spike.BaselineInfo.mean_fr" title="Permalink to this definition"></a></dt>
 <dd><p>Mean firing rates</p>
 </dd></dl>
 
@@ -1082,18 +1090,18 @@ combine correlogram from undir and dir since no contextual differentiation is ne
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.spike.AudioData">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">AudioData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.wav'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#AudioData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.AudioData" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AudioData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.wav'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#AudioData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.AudioData" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Create an object that has concatenated audio signal and its timestamps
 Get all data by default; specify time range if needed</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="analysis.spike.AudioData.open_folder">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">open_folder</span></span><a class="headerlink" href="#analysis.spike.AudioData.open_folder" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">open_folder</span></span><a class="headerlink" href="#analysis.spike.AudioData.open_folder" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.AudioData.extract">
-<span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_range</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#AudioData.extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.AudioData.extract" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#AudioData.extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.AudioData.extract" title="Permalink to this definition"></a></dt>
 <dd><p>Extracts data from the specified range</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1119,11 +1127,8 @@ Get all data by default; specify time range if needed</p>
 <li><p><strong>mode</strong> (<em>{'spectral'</em><em>, </em><em>''spectro_temporal'}</em>) – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>array of spectral entropy</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array of spectral entropy</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1132,7 +1137,7 @@ Get all data by default; specify time range if needed</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.spike.NeuralData">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">NeuralData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rhd'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#NeuralData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.NeuralData" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NeuralData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rhd'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#NeuralData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.NeuralData" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.NeuralData.load_neural_data">
@@ -1142,7 +1147,7 @@ Get all data by default; specify time range if needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.NeuralData.extract">
-<span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_range</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#NeuralData.extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.NeuralData.extract" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#NeuralData.extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.NeuralData.extract" title="Permalink to this definition"></a></dt>
 <dd><p>Extracts data from the specified range</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1160,29 +1165,26 @@ Get all data by default; specify time range if needed</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="analysis.spike.NeuralData.open_folder">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">open_folder</span></span><a class="headerlink" href="#analysis.spike.NeuralData.open_folder" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">open_folder</span></span><a class="headerlink" href="#analysis.spike.NeuralData.open_folder" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.spike.Correlogram">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Correlogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">correlogram</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#Correlogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.Correlogram" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Correlogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">correlogram</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#Correlogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.Correlogram" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for correlogram analysis</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis.spike.Correlogram.category">
-<span class="sig-name descname"><span class="pre">category</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">correlogram_jitter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="_modules/analysis/spike.html#Correlogram.category"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.Correlogram.category" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">category</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">correlogram_jitter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/analysis/spike.html#Correlogram.category"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.Correlogram.category" title="Permalink to this definition"></a></dt>
 <dd><p>Get bursting category of a neuron based on autocorrelogram</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>correlogram_jitter</strong> (<em>np.ndarray</em>) – Random time-jittered correlogram for baseline setting</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Category of a neuron (‘Bursting’ or ‘Nonbursting’)</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Category of a neuron (‘Bursting’ or ‘Nonbursting’)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1209,13 +1211,13 @@ Get all data by default; specify time range if needed</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.spike.BurstingInfo">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">BurstingInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ClassInfo</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">input_context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#BurstingInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.BurstingInfo" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BurstingInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ClassInfo</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">input_context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#BurstingInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.BurstingInfo" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis.spike.ISI">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ISI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">isi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#ISI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ISI" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ISI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">isi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis/spike.html#ISI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis.spike.ISI" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class object for inter-spike interval analysis</p>
 <dl class="py method">

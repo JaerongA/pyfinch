@@ -34,7 +34,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">pyfinch</a></li>
 </ul>
@@ -254,7 +254,7 @@
         <span class="kn">from</span> <span class="nn">..utils.draw</span> <span class="kn">import</span> <span class="n">remove_right_top</span>
 
         <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;PCC shuffle distribution&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=.</span><span class="mi">98</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;PCC shuffle distribution&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">.98</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">context</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">pcc_shuffle</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
             <span class="n">axis</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
             <span class="n">axis</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">pcc_shuffle</span><span class="p">[</span><span class="n">context</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
@@ -530,7 +530,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts_jittered</span> <span class="o">=</span> <span class="n">spk_ts_jittered_list</span></div>
 
 <div class="viewcode-block" id="ClusterInfo.get_jittered_corr"><a class="viewcode-back" href="../../analysis.html#analysis.spike.ClusterInfo.get_jittered_corr">[docs]</a>    <span class="k">def</span> <span class="nf">get_jittered_corr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get correlogram based time-jittered spikes&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Get spike correlogram from time-jittered spikes&quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">..analysis.parameters</span> <span class="kn">import</span> <span class="n">corr_shuffle</span>
         <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
@@ -562,8 +562,6 @@
 <span class="sd">        add_premotor_spk : bool</span>
 <span class="sd">            add spikes from the premotor window for calculation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
         <span class="n">isi_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">list_zip</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts</span><span class="p">)</span>
@@ -604,13 +602,14 @@
 
         <span class="k">return</span> <span class="n">nb_files</span>
 
-<div class="viewcode-block" id="ClusterInfo.nb_bouts"><a class="viewcode-back" href="../../analysis.html#analysis.spike.ClusterInfo.nb_bouts">[docs]</a>    <span class="k">def</span> <span class="nf">nb_bouts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">song_note</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="ClusterInfo.nb_bouts"><a class="viewcode-back" href="../../analysis.html#analysis.spike.ClusterInfo.nb_bouts">[docs]</a>    <span class="k">def</span> <span class="nf">nb_bouts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">song_note</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the number of bouts per context</span>
+<span class="sd">        Return the number of bouts per context</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        song_note : str</span>
+<span class="sd">            song motif syllables</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -631,14 +630,14 @@
 
         <span class="k">return</span> <span class="n">nb_bouts</span></div>
 
-<div class="viewcode-block" id="ClusterInfo.nb_motifs"><a class="viewcode-back" href="../../analysis.html#analysis.spike.ClusterInfo.nb_motifs">[docs]</a>    <span class="k">def</span> <span class="nf">nb_motifs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">motif</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="ClusterInfo.nb_motifs"><a class="viewcode-back" href="../../analysis.html#analysis.spike.ClusterInfo.nb_motifs">[docs]</a>    <span class="k">def</span> <span class="nf">nb_motifs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">motif</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the number of motifs per context</span>
+<span class="sd">        Return the number of motifs per context</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        motf : str</span>
-<span class="sd">            Define song motif (e.g., &#39;abcd&#39;)</span>
+<span class="sd">            Song motif (e.g., &#39;abcd&#39;)</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -658,7 +657,7 @@
 
         <span class="k">return</span> <span class="n">nb_motifs</span></div>
 
-<div class="viewcode-block" id="ClusterInfo.get_note_info"><a class="viewcode-back" href="../../analysis.html#analysis.spike.ClusterInfo.get_note_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_note_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">note</span><span class="p">,</span>
+<div class="viewcode-block" id="ClusterInfo.get_note_info"><a class="viewcode-back" href="../../analysis.html#analysis.spike.ClusterInfo.get_note_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_note_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_note</span><span class="p">,</span>
                       <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">post_buffer</span><span class="o">=</span><span class="mi">0</span>
                       <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -667,18 +666,18 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        note : str</span>
+<span class="sd">        target_note : str</span>
+<span class="sd">            Get information from this note</span>
 <span class="sd">        pre_buffer : int</span>
-<span class="sd">            amount of time buffer relative to the event onset (e.g., syllable onset)</span>
+<span class="sd">            Amount of time buffer relative to the event onset (e.g., syllable onset)</span>
 <span class="sd">        post_buffer : int</span>
-<span class="sd">            amount of time buffer relative to the event offset (e.g., syllable onset)</span>
+<span class="sd">            Amount of time buffer relative to the event offset (e.g., syllable onset)</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        NoteInfo : class object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">..utils.functions</span> <span class="kn">import</span> <span class="n">find_str</span>
-        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
         <span class="n">syllables</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllables</span><span class="p">)</span>
         <span class="n">onsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onsets</span><span class="p">)</span>
@@ -689,13 +688,19 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">)):</span>  <span class="c1"># concatenate contexts</span>
             <span class="n">contexts</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">syllables</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
-        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">find_str</span><span class="p">(</span><span class="n">syllables</span><span class="p">,</span> <span class="n">note</span><span class="p">))</span>  <span class="c1"># note indices</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">ind</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>  <span class="c1"># note does not exist</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">find_str</span><span class="p">(</span><span class="n">syllables</span><span class="p">,</span> <span class="n">target_note</span><span class="p">))</span>  <span class="c1"># get note indices</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ind</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>  <span class="c1"># skil if the note does not exist</span>
             <span class="k">return</span>
+
         <span class="n">note_onsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">onsets</span><span class="p">[</span><span class="n">ind</span><span class="p">])))</span>
         <span class="n">note_offsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">offsets</span><span class="p">[</span><span class="n">ind</span><span class="p">])))</span>
         <span class="n">note_durations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">durations</span><span class="p">[</span><span class="n">ind</span><span class="p">])))</span>
         <span class="n">note_contexts</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">contexts</span><span class="p">))[</span><span class="n">ind</span><span class="p">])</span>
+
+        <span class="c1"># Get the note that immeidately follows</span>
+        <span class="n">next_notes</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">:</span>
+            <span class="n">next_notes</span> <span class="o">+=</span> <span class="n">syllables</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
 
         <span class="c1"># Get spike info</span>
         <span class="n">spk_ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spk_ts</span><span class="p">)</span>
@@ -706,7 +711,8 @@
 
         <span class="c1"># Organize data into a dictionary</span>
         <span class="n">note_info</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;note&#39;</span><span class="p">:</span> <span class="n">note</span><span class="p">,</span>
+            <span class="s1">&#39;note&#39;</span><span class="p">:</span> <span class="n">target_note</span><span class="p">,</span>
+            <span class="s1">&#39;next_notes&#39;</span> <span class="p">:</span> <span class="n">next_notes</span><span class="p">,</span>
             <span class="s1">&#39;onsets&#39;</span><span class="p">:</span> <span class="n">note_onsets</span><span class="p">,</span>
             <span class="s1">&#39;offsets&#39;</span><span class="p">:</span> <span class="n">note_offsets</span><span class="p">,</span>
             <span class="s1">&#39;durations&#39;</span><span class="p">:</span> <span class="n">note_durations</span><span class="p">,</span>
@@ -740,14 +746,27 @@
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">note_dict</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 
         <span class="c1"># Perform PLW (piecewise linear warping)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts_warp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">piecewise_linear_warping</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts_warp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_piecewise_linear_warping</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">([</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
 
+<div class="viewcode-block" id="NoteInfo.select_index"><a class="viewcode-back" href="../../analysis.html#analysis.spike.NoteInfo.select_index">[docs]</a>    <span class="k">def</span> <span class="nf">select_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select only the notes with the matching index</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : np.array or list</span>
+<span class="sd">            Note indices to keep</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">onsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">durations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts_warp</span><span class="p">)</span>
+
+        <span class="k">pass</span></div>
+
 <div class="viewcode-block" id="NoteInfo.select_context"><a class="viewcode-back" href="../../analysis.html#analysis.spike.NoteInfo.select_context">[docs]</a>    <span class="k">def</span> <span class="nf">select_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_context</span> <span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                        <span class="n">keep_median_duration</span><span class="o">=</span><span class="kc">True</span>
-                       <span class="p">):</span>
+                       <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select one context</span>
 
@@ -760,15 +779,15 @@
 <span class="sd">            one may prefer to use this median to reduce variability when calculating pcc</span>
 <span class="sd">            if set False, new median duration will be calculated using the selected notes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
         <span class="n">zipped_list</span> <span class="o">=</span> \
-            <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">onsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">durations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts_warp</span><span class="p">))</span>
+            <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_notes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">onsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">durations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts_warp</span><span class="p">))</span>
         <span class="n">zipped_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">target_context</span><span class="p">,</span> <span class="n">zipped_list</span><span class="p">))</span>  <span class="c1"># filter context</span>
         <span class="n">unzipped_object</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">zipped_list</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">onsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">durations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts_warp</span> <span class="o">=</span> \
+        <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_notes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">onsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">durations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spk_ts_warp</span> <span class="o">=</span> \
             <span class="nb">list</span><span class="p">(</span><span class="n">unzipped_object</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">contexts</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_notes</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_notes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">onsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onsets</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">offsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offsets</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">durations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">durations</span><span class="p">)</span>
@@ -785,7 +804,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">..analysis.parameters</span> <span class="kn">import</span> <span class="n">nb_note_crit</span>
         <span class="kn">from</span> <span class="nn">..analysis.functions</span> <span class="kn">import</span> <span class="n">get_spectral_entropy</span><span class="p">,</span> <span class="n">get_spectrogram</span><span class="p">,</span> <span class="n">find_str</span>
-        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
         <span class="n">entropy_mean</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">entropy_var</span> <span class="o">=</span> <span class="p">{}</span>
@@ -814,10 +832,9 @@
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># spectral entropy (does not have entropy variance)</span>
             <span class="k">return</span> <span class="n">entropy_mean</span></div>
 
-<div class="viewcode-block" id="NoteInfo.piecewise_linear_warping"><a class="viewcode-back" href="../../analysis.html#analysis.spike.NoteInfo.piecewise_linear_warping">[docs]</a>    <span class="k">def</span> <span class="nf">piecewise_linear_warping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_piecewise_linear_warping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Perform piecewise linear warping per note&quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">copy</span>
-        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
         <span class="n">note_spk_ts_warp_list</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -832,7 +849,7 @@
             <span class="n">np</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">spk_ts_new</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">spk_ts_temp</span><span class="p">)</span>  <span class="c1"># replace original spk timestamps with warped timestamps</span>
             <span class="n">note_spk_ts_warp_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spk_ts_new</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">note_spk_ts_warp_list</span></div>
+        <span class="k">return</span> <span class="n">note_spk_ts_warp_list</span>
 
 <div class="viewcode-block" id="NoteInfo.get_note_peth"><a class="viewcode-back" href="../../analysis.html#analysis.spike.NoteInfo.get_note_peth">[docs]</a>    <span class="k">def</span> <span class="nf">get_note_peth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_warp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pre_evt_buffer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                       <span class="n">bin_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -916,7 +933,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nb_note</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns number of notes per context&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Return number of notes per context&quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">..utils.functions</span> <span class="kn">import</span> <span class="n">find_str</span>
 
         <span class="n">nb_note</span> <span class="o">=</span> <span class="p">{}</span>
@@ -926,7 +943,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mean_fr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns mean firing rates for the note (includes pre-motor window) per context&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Return mean firing rates for the note (includes pre-motor window) per context&quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">..analysis.parameters</span> <span class="kn">import</span> <span class="n">nb_note_crit</span><span class="p">,</span> <span class="n">pre_motor_win_size</span>
         <span class="kn">from</span> <span class="nn">..utils.functions</span> <span class="kn">import</span> <span class="n">find_str</span>
 
@@ -940,8 +957,14 @@
                     <span class="nb">round</span><span class="p">(</span><span class="n">note_spk</span><span class="p">[</span><span class="n">context1</span><span class="p">]</span> <span class="o">/</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">durations</span><span class="p">[</span><span class="n">find_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contexts</span><span class="p">,</span> <span class="n">context1</span><span class="p">)]</span> <span class="o">+</span> <span class="n">pre_motor_win_size</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="mf">1E3</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">note_fr</span><span class="p">[</span><span class="n">context1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-        <span class="k">return</span> <span class="n">note_fr</span></div>
+        <span class="k">return</span> <span class="n">note_fr</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">open_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Open the data folder&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">..utils.functions</span> <span class="kn">import</span> <span class="n">open_folder</span>
+
+        <span class="n">open_folder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MotifInfo"><a class="viewcode-back" href="../../analysis.html#analysis.spike.MotifInfo">[docs]</a><span class="k">class</span> <span class="nc">MotifInfo</span><span class="p">(</span><span class="n">ClusterInfo</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -1251,8 +1274,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Set the dictionary values to class attributes</span>
-        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">peth_dict</span><span class="p">:</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">peth_dict</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 
@@ -1441,8 +1462,6 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">channel_nb</span><span class="p">,</span> <span class="n">unit_nb</span><span class="p">,</span> <span class="n">song_note</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;rhd&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">channel_nb</span><span class="p">,</span> <span class="n">unit_nb</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">song_note</span> <span class="o">=</span> <span class="n">song_note</span>
 
         <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
@@ -1521,7 +1540,6 @@
             <span class="s1">&#39;syllables&#39;</span><span class="p">:</span> <span class="n">syllable_list</span><span class="p">,</span>
             <span class="s1">&#39;contexts&#39;</span><span class="p">:</span> <span class="n">context_list</span><span class="p">,</span>
         <span class="p">}</span>
-
         <span class="k">return</span> <span class="n">bout_info</span></div></div>
 
 
@@ -1619,7 +1637,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="kn">from</span> <span class="nn">..analysis.parameters</span> <span class="kn">import</span> <span class="n">spk_corr_parm</span>
-        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
         <span class="n">correlogram_all</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_correlogram</span><span class="p">(</span><span class="n">ref_spk_list</span><span class="p">,</span> <span class="n">target_spk_list</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">correlogram</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spk_corr_parm</span><span class="p">[</span><span class="s1">&#39;time_bin&#39;</span><span class="p">]))</span>
@@ -1631,10 +1648,9 @@
 
         <span class="k">return</span> <span class="n">correlogram</span>  <span class="c1"># return class object for further analysis</span></div>
 
-<div class="viewcode-block" id="BaselineInfo.get_jittered_corr"><a class="viewcode-back" href="../../analysis.html#analysis.spike.BaselineInfo.get_jittered_corr">[docs]</a>    <span class="k">def</span> <span class="nf">get_jittered_corr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
+<div class="viewcode-block" id="BaselineInfo.get_jittered_corr"><a class="viewcode-back" href="../../analysis.html#analysis.spike.BaselineInfo.get_jittered_corr">[docs]</a>    <span class="k">def</span> <span class="nf">get_jittered_corr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get spike correlogram from time-jittered spikes&quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">..analysis.parameters</span> <span class="kn">import</span> <span class="n">corr_shuffle</span>
-        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
         <span class="n">correlogram_jitter</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -2070,11 +2086,10 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 
-<span class="sd">        isi : array</span>
+<span class="sd">        isi : np.ndarray</span>
 <span class="sd">            Inter-spike interval array</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">..analysis.parameters</span> <span class="kn">import</span> <span class="n">isi_win</span><span class="p">,</span> <span class="n">isi_scale</span><span class="p">,</span> <span class="n">isi_bin</span>
-        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">isi</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_bin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">isi</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="n">isi_bin</span><span class="p">)</span>

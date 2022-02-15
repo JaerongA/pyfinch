@@ -18,7 +18,6 @@ def get_isi(spk_ts_list: list):
     isi : class object
         class object for inter-spike intervals
     """
-    import numpy as np
 
     isi = np.array([], dtype=np.float64)
     for spk in spk_ts_list:
@@ -35,8 +34,37 @@ def get_peth(evt_ts_list: list, spk_ts_list: list,
              ):
     """
     Get peri-event histogram & firing rates
-    for song peth event_ts indicates syllable onset
+
+    Parameters
+    ----------
+    evt_ts_list : list
+        Timestamps for behavioral events (e.g., syllable onset/offsets)
+    spk_ts_list : list
+        Spike timestamps
+    pre_evt_buffer : int, default=None
+        Size of buffer window prior to the first event (in ms)
+    duration : int, optional
+        Duration of the peth (in ms). Truncate the
+    bin_size : int, default=None
+        Time bin size
+    nb_bins : int, default=None
+        Number of bins
+
+    Returns
+    -------
+    peth : np.ndarray
+        Peri-event time histograms
+    time_bin : np.ndarray
+        Time bin vector
+    parameter : dict
+        Parameters for draw peth
+
+    Notes
+    -----
+    If pre_evt_buffer, bin_size, nb_bins not specified,
+    take values from analysis ..analysis.parameters
     """
+
     from ..analysis.parameters import peth_parm
     import copy
     import math
@@ -85,14 +113,14 @@ def get_peth(evt_ts_list: list, spk_ts_list: list,
     return peth, time_bin, parameter
 
 
-def get_pcc(fr_array):
+def get_pcc(fr_array: np.ndarray) -> dict:
     """
     Get pairwise cross-correlation
 
     Parameters
     ----------
     fr_array : np.ndarray
-        trial x time_bin
+        (trial x time_bin)
 
     Returns
     -------
@@ -121,10 +149,8 @@ def jitter_spk_ts(spk_ts_list, shuffle_limit, reproducible=True):
     Parameters
     ----------
     reproducible : bool
-        make the results reproducible by setting the seed as equal to index
+        Make the results reproducible by setting the seed as equal to index
     """
-
-    import numpy as np
 
     spk_ts_jittered_list = []
     for ind, spk_ts in enumerate(spk_ts_list):
@@ -157,12 +183,12 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
     p_sig : dict
         True if the pcc is significantly above the baseline
     """
+
     from ..analysis.parameters import peth_shuffle
     from collections import defaultdict
     from functools import partial
     import scipy.stats as stats
     import matplotlib.pyplot as plt
-    import numpy as np
 
     pcc_shuffle = defaultdict(partial(np.ndarray, 0))
     for i in range(peth_shuffle['shuffle_iter']):
@@ -229,7 +255,6 @@ class ClusterInfo:
             'ms' by default
         """
         from ..analysis.load import load_song
-        import numpy as np
 
         self.path = path
         if channel_nb:  # if a neuron was recorded
@@ -494,7 +519,7 @@ class ClusterInfo:
         Parameters
         ----------
         add_premotor_spk : bool
-            add spikes from the premotor window for calculation
+            Add spikes from the premotor window for calculation
         """
 
         isi_dict = {}
@@ -577,7 +602,7 @@ class ClusterInfo:
         -------
         nb_motifs : dict
         """
-        from ..analysis.functions import find_str
+        from ..utils.functions import find_str
 
         nb_motifs = {}
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
@@ -1058,7 +1083,6 @@ class MotifInfo(ClusterInfo):
         Based on each median note and gap durations
         """
         import copy
-        import numpy as np
         from ..utils.functions import extract_ind
 
         spk_ts_warped_list = []
@@ -1406,7 +1430,7 @@ class BoutInfo(ClusterInfo):
         # Load bout info
         file_name = self.path / "BoutInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
         if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
-            bout_info = self.load_bouts()
+            bout_info = self._load_bouts()
             # Save info dict as a numpy object
             np.save(file_name, bout_info)
         else:
@@ -1423,9 +1447,8 @@ class BoutInfo(ClusterInfo):
     def __len__(self):
         return len(self.files)
 
-    def load_bouts(self):
+    def _load_bouts(self):
         # Store values here
-        import numpy as np
         from ..utils.functions import find_str
 
         file_list = []
@@ -1483,7 +1506,6 @@ class BaselineInfo(ClusterInfo):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
 
         from ..analysis.parameters import baseline
-        import numpy as np
         from ..utils.functions import find_str
 
         if name:
@@ -1648,7 +1670,6 @@ class AudioData:
         ----------
         time_range : list
         """
-        import numpy as np
 
         start = time_range[0]
         end = time_range[-1]
@@ -1658,7 +1679,6 @@ class AudioData:
 
     def spectrogram(self, timestamp, data, freq_range=[300, 8000]):
         """Calculate spectrogram"""
-        import numpy as np
         from ..utils.spect import spectrogram
 
         spect, spect_freq, _ = spectrogram(data, self.sample_rate, freq_range=freq_range)
@@ -1881,7 +1901,6 @@ class Correlogram():
             normalize the correlogram
         """
         import matplotlib.pyplot as plt
-        import numpy as np
         from ..utils.draw import remove_right_top
         from ..utils.functions import myround
 
