@@ -2,7 +2,7 @@
 
 Python package for analyzing neural & bioacoustics signals from songbirds
 
-[![PyPi version](https://badgen.net/pypi/v/pip/)](https://pypi.org/project/pyfinch/)
+[![PyPi version](https://pypi.org/project/pyfinch/)](https://pypi.org/project/pyfinch/)
 
 ### Installation ###
 ```python
