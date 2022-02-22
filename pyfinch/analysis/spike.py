@@ -719,9 +719,13 @@ class NoteInfo:
         index : np.array or list
             Note indices to keep
         """
-        zip(self.contexts, self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp)
+        if isinstance(index, list):
+            index = np.array(index)
 
-        pass
+        self.contexts = ''.join(np.array(list(self.contexts))[index])
+        self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp \
+            = self.onsets[index], self.offsets[index], self.durations[index], self.spk_ts[index], self.spk_ts_warp[index]
+
 
     def select_context(self, target_context : str,
                        keep_median_duration=True
@@ -918,12 +922,12 @@ class NoteInfo:
                 note_fr[context1] = np.nan
         return note_fr
 
-    @property
-    def open_folder(self) -> None:
-        """Open the data folder"""
-        from ..utils.functions import open_folder
-
-        open_folder(self.path)
+    # @property
+    # def open_folder(self) -> None:
+    #     """Open the data folder"""
+    #     from ..utils.functions import open_folder
+    #
+    #     open_folder(self.path)
 
 class MotifInfo(ClusterInfo):
     """
@@ -953,12 +957,15 @@ class MotifInfo(ClusterInfo):
         for key in motif_info:
             setattr(self, key, motif_info[key])
 
-        if hasattr(self, 'spk_wf'):
-            self._delete_wf()
+        # Delete un-used attributes
+        self._delete_attr()
 
-    def _delete_wf(self):
-        """Delete waveform attribute (not needed for this)"""
+    def _delete_attr(self):
+        """Delete un-used attributes/methods inheritied from the parent class """
         delattr(self, 'spk_wf')
+        delattr(self, 'nb_spk')
+        delattr(self, 'file_start')
+        delattr(self, 'file_end')
 
     def _load_motif(self):
         """Load motif info"""
@@ -1035,20 +1042,34 @@ class MotifInfo(ClusterInfo):
 
         return motif_info
 
-    def _print_name(self):
-        print('')
-        print('Load motif {self.name}'.format(self=self))
+    def select_context(self, target_context : str,
+                       keep_median_duration=True
+                       ) -> None:
+        """
+        Select one context
 
-    def __len__(self):
-        return len(self.files)
+        Parameters
+        ----------
+        target_context : str
+            'U' or 'D'
+        keep_median_duration : bool
+            Normally medial note duration is calculated using all syllables regardless of the context.
 
-    def __repr__(self):  # print attributes
-        return str([key for key in self.__dict__.keys()])
+            One may prefer to use this median to reduce variability when calculating pcc.
 
-    @property
-    def open_folder(self):
-        from ..utils.functions import open_folder
-        open_folder(self.path)
+            IF set False, new median duration will be calculated using the selected notes.
+        """
+
+        zipped_list = \
+            list(zip(self.contexts, self.files, self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp, self.note_durations))
+
+        zipped_list = list(filter(lambda x: x[0] == target_context, zipped_list))  # filter context
+        unzipped_object = zip(*zipped_list)
+        self.contexts, self.files, self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp, self.note_durations = \
+            list(unzipped_object)
+
+        if not keep_median_duration:
+            _, self.median_durations = self.get_note_duration()
 
     def get_note_duration(self):
         """
@@ -1217,6 +1238,23 @@ class MotifInfo(ClusterInfo):
         peth_dict['contexts'] = self.contexts
         peth_dict['median_duration'] = self.median_durations.sum()
         return PethInfo(peth_dict)  # return peth class object for further analysis
+
+    def __len__(self):
+        return len(self.files)
+
+    def __repr__(self):  # print attributes
+        return str([key for key in self.__dict__.keys()])
+
+    @property
+    def open_folder(self):
+        """Open the data folder"""
+        from ..utils.functions import open_folder
+
+        open_folder(self.path)
+
+    def _print_name(self):
+        print('')
+        print('Load motif {self.name}'.format(self=self))
 
 
 class PethInfo():
@@ -1589,7 +1627,8 @@ class BaselineInfo(ClusterInfo):
     def get_correlogram(self, ref_spk_list, target_spk_list, normalize=False):
         """
         Override the parent method
-        combine correlogram from undir and dir since no contextual differentiation is needed in baseline
+
+        Combine correlogram from undir and dir since no contextual differentiation is needed in baseline
         """
 
         from ..analysis.parameters import spk_corr_parm
@@ -1636,6 +1675,7 @@ class BaselineInfo(ClusterInfo):
 class AudioData:
     """
     Create an object that has concatenated audio signal and its timestamps
+
     Get all data by default; specify time range if needed
     """
     def __init__(self, path, format='.wav', update=False):
@@ -1659,7 +1699,9 @@ class AudioData:
 
     @property
     def open_folder(self):
+        """Open the data folder"""
         from ..utils.functions import open_folder
+
         open_folder(self.path)
 
     def extract(self, time_range: list):
@@ -1810,7 +1852,7 @@ class NeuralData:
 
     @property
     def open_folder(self):
-
+        """Open the data folder"""
         from ..utils.functions import open_folder
 
         open_folder(self.path)
