@@ -766,7 +766,8 @@ class NoteInfo:
         Two versions : spectro-temporal entropy & spectral entropy
         """
         from ..analysis.parameters import nb_note_crit
-        from ..analysis.functions import get_spectral_entropy, get_spectrogram, find_str
+        from ..analysis.functions import get_spectral_entropy, get_spectrogram
+        from ..utils.functions import find_str
 
         entropy_mean = {}
         entropy_var = {}

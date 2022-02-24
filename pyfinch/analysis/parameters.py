@@ -8,8 +8,9 @@ Please note that the changed parameter affect values in other programs.
 If one were to play with a range of different parameters, take it out and use it as a local variable in a script.
 """
 
+from typing import Dict, List
+
 import numpy as np
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Sequence
 
 # Song parameters
 sample_rate: Dict[str, int] = {'rhd': 30000, 'cbin': 32000, 'recorder': 44000}  # sampling rate for audio signal (Hz)
@@ -22,7 +23,8 @@ note_color: Dict[str, List[str]] = {'Intro': ['k', 'gray', 'darkseagreen', 'oliv
                                     'Call': ['teal', 'darkgrey', 'indigo', 'darkgray', ]}
 
 bout_color: Dict[str, str] = {'i': 'k', 'j': 'gray', 'k': 'darkseagreen',  # intro notes
-                              'a': 'r', 'b': 'b', 'c': 'lime', 'd': 'm', 'e': 'brown', 'f': 'purple', 'g': 'saddlebrown',  # motif notes
+                              'a': 'r', 'b': 'b', 'c': 'lime', 'd': 'm', 'e': 'brown', 'f': 'purple',
+                              'g': 'saddlebrown',  # motif notes
                               'm': 'teal', 'n': 'darkgrey', 'l': 'darkgray', 'o': 'indigo',  # calls
                               'A': 'w'
                               }
