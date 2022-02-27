@@ -4,7 +4,10 @@ Plot raw data before further preprocessing (e.g., raw data, syllable durations, 
 
 
 def notestat(data_path=None, fig_name=None, save_path=None, save_fig=True,
-             fig_ext='.png', view_folder=True):
+             fig_ext='.png', view_folder=True,
+             dot_size=3, fig_size=[6, 5]
+             ):
+
     """
     Plot syllable durations to view distributions & detect outliers.
 
@@ -14,7 +17,7 @@ def notestat(data_path=None, fig_name=None, save_path=None, save_fig=True,
 
     Parameters
     ----------
-    data_path : path
+    data_path : str or path
         The folder that contains labeling .not.mat files.
     fig_name : str, optional
         Name of the figure. If not specified, defaults to the data path name.
@@ -26,6 +29,10 @@ def notestat(data_path=None, fig_name=None, save_path=None, save_fig=True,
         Figure file extension
     view_folder : bool, default=True
         Open the save folder
+    dot_size : int, default=3
+        Size of the scatter dot
+    fig_size : list
+        Size of the figure [width, height]
     """
 
     import math
@@ -54,12 +61,11 @@ def notestat(data_path=None, fig_name=None, save_path=None, save_fig=True,
     # Loop over all the audio files
     for file in audio_files:
         # Load the .not.mat file
-        print('Loading... ' + file.stem)
+        # print('Loading... ' + file.stem)
         notmat_file = file.with_suffix('.wav.not.mat')
 
         if not notmat_file.exists():
             raise FileNotFoundError
-            # raise("File doesn't exist!")
 
         birdID = file.name.split('_')[0]
         onsets, offsets, intervals, durations, syllables, context = read_not_mat(notmat_file)
@@ -75,11 +81,11 @@ def notestat(data_path=None, fig_name=None, save_path=None, save_fig=True,
     # Plot the results
     syllable_list = sorted(list(set(df['Syllable'].to_list())))
 
-    fig, ax = plt.subplots(figsize=(6, 5))
-    plt.title("{} - {}".format(birdID, data_path.name))
+    fig, ax = plt.subplots(figsize=fig_size)
+    plt.title(fig_name)
     sns.stripplot(ax=ax, data=df, x='Syllable', y='Duration',
                   order=syllable_list,
-                  s=4,
+                  s=dot_size,
                   palette=sns.color_palette(),
                   # set color category to be consistent regardless of the number of syllables
                   jitter=0.15)
@@ -97,9 +103,6 @@ def notestat(data_path=None, fig_name=None, save_path=None, save_fig=True,
     plt.ylabel('Duration (ms)')
     fig.tight_layout()
 
-    open_folder(data_path)
-    print("Done!")
-
     # Save the figure
     if save_fig:
         if not save_path:
@@ -109,3 +112,15 @@ def notestat(data_path=None, fig_name=None, save_path=None, save_fig=True,
         save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, view_folder=view_folder)
     else:
         plt.show()
+
+    # print("Done!")
+
+def rhd():
+    """
+    Plot .rhd files (intan)
+
+    Returns
+    -------
+
+    """
+    pass
