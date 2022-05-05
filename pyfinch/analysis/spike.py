@@ -169,7 +169,7 @@ def jitter_spk_ts(spk_ts_list, shuffle_limit, reproducible=True):
 
 def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
     """
-    Run statistical test to see if baseline pairwise cross-correlation obtained by spike time shuffling
+    Run statistical test to see if baseline pairwise cross-correlation obtained by spike time shuffling is significant
 
     Parameters
     ----------
@@ -205,7 +205,7 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
 
     for context in pcc_shuffle.keys():
         (_, p_val[context]) = stats.ttest_1samp(a=pcc_shuffle[context], popmean=PethInfo.pcc[context]['mean'],
-                                                nan_policy='omit', alternative='less')
+                                                nan_policy='omit', alternative='less')  # one-tailed t-test
     for context, value in p_val.items():
         p_sig[context] = value < alpha
 

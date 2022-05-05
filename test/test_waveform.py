@@ -1,4 +1,4 @@
-from pyfinch.analysis import get_half_width
+from pyfinch.analysis.functions import get_half_width
 from pyfinch.analysis import *
 from scipy import interpolate
 import numpy as np
