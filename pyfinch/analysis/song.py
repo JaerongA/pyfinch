@@ -91,7 +91,7 @@ class SongInfo:
 
     def nb_motifs(self, motif):
 
-        from ..analysis.functions import find_str
+        from ..utils.functions import find_str
 
         nb_motifs = {}
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
@@ -155,7 +155,7 @@ class SongInfo:
     def get_motif_info(self, motif: str):
         """Get information about song motif for the songs recorded in the session"""
 
-        from ..analysis.functions import find_str
+        from ..utils.functions import find_str
 
         # Store values here
         file_list = []
