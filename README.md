@@ -5,7 +5,7 @@ Python package for analyzing avian neural & bioacoustics signals
 
 ### Installation ###
 ```python
-pip install git+https://github.com/JaerongA/pyfinch.git
+pip install git+[https://github.com/JaerongA/pyfinch.git]
 ```
 
 Documentation available at : https://pyfinch.readthedocs.io
