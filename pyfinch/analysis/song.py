@@ -6,7 +6,9 @@ import numpy as np
 
 
 class SongInfo:
-
+    """
+    Class object for analyzing song data
+    """
     def __init__(self, path, name=None, update=False):
 
         from ..analysis.load import load_song
@@ -91,7 +93,7 @@ class SongInfo:
 
     def nb_motifs(self, motif):
 
-        from ..analysis.functions import find_str
+        from ..utils.functions import find_str
 
         nb_motifs = {}
         syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
@@ -155,7 +157,7 @@ class SongInfo:
     def get_motif_info(self, motif: str):
         """Get information about song motif for the songs recorded in the session"""
 
-        from ..analysis.functions import find_str
+        from ..utils.functions import find_str
 
         # Store values here
         file_list = []
@@ -206,6 +208,7 @@ class SongInfo:
 class BoutInfo(SongInfo):
     """
     Get song & spike information for a song bout
+
     Child class of SongInfo
     """
 
@@ -292,9 +295,6 @@ class BoutInfo(SongInfo):
 
 
 class MotifInfo:
-    """Child class of SongInfo"""
-
-    # def __init__(self, path, motif=None, name=None, update=False):
 
     def __init__(self, motif_info, motif):
 
