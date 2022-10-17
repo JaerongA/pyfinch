@@ -41,7 +41,7 @@ def make_dir(parent_path, *dir_name, add_date=True):
     return save_path
 
 
-def save_fig(fig, save_path, title, fig_ext='.png',
+def save_fig(fig, save_path, name, fig_ext='.png',
              view_folder=False, dpi=None) -> None:
     """
     Save figure
@@ -51,8 +51,8 @@ def save_fig(fig, save_path, title, fig_ext='.png',
     fig : figure object
     save_path : path
         directory path to save figures
-    title : str
-        title of the figure
+    name : str
+        name of the figure
     fig_ext : str
         figure extension (e.g., '.pdf' for vector output), '.png' by default
     view_folder : bool
@@ -74,7 +74,7 @@ def save_fig(fig, save_path, title, fig_ext='.png',
     matplotlib.rcParams['font.sans-serif'] = "Arial"
     matplotlib.rcParams['font.family'] = "sans-serif"
 
-    fig_name = save_path / (title + fig_ext)
+    fig_name = save_path / (name + fig_ext)
     plt.savefig(fig_name, transparent=True, dpi=dpi)
     plt.close(fig)
 
