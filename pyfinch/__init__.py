@@ -1,1 +1,1 @@
-import analysis, database, utils, preprocessing
+from . import analysis, database, utils, preprocessing

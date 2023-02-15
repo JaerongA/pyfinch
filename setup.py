@@ -18,7 +18,7 @@ with open("requirements.txt") as requirements_file:
 
 setup(
     name="pyfinch",
-    version="0.0.1",
+    version="0.1.2",
     description="A python package for analyzing neural & bioacoustics signals from songbirds",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -26,7 +26,7 @@ setup(
     author="Jaerong Ahn",
     author_email="jaerongahn@gmail.com",
     license="BSD 3-Clause License",
-    packages=find_packages(include=['pyfinch']),
+    packages=find_packages(),
     include_package_data=True,
     install_requires=install_requires,
     python_requires='>=3.7',
