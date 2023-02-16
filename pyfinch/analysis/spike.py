@@ -686,11 +686,11 @@ class ClusterInfo:
         return NoteInfo(note_info)  # return note info
 
     @property
-    def open_folder(self) -> None:
-        """Open the data folder"""
-        from ..utils.functions import open_folder
+    def open_folder(self):
 
-        open_folder(self.path)
+        from ..utils.functions import open_folder as _open_folder
+
+        return _open_folder(self.path)
 
 
 class NoteInfo:
@@ -922,13 +922,6 @@ class NoteInfo:
             else:
                 note_fr[context1] = np.nan
         return note_fr
-
-    # @property
-    # def open_folder(self) -> None:
-    #     """Open the data folder"""
-    #     from ..utils.functions import open_folder
-    #
-    #     open_folder(self.path)
 
 class MotifInfo(ClusterInfo):
     """
@@ -1844,10 +1837,10 @@ class AudioData:
 
     @property
     def open_folder(self):
-        """Open the data folder"""
-        from ..utils.functions import open_folder
 
-        open_folder(self.path)
+        from ..utils.functions import open_folder as _open_folder
+
+        return _open_folder(self.path)
 
     def extract(self, time_range: list):
         """
@@ -1933,12 +1926,14 @@ class NeuralData:
         file_list = []
 
         if self.format == 'cbin':
+            
             # if the neural data is in .cbin format, read from .mat files that has contains concatenated data
             # currently does not have files to extract data from .cbin files in python
             import scipy.io
             mat_file = list(self.path.glob(f'*Ch{self.channel_nb}(merged).mat'))[0]
             timestamp_concat = scipy.io.loadmat(mat_file)['t_amplifier'][0].astype(np.float64)
             amplifier_data_concat = scipy.io.loadmat(mat_file)['amplifier_data'][0].astype(np.float64)
+            
         else:
             # Loop through Intan .rhd files
             for file in files:
@@ -1997,10 +1992,10 @@ class NeuralData:
 
     @property
     def open_folder(self):
-        """Open the data folder"""
-        from ..utils.functions import open_folder
 
-        open_folder(self.path)
+        from ..utils.functions import open_folder as _open_folder
+
+        return _open_folder(self.path)
 
 class Correlogram():
     """

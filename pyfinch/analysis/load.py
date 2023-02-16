@@ -101,8 +101,8 @@ def read_rhd(filename):
 
     Data are returned in a dictionary, for future extensibility.
     """
-    from ..utils.intan.load_intan_rhd_format import read_rhd
-    intan = read_rhd(filename)
+    from ..utils.intan.load_intan_rhd_format import read_rhd as _read_rhd
+    intan = _read_rhd(filename)
     return intan
 
 

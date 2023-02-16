@@ -50,9 +50,9 @@ class SongInfo:
     @property
     def open_folder(self):
 
-        from ..utils.functions import open_folder
+        from ..utils.functions import open_folder as _open_folder
 
-        open_folder(self.path)
+        return _open_folder(self.path)
 
     @property
     def nb_files(self) -> int:
@@ -354,8 +354,10 @@ class AudioInfo:
 
     @property
     def open_folder(self):
-        from ..utils.functions import open_folder
-        open_folder(self.dir)
+
+        from ..utils.functions import open_folder as _open_folder
+
+        return _open_folder(self.path)
 
     def extract(self, time_range):
         """

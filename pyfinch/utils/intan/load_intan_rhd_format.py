@@ -191,7 +191,7 @@ def read_rhd(filename):
                     # print('{}% done...'.format(percent_done))
                     percent_done += print_increment
     else:
-        data = [];
+        data = []
 
     # Move variables to result struct.
     result = data_to_result(header, data, data_present)
