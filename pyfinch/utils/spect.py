@@ -14,7 +14,7 @@ def butter_bandpass(lowcut, highcut, fs, order=5):
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
-    b, a = butter(order, [low, high], btype='band')
+    b, a = butter(order, [low, high], btype="band")
     return b, a
 
 
@@ -26,8 +26,15 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
     return y
 
 
-def spectrogram(dat, samp_freq, fft_size=512, step_size=64, thresh=None, transform_type=None,
-                freq_range=None):
+def spectrogram(
+    dat,
+    samp_freq,
+    fft_size=512,
+    step_size=64,
+    thresh=None,
+    transform_type=None,
+    freq_range=None,
+):
     """creates a spectrogram
 
     Parameters
@@ -64,32 +71,34 @@ def spectrogram(dat, samp_freq, fft_size=512, step_size=64, thresh=None, transfo
     noverlap = fft_size - step_size
 
     if freq_range:
-        dat = butter_bandpass_filter(dat,
-                                     freq_range[0],
-                                     freq_range[1],
-                                     samp_freq)
+        dat = butter_bandpass_filter(dat, freq_range[0], freq_range[1], samp_freq)
 
     # below only take [:3] from return of specgram because we don't need the image
-    spect, freqbins, timebins = specgram(dat, fft_size, samp_freq, noverlap=noverlap)[:3]
+    spect, freqbins, timebins = specgram(dat, fft_size, samp_freq, noverlap=noverlap)[
+        :3
+    ]
 
     if transform_type:
-        if transform_type == 'log_spect':
+        if transform_type == "log_spect":
             spect /= spect.max()  # volume normalize to max 1
             spect = np.log10(spect)  # take log
             if thresh:
                 # I know this is weird, maintaining 'legacy' behavior
                 spect[spect < -thresh] = -thresh
-        elif transform_type == 'log_spect_plus_one':
+        elif transform_type == "log_spect_plus_one":
             spect = np.log10(spect + 1)
             if thresh:
                 spect[spect < thresh] = thresh
     else:
         if thresh:
-            spect[spect < thresh] = thresh  # set anything less than the threshold as the threshold
+            spect[
+                spect < thresh
+            ] = thresh  # set anything less than the threshold as the threshold
 
     if freq_range:
-        f_inds = np.nonzero((freqbins >= freq_range[0]) &
-                            (freqbins < freq_range[1]))[0]  # returns tuple
+        f_inds = np.nonzero((freqbins >= freq_range[0]) & (freqbins < freq_range[1]))[
+            0
+        ]  # returns tuple
         spect = spect[f_inds, :]
         freqbins = freqbins[f_inds]
 

@@ -25,7 +25,9 @@ def make_dir(parent_path, *dir_name, add_date=True):
     if dir_name:
         if add_date:
             today = date.today()
-            save_path = parent_path / dir_name[0] / today.strftime("%Y-%m-%d")  # 2020-07-04
+            save_path = (
+                parent_path / dir_name[0] / today.strftime("%Y-%m-%d")
+            )  # 2020-07-04
         else:
             save_path = parent_path / dir_name[0]
     else:
@@ -41,8 +43,7 @@ def make_dir(parent_path, *dir_name, add_date=True):
     return save_path
 
 
-def save_fig(fig, save_path, name, fig_ext='.png',
-             view_folder=False, dpi=None) -> None:
+def save_fig(fig, save_path, name, fig_ext=".png", view_folder=False, dpi=None) -> None:
     """
     Save figure
 
@@ -67,12 +68,12 @@ def save_fig(fig, save_path, name, fig_ext='.png',
 
     # Make the text in .pdf editable
     # pdf.fonttype : 42 # Output Type 3 (Type3) or Type 42 (TrueType)
-    matplotlib.rcParams['pdf.fonttype'] = 42
-    matplotlib.rcParams['ps.fonttype'] = 42
+    matplotlib.rcParams["pdf.fonttype"] = 42
+    matplotlib.rcParams["ps.fonttype"] = 42
 
     # Make Arial the default font
-    matplotlib.rcParams['font.sans-serif'] = "Arial"
-    matplotlib.rcParams['font.family'] = "sans-serif"
+    matplotlib.rcParams["font.sans-serif"] = "Arial"
+    matplotlib.rcParams["font.family"] = "sans-serif"
 
     fig_name = save_path / (name + fig_ext)
     plt.savefig(fig_name, transparent=True, dpi=dpi)
@@ -92,5 +93,6 @@ def save2json(filename, data) -> None:
     data : arr
     """
     import json
-    with open(filename, 'w') as f:
+
+    with open(filename, "w") as f:
         json.dump(data, f)

@@ -27,11 +27,14 @@ def get_isi(spk_ts_list: list):
     return isi
 
 
-def get_peth(evt_ts_list: list, spk_ts_list: list,
-             pre_evt_buffer=None, duration=None,
-             bin_size=None,
-             nb_bins=None
-             ):
+def get_peth(
+    evt_ts_list: list,
+    spk_ts_list: list,
+    pre_evt_buffer=None,
+    duration=None,
+    bin_size=None,
+    nb_bins=None,
+):
     """
     Get peri-event histogram & firing rates
 
@@ -72,13 +75,13 @@ def get_peth(evt_ts_list: list, spk_ts_list: list,
     parameter = peth_parm.copy()
 
     if pre_evt_buffer is None:
-        pre_evt_buffer = parameter['buffer']
+        pre_evt_buffer = parameter["buffer"]
 
     if bin_size is None:
-        bin_size = parameter['bin_size']
+        bin_size = parameter["bin_size"]
 
     if nb_bins is None:
-        nb_bins = parameter['nb_bins']
+        nb_bins = parameter["nb_bins"]
 
     time_bin = np.arange(0, nb_bins, bin_size) - pre_evt_buffer
     peth = np.zeros((len(evt_ts_list), nb_bins))  # nb of trials x nb of time bins
@@ -101,14 +104,15 @@ def get_peth(evt_ts_list: list, spk_ts_list: list,
         for spk in spk_ts_new:
             ind = math.ceil(spk / bin_size)
             # print("spk = {}, bin index = {}".format(spk, ind))  # for debugging
-            if ind < 0: raise Exception("Index out of bound")
+            if ind < 0:
+                raise Exception("Index out of bound")
             peth[trial_ind, ind] += 1
 
     # Truncate the array leaving out only the portion of our interest
     if duration:
         ind = np.where(((0 - pre_evt_buffer) <= time_bin) & (time_bin < duration))[0]
-        peth = peth[:, ind[0]:ind[-1]+1]
-        time_bin = time_bin[ind[0]:ind[-1]+1]
+        peth = peth[:, ind[0] : ind[-1] + 1]
+        time_bin = time_bin[ind[0] : ind[-1] + 1]
 
     return peth, time_bin, parameter
 
@@ -133,12 +137,16 @@ def get_pcc(fr_array: np.ndarray) -> dict:
     for ind1, fr1 in enumerate(fr_array):
         for ind2, fr2 in enumerate(fr_array):
             if ind2 > ind1:
-                if np.linalg.norm((fr1 - fr1.mean()), ord=1) * np.linalg.norm((fr2 - fr2.mean()), ord=1):
+                if np.linalg.norm((fr1 - fr1.mean()), ord=1) * np.linalg.norm(
+                    (fr2 - fr2.mean()), ord=1
+                ):
                     if not np.isnan(np.corrcoef(fr1, fr2)[0, 1]):
-                        pcc_arr = np.append(pcc_arr, np.corrcoef(fr1, fr2)[0, 1])  # get correlation coefficient
+                        pcc_arr = np.append(
+                            pcc_arr, np.corrcoef(fr1, fr2)[0, 1]
+                        )  # get correlation coefficient
 
-    pcc_dict['array'] = pcc_arr
-    pcc_dict['mean'] = round(pcc_arr.mean(), 3)
+    pcc_dict["array"] = pcc_arr
+    pcc_dict["mean"] = round(pcc_arr.mean(), 3)
     return pcc_dict
 
 
@@ -191,21 +199,25 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
     import matplotlib.pyplot as plt
 
     pcc_shuffle = defaultdict(partial(np.ndarray, 0))
-    for i in range(peth_shuffle['shuffle_iter']):
-        ClassObject.jitter_spk_ts(peth_shuffle['shuffle_limit'])
+    for i in range(peth_shuffle["shuffle_iter"]):
+        ClassObject.jitter_spk_ts(peth_shuffle["shuffle_limit"])
         pi_shuffle = ClassObject.get_note_peth(shuffle=True)  # peth object
         pi_shuffle.get_fr()  # get firing rates
         pi_shuffle.get_pcc()  # get pcc
         for context, pcc in pi_shuffle.pcc.items():
-            pcc_shuffle[context] = np.append(pcc_shuffle[context], pcc['mean'])
+            pcc_shuffle[context] = np.append(pcc_shuffle[context], pcc["mean"])
 
     # One-sample t-test (one-sided)
     p_val = {}
     p_sig = {}
 
     for context in pcc_shuffle.keys():
-        (_, p_val[context]) = stats.ttest_1samp(a=pcc_shuffle[context], popmean=PethInfo.pcc[context]['mean'],
-                                                nan_policy='omit', alternative='less')  # one-tailed t-test
+        (_, p_val[context]) = stats.ttest_1samp(
+            a=pcc_shuffle[context],
+            popmean=PethInfo.pcc[context]["mean"],
+            nan_policy="omit",
+            alternative="less",
+        )  # one-tailed t-test
     for context, value in p_val.items():
         p_sig[context] = value < alpha
 
@@ -214,16 +226,20 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
         from ..utils.draw import remove_right_top
 
         fig, axes = plt.subplots(1, 2, figsize=(6, 3))
-        plt.suptitle('PCC shuffle distribution', y=.98, fontsize=10)
+        plt.suptitle("PCC shuffle distribution", y=0.98, fontsize=10)
         for axis, context in zip(axes, pcc_shuffle.keys()):
             axis.set_title(context)
-            axis.hist(pcc_shuffle[context], color='k')
+            axis.hist(pcc_shuffle[context], color="k")
             axis.set_xlim([-0.1, 0.6])
-            axis.set_xlabel('PCC'), axis.set_ylabel('Count')
+            axis.set_xlabel("PCC"), axis.set_ylabel("Count")
             if p_sig[context]:
-                axis.axvline(x=PethInfo.pcc[context]['mean'], color='r', linewidth=1, ls='--')
+                axis.axvline(
+                    x=PethInfo.pcc[context]["mean"], color="r", linewidth=1, ls="--"
+                )
             else:
-                axis.axvline(x=PethInfo.pcc[context]['mean'], color='k', linewidth=1, ls='--')
+                axis.axvline(
+                    x=PethInfo.pcc[context]["mean"], color="k", linewidth=1, ls="--"
+                )
             remove_right_top(axis)
         plt.tight_layout()
         plt.show()
@@ -232,8 +248,16 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
 
 
 class ClusterInfo:
-
-    def __init__(self, path, channel_nb, unit_nb, format='rhd', *name, update=False, time_unit='ms'):
+    def __init__(
+        self,
+        path,
+        channel_nb,
+        unit_nb,
+        format="rhd",
+        *name,
+        update=False,
+        time_unit="ms",
+    ):
         """
         Load information about cluster
 
@@ -259,11 +283,11 @@ class ClusterInfo:
         self.path = path
         if channel_nb:  # if a neuron was recorded
             if len(str(channel_nb)) == 1:
-                self.channel_nb = 'Ch0' + str(channel_nb)
+                self.channel_nb = "Ch0" + str(channel_nb)
             elif len(str(channel_nb)) == 2:
-                self.channel_nb = 'Ch' + str(channel_nb)
+                self.channel_nb = "Ch" + str(channel_nb)
         else:
-            self.channel_nb = 'Ch'
+            self.channel_nb = "Ch"
 
         self.unit_nb = unit_nb
         self.format = format
@@ -276,8 +300,12 @@ class ClusterInfo:
         self._print_name()
 
         # Load events
-        file_name = self.path / "ClusterInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
-        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+        file_name = self.path / "ClusterInfo_{}_Cluster{}.npy".format(
+            self.channel_nb, self.unit_nb
+        )
+        if (
+            update or not file_name.exists()
+        ):  # if .npy doesn't exist or want to update the file
             song_info = load_song(self.path)
             # Save cluster_info as a numpy object
             np.save(file_name, song_info)
@@ -296,15 +324,15 @@ class ClusterInfo:
         return str([key for key in self.__dict__.keys()])
 
     def _print_name(self) -> None:
-        print('')
-        print('Load cluster {self.name}'.format(self=self))
+        print("")
+        print("Load cluster {self.name}".format(self=self))
 
     def list_files(self, ext: str):
         from ..utils.functions import list_files
 
         return list_files(self.path, ext)
 
-    def _load_spk(self, time_unit, delimiter='\t') -> None:
+    def _load_spk(self, time_unit, delimiter="\t") -> None:
         """
         Load spike information
 
@@ -320,13 +348,15 @@ class ClusterInfo:
             sets spk_wf, spk_ts, nb_spk as attributes
         """
 
-        spk_txt_file = list(self.path.glob('*' + self.channel_nb + '(merged).txt'))
+        spk_txt_file = list(self.path.glob("*" + self.channel_nb + "(merged).txt"))
         if not spk_txt_file:
             print("spk text file doesn't exist !")
             return
 
         spk_txt_file = spk_txt_file[0]
-        spk_info = np.loadtxt(spk_txt_file, delimiter=delimiter, skiprows=1)  # skip header
+        spk_info = np.loadtxt(
+            spk_txt_file, delimiter=delimiter, skiprows=1
+        )  # skip header
 
         # Select only the unit (there could be multiple isolated units in the same file)
         if self.unit_nb:  # if the unit number is specified
@@ -340,21 +370,20 @@ class ClusterInfo:
         self.nb_spk = nb_spk  # the number of spikes
 
         # Units are in second by default, but convert to  millisecond with the argument
-        if time_unit == 'ms':
-            spk_ts *= 1E3
+        if time_unit == "ms":
+            spk_ts *= 1e3
 
         # Output analysis timestamps per file in a list
         spk_list = []
         for file_start, file_end in zip(self.file_start, self.file_end):
-            spk_list.append(spk_ts[np.where((spk_ts >= file_start) & (spk_ts <= file_end))])
+            spk_list.append(
+                spk_ts[np.where((spk_ts >= file_start) & (spk_ts <= file_end))]
+            )
 
         self.spk_ts = spk_list  # analysis timestamps in ms
         # print("spk_ts, spk_wf, nb_spk attributes added")
 
-    def analyze_waveform(self,
-                         align_wf=True,
-                         interpolate=True, interp_factor=None
-                         ):
+    def analyze_waveform(self, align_wf=True, interpolate=True, interp_factor=None):
         """
         Perform waveform analysis
 
@@ -377,49 +406,80 @@ class ClusterInfo:
         def _get_spk_profile(wf_ts, avg_wf, interpolate=interpolate):
             spk_height = np.abs(np.max(avg_wf) - np.min(avg_wf))  # in microseconds
             if interpolate:
-                spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
-                        (1 / sample_rate[self.format]) / interp_factor) * 1E6  # in microseconds
+                spk_width = (
+                    abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1))
+                    * ((1 / sample_rate[self.format]) / interp_factor)
+                    * 1e6
+                )  # in microseconds
             else:
-                spk_width = abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1)) * (
-                        1 / sample_rate[self.format]) * 1E6  # in microseconds
-            deflection_range, half_width = get_half_width(wf_ts, avg_wf)  # get the half width from the peak deflection
+                spk_width = (
+                    abs(((np.argmax(avg_wf) - np.argmin(avg_wf)) + 1))
+                    * (1 / sample_rate[self.format])
+                    * 1e6
+                )  # in microseconds
+            deflection_range, half_width = get_half_width(
+                wf_ts, avg_wf
+            )  # get the half width from the peak deflection
             return spk_height, spk_width, half_width, deflection_range
 
         if not interp_factor:
             from ..analysis.parameters import interp_factor
+
             interp_factor = interp_factor
 
         self.avg_wf = np.nanmean(self.spk_wf, axis=0)
-        self.wf_ts = np.arange(0, self.avg_wf.shape[0]) / sample_rate[self.format] * 1E3  # x-axis in ms
+        self.wf_ts = (
+            np.arange(0, self.avg_wf.shape[0]) / sample_rate[self.format] * 1e3
+        )  # x-axis in ms
 
         if interpolate:  # interpolate the waveform to increase sampling frequency
             from scipy import interpolate
 
             f = interpolate.interp1d(self.wf_ts, self.avg_wf)
-            wf_ts_interp = np.arange(0, self.wf_ts[-1], ((self.wf_ts[1] - self.wf_ts[0]) * (1 / interp_factor)))
+            wf_ts_interp = np.arange(
+                0,
+                self.wf_ts[-1],
+                ((self.wf_ts[1] - self.wf_ts[0]) * (1 / interp_factor)),
+            )
             assert (np.diff(wf_ts_interp)[0] * interp_factor) == np.diff(self.wf_ts)[0]
-            avg_wf_interp = f(wf_ts_interp)  # use interpolation function returned by `interp1d`
+            avg_wf_interp = f(
+                wf_ts_interp
+            )  # use interpolation function returned by `interp1d`
 
             # Replace the original value with interpolated ones
             self.wf_ts_interp = wf_ts_interp
             self.avg_wf_interp = avg_wf_interp
 
-            spk_height, spk_width, half_width, deflection_range = _get_spk_profile(wf_ts_interp, avg_wf_interp)
+            spk_height, spk_width, half_width, deflection_range = _get_spk_profile(
+                wf_ts_interp, avg_wf_interp
+            )
         else:
-            spk_height, spk_width, half_width, deflection_range = _get_spk_profile(self.wf_ts, self.avg_wf)
+            spk_height, spk_width, half_width, deflection_range = _get_spk_profile(
+                self.wf_ts, self.avg_wf
+            )
 
         self.spk_height = round(spk_height, 3)  # in microvolts
         self.spk_width = round(spk_width, 3)  # in microseconds
         self.half_width = half_width
-        self.deflection_range = deflection_range  # the range where half width was calculated
+        self.deflection_range = (
+            deflection_range  # the range where half width was calculated
+        )
 
         # print("avg_wf, spk_height (uv), spk_width (us), wf_ts (ms) added")
 
     def get_conditional_spk(self) -> dict:
         """Get spike timestamps from different contexts"""
         conditional_spk = {}
-        conditional_spk['U'] = [spk_ts for spk_ts, context in zip(self.spk_ts, self.contexts) if context == 'U']
-        conditional_spk['D'] = [spk_ts for spk_ts, context in zip(self.spk_ts, self.contexts) if context == 'D']
+        conditional_spk["U"] = [
+            spk_ts
+            for spk_ts, context in zip(self.spk_ts, self.contexts)
+            if context == "U"
+        ]
+        conditional_spk["D"] = [
+            spk_ts
+            for spk_ts, context in zip(self.spk_ts, self.contexts)
+            if context == "D"
+        ]
 
         return conditional_spk
 
@@ -432,24 +492,46 @@ class ClusterInfo:
 
         for social_context in set(self.contexts):
             # Compute spk correlogram
-            corr_temp = np.zeros(len(spk_corr_parm['time_bin']))
-            for ref_spks, target_spks, context in zip(ref_spk_list, target_spk_list, self.contexts):
+            corr_temp = np.zeros(len(spk_corr_parm["time_bin"]))
+            for ref_spks, target_spks, context in zip(
+                ref_spk_list, target_spk_list, self.contexts
+            ):
 
                 if context == social_context:
                     for ref_spk in ref_spks:
                         for target_spk in target_spks:
-                            diff = target_spk - ref_spk  # time difference between two spikes
-                            if (diff) and (diff <= spk_corr_parm['lag'] and diff >= -spk_corr_parm['lag']):
+                            diff = (
+                                target_spk - ref_spk
+                            )  # time difference between two spikes
+                            if (diff) and (
+                                diff <= spk_corr_parm["lag"]
+                                and diff >= -spk_corr_parm["lag"]
+                            ):
                                 if diff < 0:
-                                    ind = np.where(spk_corr_parm['time_bin'] <= -math.ceil(abs(diff)))[0][-1]
+                                    ind = np.where(
+                                        spk_corr_parm["time_bin"]
+                                        <= -math.ceil(abs(diff))
+                                    )[0][-1]
                                 elif diff > 0:
-                                    ind = np.where(spk_corr_parm['time_bin'] >= math.ceil(diff))[0][0]
+                                    ind = np.where(
+                                        spk_corr_parm["time_bin"] >= math.ceil(diff)
+                                    )[0][0]
                                 # print("diff = {}, bin index = {}".format(diff, spk_corr_parm['time_bin'][ind]))  # for debugging
                                 corr_temp[ind] += 1
 
                     # Make sure the array is symmetrical
-                    first_half = np.fliplr([corr_temp[:int((spk_corr_parm['lag'] / spk_corr_parm['bin_size']))]])[0]
-                    second_half = corr_temp[int((spk_corr_parm['lag'] / spk_corr_parm['bin_size'])) + 1:]
+                    first_half = np.fliplr(
+                        [
+                            corr_temp[
+                                : int(
+                                    (spk_corr_parm["lag"] / spk_corr_parm["bin_size"])
+                                )
+                            ]
+                        ]
+                    )[0]
+                    second_half = corr_temp[
+                        int((spk_corr_parm["lag"] / spk_corr_parm["bin_size"])) + 1 :
+                    ]
                     assert np.sum(first_half - second_half) == 0
 
                     # Normalize correlogram by the total sum (convert to probability density )
@@ -457,7 +539,7 @@ class ClusterInfo:
                         corr_temp /= np.sum(correlogram)
 
             correlogram[social_context] = corr_temp
-        correlogram['parameter'] = spk_corr_parm  # store parameters in the dictionary
+        correlogram["parameter"] = spk_corr_parm  # store parameters in the dictionary
 
         return correlogram
 
@@ -495,12 +577,12 @@ class ClusterInfo:
 
         correlogram_jitter = defaultdict(list)
 
-        for iter in range(corr_shuffle['shuffle_iter']):
-            self.jitter_spk_ts(corr_shuffle['shuffle_limit'])
+        for iter in range(corr_shuffle["shuffle_iter"]):
+            self.jitter_spk_ts(corr_shuffle["shuffle_limit"])
             corr_temp = self.get_correlogram(self.spk_ts_jittered, self.spk_ts_jittered)
             # Combine correlogram from two contexts
             for key, value in corr_temp.items():
-                if key != 'parameter':
+                if key != "parameter":
                     try:
                         correlogram_jitter[key].append(value)
                     except:
@@ -508,7 +590,7 @@ class ClusterInfo:
 
         # Convert to array
         for key, value in correlogram_jitter.items():
-            correlogram_jitter[key] = (np.array(value))
+            correlogram_jitter[key] = np.array(value)
 
         return correlogram_jitter
 
@@ -532,14 +614,23 @@ class ClusterInfo:
             for onset, offset, spks in list_zip:
                 onset = np.asarray(list(map(float, onset)))
                 offset = np.asarray(list(map(float, offset)))
-                spk_list.append(spks[np.where((spks >= onset[0]) & (spks <= offset[-1]))])
+                spk_list.append(
+                    spks[np.where((spks >= onset[0]) & (spks <= offset[-1]))]
+                )
 
         for context1 in set(self.contexts):
             if not add_premotor_spk:
-                spk_list_context = [spk_ts for spk_ts, context2 in zip(spk_list, self.contexts) if context2 == context1]
+                spk_list_context = [
+                    spk_ts
+                    for spk_ts, context2 in zip(spk_list, self.contexts)
+                    if context2 == context1
+                ]
             else:
-                spk_list_context = [spk_ts for spk_ts, context2 in zip(self.spk_ts, self.contexts) if
-                                    context2 == context1]
+                spk_list_context = [
+                    spk_ts
+                    for spk_ts, context2 in zip(self.spk_ts, self.contexts)
+                    if context2 == context1
+                ]
             isi_dict[context1] = get_isi(spk_list_context)
 
         return isi_dict
@@ -555,9 +646,9 @@ class ClusterInfo:
             Number of files per context ('U', 'D', 'All')
         """
         nb_files = {}
-        nb_files['U'] = len([context for context in self.contexts if context == 'U'])
-        nb_files['D'] = len([context for context in self.contexts if context == 'D'])
-        nb_files['All'] = nb_files['U'] + nb_files['D']
+        nb_files["U"] = len([context for context in self.contexts if context == "U"])
+        nb_files["D"] = len([context for context in self.contexts if context == "D"])
+        nb_files["All"] = nb_files["U"] + nb_files["D"]
 
         return nb_files
 
@@ -578,14 +669,22 @@ class ClusterInfo:
         from ..analysis.functions import get_nb_bouts
 
         nb_bouts = {}
-        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
-        syllables = ''.join(syllable_list)
-        nb_bouts['U'] = get_nb_bouts(song_note, syllables)
+        syllable_list = [
+            syllable
+            for syllable, context in zip(self.syllables, self.contexts)
+            if context == "U"
+        ]
+        syllables = "".join(syllable_list)
+        nb_bouts["U"] = get_nb_bouts(song_note, syllables)
 
-        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'D']
-        syllables = ''.join(syllable_list)
-        nb_bouts['D'] = get_nb_bouts(song_note, syllables)
-        nb_bouts['All'] = nb_bouts['U'] + nb_bouts['D']
+        syllable_list = [
+            syllable
+            for syllable, context in zip(self.syllables, self.contexts)
+            if context == "D"
+        ]
+        syllables = "".join(syllable_list)
+        nb_bouts["D"] = get_nb_bouts(song_note, syllables)
+        nb_bouts["All"] = nb_bouts["U"] + nb_bouts["D"]
 
         return nb_bouts
 
@@ -605,20 +704,26 @@ class ClusterInfo:
         from ..utils.functions import find_str
 
         nb_motifs = {}
-        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
-        syllables = ''.join(syllable_list)
-        nb_motifs['U'] = len(find_str(syllables, motif))
+        syllable_list = [
+            syllable
+            for syllable, context in zip(self.syllables, self.contexts)
+            if context == "U"
+        ]
+        syllables = "".join(syllable_list)
+        nb_motifs["U"] = len(find_str(syllables, motif))
 
-        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'D']
-        syllables = ''.join(syllable_list)
-        nb_motifs['D'] = len(find_str(syllables, motif))
-        nb_motifs['All'] = nb_motifs['U'] + nb_motifs['D']
+        syllable_list = [
+            syllable
+            for syllable, context in zip(self.syllables, self.contexts)
+            if context == "D"
+        ]
+        syllables = "".join(syllable_list)
+        nb_motifs["D"] = len(find_str(syllables, motif))
+        nb_motifs["All"] = nb_motifs["U"] + nb_motifs["D"]
 
         return nb_motifs
 
-    def get_note_info(self, target_note,
-                      pre_buffer=0, post_buffer=0
-                      ):
+    def get_note_info(self, target_note, pre_buffer=0, post_buffer=0):
         """
         Obtain a class object (NoteInfo) for individual note
         spikes will be collected from note onset (+- pre_buffer) to offset (+- post_buffer)
@@ -638,11 +743,11 @@ class ClusterInfo:
         """
         from ..utils.functions import find_str
 
-        syllables = ''.join(self.syllables)
+        syllables = "".join(self.syllables)
         onsets = np.hstack(self.onsets)
         offsets = np.hstack(self.offsets)
         durations = np.hstack(self.durations)
-        contexts = ''
+        contexts = ""
 
         for i in range(len(self.contexts)):  # concatenate contexts
             contexts += self.contexts[i] * len(self.syllables[i])
@@ -654,10 +759,10 @@ class ClusterInfo:
         note_onsets = np.asarray(list(map(float, onsets[ind])))
         note_offsets = np.asarray(list(map(float, offsets[ind])))
         note_durations = np.asarray(list(map(float, durations[ind])))
-        note_contexts = ''.join(np.asarray(list(contexts))[ind])
+        note_contexts = "".join(np.asarray(list(contexts))[ind])
 
         # Get the note that immeidately follows
-        next_notes = ''
+        next_notes = ""
         for i in ind:
             next_notes += syllables[i + 1]
 
@@ -666,21 +771,27 @@ class ClusterInfo:
         note_spk_ts_list = []
         for onset, offset in zip(note_onsets, note_offsets):
             note_spk_ts_list.append(
-                spk_ts[np.where((spk_ts >= onset - pre_buffer) & (spk_ts <= offset + post_buffer))])
+                spk_ts[
+                    np.where(
+                        (spk_ts >= onset - pre_buffer)
+                        & (spk_ts <= offset + post_buffer)
+                    )
+                ]
+            )
 
         # Organize data into a dictionary
         note_info = {
-            'note': target_note,
-            'next_notes' : next_notes,
-            'onsets': note_onsets,
-            'offsets': note_offsets,
-            'durations': note_durations,
-            'contexts': note_contexts,
-            'median_dur': np.median(note_durations, axis=0),
-            'spk_ts': note_spk_ts_list,
-            'path': self.path,  # directory where the data exists
-            'pre_buffer' : pre_buffer,
-            'post_buffer' : post_buffer
+            "note": target_note,
+            "next_notes": next_notes,
+            "onsets": note_onsets,
+            "offsets": note_offsets,
+            "durations": note_durations,
+            "contexts": note_contexts,
+            "median_dur": np.median(note_durations, axis=0),
+            "spk_ts": note_spk_ts_list,
+            "path": self.path,  # directory where the data exists
+            "pre_buffer": pre_buffer,
+            "post_buffer": post_buffer,
         }
 
         return NoteInfo(note_info)  # return note info
@@ -722,14 +833,16 @@ class NoteInfo:
         if isinstance(index, list):
             index = np.array(index)
 
-        self.contexts = ''.join(np.array(list(self.contexts))[index])
-        self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp \
-            = self.onsets[index], self.offsets[index], self.durations[index], self.spk_ts[index], self.spk_ts_warp[index]
+        self.contexts = "".join(np.array(list(self.contexts))[index])
+        self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp = (
+            self.onsets[index],
+            self.offsets[index],
+            self.durations[index],
+            self.spk_ts[index],
+            self.spk_ts_warp[index],
+        )
 
-
-    def select_context(self, target_context : str,
-                       keep_median_duration=True
-                       ) -> None:
+    def select_context(self, target_context: str, keep_median_duration=True) -> None:
         """
         Select one context
 
@@ -743,14 +856,32 @@ class NoteInfo:
             if set False, new median duration will be calculated using the selected notes
         """
 
-        zipped_list = \
-            list(zip(self.contexts, self.next_notes, self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp))
-        zipped_list = list(filter(lambda x: x[0] == target_context, zipped_list))  # filter context
+        zipped_list = list(
+            zip(
+                self.contexts,
+                self.next_notes,
+                self.onsets,
+                self.offsets,
+                self.durations,
+                self.spk_ts,
+                self.spk_ts_warp,
+            )
+        )
+        zipped_list = list(
+            filter(lambda x: x[0] == target_context, zipped_list)
+        )  # filter context
         unzipped_object = zip(*zipped_list)
-        self.contexts, self.next_notes, self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp = \
-            list(unzipped_object)
-        self.contexts = ''.join(self.contexts)
-        self.next_notes = ''.join(self.next_notes)
+        (
+            self.contexts,
+            self.next_notes,
+            self.onsets,
+            self.offsets,
+            self.durations,
+            self.spk_ts,
+            self.spk_ts_warp,
+        ) = list(unzipped_object)
+        self.contexts = "".join(self.contexts)
+        self.next_notes = "".join(self.next_notes)
         self.onsets = np.array(self.onsets)
         self.offsets = np.array(self.offsets)
         self.durations = np.array(self.durations)
@@ -760,7 +891,7 @@ class NoteInfo:
         if not keep_median_duration:
             self.median_dur = np.median(self.median_dur, axis=0)
 
-    def get_entropy(self, normalize=True, mode='spectral'):
+    def get_entropy(self, normalize=True, mode="spectral"):
         """
         Calculate syllable entropy from all renditions and get the average
         Two versions : spectro-temporal entropy & spectral entropy
@@ -773,7 +904,7 @@ class NoteInfo:
         entropy_var = {}
         audio = AudioData(self.path)
 
-        for context in ['U', 'D']:
+        for context in ["U", "D"]:
 
             se_mean_arr = np.array([], dtype=np.float32)
             se_var_arr = np.array([], dtype=np.float32)
@@ -785,13 +916,19 @@ class NoteInfo:
                     _, spect, _ = get_spectrogram(timestamp, data, audio.sample_rate)
                     se = get_spectral_entropy(spect, normalize=normalize, mode=mode)
                     if isinstance(se, dict):
-                        se_mean_arr = np.append(se_mean_arr, se['mean'])  # spectral entropy averaged over time bins per rendition
-                        se_var_arr = np.append(se_var_arr, se['var'])  # spectral entropy variance per rendition
+                        se_mean_arr = np.append(
+                            se_mean_arr, se["mean"]
+                        )  # spectral entropy averaged over time bins per rendition
+                        se_var_arr = np.append(
+                            se_var_arr, se["var"]
+                        )  # spectral entropy variance per rendition
                     else:
-                        se_mean_arr = np.append(se_mean_arr, se)  # spectral entropy time-resolved
+                        se_mean_arr = np.append(
+                            se_mean_arr, se
+                        )  # spectral entropy time-resolved
                 entropy_mean[context] = round(se_mean_arr.mean(), 3)
                 entropy_var[context] = round(se_var_arr.mean(), 5)
-        if mode == 'spectro_temporal':
+        if mode == "spectro_temporal":
             return entropy_mean, entropy_var
         else:  # spectral entropy (does not have entropy variance)
             return entropy_mean
@@ -810,15 +947,22 @@ class NoteInfo:
             spk_ts_temp, ind = spk_ts[spk_ts >= onset], np.where(spk_ts >= onset)
 
             spk_ts_temp = ((ratio * ((spk_ts_temp - onset))) + origin) + onset
-            np.put(spk_ts_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
+            np.put(
+                spk_ts_new, ind, spk_ts_temp
+            )  # replace original spk timestamps with warped timestamps
             note_spk_ts_warp_list.append(spk_ts_new)
 
         return note_spk_ts_warp_list
 
-    def get_note_peth(self, time_warp=True, shuffle=False, pre_evt_buffer=None, duration=None,
-                      bin_size=None,
-                      nb_bins=None
-                      ):
+    def get_note_peth(
+        self,
+        time_warp=True,
+        shuffle=False,
+        pre_evt_buffer=None,
+        duration=None,
+        bin_size=None,
+        nb_bins=None,
+    ):
         """
         Get peri-event time histograms for single syllable
 
@@ -837,34 +981,40 @@ class NoteInfo:
         peth_dict = {}
 
         if shuffle:
-            peth, time_bin, peth_parm = \
-                get_peth(self.onsets, self.spk_ts_jittered,
-                         pre_evt_buffer=pre_evt_buffer, duration=duration,
-                         bin_size=bin_size,
-                         nb_bins=nb_bins
-                         )
+            peth, time_bin, peth_parm = get_peth(
+                self.onsets,
+                self.spk_ts_jittered,
+                pre_evt_buffer=pre_evt_buffer,
+                duration=duration,
+                bin_size=bin_size,
+                nb_bins=nb_bins,
+            )
         else:
             if time_warp:  # peth calculated from time-warped spikes by default
                 # peth, time_bin = get_note_peth(self.onsets, self.spk_ts_warp, self.median_durations.sum())  # truncated version to fit the motif duration
-                peth, time_bin, peth_parm = \
-                    get_peth(self.onsets, self.spk_ts_warp,
-                             pre_evt_buffer=pre_evt_buffer, duration=duration,
-                             bin_size = bin_size,
-                             nb_bins = nb_bins
-                             )
+                peth, time_bin, peth_parm = get_peth(
+                    self.onsets,
+                    self.spk_ts_warp,
+                    pre_evt_buffer=pre_evt_buffer,
+                    duration=duration,
+                    bin_size=bin_size,
+                    nb_bins=nb_bins,
+                )
             else:
-                peth, time_bin, peth_parm = \
-                    get_peth(self.onsets, self.spk_ts,
-                             pre_evt_buffer=pre_evt_buffer, duration=duration,
-                             bin_size=bin_size,
-                             nb_bins=nb_bins
-                             )
+                peth, time_bin, peth_parm = get_peth(
+                    self.onsets,
+                    self.spk_ts,
+                    pre_evt_buffer=pre_evt_buffer,
+                    duration=duration,
+                    bin_size=bin_size,
+                    nb_bins=nb_bins,
+                )
 
-        peth_dict['peth'] = peth
-        peth_dict['time_bin'] = time_bin
-        peth_dict['parameters'] = peth_parm
-        peth_dict['contexts'] = self.contexts
-        peth_dict['median_duration'] = self.median_dur
+        peth_dict["peth"] = peth
+        peth_dict["time_bin"] = time_bin
+        peth_dict["parameters"] = peth_parm
+        peth_dict["contexts"] = self.contexts
+        peth_dict["median_duration"] = self.median_dur
         return PethInfo(peth_dict)  # return peth class object for further analysis
 
     def jitter_spk_ts(self, shuffle_limit):
@@ -901,7 +1051,7 @@ class NoteInfo:
         from ..utils.functions import find_str
 
         nb_note = {}
-        for context in ['U', 'D']:
+        for context in ["U", "D"]:
             nb_note[context] = len(find_str(self.contexts, context))
         return nb_note
 
@@ -913,15 +1063,30 @@ class NoteInfo:
 
         note_spk = {}
         note_fr = {}
-        for context1 in ['U', 'D']:
+        for context1 in ["U", "D"]:
             if self.nb_note[context1] >= nb_note_crit:
-                note_spk[context1] = \
-                    sum([len(spk) for context2, spk in zip(self.contexts, self.spk_ts) if context2 == context1])
-                note_fr[context1] = \
-                    round(note_spk[context1] / ((self.durations[find_str(self.contexts, context1)] + pre_motor_win_size).sum() / 1E3), 3)
+                note_spk[context1] = sum(
+                    [
+                        len(spk)
+                        for context2, spk in zip(self.contexts, self.spk_ts)
+                        if context2 == context1
+                    ]
+                )
+                note_fr[context1] = round(
+                    note_spk[context1]
+                    / (
+                        (
+                            self.durations[find_str(self.contexts, context1)]
+                            + pre_motor_win_size
+                        ).sum()
+                        / 1e3
+                    ),
+                    3,
+                )
             else:
                 note_fr[context1] = np.nan
         return note_fr
+
 
 class MotifInfo(ClusterInfo):
     """
@@ -929,7 +1094,9 @@ class MotifInfo(ClusterInfo):
     child class of ClusterInfo
     """
 
-    def __init__(self, path, channel_nb, unit_nb, motif, format='rhd', *name, update=False):
+    def __init__(
+        self, path, channel_nb, unit_nb, motif, format="rhd", *name, update=False
+    ):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
 
         self.motif = motif
@@ -939,8 +1106,12 @@ class MotifInfo(ClusterInfo):
             self.name = str(self.path)
 
         # Load motif info
-        file_name = self.path / "MotifInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
-        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+        file_name = self.path / "MotifInfo_{}_Cluster{}.npy".format(
+            self.channel_nb, self.unit_nb
+        )
+        if (
+            update or not file_name.exists()
+        ):  # if .npy doesn't exist or want to update the file
             motif_info = self._load_motif()
             # Save info dict as a numpy object
             np.save(file_name, motif_info)
@@ -955,11 +1126,11 @@ class MotifInfo(ClusterInfo):
         self._delete_attr()
 
     def _delete_attr(self):
-        """Delete un-used attributes/methods inheritied from the parent class """
-        delattr(self, 'spk_wf')
-        delattr(self, 'nb_spk')
-        delattr(self, 'file_start')
-        delattr(self, 'file_end')
+        """Delete un-used attributes/methods inheritied from the parent class"""
+        delattr(self, "spk_wf")
+        delattr(self, "nb_spk")
+        delattr(self, "file_start")
+        delattr(self, "file_end")
 
     def _load_motif(self):
         """Load motif info"""
@@ -975,10 +1146,17 @@ class MotifInfo(ClusterInfo):
         duration_list = []
         context_list = []
 
-        list_zip = zip(self.files, self.spk_ts, self.onsets, self.offsets, self.syllables, self.contexts)
+        list_zip = zip(
+            self.files,
+            self.spk_ts,
+            self.onsets,
+            self.offsets,
+            self.syllables,
+            self.contexts,
+        )
 
         for file, spks, onsets, offsets, syllables, context in list_zip:
-            print('Loading... ' + file)
+            print("Loading... " + file)
             onsets = onsets.tolist()
             offsets = offsets.tolist()
 
@@ -994,28 +1172,37 @@ class MotifInfo(ClusterInfo):
                 motif_onset = float(onsets[start_ind])
                 motif_offset = float(offsets[stop_ind])
                 # Includes pre-motor spikes
-                motif_spk = spks[np.where((spks >= motif_onset - peth_parm['buffer']) & (spks <= motif_offset))]
-                onsets_in_motif = onsets[start_ind:stop_ind + 1]  # list of motif onset timestamps
-                offsets_in_motif = offsets[start_ind:stop_ind + 1]  # list of motif offset timestamps
+                motif_spk = spks[
+                    np.where(
+                        (spks >= motif_onset - peth_parm["buffer"])
+                        & (spks <= motif_offset)
+                    )
+                ]
+                onsets_in_motif = onsets[
+                    start_ind : stop_ind + 1
+                ]  # list of motif onset timestamps
+                offsets_in_motif = offsets[
+                    start_ind : stop_ind + 1
+                ]  # list of motif offset timestamps
 
                 file_list.append(file)
                 spk_list.append(motif_spk)
                 duration_list.append(motif_offset - motif_onset)
                 onset_list.append(onsets_in_motif)
                 offset_list.append(offsets_in_motif)
-                syllable_list.append(syllables[start_ind:stop_ind + 1])
+                syllable_list.append(syllables[start_ind : stop_ind + 1])
                 context_list.append(context)
 
         # Organize event-related info into a single dictionary object
         motif_info = {
-            'files': file_list,
-            'spk_ts': spk_list,
-            'onsets': onset_list,
-            'offsets': offset_list,
-            'durations': duration_list,  # this is motif durations
-            'syllables': syllable_list,
-            'contexts': context_list,
-            'parameter': peth_parm
+            "files": file_list,
+            "spk_ts": spk_list,
+            "onsets": onset_list,
+            "offsets": offset_list,
+            "durations": duration_list,  # this is motif durations
+            "syllables": syllable_list,
+            "contexts": context_list,
+            "parameter": peth_parm,
         }
 
         # Set the dictionary values to class attributes
@@ -1026,19 +1213,17 @@ class MotifInfo(ClusterInfo):
         note_duration_list, median_duration_list = self.get_note_duration()
         self.note_durations = note_duration_list
         self.median_durations = median_duration_list
-        motif_info['note_durations'] = note_duration_list
-        motif_info['median_durations'] = median_duration_list
+        motif_info["note_durations"] = note_duration_list
+        motif_info["median_durations"] = median_duration_list
 
         # Get PLW (piecewise linear warping)
         spk_ts_warp_list = self.piecewise_linear_warping()
         # self.spk_ts_warp = spk_ts_warp_list
-        motif_info['spk_ts_warp'] = spk_ts_warp_list
+        motif_info["spk_ts_warp"] = spk_ts_warp_list
 
         return motif_info
 
-    def select_context(self, target_context : str,
-                       keep_median_duration=True
-                       ) -> None:
+    def select_context(self, target_context: str, keep_median_duration=True) -> None:
         """
         Select one context
 
@@ -1054,13 +1239,33 @@ class MotifInfo(ClusterInfo):
             IF set False, new median duration will be calculated using the selected notes.
         """
 
-        zipped_list = \
-            list(zip(self.contexts, self.files, self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp, self.note_durations))
+        zipped_list = list(
+            zip(
+                self.contexts,
+                self.files,
+                self.onsets,
+                self.offsets,
+                self.durations,
+                self.spk_ts,
+                self.spk_ts_warp,
+                self.note_durations,
+            )
+        )
 
-        zipped_list = list(filter(lambda x: x[0] == target_context, zipped_list))  # filter context
+        zipped_list = list(
+            filter(lambda x: x[0] == target_context, zipped_list)
+        )  # filter context
         unzipped_object = zip(*zipped_list)
-        self.contexts, self.files, self.onsets, self.offsets, self.durations, self.spk_ts, self.spk_ts_warp, self.note_durations = \
-            list(unzipped_object)
+        (
+            self.contexts,
+            self.files,
+            self.onsets,
+            self.offsets,
+            self.durations,
+            self.spk_ts,
+            self.spk_ts_warp,
+            self.note_durations,
+        ) = list(unzipped_object)
 
         if not keep_median_duration:
             _, self.median_durations = self.get_note_duration()
@@ -1103,7 +1308,9 @@ class MotifInfo(ClusterInfo):
         spk_ts_warped_list = []
         list_zip = zip(self.note_durations, self.onsets, self.offsets, self.spk_ts)
 
-        for motif_ind, (durations, onset, offset, spk_ts) in enumerate(list_zip):  # per motif
+        for motif_ind, (durations, onset, offset, spk_ts) in enumerate(
+            list_zip
+        ):  # per motif
 
             onset = np.asarray(list(map(float, onset)))
             offset = np.asarray(list(map(float, offset)))
@@ -1124,9 +1331,13 @@ class MotifInfo(ClusterInfo):
 
                 # Add spikes from motif
                 ind, spk_ts_temp = extract_ind(spk_ts, [timestamp[i], timestamp[i + 1]])
-                spk_ts_temp = ((ratio * ((spk_ts_temp - timestamp[0]) - diff)) + origin) + timestamp[0]
+                spk_ts_temp = (
+                    (ratio * ((spk_ts_temp - timestamp[0]) - diff)) + origin
+                ) + timestamp[0]
                 # spk_ts_new = np.append(spk_ts_new, spk_ts_temp)
-                np.put(spk_ts_new, ind, spk_ts_temp)  # replace original spk timestamps with warped timestamps
+                np.put(
+                    spk_ts_new, ind, spk_ts_temp
+                )  # replace original spk timestamps with warped timestamps
 
             spk_ts_warped_list.append(spk_ts_new)
         return spk_ts_warped_list
@@ -1154,18 +1365,45 @@ class MotifInfo(ClusterInfo):
             onset = np.asarray(list(map(float, onset)))
             offset = np.asarray(list(map(float, offset)))
             if add_pre_motor:
-                motif_spk_list.append(spks[np.where((spks >= (onset[0] - peth_parm['buffer'])) & (spks <= offset[-1]))])
+                motif_spk_list.append(
+                    spks[
+                        np.where(
+                            (spks >= (onset[0] - peth_parm["buffer"]))
+                            & (spks <= offset[-1])
+                        )
+                    ]
+                )
             else:
-                motif_spk_list.append(spks[np.where((spks >= onset[0]) & (spks <= offset[-1]))])
+                motif_spk_list.append(
+                    spks[np.where((spks >= onset[0]) & (spks <= offset[-1]))]
+                )
 
         for context1 in set(self.contexts):
-            nb_spk = sum([len(spk) for spk, context2 in zip(motif_spk_list, self.contexts) if context2 == context1])
+            nb_spk = sum(
+                [
+                    len(spk)
+                    for spk, context2 in zip(motif_spk_list, self.contexts)
+                    if context2 == context1
+                ]
+            )
             if add_pre_motor:
-                total_duration = sum([duration + peth_parm['buffer'] for duration, context2 in zip(self.durations, self.contexts) if context2 == context1])
+                total_duration = sum(
+                    [
+                        duration + peth_parm["buffer"]
+                        for duration, context2 in zip(self.durations, self.contexts)
+                        if context2 == context1
+                    ]
+                )
             else:
-                total_duration = sum([duration for duration, context2 in zip(self.durations, self.contexts) if context2 == context1])
+                total_duration = sum(
+                    [
+                        duration
+                        for duration, context2 in zip(self.durations, self.contexts)
+                        if context2 == context1
+                    ]
+                )
 
-            mean_fr = nb_spk / (total_duration / 1E3)
+            mean_fr = nb_spk / (total_duration / 1e3)
             fr_dict[context1] = round(mean_fr, 3)
         # print("mean_fr added")
         self.mean_fr = fr_dict
@@ -1183,7 +1421,9 @@ class MotifInfo(ClusterInfo):
         for ind, (onset, offset, spk_ts) in enumerate(list_zip):
 
             # Find motif onset & offset
-            onset = float(onset[0]) - pre_motor_win_size  # start from the premotor window
+            onset = (
+                float(onset[0]) - pre_motor_win_size
+            )  # start from the premotor window
             offset = float(offset[-1])
 
             jittered_spk = np.array([], dtype=np.float32)
@@ -1225,12 +1465,13 @@ class MotifInfo(ClusterInfo):
             else:
                 peth, time_bin, peth_parm = get_peth(self.onsets, self.spk_ts)
 
-        peth_parm.pop('time_bin'); peth_parm.pop('nb_bins')
-        peth_dict['peth'] = peth
-        peth_dict['time_bin'] = time_bin
-        peth_dict['parameters'] = peth_parm
-        peth_dict['contexts'] = self.contexts
-        peth_dict['median_duration'] = self.median_durations.sum()
+        peth_parm.pop("time_bin")
+        peth_parm.pop("nb_bins")
+        peth_dict["peth"] = peth
+        peth_dict["time_bin"] = time_bin
+        peth_dict["parameters"] = peth_parm
+        peth_dict["contexts"] = self.contexts
+        peth_dict["median_duration"] = self.median_durations.sum()
         return PethInfo(peth_dict)  # return peth class object for further analysis
 
     def __len__(self):
@@ -1247,11 +1488,11 @@ class MotifInfo(ClusterInfo):
         open_folder(self.path)
 
     def _print_name(self):
-        print('')
-        print('Load motif {self.name}'.format(self=self))
+        print("")
+        print("Load motif {self.name}".format(self=self))
 
 
-class PethInfo():
+class PethInfo:
     def __init__(self, peth_dict: dict):
         """
         Class object for peri-event time histogram (PETH)
@@ -1269,7 +1510,7 @@ class PethInfo():
 
         # Get conditional peth, fr, spike counts
         peth_dict = {}
-        peth_dict['All'] = self.peth
+        peth_dict["All"] = self.peth
         for context in set(self.contexts):
             if type(self.contexts) == str:
                 self.contexts = list(self.contexts)
@@ -1297,20 +1538,24 @@ class PethInfo():
         from ..analysis.parameters import peth_parm, gauss_std, nb_note_crit
         from scipy.ndimage import gaussian_filter1d
 
-        if not gaussian_std:  # if not specified, get the value fromm analysis.parameters
+        if (
+            not gaussian_std
+        ):  # if not specified, get the value fromm analysis.parameters
             gaussian_std = gauss_std
 
         # Get trial-by-trial firing rates
         fr_dict = {}
         for k, v in self.peth.items():  # loop through different conditions in peth dict
             if v.shape[0] >= nb_note_crit:
-                fr = v / (peth_parm['bin_size'] / 1E3)  # in Hz
+                fr = v / (peth_parm["bin_size"] / 1e3)  # in Hz
 
                 if smoothing:  # Gaussian smoothing
                     fr = gaussian_filter1d(fr, gaussian_std)
 
                 # Truncate values outside the range
-                ind = (((0 - peth_parm['buffer']) <= self.time_bin) & (self.time_bin <= self.median_duration))
+                ind = ((0 - peth_parm["buffer"]) <= self.time_bin) & (
+                    self.time_bin <= self.median_duration
+                )
                 fr = fr[:, ind]
                 fr_dict[k] = fr
         self.fr = fr_dict
@@ -1322,7 +1567,7 @@ class PethInfo():
             fr = np.mean(fr, axis=0)
             mean_fr_dict[context] = fr
         if smoothing:
-            mean_fr_dict['gauss_std'] = gauss_std
+            mean_fr_dict["gauss_std"] = gauss_std
         self.mean_fr = mean_fr_dict
 
     def get_pcc(self):
@@ -1331,7 +1576,7 @@ class PethInfo():
 
         pcc_dict = {}
         for k, v in self.fr.items():  # loop through different conditions in peth dict
-            if k != 'All':
+            if k != "All":
                 if v.shape[0] >= nb_note_crit:
                     pcc = get_pcc(v)
                     pcc_dict[k] = pcc
@@ -1343,8 +1588,11 @@ class PethInfo():
             self.get_fr()
 
         fr_cv = {}
-        for context, fr in self.mean_fr.items():  # loop through different conditions in peth dict
-            if context in ['U', 'D']:
+        for (
+            context,
+            fr,
+        ) in self.mean_fr.items():  # loop through different conditions in peth dict
+            if context in ["U", "D"]:
                 fr_cv[context] = round(fr.std(axis=0) / fr.mean(axis=0), 3)
         return fr_cv
 
@@ -1368,9 +1616,10 @@ class PethInfo():
         mean_fr = dict()
         sparseness = dict()
 
-        if bin_size != None and bin_size != self.parameters['bin_size']:
+        if bin_size != None and bin_size != self.parameters["bin_size"]:
             for context, peth in self.peth.items():
-                if context == 'All': continue
+                if context == "All":
+                    continue
                 new_peth = np.empty([peth.shape[0], 0])
                 nb_bins = math.ceil(peth.shape[1] / bin_size)
                 bin_ind = 0
@@ -1381,13 +1630,15 @@ class PethInfo():
                     if end_ind > peth.shape[1]:
                         end_ind = peth.shape[1]
                     # print(start_ind, end_ind)
-                    peth_bin = peth[:, start_ind: end_ind].sum(axis=1).reshape(peth.shape[0], 1)
+                    peth_bin = (
+                        peth[:, start_ind:end_ind].sum(axis=1).reshape(peth.shape[0], 1)
+                    )
                     new_peth = np.append(new_peth, peth_bin, axis=1)
                     start_ind += bin_size
                     end_ind += bin_size
                     bin_ind += 1
 
-                fr = new_peth / (bin_size / 1E3)  # in Hz
+                fr = new_peth / (bin_size / 1e3)  # in Hz
                 mean_fr[context] = np.mean(fr, axis=0)
 
         else:
@@ -1395,9 +1646,12 @@ class PethInfo():
 
         # Calculate sparseness
         for context, fr in mean_fr.items():
-            if context not in ['U', 'D']: continue
+            if context not in ["U", "D"]:
+                continue
             norm_fr = fr / np.sum(fr)
-            sparseness[context] = round(1 + (np.nansum(norm_fr * np.log10(norm_fr)) / np.log10(len(norm_fr))), 3)
+            sparseness[context] = round(
+                1 + (np.nansum(norm_fr * np.log10(norm_fr)) / np.log10(len(norm_fr))), 3
+            )
 
         return sparseness
 
@@ -1407,28 +1661,33 @@ class PethInfo():
         """
         from ..analysis.parameters import peth_parm, spk_count_parm
 
-        win_size = spk_count_parm['win_size']
+        win_size = spk_count_parm["win_size"]
         spk_count_dict = {}
         fano_factor_dict = {}
         spk_count_cv_dict = {}
 
         for k, v in self.peth.items():  # loop through different conditions in peth dict
             spk_arr = np.empty((v.shape[0], 0), int)  # (renditions x time bins)
-            if k != 'All':  # skip all trials
+            if k != "All":  # skip all trials
                 win_inc = 0
                 for i in range(v.shape[1] - win_size):
-                    count = v[:, i: win_size + win_inc].sum(axis=1)
+                    count = v[:, i : win_size + win_inc].sum(axis=1)
                     # print(f"from {i} to {win_size + win_inc}, count = {count}")
                     spk_arr = np.append(spk_arr, np.array([count]).transpose(), axis=1)
                     win_inc += 1
                 # Truncate values outside the range
-                ind = (((0 - peth_parm['buffer']) <= self.time_bin) & (self.time_bin <= self.median_duration))
-                spk_arr = spk_arr[:, :ind.shape[0]]
+                ind = ((0 - peth_parm["buffer"]) <= self.time_bin) & (
+                    self.time_bin <= self.median_duration
+                )
+                spk_arr = spk_arr[:, : ind.shape[0]]
 
                 spk_count = spk_arr.sum(axis=0)
                 fano_factor = spk_arr.var(axis=0) / spk_arr.mean(
-                    axis=0)  # per time window (across renditions) (renditions x time window)
-                spk_count_cv = spk_count.std(axis=0) / spk_count.mean(axis=0)  # cv across time (single value)
+                    axis=0
+                )  # per time window (across renditions) (renditions x time window)
+                spk_count_cv = spk_count.std(axis=0) / spk_count.mean(
+                    axis=0
+                )  # cv across time (single value)
 
                 # store values in a dictionary
                 spk_count_dict[k] = spk_count
@@ -1449,7 +1708,9 @@ class BoutInfo(ClusterInfo):
     Child class of ClusterInfo
     """
 
-    def __init__(self, path, channel_nb, unit_nb, song_note, format='rhd', *name, update=False):
+    def __init__(
+        self, path, channel_nb, unit_nb, song_note, format="rhd", *name, update=False
+    ):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
 
         self.song_note = song_note
@@ -1460,8 +1721,12 @@ class BoutInfo(ClusterInfo):
             self.name = str(self.path)
 
         # Load bout info
-        file_name = self.path / "BoutInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
-        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+        file_name = self.path / "BoutInfo_{}_Cluster{}.npy".format(
+            self.channel_nb, self.unit_nb
+        )
+        if (
+            update or not file_name.exists()
+        ):  # if .npy doesn't exist or want to update the file
             bout_info = self._load_bouts()
             # Save info dict as a numpy object
             np.save(file_name, bout_info)
@@ -1473,8 +1738,8 @@ class BoutInfo(ClusterInfo):
             setattr(self, key, bout_info[key])
 
     def _print_name(self):
-        print('')
-        print('Load bout {self.name}'.format(self=self))
+        print("")
+        print("Load bout {self.name}".format(self=self))
 
     def __len__(self):
         return len(self.files)
@@ -1491,11 +1756,18 @@ class BoutInfo(ClusterInfo):
         duration_list = []
         context_list = []
 
-        list_zip = zip(self.files, self.spk_ts, self.onsets, self.offsets, self.syllables, self.contexts)
+        list_zip = zip(
+            self.files,
+            self.spk_ts,
+            self.onsets,
+            self.offsets,
+            self.syllables,
+            self.contexts,
+        )
 
         for file, spks, onsets, offsets, syllables, context in list_zip:
 
-            bout_ind = find_str(syllables, '*')
+            bout_ind = find_str(syllables, "*")
 
             for ind in range(len(bout_ind)):
                 if ind == 0:
@@ -1508,31 +1780,35 @@ class BoutInfo(ClusterInfo):
                 bout_offset = float(offsets[stop_ind])
 
                 bout_spk = spks[np.where((spks >= bout_onset) & (spks <= bout_offset))]
-                onsets_in_bout = onsets[start_ind:stop_ind + 1]  # list of bout onset timestamps
-                offsets_in_bout = offsets[start_ind:stop_ind + 1]  # list of bout offset timestamps
+                onsets_in_bout = onsets[
+                    start_ind : stop_ind + 1
+                ]  # list of bout onset timestamps
+                offsets_in_bout = offsets[
+                    start_ind : stop_ind + 1
+                ]  # list of bout offset timestamps
 
                 file_list.append(file)
                 spk_list.append(bout_spk)
                 duration_list.append(bout_offset - bout_onset)
                 onset_list.append(onsets_in_bout)
                 offset_list.append(offsets_in_bout)
-                syllable_list.append(syllables[start_ind:stop_ind + 1])
+                syllable_list.append(syllables[start_ind : stop_ind + 1])
                 context_list.append(context)
 
         # Organize event-related info into a single dictionary object
         bout_info = {
-            'files': file_list,
-            'spk_ts': spk_list,
-            'onsets': onset_list,
-            'offsets': offset_list,
-            'durations': duration_list,  # this is bout durations
-            'syllables': syllable_list,
-            'contexts': context_list,
+            "files": file_list,
+            "spk_ts": spk_list,
+            "onsets": onset_list,
+            "offsets": offset_list,
+            "durations": duration_list,  # this is bout durations
+            "syllables": syllable_list,
+            "contexts": context_list,
         }
         return bout_info
 
     def plot(self):
-        #TODO: this function needs revision
+        # TODO: this function needs revision
         from ..analysis.parameters import bout_buffer, freq_range, bout_color
         from ..utils import save
         from ..utils.draw import remove_right_top
@@ -1542,13 +1818,14 @@ class BoutInfo(ClusterInfo):
         from ..database.load import ProjectLoader, DBInfo
         from scipy import stats
         import warnings
-        warnings.filterwarnings('ignore')
+
+        warnings.filterwarnings("ignore")
 
         # Parameters
         save_fig = False
         update = False
-        dir_name = 'RasterBouts'
-        fig_ext = '.png'  # .png or .pdf
+        dir_name = "RasterBouts"
+        fig_ext = ".png"  # .png or .pdf
         font_size = 12  # figure font size
         rec_yloc = 0.05
         rect_height = 0.2
@@ -1576,12 +1853,31 @@ class BoutInfo(ClusterInfo):
             channel_nb = int(cluster_db.channel[-2:])
             format = cluster_db.format
 
-            ci = ClusterInfo(path, channel_nb, unit_nb, format, name, update=update)  # cluster object
-            bi = BoutInfo(path, channel_nb, unit_nb, cluster_db.songNote, format, name, update=update)  # bout object
+            ci = ClusterInfo(
+                path, channel_nb, unit_nb, format, name, update=update
+            )  # cluster object
+            bi = BoutInfo(
+                path,
+                channel_nb,
+                unit_nb,
+                cluster_db.songNote,
+                format,
+                name,
+                update=update,
+            )  # bout object
 
-            list_zip = zip(bi.files, bi.spk_ts, bi.onsets, bi.offsets, bi.syllables, bi.contexts)
+            list_zip = zip(
+                bi.files, bi.spk_ts, bi.onsets, bi.offsets, bi.syllables, bi.contexts
+            )
 
-            for bout_ind, (file, spks, onsets, offsets, syllables, context) in enumerate(list_zip):
+            for bout_ind, (
+                file,
+                spks,
+                onsets,
+                offsets,
+                syllables,
+                context,
+            ) in enumerate(list_zip):
 
                 # Convert from string to array of floats
                 onsets = np.asarray(list(map(float, onsets)))
@@ -1594,7 +1890,9 @@ class BoutInfo(ClusterInfo):
                 duration = offsets[-1] - onsets[0]
 
                 # Get spectrogram
-                audio = AudioData(path, update=update).extract([start, end])  # audio object
+                audio = AudioData(path, update=update).extract(
+                    [start, end]
+                )  # audio object
                 audio.spectrogram()
                 audio.spect_time = audio.spect_time - audio.spect_time[0] - bout_buffer
 
@@ -1606,79 +1904,118 @@ class BoutInfo(ClusterInfo):
                 fig.suptitle(fig_name, y=0.95)
 
                 # Plot spectrogram
-                ax_spect = plt.subplot2grid((nb_row, nb_col), (2, 0), rowspan=2, colspan=1)
-                ax_spect.pcolormesh(audio.spect_time, audio.spect_freq, audio.spect,  # data
-                                    cmap='hot_r',
-                                    norm=colors.SymLogNorm(linthresh=0.05,
-                                                           linscale=0.03,
-                                                           vmin=0.5,
-                                                           vmax=100
-                                                           ))
+                ax_spect = plt.subplot2grid(
+                    (nb_row, nb_col), (2, 0), rowspan=2, colspan=1
+                )
+                ax_spect.pcolormesh(
+                    audio.spect_time,
+                    audio.spect_freq,
+                    audio.spect,  # data
+                    cmap="hot_r",
+                    norm=colors.SymLogNorm(
+                        linthresh=0.05, linscale=0.03, vmin=0.5, vmax=100
+                    ),
+                )
 
                 remove_right_top(ax_spect)
                 ax_spect.set_ylim(freq_range[0], freq_range[1])
-                ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
+                ax_spect.set_ylabel("Frequency (Hz)", fontsize=font_size)
                 plt.yticks(freq_range, [str(freq_range[0]), str(freq_range[1])])
                 plt.setp(ax_spect.get_xticklabels(), visible=False)
                 plt.xlim([audio.spect_time[0] - 100, audio.spect_time[-1] + 100])
 
                 # Plot syllable duration
-                ax_syl = plt.subplot2grid((nb_row, nb_col), (1, 0), rowspan=1, colspan=1, sharex=ax_spect)
+                ax_syl = plt.subplot2grid(
+                    (nb_row, nb_col), (1, 0), rowspan=1, colspan=1, sharex=ax_spect
+                )
                 note_dur = offsets - onsets  # syllable duration
                 onsets -= onsets[0]  # start from 0
                 offsets = onsets + note_dur
 
                 # Mark syllables
                 for i, syl in enumerate(syllables):
-                    rectangle = plt.Rectangle((onsets[i], rec_yloc), note_dur[i], rect_height,
-                                              linewidth=1, alpha=0.5, edgecolor='k', facecolor=bout_color[syl])
+                    rectangle = plt.Rectangle(
+                        (onsets[i], rec_yloc),
+                        note_dur[i],
+                        rect_height,
+                        linewidth=1,
+                        alpha=0.5,
+                        edgecolor="k",
+                        facecolor=bout_color[syl],
+                    )
                     ax_syl.add_patch(rectangle)
-                    ax_syl.text((onsets[i] + (offsets[i] - onsets[i]) / 2), text_yloc, syl, size=font_size)
-                ax_syl.axis('off')
+                    ax_syl.text(
+                        (onsets[i] + (offsets[i] - onsets[i]) / 2),
+                        text_yloc,
+                        syl,
+                        size=font_size,
+                    )
+                ax_syl.axis("off")
 
                 # Plot song amplitude
                 audio.data = stats.zscore(audio.data)
                 audio.timestamp = audio.timestamp - audio.timestamp[0] - bout_buffer
-                ax_amp = plt.subplot2grid((nb_row, nb_col), (4, 0), rowspan=2, colspan=1, sharex=ax_spect)
-                ax_amp.plot(audio.timestamp, audio.data, 'k', lw=0.1)
-                ax_amp.axis('off')
+                ax_amp = plt.subplot2grid(
+                    (nb_row, nb_col), (4, 0), rowspan=2, colspan=1, sharex=ax_spect
+                )
+                ax_amp.plot(audio.timestamp, audio.data, "k", lw=0.1)
+                ax_amp.axis("off")
 
                 # Plot rasters
-                ax_raster = plt.subplot2grid((nb_row, nb_col), (6, 0), rowspan=2, colspan=1, sharex=ax_spect)
+                ax_raster = plt.subplot2grid(
+                    (nb_row, nb_col), (6, 0), rowspan=2, colspan=1, sharex=ax_spect
+                )
                 # spks2 = spks - start -peth_parm['buffer'] -peth_parm['buffer']
-                ax_raster.eventplot(spks, colors='k', lineoffsets=0.5,
-                                    linelengths=tick_length, linewidths=tick_width, orientation='horizontal')
-                ax_raster.axis('off')
+                ax_raster.eventplot(
+                    spks,
+                    colors="k",
+                    lineoffsets=0.5,
+                    linelengths=tick_length,
+                    linewidths=tick_width,
+                    orientation="horizontal",
+                )
+                ax_raster.axis("off")
 
                 # Plot raw neural data
-                nd = NeuralData(path, channel_nb, format, update=update).extract([start, end])  # raw neural data
+                nd = NeuralData(path, channel_nb, format, update=update).extract(
+                    [start, end]
+                )  # raw neural data
                 nd.timestamp = nd.timestamp - nd.timestamp[0] - bout_buffer
-                ax_nd = plt.subplot2grid((nb_row, nb_col), (8, 0), rowspan=2, colspan=1, sharex=ax_spect)
-                ax_nd.plot(nd.timestamp, nd.data, 'k', lw=0.5)
+                ax_nd = plt.subplot2grid(
+                    (nb_row, nb_col), (8, 0), rowspan=2, colspan=1, sharex=ax_spect
+                )
+                ax_nd.plot(nd.timestamp, nd.data, "k", lw=0.5)
 
                 # Add a scale bar
-                plt.plot([ax_nd.get_xlim()[0] + 50, ax_nd.get_xlim()[0] + 50],
-                         [-250, 250], 'k', lw=3)  # for amplitude
-                plt.text(ax_nd.get_xlim()[0] - (bout_buffer / 2), -200, '500 µV', rotation=90)
+                plt.plot(
+                    [ax_nd.get_xlim()[0] + 50, ax_nd.get_xlim()[0] + 50],
+                    [-250, 250],
+                    "k",
+                    lw=3,
+                )  # for amplitude
+                plt.text(
+                    ax_nd.get_xlim()[0] - (bout_buffer / 2), -200, "500 µV", rotation=90
+                )
                 plt.subplots_adjust(wspace=0, hspace=0)
                 remove_right_top(ax_nd)
-                ax_nd.spines['left'].set_visible(False)
+                ax_nd.spines["left"].set_visible(False)
                 plt.yticks([], [])
-                ax_nd.set_xlabel('Time (ms)')
+                ax_nd.set_xlabel("Time (ms)")
 
                 # Save results
                 if save_fig:
-                    save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'RasterBouts')
+                    save_path = save.make_dir(
+                        ProjectLoader().path / "Analysis", "RasterBouts"
+                    )
                     save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext)
                 else:
                     plt.show()
 
-        print('Done!')
+        print("Done!")
 
 
 class BaselineInfo(ClusterInfo):
-
-    def __init__(self, path, channel_nb, unit_nb, format='rhd', *name, update=False):
+    def __init__(self, path, channel_nb, unit_nb, format="rhd", *name, update=False):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
 
         from ..analysis.parameters import baseline
@@ -1690,8 +2027,12 @@ class BaselineInfo(ClusterInfo):
             self.name = str(self.path)
 
         # Load baseline info
-        file_name = self.path / "BaselineInfo_{}_Cluster{}.npy".format(self.channel_nb, self.unit_nb)
-        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+        file_name = self.path / "BaselineInfo_{}_Cluster{}.npy".format(
+            self.channel_nb, self.unit_nb
+        )
+        if (
+            update or not file_name.exists()
+        ):  # if .npy doesn't exist or want to update the file
 
             # Store values in here
             file_list = []
@@ -1701,52 +2042,77 @@ class BaselineInfo(ClusterInfo):
             context_list = []
             baseline_info = {}
 
-            list_zip = zip(self.files, self.spk_ts, self.file_start, self.onsets, self.offsets, self.syllables,
-                           self.contexts)
+            list_zip = zip(
+                self.files,
+                self.spk_ts,
+                self.file_start,
+                self.onsets,
+                self.offsets,
+                self.syllables,
+                self.contexts,
+            )
 
             for file, spks, file_start, onsets, offsets, syllables, context in list_zip:
 
-                bout_ind_list = find_str(syllables, '*')
+                bout_ind_list = find_str(syllables, "*")
                 bout_ind_list.insert(0, -1)  # start from the first index
 
                 for bout_ind in bout_ind_list:
                     # print(bout_ind)
-                    if bout_ind == len(syllables) - 1:  # skip if * indicates the end syllable
+                    if (
+                        bout_ind == len(syllables) - 1
+                    ):  # skip if * indicates the end syllable
                         continue
 
-                    baseline_onset = float(onsets[bout_ind + 1]) - baseline['time_buffer'] - baseline['time_win']
+                    baseline_onset = (
+                        float(onsets[bout_ind + 1])
+                        - baseline["time_buffer"]
+                        - baseline["time_win"]
+                    )
 
-                    if bout_ind > 0 and baseline_onset < float(offsets[
-                                                                   bout_ind - 1]):  # skip if the baseline starts before the offset of the previous syllable
+                    if bout_ind > 0 and baseline_onset < float(
+                        offsets[bout_ind - 1]
+                    ):  # skip if the baseline starts before the offset of the previous syllable
                         continue
 
                     if baseline_onset < file_start:
                         baseline_onset = file_start
 
-                    baseline_offset = float(onsets[bout_ind + 1]) - baseline['time_buffer']
+                    baseline_offset = (
+                        float(onsets[bout_ind + 1]) - baseline["time_buffer"]
+                    )
 
-                    if baseline_offset - baseline_onset < 0:  # skip if there's not enough baseline period at the start of a file
+                    if (
+                        baseline_offset - baseline_onset < 0
+                    ):  # skip if there's not enough baseline period at the start of a file
                         continue
 
                     if baseline_onset > baseline_offset:
-                        print('start time ={} to end time = {}'.format(baseline_onset, baseline_offset))
+                        print(
+                            "start time ={} to end time = {}".format(
+                                baseline_onset, baseline_offset
+                            )
+                        )
 
-                    baseline_spk = spks[np.where((spks >= baseline_onset) & (spks <= baseline_offset))]
+                    baseline_spk = spks[
+                        np.where((spks >= baseline_onset) & (spks <= baseline_offset))
+                    ]
 
                     file_list.append(file)
                     spk_list.append(baseline_spk)
                     nb_spk_list.append(len(baseline_spk))
                     duration_list.append(
-                        (baseline_offset - baseline_onset))  # convert to seconds for calculating in Hz
+                        (baseline_offset - baseline_onset)
+                    )  # convert to seconds for calculating in Hz
                     context_list.append(context)
 
             baseline_info = {
-                'files': file_list,
-                'spk_ts': spk_list,
-                'nb_spk': nb_spk_list,
-                'durations': duration_list,
-                'contexts': context_list,
-                'parameter': baseline
+                "files": file_list,
+                "spk_ts": spk_list,
+                "nb_spk": nb_spk_list,
+                "durations": duration_list,
+                "contexts": context_list,
+                "parameter": baseline,
             }
             # Save baseline_info as a numpy object
             np.save(file_name, baseline_info)
@@ -1759,8 +2125,8 @@ class BaselineInfo(ClusterInfo):
             setattr(self, key, baseline_info[key])
 
     def _print_name(self):
-        print('')
-        print('Load baseline {self.name}'.format(self=self))
+        print("")
+        print("Load baseline {self.name}".format(self=self))
 
     def get_correlogram(self, ref_spk_list, target_spk_list, normalize=False):
         """
@@ -1771,12 +2137,14 @@ class BaselineInfo(ClusterInfo):
 
         from ..analysis.parameters import spk_corr_parm
 
-        correlogram_all = super().get_correlogram(ref_spk_list, target_spk_list, normalize=False)
-        correlogram = np.zeros(len(spk_corr_parm['time_bin']))
+        correlogram_all = super().get_correlogram(
+            ref_spk_list, target_spk_list, normalize=False
+        )
+        correlogram = np.zeros(len(spk_corr_parm["time_bin"]))
 
         # Combine correlogram from two contexts
         for key, value in correlogram_all.items():
-            if key in ['U', 'D']:
+            if key in ["U", "D"]:
                 correlogram += value
 
         return correlogram  # return class object for further analysis
@@ -1787,8 +2155,8 @@ class BaselineInfo(ClusterInfo):
 
         correlogram_jitter = []
 
-        for iter in range(corr_shuffle['shuffle_iter']):
-            self.jitter_spk_ts(corr_shuffle['shuffle_limit'])
+        for iter in range(corr_shuffle["shuffle_iter"]):
+            self.jitter_spk_ts(corr_shuffle["shuffle_limit"])
             corr_temp = self.get_correlogram(self.spk_ts_jittered, self.spk_ts_jittered)
             correlogram_jitter.append(corr_temp)
 
@@ -1803,7 +2171,7 @@ class BaselineInfo(ClusterInfo):
         """Mean firing rates"""
         nb_spk = sum([len(spk_ts) for spk_ts in self.spk_ts])
         total_duration = sum(self.durations)
-        mean_fr = nb_spk / (total_duration / 1E3)
+        mean_fr = nb_spk / (total_duration / 1e3)
         return round(mean_fr, 3)
 
     def __repr__(self):  # print attributes
@@ -1816,14 +2184,17 @@ class AudioData:
 
     Get all data by default; specify time range if needed
     """
-    def __init__(self, path, format='.wav', update=False):
+
+    def __init__(self, path, format=".wav", update=False):
         from ..analysis.load import load_audio
 
         self.path = path
         self.format = format
 
         file_name = self.path / "AudioData.npy"
-        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+        if (
+            update or not file_name.exists()
+        ):  # if .npy doesn't exist or want to update the file
             audio_info = load_audio(self.path, self.format)
         else:
             audio_info = np.load(file_name, allow_pickle=True).item()
@@ -1861,8 +2232,12 @@ class AudioData:
         """Calculate spectrogram"""
         from ..utils.spect import spectrogram
 
-        spect, spect_freq, _ = spectrogram(data, self.sample_rate, freq_range=freq_range)
-        spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram
+        spect, spect_freq, _ = spectrogram(
+            data, self.sample_rate, freq_range=freq_range
+        )
+        spect_time = np.linspace(
+            timestamp[0], timestamp[-1], spect.shape[1]
+        )  # timestamp for spectrogram
         return spect_time, spect, spect_freq
 
     def get_spectral_entropy(self, spect, normalize=True, mode=None):
@@ -1885,14 +2260,16 @@ class AudioData:
 
 
 class NeuralData:
-    def __init__(self, path, channel_nb, format='rhd', update=False):
+    def __init__(self, path, channel_nb, format="rhd", update=False):
 
         self.path = path
         self.channel_nb = str(channel_nb).zfill(2)
         self.format = format  # format of the file (e.g., rhd), this info should be in the database
 
         file_name = self.path / f"NeuralData_Ch{self.channel_nb}.npy"
-        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+        if (
+            update or not file_name.exists()
+        ):  # if .npy doesn't exist or want to update the file
             data_info = self.load_neural_data()
             # Save event_info as a numpy object
         else:
@@ -1916,7 +2293,7 @@ class NeuralData:
         print("")
         print("Load neural data")
         # List .rhd files
-        files = list(self.path.glob(f'*.{self.format}'))
+        files = list(self.path.glob(f"*.{self.format}"))
 
         # Initialize
         timestamp_concat = np.array([], dtype=np.float64)
@@ -1925,44 +2302,53 @@ class NeuralData:
         # Store values in these lists
         file_list = []
 
-        if self.format == 'cbin':
-            
+        if self.format == "cbin":
+
             # if the neural data is in .cbin format, read from .mat files that has contains concatenated data
             # currently does not have files to extract data from .cbin files in python
             import scipy.io
-            mat_file = list(self.path.glob(f'*Ch{self.channel_nb}(merged).mat'))[0]
-            timestamp_concat = scipy.io.loadmat(mat_file)['t_amplifier'][0].astype(np.float64)
-            amplifier_data_concat = scipy.io.loadmat(mat_file)['amplifier_data'][0].astype(np.float64)
-            
+
+            mat_file = list(self.path.glob(f"*Ch{self.channel_nb}(merged).mat"))[0]
+            timestamp_concat = scipy.io.loadmat(mat_file)["t_amplifier"][0].astype(
+                np.float64
+            )
+            amplifier_data_concat = scipy.io.loadmat(mat_file)["amplifier_data"][
+                0
+            ].astype(np.float64)
+
         else:
             # Loop through Intan .rhd files
             for file in files:
 
                 # Load data file
-                print('Loading... ' + file.stem)
+                print("Loading... " + file.stem)
                 file_list.append(file.name)
                 intan = read_rhd(file)  # note that the timestamp is in second
                 # Concatenate timestamps
-                intan['t_amplifier'] -= intan['t_amplifier'][0]  # start from t = 0
+                intan["t_amplifier"] -= intan["t_amplifier"][0]  # start from t = 0
                 if timestamp_concat.size == 0:
-                    timestamp_concat = np.append(timestamp_concat, intan['t_amplifier'])
+                    timestamp_concat = np.append(timestamp_concat, intan["t_amplifier"])
                 else:
-                    intan['t_amplifier'] += (timestamp_concat[-1] + (1 / sample_rate[self.format]))
-                    timestamp_concat = np.append(timestamp_concat, intan['t_amplifier'])
+                    intan["t_amplifier"] += timestamp_concat[-1] + (
+                        1 / sample_rate[self.format]
+                    )
+                    timestamp_concat = np.append(timestamp_concat, intan["t_amplifier"])
 
                 # Concatenate neural data
-                for ind, ch in enumerate(intan['amplifier_channels']):
-                    if int(self.channel_nb) == int(ch['native_channel_name'][-2:]):
-                        amplifier_data_concat = np.append(amplifier_data_concat, intan['amplifier_data'][ind, :])
+                for ind, ch in enumerate(intan["amplifier_channels"]):
+                    if int(self.channel_nb) == int(ch["native_channel_name"][-2:]):
+                        amplifier_data_concat = np.append(
+                            amplifier_data_concat, intan["amplifier_data"][ind, :]
+                        )
 
-            timestamp_concat *= 1E3  # convert to microsecond
+            timestamp_concat *= 1e3  # convert to microsecond
 
         # Organize data into a dictionary
         data_info = {
-            'files': file_list,
-            'timestamp': timestamp_concat,
-            'data': amplifier_data_concat,
-            'sample_rate': sample_rate[self.format]
+            "files": file_list,
+            "timestamp": timestamp_concat,
+            "data": amplifier_data_concat,
+            "sample_rate": sample_rate[self.format],
         }
         file_name = self.path / f"NeuralData_Ch{self.channel_nb}.npy"
         np.save(file_name, data_info)
@@ -1997,7 +2383,8 @@ class NeuralData:
 
         return _open_folder(self.path)
 
-class Correlogram():
+
+class Correlogram:
     """
     Class for correlogram analysis
     """
@@ -2008,19 +2395,32 @@ class Correlogram():
 
         corr_center = round(correlogram.shape[0] / 2) + 1  # center of the correlogram
         self.data = correlogram
-        self.time_bin = np.arange(-spk_corr_parm['lag'],
-                                  spk_corr_parm['lag'] + spk_corr_parm['bin_size'],
-                                  spk_corr_parm['bin_size'])
+        self.time_bin = np.arange(
+            -spk_corr_parm["lag"],
+            spk_corr_parm["lag"] + spk_corr_parm["bin_size"],
+            spk_corr_parm["bin_size"],
+        )
         if self.data.sum():
-            self.peak_ind = np.min(
-                np.abs(np.argwhere(correlogram == np.amax(correlogram)) - corr_center)) + corr_center  # index of the peak
+            self.peak_ind = (
+                np.min(
+                    np.abs(
+                        np.argwhere(correlogram == np.amax(correlogram)) - corr_center
+                    )
+                )
+                + corr_center
+            )  # index of the peak
             self.peak_latency = self.time_bin[self.peak_ind] - 1
             self.peak_value = self.data[self.peak_ind]
-            burst_range = np.arange(corr_center - (1000 / burst_hz) - 1, corr_center + (1000 / burst_hz),
-                                    dtype='int')  # burst range in the correlogram
+            burst_range = np.arange(
+                corr_center - (1000 / burst_hz) - 1,
+                corr_center + (1000 / burst_hz),
+                dtype="int",
+            )  # burst range in the correlogram
             self.burst_index = round(self.data[burst_range].sum() / self.data.sum(), 3)
         else:
-            self.peak_ind = self.peak_latency = self.peak_value = self.burst_index = np.nan
+            self.peak_ind = (
+                self.peak_latency
+            ) = self.peak_value = self.burst_index = np.nan
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
@@ -2051,22 +2451,32 @@ class Correlogram():
             self.baseline = upper_lim
 
             # Check peak significance
-            if self.peak_value > upper_lim[self.peak_ind] and self.peak_latency <= corr_burst_crit:
-                self.category = 'Bursting'
+            if (
+                self.peak_value > upper_lim[self.peak_ind]
+                and self.peak_latency <= corr_burst_crit
+            ):
+                self.category = "Bursting"
             else:
-                self.category = 'NonBursting'
+                self.category = "NonBursting"
 
         else:
             self.baseline = self.category = np.array(np.nan)
         return self.category
 
-    def plot_corr(self, ax, time_bin, correlogram,
-                  title, xlabel=None, ylabel=None,
-                  font_size=10,
-                  peak_line_width=0.8,
-                  normalize=False,
-                  peak_line=True,
-                  baseline=True):
+    def plot_corr(
+        self,
+        ax,
+        time_bin,
+        correlogram,
+        title,
+        xlabel=None,
+        ylabel=None,
+        font_size=10,
+        peak_line_width=0.8,
+        normalize=False,
+        peak_line=True,
+        baseline=True,
+    ):
         """
         Plot correlogram
 
@@ -2087,7 +2497,7 @@ class Correlogram():
         from ..utils.functions import myround
 
         if correlogram.sum():
-            ax.bar(time_bin, correlogram, color='k', rasterized=True)
+            ax.bar(time_bin, correlogram, color="k", rasterized=True)
             ymax = max([self.baseline.max(), correlogram.max()])
             round(ymax / 10) * 10
             ax.set_ylim(0, ymax)
@@ -2102,27 +2512,37 @@ class Correlogram():
 
             if peak_line and not np.isnan(self.peak_ind):
                 # peak_time_ind = np.where(self.time_bin == self.peak_latency)
-                ax.axvline(x=self.time_bin[self.peak_ind], color='r', linewidth=peak_line_width, ls='--')
+                ax.axvline(
+                    x=self.time_bin[self.peak_ind],
+                    color="r",
+                    linewidth=peak_line_width,
+                    ls="--",
+                )
 
             if baseline and not np.isnan(self.baseline.mean()):
-                ax.plot(self.time_bin, self.baseline, 'm', lw=0.5, ls='--')
+                ax.plot(self.time_bin, self.baseline, "m", lw=0.5, ls="--")
         else:
-            ax.axis('off')
+            ax.axis("off")
             ax.set_title(title, size=font_size)
 
 
 class BurstingInfo:
-
     def __init__(self, ClassInfo, *input_context):
 
         from ..analysis.parameters import burst_hz
 
         # ClassInfo can be BaselineInfo, MotifInfo etc
         if input_context:  # select data based on social context
-            spk_list = [spk_ts for spk_ts, context in zip(ClassInfo.spk_ts, ClassInfo.contexts) if
-                        context == input_context[0]]
-            duration_list = [duration for duration, context in zip(ClassInfo.durations, ClassInfo.contexts) if
-                             context == input_context[0]]
+            spk_list = [
+                spk_ts
+                for spk_ts, context in zip(ClassInfo.spk_ts, ClassInfo.contexts)
+                if context == input_context[0]
+            ]
+            duration_list = [
+                duration
+                for duration, context in zip(ClassInfo.durations, ClassInfo.contexts)
+                if context == input_context[0]
+            ]
             self.context = input_context
         else:
             spk_list = ClassInfo.spk_ts
@@ -2139,7 +2559,7 @@ class BurstingInfo:
 
             # spk = bi.spk_ts[8]
             isi = np.diff(spks)  # inter-spike interval
-            inst_fr = 1E3 / np.diff(spks)  # instantaneous firing rates (Hz)
+            inst_fr = 1e3 / np.diff(spks)  # instantaneous firing rates (Hz)
             bursts = np.where(inst_fr >= burst_hz)[0]  # burst index
 
             # Skip if no bursting detected
@@ -2147,7 +2567,9 @@ class BurstingInfo:
                 continue
 
             # Get the number of bursts
-            temp = np.diff(bursts)[np.where(np.diff(bursts) == 1)].size  # check if the spikes occur in bursting
+            temp = np.diff(bursts)[
+                np.where(np.diff(bursts) == 1)
+            ].size  # check if the spikes occur in bursting
             nb_bursts = np.append(nb_bursts, bursts.size - temp)
 
             # Get burst onset
@@ -2172,8 +2594,10 @@ class BurstingInfo:
             burst_offset_ind = np.append(burst_offset_ind, bursts[bursts.size - 1] + 1)
             burst_onset = spks[burst_onset_ind]
             burst_offset = spks[burst_offset_ind]
-            burst_spk_list.append(spks[burst_onset_ind[0]: burst_offset_ind[0] + 1])
-            burst_duration_arr = np.append(burst_duration_arr, burst_offset - burst_onset)
+            burst_spk_list.append(spks[burst_onset_ind[0] : burst_offset_ind[0] + 1])
+            burst_duration_arr = np.append(
+                burst_duration_arr, burst_offset - burst_onset
+            )
 
             # Get the number of burst spikes
             nb_burst_spks = 1  # note that it should always be greater than 1
@@ -2199,14 +2623,20 @@ class BurstingInfo:
         if sum(nb_burst_spk_list):
             self.spk_list = burst_spk_list
             self.nb_burst_spk = sum(nb_burst_spk_list)
-            self.fraction = (round(sum(nb_burst_spk_list) / sum([len(spks) for spks in spk_list]), 3)) * 100
+            self.fraction = (
+                round(sum(nb_burst_spk_list) / sum([len(spks) for spks in spk_list]), 3)
+            ) * 100
             self.duration = round((burst_duration_arr).sum(), 3)  # total duration
-            self.freq = round(nb_bursts.sum() / (sum(duration_list) / 1E3), 3)
+            self.freq = round(nb_bursts.sum() / (sum(duration_list) / 1e3), 3)
             self.mean_nb_spk = round(np.array(nb_burst_spk_list).mean(), 3)
             self.mean_duration = round(burst_duration_arr.mean(), 3)  # mean duration
         else:  # no burst spike detected
             self.spk_list = []
-            self.nb_burst_spk = self.fraction = self.duration = self.freq = self.mean_nb_spk = self.mean_duration = np.nan
+            self.nb_burst_spk = (
+                self.fraction
+            ) = (
+                self.duration
+            ) = self.freq = self.mean_nb_spk = self.mean_duration = np.nan
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
@@ -2216,6 +2646,7 @@ class ISI:
     """
     Class object for inter-spike interval analysis
     """
+
     def __init__(self, isi):
         """
         Parameters
@@ -2230,25 +2661,25 @@ class ISI:
         self.hist, self.time_bin = np.histogram(np.log10(isi), bins=isi_bin)
         self.time_bin = self.time_bin[:-1]
         # Peak latency of the ISI distribution
-        self.time_bin = 10 ** self.time_bin
-        self.peak_latency = self.time_bin[np.min(np.where(self.hist == np.min(self.hist.max())))]  # in ms
+        self.time_bin = 10**self.time_bin
+        self.peak_latency = self.time_bin[
+            np.min(np.where(self.hist == np.min(self.hist.max())))
+        ]  # in ms
         # Proportion of within-refractory period spikes
         self.within_ref_prop = (np.sum(self.data < 1) / self.data.shape[0]) * 100
         # CV of ISI
         self.cv = round(self.hist.std(axis=0) / self.hist.mean(axis=0), 3)
 
-    def plot(self, ax,
-             *title,
-             font_size=10):
+    def plot(self, ax, *title, font_size=10):
         from ..utils.draw import remove_right_top
 
-        ax.bar(self.time_bin, self.hist, color='k')
+        ax.bar(self.time_bin, self.hist, color="k")
         # ax.set_ylim([0, myround(math.ceil(ax.get_ylim()[1]), base=5)])
-        ax.axvline(1, color='k', linestyle='dashed', linewidth=1)
-        ax.axvline(self.peak_latency, color='r', linestyle='dashed', linewidth=0.3)
-        ax.set_ylabel('Count')
-        ax.set_xlabel('Time (ms)')
-        ax.set_xscale('log')
+        ax.axvline(1, color="k", linestyle="dashed", linewidth=1)
+        ax.axvline(self.peak_latency, color="r", linestyle="dashed", linewidth=0.3)
+        ax.set_ylabel("Count")
+        ax.set_xlabel("Time (ms)")
+        ax.set_xscale("log")
         if title:
             ax.set_title(title[0], size=font_size)
         remove_right_top(ax)

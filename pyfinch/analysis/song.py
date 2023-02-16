@@ -9,6 +9,7 @@ class SongInfo:
     """
     Class object for analyzing song data
     """
+
     def __init__(self, path, name=None, update=False):
 
         from ..analysis.load import load_song
@@ -22,7 +23,9 @@ class SongInfo:
 
         # Load song
         file_name = self.path / "SongInfo.npy"
-        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+        if (
+            update or not file_name.exists()
+        ):  # if .npy doesn't exist or want to update the file
             song_info = load_song(self.path)
             # Save song_info as a numpy object
             np.save(file_name, song_info)
@@ -37,11 +40,12 @@ class SongInfo:
         return str([key for key in self.__dict__.keys()])
 
     def __print_name(self):
-        print('')
-        print('Load song info {self.name}'.format(self=self))
+        print("")
+        print("Load song info {self.name}".format(self=self))
 
-    def list_files(self, ext='.wav'):
+    def list_files(self, ext=".wav"):
         from ..utils.functions import list_files
+
         return list_files(self.path, ext)
 
     def __len__(self):
@@ -58,9 +62,9 @@ class SongInfo:
     def nb_files(self) -> int:
         """Number of files"""
         nb_files = {}
-        nb_files['U'] = len([context for context in self.contexts if context == 'U'])
-        nb_files['D'] = len([context for context in self.contexts if context == 'D'])
-        nb_files['All'] = nb_files['U'] + nb_files['D']
+        nb_files["U"] = len([context for context in self.contexts if context == "U"])
+        nb_files["D"] = len([context for context in self.contexts if context == "D"])
+        nb_files["All"] = nb_files["U"] + nb_files["D"]
 
         return nb_files
 
@@ -80,14 +84,22 @@ class SongInfo:
         from ..analysis.functions import get_nb_bouts
 
         nb_bouts = {}
-        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
-        syllables = ''.join(syllable_list)
-        nb_bouts['U'] = get_nb_bouts(song_note, syllables)
+        syllable_list = [
+            syllable
+            for syllable, context in zip(self.syllables, self.contexts)
+            if context == "U"
+        ]
+        syllables = "".join(syllable_list)
+        nb_bouts["U"] = get_nb_bouts(song_note, syllables)
 
-        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'D']
-        syllables = ''.join(syllable_list)
-        nb_bouts['D'] = get_nb_bouts(song_note, syllables)
-        nb_bouts['All'] = nb_bouts['U'] + nb_bouts['D']
+        syllable_list = [
+            syllable
+            for syllable, context in zip(self.syllables, self.contexts)
+            if context == "D"
+        ]
+        syllables = "".join(syllable_list)
+        nb_bouts["D"] = get_nb_bouts(song_note, syllables)
+        nb_bouts["All"] = nb_bouts["U"] + nb_bouts["D"]
 
         return nb_bouts
 
@@ -96,14 +108,22 @@ class SongInfo:
         from ..utils.functions import find_str
 
         nb_motifs = {}
-        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'U']
-        syllables = ''.join(syllable_list)
-        nb_motifs['U'] = len(find_str(syllables, motif))
+        syllable_list = [
+            syllable
+            for syllable, context in zip(self.syllables, self.contexts)
+            if context == "U"
+        ]
+        syllables = "".join(syllable_list)
+        nb_motifs["U"] = len(find_str(syllables, motif))
 
-        syllable_list = [syllable for syllable, context in zip(self.syllables, self.contexts) if context == 'D']
-        syllables = ''.join(syllable_list)
-        nb_motifs['D'] = len(find_str(syllables, motif))
-        nb_motifs['All'] = nb_motifs['U'] + nb_motifs['D']
+        syllable_list = [
+            syllable
+            for syllable, context in zip(self.syllables, self.contexts)
+            if context == "D"
+        ]
+        syllables = "".join(syllable_list)
+        nb_motifs["D"] = len(find_str(syllables, motif))
+        nb_motifs["All"] = nb_motifs["U"] + nb_motifs["D"]
         return nb_motifs
 
     def mean_nb_intro(self, intro_note, song_note):
@@ -115,17 +135,23 @@ class SongInfo:
         from statistics import mean
 
         mean_nb_intro_notes = {}
-        mean_nb_intro_notes['U'] = mean_nb_intro_notes['D'] = None
+        mean_nb_intro_notes["U"] = mean_nb_intro_notes["D"] = None
 
         for context1 in set(self.contexts):
-            syllable_list = [syllable for syllable, context2 in zip(self.syllables, self.contexts) if
-                             context2 == context1]
-            syllables = ''.join(syllable_list)
-            bout_list = syllables.split('*')[:-1]  # eliminate demarcate marker
-            bout_list = [bout for bout in bout_list if
-                         unique_nb_notes_in_bout(song_note, bout)]  # eliminate bouts having no song note
+            syllable_list = [
+                syllable
+                for syllable, context2 in zip(self.syllables, self.contexts)
+                if context2 == context1
+            ]
+            syllables = "".join(syllable_list)
+            bout_list = syllables.split("*")[:-1]  # eliminate demarcate marker
+            bout_list = [
+                bout for bout in bout_list if unique_nb_notes_in_bout(song_note, bout)
+            ]  # eliminate bouts having no song note
             if bout_list:
-                mean_nb_intro_notes[context1] = round(mean(list(map(lambda x: x.count(intro_note), bout_list))), 3)
+                mean_nb_intro_notes[context1] = round(
+                    mean(list(map(lambda x: x.count(intro_note), bout_list))), 3
+                )
         return mean_nb_intro_notes
 
     def song_call_prop(self, call: str, song_note: str):
@@ -138,19 +164,27 @@ class SongInfo:
         from ..analysis.functions import unique_nb_notes_in_bout, total_nb_notes_in_bout
 
         song_call_prop = {}
-        song_call_prop['U'] = song_call_prop['D'] = None
+        song_call_prop["U"] = song_call_prop["D"] = None
 
         for context1 in set(self.contexts):
-            syllable_list = [syllable for syllable, context2 in zip(self.syllables, self.contexts) if
-                             context2 == context1]
-            syllables = ''.join(syllable_list)
-            bout_list = syllables.split('*')[:-1]  # eliminate demarcate marker
-            bout_list = [bout for bout in bout_list if
-                         unique_nb_notes_in_bout(song_note, bout)]  # eliminate bouts having no song note
+            syllable_list = [
+                syllable
+                for syllable, context2 in zip(self.syllables, self.contexts)
+                if context2 == context1
+            ]
+            syllables = "".join(syllable_list)
+            bout_list = syllables.split("*")[:-1]  # eliminate demarcate marker
+            bout_list = [
+                bout for bout in bout_list if unique_nb_notes_in_bout(song_note, bout)
+            ]  # eliminate bouts having no song note
             if bout_list:
-                nb_calls_per_bout = np.array(list(map(lambda x: total_nb_notes_in_bout(call, x), bout_list)))
+                nb_calls_per_bout = np.array(
+                    list(map(lambda x: total_nb_notes_in_bout(call, x), bout_list))
+                )
                 total_nb_notes = np.array([len(bout) for bout in bout_list])
-                song_call_prop[context1] = round((nb_calls_per_bout / total_nb_notes).mean(), 4)
+                song_call_prop[context1] = round(
+                    (nb_calls_per_bout / total_nb_notes).mean(), 4
+                )
 
         return song_call_prop
 
@@ -166,7 +200,9 @@ class SongInfo:
         duration_list = []
         context_list = []
 
-        list_zip = zip(self.files, self.onsets, self.offsets, self.syllables, self.contexts)
+        list_zip = zip(
+            self.files, self.onsets, self.offsets, self.syllables, self.contexts
+        )
 
         for file, onsets, offsets, syllables, context in list_zip:
             onsets = onsets.tolist()
@@ -184,8 +220,12 @@ class SongInfo:
                 motif_onset = float(onsets[start_ind])
                 motif_offset = float(offsets[stop_ind])
 
-                onsets_in_motif = onsets[start_ind:stop_ind + 1]  # list of motif onset timestamps
-                offsets_in_motif = offsets[start_ind:stop_ind + 1]  # list of motif offset timestamps
+                onsets_in_motif = onsets[
+                    start_ind : stop_ind + 1
+                ]  # list of motif onset timestamps
+                offsets_in_motif = offsets[
+                    start_ind : stop_ind + 1
+                ]  # list of motif offset timestamps
 
                 file_list.append(file)
                 duration_list.append(motif_offset - motif_onset)
@@ -195,11 +235,11 @@ class SongInfo:
 
         # Organize event-related info into a single dictionary object
         motif_info = {
-            'files': file_list,
-            'onsets': onset_list,
-            'offsets': offset_list,
-            'durations': duration_list,  # this is motif durations
-            'contexts': context_list,
+            "files": file_list,
+            "onsets": onset_list,
+            "offsets": offset_list,
+            "durations": duration_list,  # this is motif durations
+            "contexts": context_list,
         }
 
         return MotifInfo(motif_info, motif)
@@ -224,7 +264,9 @@ class BoutInfo(SongInfo):
 
         # Load bout info
         file_name = self.path / "BoutInfo.npy"
-        if update or not file_name.exists():  # if .npy doesn't exist or want to update the file
+        if (
+            update or not file_name.exists()
+        ):  # if .npy doesn't exist or want to update the file
             bout_info = self._load_bouts()
             # Save info dict as a numpy object
             np.save(file_name, bout_info)
@@ -236,8 +278,8 @@ class BoutInfo(SongInfo):
             setattr(self, key, bout_info[key])
 
     def print_name(self):
-        print('')
-        print('Load bout {self.name}'.format(self=self))
+        print("")
+        print("Load bout {self.name}".format(self=self))
 
     def __len__(self):
         return len(self.files)
@@ -254,11 +296,18 @@ class BoutInfo(SongInfo):
         duration_list = []
         context_list = []
 
-        list_zip = zip(self.files, self.spk_ts, self.onsets, self.offsets, self.syllables, self.contexts)
+        list_zip = zip(
+            self.files,
+            self.spk_ts,
+            self.onsets,
+            self.offsets,
+            self.syllables,
+            self.contexts,
+        )
 
         for file, spks, onsets, offsets, syllables, context in list_zip:
 
-            bout_ind = find_str(syllables, '*')
+            bout_ind = find_str(syllables, "*")
 
             for ind in range(len(bout_ind)):
                 if ind == 0:
@@ -270,32 +319,35 @@ class BoutInfo(SongInfo):
                 bout_onset = float(onsets[start_ind])
                 bout_offset = float(offsets[stop_ind])
 
-                onsets_in_bout = onsets[start_ind:stop_ind + 1]  # list of bout onset timestamps
-                offsets_in_bout = offsets[start_ind:stop_ind + 1]  # list of bout offset timestamps
+                onsets_in_bout = onsets[
+                    start_ind : stop_ind + 1
+                ]  # list of bout onset timestamps
+                offsets_in_bout = offsets[
+                    start_ind : stop_ind + 1
+                ]  # list of bout offset timestamps
 
                 file_list.append(file)
                 duration_list.append(bout_offset - bout_onset)
                 onset_list.append(onsets_in_bout)
                 offset_list.append(offsets_in_bout)
-                syllable_list.append(syllables[start_ind:stop_ind + 1])
+                syllable_list.append(syllables[start_ind : stop_ind + 1])
                 context_list.append(context)
 
         # Organize event-related info into a single dictionary object
         bout_info = {
-            'files': file_list,
-            'spk_ts': spk_list,
-            'onsets': onset_list,
-            'offsets': offset_list,
-            'durations': duration_list,  # this is bout durations
-            'syllables': syllable_list,
-            'contexts': context_list,
+            "files": file_list,
+            "spk_ts": spk_list,
+            "onsets": onset_list,
+            "offsets": offset_list,
+            "durations": duration_list,  # this is bout durations
+            "syllables": syllable_list,
+            "contexts": context_list,
         }
 
         return bout_info
 
 
 class MotifInfo:
-
     def __init__(self, motif_info, motif):
 
         # Set the dictionary values to class attributes
@@ -307,14 +359,18 @@ class MotifInfo:
     def get_motif_duration(self):
         """Get mean motif duration and its cv per context"""
 
-        motif_dur = {'mean': {'U': None, 'D': None},
-                     'cv': {'U': None, 'D': None}}
+        motif_dur = {"mean": {"U": None, "D": None}, "cv": {"U": None, "D": None}}
 
         for context1 in set(self.contexts):
-            duration = np.array([duration for context2, duration in zip(self.contexts, self.durations)
-                                 if context2 == context1])
-            motif_dur['mean'][context1] = round(duration.mean(), 3)
-            motif_dur['cv'][context1] = round(duration.std() / duration.mean(), 3)
+            duration = np.array(
+                [
+                    duration
+                    for context2, duration in zip(self.contexts, self.durations)
+                    if context2 == context1
+                ]
+            )
+            motif_dur["mean"][context1] = round(duration.mean(), 3)
+            motif_dur["cv"][context1] = round(duration.std() / duration.mean(), 3)
         return motif_dur
 
     def __len__(self):
@@ -329,7 +385,7 @@ class AudioInfo:
     Create an audio object from a single audio file (e.g., .wav)
     """
 
-    def __init__(self, filepath, format='.wav'):
+    def __init__(self, filepath, format=".wav"):
 
         from scipy.io import wavfile
 
@@ -337,17 +393,27 @@ class AudioInfo:
         self.name = filepath.stem
         self.dir = filepath.parent
         self.format = format
-        self.sample_rate, self.data = wavfile.read(filepath)  # note that the timestamp is in second
+        self.sample_rate, self.data = wavfile.read(
+            filepath
+        )  # note that the timestamp is in second
         length = self.data.shape[0] / self.sample_rate
-        self.timestamp = np.linspace(0., length, self.data.shape[0]) * 1E3  # start from t = 0 in ms
+        self.timestamp = (
+            np.linspace(0.0, length, self.data.shape[0]) * 1e3
+        )  # start from t = 0 in ms
 
     def load_notmat(self):
         """Load the .not.mat file"""
         from ..analysis.load import read_not_mat
 
-        notmat_file = self.path.with_suffix('.wav.not.mat')
-        self.onsets, self.offsets, self.intervals, self.durations, self.syllables, self.context \
-            = read_not_mat(notmat_file, unit='ms')
+        notmat_file = self.path.with_suffix(".wav.not.mat")
+        (
+            self.onsets,
+            self.offsets,
+            self.intervals,
+            self.durations,
+            self.syllables,
+            self.context,
+        ) = read_not_mat(notmat_file, unit="ms")
 
     def __repr__(self):  # print attributes
         return str([key for key in self.__dict__.keys()])
@@ -384,8 +450,12 @@ class AudioInfo:
         """Calculate spectrogram"""
         from ..utils.spect import spectrogram
 
-        spect, spect_freq, _ = spectrogram(data, self.sample_rate, freq_range=freq_range)
-        spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram
+        spect, spect_freq, _ = spectrogram(
+            data, self.sample_rate, freq_range=freq_range
+        )
+        spect_time = np.linspace(
+            timestamp[0], timestamp[-1], spect.shape[1]
+        )  # timestamp for spectrogram
         return spect_time, spect, spect_freq
 
     def get_spectral_entropy(self, spect, normalize=True, mode=None):
@@ -410,10 +480,17 @@ class AudioInfo:
 class FundamentalFreq:
     """Class object for analyzing fundamental frequency of a syllable"""
 
-    def __init__self(self, note=None,
-                     crit=None, parameter=None, onset=None, offset=None,
-                     low=None, high=None, harmonic=1
-                     ):
+    def __init__self(
+        self,
+        note=None,
+        crit=None,
+        parameter=None,
+        onset=None,
+        offset=None,
+        low=None,
+        high=None,
+        harmonic=1,
+    ):
         self.note = note
         self.crit = crit
         self.parameter = None  # {'percent_from_start', 'ms_from_start', 'ms_from_end'}
@@ -428,19 +505,24 @@ class FundamentalFreq:
         """Load info from the database if exists"""
         from ..database.load import ProjectLoader
 
-        query = f"SELECT ffNote, ffParameter, ffCriterion, ffLow, ffHigh, ffDuration, harmonic " \
-                f"FROM ff " \
-                f"WHERE birdID='{birdID}' AND ffNote='{ff_note}'"
+        query = (
+            f"SELECT ffNote, ffParameter, ffCriterion, ffLow, ffHigh, ffDuration, harmonic "
+            f"FROM ff "
+            f"WHERE birdID='{birdID}' AND ffNote='{ff_note}'"
+        )
         db = ProjectLoader().load_db().execute(query)
 
-        ff_info = {data[0]: {'parameter': data[1],
-                             'crit': data[2],
-                             'low': data[3],  # lower limit of frequency
-                             'high': data[4],  # upper limit of frequency
-                             'duration': data[5],
-                             'harmonic': data[6]  # 1st or 2nd harmonic detection
-                             } for data in db.cur.fetchall()  # ff duration
-                   }
+        ff_info = {
+            data[0]: {
+                "parameter": data[1],
+                "crit": data[2],
+                "low": data[3],  # lower limit of frequency
+                "high": data[4],  # upper limit of frequency
+                "duration": data[5],
+                "harmonic": data[6],  # 1st or 2nd harmonic detection
+            }
+            for data in db.cur.fetchall()  # ff duration
+        }
 
         # Set the dictionary values to class attributes
         for key in ff_info:
@@ -452,6 +534,5 @@ class FundamentalFreq:
 
 
 class SyllableNetwork:
-
     def __init__(self):
         pass

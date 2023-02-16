@@ -15,6 +15,7 @@ from pyfinch.utils.spect import *
 from util.draw import *
 import math
 
+
 class TestMotifInfo(unittest.TestCase):
 
     query = "SELECT * FROM cluster WHERE id == 9"
@@ -28,5 +29,5 @@ class TestMotifInfo(unittest.TestCase):
         len(mi)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

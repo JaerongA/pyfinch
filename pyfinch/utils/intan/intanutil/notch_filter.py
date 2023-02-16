@@ -5,6 +5,7 @@
 import math
 import numpy as np
 
+
 def notch_filter(input, fSample, fNotch, Bandwidth):
     """Implements a notch filter (e.g., for 50 or 60 Hz) on vector 'input'.
 
@@ -21,20 +22,20 @@ def notch_filter(input, fSample, fNotch, Bandwidth):
     out = notch_filter(input, 30000, 60, 10);
     """
 
-    tstep = 1.0/fSample
-    Fc = fNotch*tstep
+    tstep = 1.0 / fSample
+    Fc = fNotch * tstep
 
     L = len(input)
 
     # Calculate IIR filter parameters
-    d = math.exp(-2.0*math.pi*(Bandwidth/2.0)*tstep)
-    b = (1.0 + d*d) * math.cos(2.0*math.pi*Fc)
+    d = math.exp(-2.0 * math.pi * (Bandwidth / 2.0) * tstep)
+    b = (1.0 + d * d) * math.cos(2.0 * math.pi * Fc)
     a0 = 1.0
     a1 = -b
-    a2 = d*d
-    a = (1.0 + d*d)/2.0
+    a2 = d * d
+    a = (1.0 + d * d) / 2.0
     b0 = 1.0
-    b1 = -2.0 * math.cos(2.0*math.pi*Fc)
+    b1 = -2.0 * math.cos(2.0 * math.pi * Fc)
     b2 = 1.0
 
     out = np.zeros(len(input))
@@ -44,7 +45,13 @@ def notch_filter(input, fSample, fNotch, Bandwidth):
     #  previous final two values of out.)
 
     # Run filter
-    for i in range(2,L):
-        out[i] = (a*b2*input[i-2] + a*b1*input[i-1] + a*b0*input[i] - a2*out[i-2] - a1*out[i-1])/a0
+    for i in range(2, L):
+        out[i] = (
+            a * b2 * input[i - 2]
+            + a * b1 * input[i - 1]
+            + a * b0 * input[i]
+            - a2 * out[i - 2]
+            - a1 * out[i - 1]
+        ) / a0
 
     return out

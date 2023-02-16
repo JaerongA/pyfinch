@@ -17,7 +17,8 @@ def set_fig_size(w, h, ax=None):
     """
     import matplotlib.pyplot as plt
 
-    if not ax: ax = plt.gca()
+    if not ax:
+        ax = plt.gca()
     l = ax.figure.subplotpars.left
     r = ax.figure.subplotpars.right
     t = ax.figure.subplotpars.top
@@ -35,7 +36,7 @@ def remove_right_top(ax):
     ----------
     ax : axis object
     """
-    ax.spines['right'].set_visible(False), ax.spines['top'].set_visible(False)
+    ax.spines["right"].set_visible(False), ax.spines["top"].set_visible(False)
 
 
 def get_ax_lim(ax_min, ax_max, base=10):

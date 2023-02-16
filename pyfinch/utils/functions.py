@@ -38,6 +38,7 @@ def find_str(string: str, pattern: str) -> list:
         list of starting indices
     """
     import re
+
     if not pattern.isalpha():  # if the pattern contains non-alphabetic chars such as *
         pattern = "\\" + pattern
 
@@ -52,6 +53,7 @@ def find_data_path():
     from pathlib import Path
     from tkinter import Tk
     from tkinter import filedialog
+
     root = Tk()
     root.withdraw()
     data_dir = filedialog.askdirectory()
@@ -72,13 +74,14 @@ def list_files(dir: str, ext: str) -> list:
     -------
     files : list
     """
-    files = [file for file in dir.rglob('*' + ext)]
+    files = [file for file in dir.rglob("*" + ext)]
     return files
 
 
 def open_folder(path) -> None:
     """Open the directory in win explorer"""
     import webbrowser
+
     webbrowser.open(path)
 
 
@@ -177,13 +180,13 @@ def para_interp(x, y):
         estimated max value
     """
 
-    x = np.vstack((x ** 2, x))
+    x = np.vstack((x**2, x))
     x = np.vstack((x, np.array([1, 1, 1]))).T
 
     x = np.linalg.inv(x)
     func = np.dot(x, y)
 
     x_max = -func[1] / (2 * func[0])
-    y_max = (func[0] * x_max ** 2) + (func[1] * x_max) + func[2]
+    y_max = (func[0] * x_max**2) + (func[1] * x_max) + func[2]
 
     return x_max, y_max

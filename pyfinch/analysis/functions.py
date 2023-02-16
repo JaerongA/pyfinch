@@ -26,11 +26,11 @@ def get_note_type(syllables: str, song_db: Dict[str, str]) -> List[str]:
     type_str = []
     for syllable in syllables:
         if syllable in song_db.motif:
-            type_str.append('M')  # motif
+            type_str.append("M")  # motif
         elif syllable in song_db.calls:
-            type_str.append('C')  # call
+            type_str.append("C")  # call
         elif syllable in song_db.introNotes:
-            type_str.append('I')  # intro notes
+            type_str.append("I")  # intro notes
         else:
             type_str.append(None)  # intro notes
     return type_str
@@ -61,32 +61,34 @@ def demarcate_bout(target, intervals: int):
         if len(ind):
             for i, item in enumerate(ind):
                 if i != 0:
-                    bout_labeling += '*' + target[ind[i - 1] + 1:ind[i] + 1]
+                    bout_labeling += "*" + target[ind[i - 1] + 1 : ind[i] + 1]
                 else:
-                    bout_labeling = target[:item + 1]
-            bout_labeling += '*' + target[ind[i] + 1:]
+                    bout_labeling = target[: item + 1]
+            bout_labeling += "*" + target[ind[i] + 1 :]
 
-        bout_labeling += '*'  # end with an asterisk
+        bout_labeling += "*"  # end with an asterisk
 
     elif isinstance(target, np.ndarray):
         if len(ind):
             for i, item in enumerate(ind):
                 if i == 0:
-                    bout_labeling = target[:item + 1]
+                    bout_labeling = target[: item + 1]
                 else:
-                    bout_labeling = np.append(bout_labeling, '*')
-                    bout_labeling = np.append(bout_labeling, target[ind[i - 1] + 1: ind[i] + 1])
+                    bout_labeling = np.append(bout_labeling, "*")
+                    bout_labeling = np.append(
+                        bout_labeling, target[ind[i - 1] + 1 : ind[i] + 1]
+                    )
 
-            bout_labeling = np.append(bout_labeling, '*')
-            bout_labeling = np.append(bout_labeling, target[ind[i] + 1:])
+            bout_labeling = np.append(bout_labeling, "*")
+            bout_labeling = np.append(bout_labeling, target[ind[i] + 1 :])
 
-        bout_labeling = np.append(bout_labeling, '*')  # end with an asterisk
+        bout_labeling = np.append(bout_labeling, "*")  # end with an asterisk
 
     return bout_labeling
 
 
 def unique_nb_notes_in_bout(note: str, bout: str) -> int:
-    """Return the unique number of notes within a single bout string """
+    """Return the unique number of notes within a single bout string"""
     nb_song_note_in_bout = len([note for note in note if note in bout])
     return nb_song_note_in_bout
 
@@ -115,8 +117,13 @@ def get_nb_bouts(song_note: str, bout_labeling: str):
     Returns
     -------
     """
-    nb_bouts = len([bout for bout in bout_labeling.split('*')[:-1] if
-                    unique_nb_notes_in_bout(song_note, bout)])
+    nb_bouts = len(
+        [
+            bout
+            for bout in bout_labeling.split("*")[:-1]
+            if unique_nb_notes_in_bout(song_note, bout)
+        ]
+    )
     return nb_bouts
 
 
@@ -170,12 +177,16 @@ def get_half_width(wf_ts: np.ndarray, avg_wf: np.ndarray):
     deflection_range : list
     half_width : float
     """
-    if np.argmin(avg_wf) > np.argmax(avg_wf):  # inverted waveform (peak comes first in extra-cellular recording)
+    if np.argmin(avg_wf) > np.argmax(
+        avg_wf
+    ):  # inverted waveform (peak comes first in extra-cellular recording)
         deflection_baseline = np.abs(avg_wf).mean() + np.abs(avg_wf).std(
-            axis=0)  # the waveform baseline. Finds values above the baseline
+            axis=0
+        )  # the waveform baseline. Finds values above the baseline
     else:
         deflection_baseline = avg_wf.mean() - avg_wf.std(
-            axis=0)  # the waveform baseline. Finds values below the baseline
+            axis=0
+        )  # the waveform baseline. Finds values below the baseline
 
     diff_ind = []
     for ind in np.where(np.diff(avg_wf > deflection_baseline))[0]:  # below mean amp
@@ -185,7 +196,7 @@ def get_half_width(wf_ts: np.ndarray, avg_wf: np.ndarray):
     max_amp_arr = []
     for ind, _ in enumerate(diff_ind):
         if ind < len(diff_ind) - 1:
-            max_amp = np.max(np.abs(avg_wf[diff_ind[ind]: diff_ind[ind + 1]]))
+            max_amp = np.max(np.abs(avg_wf[diff_ind[ind] : diff_ind[ind + 1]]))
             max_amp_arr = np.append(max_amp_arr, max_amp)
 
     # Get the absolute amp value of the peak and trough
@@ -197,7 +208,9 @@ def get_half_width(wf_ts: np.ndarray, avg_wf: np.ndarray):
     for amp in peak_trough_amp:
         peak_trough_ind = np.append(peak_trough_ind, np.where(np.abs(avg_wf) == amp)[0])
 
-    peak_ind = peak_trough_ind.min()  # note that the waveforms are inverted in extracelluar recording so peak comes first
+    peak_ind = (
+        peak_trough_ind.min()
+    )  # note that the waveforms are inverted in extracelluar recording so peak comes first
     trough_ind = peak_trough_ind.max()
 
     deflection_range = []
@@ -205,7 +218,7 @@ def get_half_width(wf_ts: np.ndarray, avg_wf: np.ndarray):
 
     for ind, _ in enumerate(diff_ind):
         if ind < len(diff_ind) - 1:
-            range = diff_ind[ind: ind + 2]
+            range = diff_ind[ind : ind + 2]
             if range[0] < peak_ind < range[1]:
                 deflection_range = range
                 break
@@ -213,13 +226,20 @@ def get_half_width(wf_ts: np.ndarray, avg_wf: np.ndarray):
         # sometimes half-width cannot be properly estimated unless the signal is interpolated
         # in such cases, the function will just return nan
         half_width = (wf_ts[deflection_range[1]] - wf_ts[deflection_range[0]]) / 2
-        half_width *= 1E3  # convert to microsecond
+        half_width *= 1e3  # convert to microsecond
     return deflection_range, round(half_width, 3)
 
 
-def get_psd_mat(data_path, save_path,
-                save_psd=False, update=False, open_folder=False, add_date=False,
-                nfft=2 ** 10, fig_ext='.png'):
+def get_psd_mat(
+    data_path,
+    save_path,
+    save_psd=False,
+    update=False,
+    open_folder=False,
+    add_date=False,
+    nfft=2**10,
+    fig_ext=".png",
+):
     """Get matrix of power spectral density"""
     from ..analysis.parameters import freq_range
     from ..utils import save
@@ -238,46 +258,63 @@ def get_psd_mat(data_path, save_path,
     font_size = 12  # figure font size
 
     # Read from a file if it already exists
-    file_name = data_path / 'PSD.npy'
+    file_name = data_path / "PSD.npy"
 
     if save_psd and not update:
-        raise Exception("psd can only be save in an update mode or when the .npy does not exist!, set update to TRUE")
+        raise Exception(
+            "psd can only be save in an update mode or when the .npy does not exist!, set update to TRUE"
+        )
 
     if update or not file_name.exists():
 
         # Load files
-        files = list(data_path.glob('*.wav'))
+        files = list(data_path.glob("*.wav"))
 
         psd_list = []  # store psd vectors for training
         file_list = []  # store files names containing psds
-        psd_notes = ''  # concatenate all syllables
+        psd_notes = ""  # concatenate all syllables
         psd_context_list = []  # concatenate syllable contexts
 
         for file in files:
 
-            notmat_file = file.with_suffix('.wav.not.mat')
-            onsets, offsets, intervals, durations, syllables, contexts = read_not_mat(notmat_file, unit='ms')
-            sample_rate, data = wavfile.read(file)  # note that the timestamp is in second
+            notmat_file = file.with_suffix(".wav.not.mat")
+            onsets, offsets, intervals, durations, syllables, contexts = read_not_mat(
+                notmat_file, unit="ms"
+            )
+            sample_rate, data = wavfile.read(
+                file
+            )  # note that the timestamp is in second
             length = data.shape[0] / sample_rate
-            timestamp = np.round(np.linspace(0, length, data.shape[0]) * 1E3,
-                                 3)  # start from t = 0 in ms, reduce floating precision
+            timestamp = np.round(
+                np.linspace(0, length, data.shape[0]) * 1e3, 3
+            )  # start from t = 0 in ms, reduce floating precision
             contexts = contexts * len(syllables)
             list_zip = zip(onsets, offsets, syllables, contexts)
 
             for i, (onset, offset, syllable, context) in enumerate(list_zip):
 
                 # Get spectrogram
-                ind, _ = extract_ind(timestamp, [onset - note_buffer, offset + note_buffer])
+                ind, _ = extract_ind(
+                    timestamp, [onset - note_buffer, offset + note_buffer]
+                )
                 extracted_data = data[ind]
-                spect, freqbins, timebins = spectrogram(extracted_data, sample_rate, freq_range=freq_range)
+                spect, freqbins, timebins = spectrogram(
+                    extracted_data, sample_rate, freq_range=freq_range
+                )
 
                 # Get power spectral density
                 # nfft = int(round(2 ** 14 / 32000.0 * sample_rate))  # used by Dave Mets
 
                 # Get psd after normalization
-                psd_seg = psd(normalize(extracted_data), NFFT=nfft, Fs=sample_rate)  # PSD segment from the time range
-                seg_start = int(round(freq_range[0] / (sample_rate / float(nfft))))  # 307
-                seg_end = int(round(freq_range[1] / (sample_rate / float(nfft))))  # 8192
+                psd_seg = psd(
+                    normalize(extracted_data), NFFT=nfft, Fs=sample_rate
+                )  # PSD segment from the time range
+                seg_start = int(
+                    round(freq_range[0] / (sample_rate / float(nfft)))
+                )  # 307
+                seg_end = int(
+                    round(freq_range[1] / (sample_rate / float(nfft)))
+                )  # 8192
                 psd_power = normalize(psd_seg[0][seg_start:seg_end])
                 psd_freq = psd_seg[1][seg_start:seg_end]
 
@@ -285,28 +322,35 @@ def get_psd_mat(data_path, save_path,
                 if save_psd:
                     # Plot spectrogram & PSD
                     fig = plt.figure(figsize=(3.5, 3))
-                    fig_name = "{}, note#{} - {} - {}".format(file.name, i, syllable, context)
+                    fig_name = "{}, note#{} - {} - {}".format(
+                        file.name, i, syllable, context
+                    )
                     fig.suptitle(fig_name, y=0.95, fontsize=10)
                     gs = gridspec.GridSpec(6, 3)
 
                     # Plot spectrogram
                     ax_spect = plt.subplot(gs[1:5, 0:2])
-                    ax_spect.pcolormesh(timebins * 1E3, freqbins, spect,  # data
-                                        cmap='hot_r',
-                                        norm=colors.SymLogNorm(linthresh=0.05,
-                                                               linscale=0.03,
-                                                               vmin=0.5, vmax=100
-                                                               ))
+                    ax_spect.pcolormesh(
+                        timebins * 1e3,
+                        freqbins,
+                        spect,  # data
+                        cmap="hot_r",
+                        norm=colors.SymLogNorm(
+                            linthresh=0.05, linscale=0.03, vmin=0.5, vmax=100
+                        ),
+                    )
 
                     remove_right_top(ax_spect)
                     ax_spect.set_ylim(freq_range[0], freq_range[1])
-                    ax_spect.set_xlabel('Time (ms)', fontsize=font_size)
-                    ax_spect.set_ylabel('Frequency (Hz)', fontsize=font_size)
+                    ax_spect.set_xlabel("Time (ms)", fontsize=font_size)
+                    ax_spect.set_ylabel("Frequency (Hz)", fontsize=font_size)
 
                     # Plot psd
                     ax_psd = plt.subplot(gs[1:5, 2], sharey=ax_spect)
-                    ax_psd.plot(psd_power, psd_freq, 'k')
-                    ax_psd.spines['right'].set_visible(False), ax_psd.spines['top'].set_visible(False)
+                    ax_psd.plot(psd_power, psd_freq, "k")
+                    ax_psd.spines["right"].set_visible(False), ax_psd.spines[
+                        "top"
+                    ].set_visible(False)
                     # ax_psd.spines['bottom'].set_visible(False)
                     # ax_psd.set_xticks([])  # remove xticks
                     plt.setp(ax_psd.set_yticks([]))
@@ -314,7 +358,13 @@ def get_psd_mat(data_path, save_path,
 
                     # Save figures
                     save_path = save.make_dir(save_path, add_date=add_date)
-                    save.save_fig(fig, save_path, fig_name, fig_ext=fig_ext, open_folder=open_folder)
+                    save.save_fig(
+                        fig,
+                        save_path,
+                        fig_name,
+                        fig_ext=fig_ext,
+                        open_folder=open_folder,
+                    )
                     plt.close(fig)
 
                 psd_list.append(psd_power)
@@ -324,10 +374,10 @@ def get_psd_mat(data_path, save_path,
 
         # Organize data into a dictionary
         data = {
-            'psd_list': psd_list,
-            'file_list': file_list,
-            'psd_notes': psd_notes,
-            'psd_context': psd_context_list,
+            "psd_list": psd_list,
+            "file_list": file_list,
+            "psd_notes": psd_notes,
+            "psd_context": psd_context_list,
         }
         # Save results
         np.save(file_name, data)
@@ -335,7 +385,7 @@ def get_psd_mat(data_path, save_path,
     else:  # if not update or file already exists
         data = np.load(file_name, allow_pickle=True).item()
 
-    return data['psd_list'], data['file_list'], data['psd_notes'], data['psd_context']
+    return data["psd_list"], data["file_list"], data["psd_notes"], data["psd_context"]
 
 
 def get_basis_psd(psd_list, notes, song_note=None, num_note_crit_basis=30):
@@ -364,17 +414,22 @@ def get_basis_psd(psd_list, notes, song_note=None, num_note_crit_basis=30):
     psd_list_basis = []
     note_list_basis = []
 
-    psd_array = np.asarray(psd_list)  # number of syllables x psd (get_basis_psd function accepts array format only)
-    unique_note = unique(''.join(sorted(notes)))  # convert note string into a list of unique syllables
+    psd_array = np.asarray(
+        psd_list
+    )  # number of syllables x psd (get_basis_psd function accepts array format only)
+    unique_note = unique(
+        "".join(sorted(notes))
+    )  # convert note string into a list of unique syllables
 
     # Remove unidentifiable note (e.g., '0' or 'x')
-    if '0' in unique_note:
-        unique_note.remove('0')
-    if 'x' in unique_note:
-        unique_note.remove('x')
+    if "0" in unique_note:
+        unique_note.remove("0")
+    if "x" in unique_note:
+        unique_note.remove("x")
 
     for note in unique_note:
-        if note not in song_note: continue
+        if note not in song_note:
+            continue
         ind = find_str(notes, note)
         if len(ind) >= num_note_crit_basis:  # number should exceed the  criteria
             note_pow_array = psd_array[ind, :]
@@ -388,9 +443,9 @@ def get_basis_psd(psd_list, notes, song_note=None, num_note_crit_basis=30):
     return psd_list_basis, note_list_basis
 
 
-def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
-                               context_selection=None,
-                               npy_update=False):
+def get_pre_motor_spk_per_note(
+    ClusterInfo, song_note, save_path, context_selection=None, npy_update=False
+):
     """
     Get the number of spikes in the pre-motor window for individual note
 
@@ -417,35 +472,48 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
 
     # Create a new database (song_syllable)
     db = ProjectLoader().load_db()
-    with open('database/create_syllable.sql', 'r') as sql_file:
+    with open("database/create_syllable.sql", "r") as sql_file:
         db.conn.executescript(sql_file.read())
 
-    cluster_id = int(ClusterInfo.name.split('-')[0])
+    cluster_id = int(ClusterInfo.name.split("-")[0])
 
     # Set save file (.npy)
-    npy_name = ClusterInfo.name + '.npy'
+    npy_name = ClusterInfo.name + ".npy"
     npy_name = save_path / npy_name
 
     if npy_name.exists() and not npy_update:
-        pre_motor_spk_dict = np.load(npy_name,
-                                     allow_pickle=True).item()  # all pre-deafening data to be combined for being used as a template
+        pre_motor_spk_dict = np.load(
+            npy_name, allow_pickle=True
+        ).item()  # all pre-deafening data to be combined for being used as a template
     else:
         nb_pre_motor_spk = np.array([], dtype=np.int)
         note_onset_ts = np.array([], dtype=np.float32)
-        notes_all = ''
-        contexts_all = ''
+        notes_all = ""
+        contexts_all = ""
 
-        for onsets, notes, contexts, spks in zip(ClusterInfo.onsets, ClusterInfo.syllables, ClusterInfo.contexts,
-                                                 ClusterInfo.spk_ts):  # loop through files
-            onsets = np.delete(onsets, np.where(onsets == '*'))
+        for onsets, notes, contexts, spks in zip(
+            ClusterInfo.onsets,
+            ClusterInfo.syllables,
+            ClusterInfo.contexts,
+            ClusterInfo.spk_ts,
+        ):  # loop through files
+            onsets = np.delete(onsets, np.where(onsets == "*"))
             onsets = np.asarray(list(map(float, onsets)))
-            notes = notes.replace('*', '')
+            notes = notes.replace("*", "")
             contexts = contexts * len(notes)
 
-            for onset, note, context in zip(onsets, notes, contexts):  # loop through notes
+            for onset, note, context in zip(
+                onsets, notes, contexts
+            ):  # loop through notes
                 if note in song_note:
                     pre_motor_win = [onset - pre_motor_win_size, onset]
-                    nb_spk = len(spks[np.where((spks >= pre_motor_win[0]) & (spks <= pre_motor_win[-1]))])
+                    nb_spk = len(
+                        spks[
+                            np.where(
+                                (spks >= pre_motor_win[0]) & (spks <= pre_motor_win[-1])
+                            )
+                        ]
+                    )
                     nb_pre_motor_spk = np.append(nb_pre_motor_spk, nb_spk)
                     note_onset_ts = np.append(note_onset_ts, onset)
                     notes_all += note
@@ -457,18 +525,25 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
         # db.conn.commit()
         # Store info in a dictionary
         pre_motor_spk_dict = {}
-        pre_motor_spk_dict['pre_motor_win'] = pre_motor_win_size  # pre-motor window before syllable onset in ms
+        pre_motor_spk_dict[
+            "pre_motor_win"
+        ] = pre_motor_win_size  # pre-motor window before syllable onset in ms
 
         for note in unique(notes_all):
             ind = find_str(notes_all, note)
             pre_motor_spk_dict[note] = {}  # nested dictionary
-            pre_motor_spk_dict[note]['nb_spk'] = nb_pre_motor_spk[ind]
-            pre_motor_spk_dict[note]['onset_ts'] = note_onset_ts[ind]
-            pre_motor_spk_dict[note]['context'] = ''.join(np.asarray(list(contexts_all))[ind])
+            pre_motor_spk_dict[note]["nb_spk"] = nb_pre_motor_spk[ind]
+            pre_motor_spk_dict[note]["onset_ts"] = note_onset_ts[ind]
+            pre_motor_spk_dict[note]["context"] = "".join(
+                np.asarray(list(contexts_all))[ind]
+            )
 
-        save_path = save.make_dir(ProjectLoader().path / 'Analysis', 'PSD_similarity' + '/' + 'SpkCount',
-                                  add_date=False)
-        npy_name = ClusterInfo.name + '.npy'
+        save_path = save.make_dir(
+            ProjectLoader().path / "Analysis",
+            "PSD_similarity" + "/" + "SpkCount",
+            add_date=False,
+        )
+        npy_name = ClusterInfo.name + ".npy"
         npy_name = save_path / npy_name
         np.save(npy_name, pre_motor_spk_dict)
 
@@ -476,19 +551,23 @@ def get_pre_motor_spk_per_note(ClusterInfo, song_note, save_path,
     if context_selection:  # 'U' or 'D' and not None
 
         for note in list(pre_motor_spk_dict.keys()):
-            if note != 'pre_motor_win':
-                context_arr = np.array(list(pre_motor_spk_dict[note]['context']))
+            if note != "pre_motor_win":
+                context_arr = np.array(list(pre_motor_spk_dict[note]["context"]))
                 ind = np.where(context_arr == context_selection)[0]
-                pre_motor_spk_dict[note]['nb_spk'] = pre_motor_spk_dict[note]['nb_spk'][ind]
-                pre_motor_spk_dict[note]['onset_ts'] = pre_motor_spk_dict[note]['onset_ts'][ind]
-                pre_motor_spk_dict[note]['context'] = ''.join(context_arr[ind])
+                pre_motor_spk_dict[note]["nb_spk"] = pre_motor_spk_dict[note]["nb_spk"][
+                    ind
+                ]
+                pre_motor_spk_dict[note]["onset_ts"] = pre_motor_spk_dict[note][
+                    "onset_ts"
+                ][ind]
+                pre_motor_spk_dict[note]["context"] = "".join(context_arr[ind])
 
     return pre_motor_spk_dict
 
 
 def get_spectral_entropy(psd_array, normalize=True, mode=None):
     """Calculate spectral entropy and it variance"""
-    if mode == 'spectral':
+    if mode == "spectral":
         # Get time resolved version of the spectral entropy
         psd_array = psd_array.mean(axis=1)  # time-averaged spectrogram
         psd_norm = psd_array / psd_array.sum()
@@ -496,7 +575,7 @@ def get_spectral_entropy(psd_array, normalize=True, mode=None):
         se /= np.log2(psd_norm.shape[0])
         return se
 
-    elif mode == 'spectro_temporal':
+    elif mode == "spectro_temporal":
         se_dict = {}
         se_array = np.array([], dtype=np.float32)
         for i in range(psd_array.shape[1]):
@@ -505,9 +584,9 @@ def get_spectral_entropy(psd_array, normalize=True, mode=None):
             if normalize:
                 se /= np.log2(psd_norm.shape[0])
             se_array = np.append(se_array, se)
-        se_dict['array'] = se_array
-        se_dict['mean'] = se_array.mean()
-        se_dict['var'] = se_array.var()
+        se_dict["array"] = se_array
+        se_dict["mean"] = se_array.mean()
+        se_dict["var"] = se_array.var()
         # se_dict['var'] = 1 / -np.log(se_array.var())
         # se_dict['var'] = se_array.std() / se_array.mean()  # calculate cv
         return se_dict
@@ -539,7 +618,7 @@ def get_ff(data, sample_rate, ff_low, ff_high, ff_harmonic=1):
 
     # Get peak of the auto-correlogram
     corr = smt.ccf(data, data, adjusted=False)
-    corr_win = corr[3: round(sample_rate / ff_low)]
+    corr_win = corr[3 : round(sample_rate / ff_low)]
     peak_ind, property_ = find_peaks(corr_win, height=0)
 
     # Plot auto-correlation (for debugging)
@@ -551,12 +630,14 @@ def get_ff(data, sample_rate, ff_low, ff_high, ff_harmonic=1):
     ff_list = []
     ff = None
     # loop through the peak until FF is found in the desired range
-    for ind in property_['peak_heights'].argsort()[::-1]:
-        if not (peak_ind[ind] == 0 or (
-                peak_ind[ind] == len(corr_win))):  # if the peak is not in first and last indices
+    for ind in property_["peak_heights"].argsort()[::-1]:
+        if not (
+            peak_ind[ind] == 0 or (peak_ind[ind] == len(corr_win))
+        ):  # if the peak is not in first and last indices
             target_peak_ind = peak_ind[ind]
             target_peak_amp = corr_win[
-                              target_peak_ind - 1: target_peak_ind + 2]  # find the peak using two neighboring values using parabolic interpolation
+                target_peak_ind - 1 : target_peak_ind + 2
+            ]  # find the peak using two neighboring values using parabolic interpolation
             target_peak_ind = np.arange(target_peak_ind - 1, target_peak_ind + 2)
             peak, _ = para_interp(target_peak_ind, target_peak_amp)
 
@@ -575,30 +656,42 @@ def get_ff(data, sample_rate, ff_low, ff_high, ff_harmonic=1):
 
 def normalize_from_pre(df, var_name: str, note: str):
     """Normalize post-deafening values using pre-deafening values"""
-    pre_val = df.loc[(df['note'] == note) & (df['taskName'] == 'Predeafening')][var_name]
+    pre_val = df.loc[(df["note"] == note) & (df["taskName"] == "Predeafening")][
+        var_name
+    ]
     pre_val = pre_val.mean()
 
-    post_val = df.loc[(df['note'] == note) & (df['taskName'] == 'Postdeafening')][var_name]
+    post_val = df.loc[(df["note"] == note) & (df["taskName"] == "Postdeafening")][
+        var_name
+    ]
     norm_val = post_val / pre_val
 
     return norm_val
 
 
-def add_pre_normalized_col(df: pd.DataFrame, col_name_to_normalize, col_name_to_add,
-                           save_path=None, csv_name=None, save_csv=False) -> pd.DataFrame:
+def add_pre_normalized_col(
+    df: pd.DataFrame,
+    col_name_to_normalize,
+    col_name_to_add,
+    save_path=None,
+    csv_name=None,
+    save_csv=False,
+) -> pd.DataFrame:
     """Normalize relative to pre-deafening mean"""
 
     df[col_name_to_add] = np.nan
 
-    bird_list = sorted(set(df['birdID'].to_list()))
+    bird_list = sorted(set(df["birdID"].to_list()))
     for bird in bird_list:
 
-        temp_df = df.loc[df['birdID'] == bird]
-        note_list = temp_df['note'].unique()
+        temp_df = df.loc[df["birdID"] == bird]
+        note_list = temp_df["note"].unique()
 
         for note in note_list:
             norm_val = normalize_from_pre(temp_df, col_name_to_normalize, note)
-            add_ind = temp_df.loc[(temp_df['note'] == note) & (temp_df['taskName'] == 'Postdeafening')].index
+            add_ind = temp_df.loc[
+                (temp_df["note"] == note) & (temp_df["taskName"] == "Postdeafening")
+            ].index
             df.loc[add_ind, col_name_to_add] = norm_val
 
     if save_csv:
@@ -629,12 +722,16 @@ def get_bird_colors(birds: list) -> dict:
     return bird_color
 
 
-def get_spectrogram(timestamp, data, sample_rate: int, freq_range: Optional[list] = [300, 8000]):
+def get_spectrogram(
+    timestamp, data, sample_rate: int, freq_range: Optional[list] = [300, 8000]
+):
     """Calculate spectrogram"""
     from ..utils.spect import spectrogram
 
     spect, spect_freq, _ = spectrogram(data, sample_rate, freq_range=freq_range)
-    spect_time = np.linspace(timestamp[0], timestamp[-1], spect.shape[1])  # timestamp for spectrogram
+    spect_time = np.linspace(
+        timestamp[0], timestamp[-1], spect.shape[1]
+    )  # timestamp for spectrogram
     return spect_time, spect, spect_freq
 
 
@@ -659,7 +756,9 @@ def align_waveform(spk_wf: np.ndarray) -> np.ndarray:
     max_first = False  # max value (peak) comes first
 
     avg_wf = spk_wf.mean(axis=0)
-    if np.argmin(avg_wf) < np.argmax(avg_wf):  # inverted waveform (peak comes first in extra-cellular recording)
+    if np.argmin(avg_wf) < np.argmax(
+        avg_wf
+    ):  # inverted waveform (peak comes first in extra-cellular recording)
         max_first = True
 
     if max_first:
@@ -681,7 +780,7 @@ def align_waveform(spk_wf: np.ndarray) -> np.ndarray:
             if max_diff > 0:
                 new_wf[:-max_diff] = wf[max_diff:]
             else:
-                new_wf[abs(max_diff):] = wf[:max_diff]
+                new_wf[abs(max_diff) :] = wf[:max_diff]
             aligned_wf[ind] = new_wf
         else:
             aligned_wf[ind] = wf
