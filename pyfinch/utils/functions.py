@@ -51,8 +51,7 @@ def find_data_path():
     Request the user to manually find dir path and return it
     """
     from pathlib import Path
-    from tkinter import Tk
-    from tkinter import filedialog
+    from tkinter import Tk, filedialog
 
     root = Tk()
     root.withdraw()

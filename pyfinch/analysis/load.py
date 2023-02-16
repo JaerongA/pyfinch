@@ -126,8 +126,9 @@ def load_song(data_path, format="wav") -> dict:
     format : str
         file extension (e.g., '.wav')
     """
-    from ..analysis.functions import demarcate_bout
     from scipy.io import wavfile
+
+    from ..analysis.functions import demarcate_bout
     from ..utils.functions import list_files
 
     # List all audio files in the dir
@@ -224,6 +225,7 @@ def load_audio(data_path, format="wav") -> dict:
     """
 
     from scipy.io import wavfile
+
     from ..utils.functions import list_files
 
     # List all audio files in the dir

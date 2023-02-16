@@ -2,7 +2,7 @@
 Functions used for song & neural analysis
 """
 
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -241,17 +241,18 @@ def get_psd_mat(
     fig_ext=".png",
 ):
     """Get matrix of power spectral density"""
-    from ..analysis.parameters import freq_range
-    from ..utils import save
-    from ..utils.draw import remove_right_top
-    from ..utils.spect import spectrogram
-    from ..utils.functions import normalize, extract_ind
-    from .load import read_not_mat
     import matplotlib.colors as colors
     import matplotlib.gridspec as gridspec
     import matplotlib.pyplot as plt
     from matplotlib.pylab import psd
     from scipy.io import wavfile
+
+    from ..analysis.parameters import freq_range
+    from ..utils import save
+    from ..utils.draw import remove_right_top
+    from ..utils.functions import extract_ind, normalize
+    from ..utils.spect import spectrogram
+    from .load import read_not_mat
 
     # Parameters
     note_buffer = 20  # in ms before and after each note
@@ -612,8 +613,9 @@ def get_ff(data, sample_rate, ff_low, ff_high, ff_harmonic=1):
     -------
     ff : float
     """
-    from scipy.signal import find_peaks
     import statsmodels.tsa.stattools as smt
+    from scipy.signal import find_peaks
+
     from ..utils.functions import para_interp
 
     # Get peak of the auto-correlogram

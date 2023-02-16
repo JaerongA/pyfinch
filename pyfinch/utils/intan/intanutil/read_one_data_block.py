@@ -2,7 +2,9 @@
 #
 # Michael Gibson 23 April 2015
 
-import sys, struct
+import struct
+import sys
+
 import numpy as np
 
 

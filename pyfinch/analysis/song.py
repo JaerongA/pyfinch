@@ -131,8 +131,9 @@ class SongInfo:
         Return the mean number of intro notes per song bout
         only counts from bouts having at least one song note
         """
-        from ..analysis.functions import unique_nb_notes_in_bout
         from statistics import mean
+
+        from ..analysis.functions import unique_nb_notes_in_bout
 
         mean_nb_intro_notes = {}
         mean_nb_intro_notes["U"] = mean_nb_intro_notes["D"] = None
@@ -161,7 +162,8 @@ class SongInfo:
         only counts from bouts having at least one song note
         """
 
-        from ..analysis.functions import unique_nb_notes_in_bout, total_nb_notes_in_bout
+        from ..analysis.functions import (total_nb_notes_in_bout,
+                                          unique_nb_notes_in_bout)
 
         song_call_prop = {}
         song_call_prop["U"] = song_call_prop["D"] = None

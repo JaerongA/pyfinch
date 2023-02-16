@@ -2,7 +2,9 @@
 #
 # Michael Gibson 23 April 2015
 
-import sys, struct
+import struct
+import sys
+
 from .qstring import read_qstring
 
 

@@ -3,7 +3,9 @@
 # Michael Gibson 23 April 2015
 
 
-import sys, struct, os
+import os
+import struct
+import sys
 
 
 def read_qstring(fid):

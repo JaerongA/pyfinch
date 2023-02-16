@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 # Load the README file.
 with open(file="README.md", mode="r") as readme_handle:

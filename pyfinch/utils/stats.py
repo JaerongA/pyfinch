@@ -46,8 +46,8 @@ def paired_ttest(arr1, arr2):
 
 def two_sample_ttest(arr1, arr2):
     """Performs independent two-sample t-test between two arrays"""
-    from scipy import stats
     import numpy as np
+    from scipy import stats
 
     # Remove nan if any
     arr1 = arr1[~np.isnan(arr1)]
@@ -67,8 +67,8 @@ def two_sample_ttest(arr1, arr2):
 
 def rank_sum_test(arr1, arr2):
     """Performs rank-sum test (non-parametric independent 2-sample test)"""
-    from scipy.stats import ranksums
     import numpy as np
+    from scipy.stats import ranksums
 
     # Remove nan if any
     arr1 = arr1[~np.isnan(arr1)]
@@ -102,8 +102,8 @@ def signed_rank_test(arr1, arr2):
 
 def two_sample_ks_test(arr1, arr2, alternative="two-sided"):
     """Performs Kolmogorov-Smirnov test to compare two distributions"""
-    from scipy import stats
     import numpy as np
+    from scipy import stats
 
     # Remove nan if any
     arr1 = arr1[~np.isnan(arr1)]

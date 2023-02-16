@@ -3,6 +3,7 @@
 # Michael Gibson 27 April 2015
 
 import math
+
 import numpy as np
 
 

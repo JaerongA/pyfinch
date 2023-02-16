@@ -18,6 +18,7 @@ def label_context():
     import shutil
     from tkinter import Tk
     from tkinter import messagebox as mb
+
     from .utils.functions import find_data_path
 
     data_path = find_data_path()
@@ -80,9 +81,11 @@ def label_context():
 def downsample_wav():
     """Downsample .wav files"""
 
-    import librosa
     from pathlib import Path
+
+    import librosa
     import soundfile as sf
+
     from .utils.functions import find_data_path
 
     target_sr = 32000  # target sampling rate
@@ -136,6 +139,7 @@ def change_cbin_names(data_path=None):
 
     import os
     from pathlib import Path
+
     from .utils.functions import find_data_path
 
     # Find data path
@@ -199,7 +203,9 @@ def convert2syllable(data_path=None):
     data_path : str
     """
     from pathlib import Path
+
     import scipy.io
+
     from .utils.functions import find_data_path
 
     if data_path:
@@ -237,11 +243,13 @@ def intan2wav(data_path=None, *args):
     args : sample_rate, freq_range
 
     """
-    from .utils.intan.load_intan_rhd_format import read_rhd
-    import matplotlib.pyplot as plt
-    from pathlib import Path
     from math import ceil
+    from pathlib import Path
+
+    import matplotlib.pyplot as plt
+
     from .utils.functions import find_data_path
+    from .utils.intan.load_intan_rhd_format import read_rhd
     from .utils.spect import spectrogram
 
     # Find data path
@@ -374,7 +382,7 @@ def notestat(
     from .analysis.load import read_not_mat
     from .utils import save
     from .utils.draw import remove_right_top
-    from .utils.functions import myround, find_data_path
+    from .utils.functions import find_data_path, myround
 
     # Find data path
     if data_path:
@@ -466,10 +474,11 @@ def rhd(data_path=None, save_fig=True, fig_ext=".png", view_folder=True):
 
     """
 
-    from .analysis.load import read_rhd
     import matplotlib.pyplot as plt
-    from .utils.functions import find_data_path
+
+    from .analysis.load import read_rhd
     from .utils import save
+    from .utils.functions import find_data_path
 
     # Find data path
     if data_path:

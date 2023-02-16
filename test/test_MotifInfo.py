@@ -1,19 +1,19 @@
+import math
 import unittest
-from pyfinch.analysis import MotifInfo
-from pyfinch.database.load import ProjectLoader
-from pyfinch.analysis import *
-from pyfinch.analysis import *
-from scipy.io import wavfile
-from song.parameters import *
 from pathlib import Path
-from pyfinch.analysis import read_rhd
-import matplotlib.pyplot as plt
+
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
+import matplotlib.pyplot as plt
+from scipy.io import wavfile
+from song.parameters import *
 from util import save
-from pyfinch.utils.spect import *
 from util.draw import *
-import math
+
+from pyfinch.analysis import *
+from pyfinch.analysis import MotifInfo, read_rhd
+from pyfinch.database.load import ProjectLoader
+from pyfinch.utils.spect import *
 
 
 class TestMotifInfo(unittest.TestCase):

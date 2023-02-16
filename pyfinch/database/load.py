@@ -115,8 +115,9 @@ class Database:
             Open the output directory
         """
         from datetime import datetime
-        import pandas as pd
         from pathlib import Path
+
+        import pandas as pd
 
         csv_name = Path(f"{table}.csv")
         if add_date:  # append time&time info to csv

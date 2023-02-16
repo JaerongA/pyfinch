@@ -1,9 +1,10 @@
-from pyfinch.analysis.functions import get_half_width
-from pyfinch.analysis import *
-from scipy import interpolate
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from scipy import interpolate
 from util.draw import remove_right_top
+
+from pyfinch.analysis import *
+from pyfinch.analysis.functions import get_half_width
 
 # Waveform timestamp
 

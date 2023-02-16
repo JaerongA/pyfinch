@@ -62,8 +62,9 @@ def save_fig(fig, save_path, name, fig_ext=".png", view_folder=False, dpi=None) 
         increase the value for enhanced resolution
     """
 
-    import matplotlib.pyplot as plt
     import matplotlib
+    import matplotlib.pyplot as plt
+
     from .functions import open_folder
 
     # Make the text in .pdf editable

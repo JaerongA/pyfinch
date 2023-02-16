@@ -1,8 +1,9 @@
 """
 Module for neural analysis
 """
-import numpy as np
 from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple
+
+import numpy as np
 
 
 def get_isi(spk_ts_list: list):
@@ -68,9 +69,10 @@ def get_peth(
     take values from analysis ..analysis.parameters
     """
 
-    from ..analysis.parameters import peth_parm
     import copy
     import math
+
+    from ..analysis.parameters import peth_parm
 
     parameter = peth_parm.copy()
 
@@ -192,11 +194,13 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
         True if the pcc is significantly above the baseline
     """
 
-    from ..analysis.parameters import peth_shuffle
     from collections import defaultdict
     from functools import partial
-    import scipy.stats as stats
+
     import matplotlib.pyplot as plt
+    import scipy.stats as stats
+
+    from ..analysis.parameters import peth_shuffle
 
     pcc_shuffle = defaultdict(partial(np.ndarray, 0))
     for i in range(peth_shuffle["shuffle_iter"]):
@@ -485,8 +489,9 @@ class ClusterInfo:
 
     def get_correlogram(self, ref_spk_list, target_spk_list, normalize=False) -> dict:
         """Get auto- or cross-correlogram"""
-        from ..analysis.parameters import spk_corr_parm
         import math
+
+        from ..analysis.parameters import spk_corr_parm
 
         correlogram = {}
 
@@ -572,8 +577,9 @@ class ClusterInfo:
 
     def get_jittered_corr(self) -> dict:
         """Get spike correlogram from time-jittered spikes"""
-        from ..analysis.parameters import corr_shuffle
         from collections import defaultdict
+
+        from ..analysis.parameters import corr_shuffle
 
         correlogram_jitter = defaultdict(list)
 
@@ -896,8 +902,8 @@ class NoteInfo:
         Calculate syllable entropy from all renditions and get the average
         Two versions : spectro-temporal entropy & spectral entropy
         """
-        from ..analysis.parameters import nb_note_crit
         from ..analysis.functions import get_spectral_entropy, get_spectrogram
+        from ..analysis.parameters import nb_note_crit
         from ..utils.functions import find_str
 
         entropy_mean = {}
@@ -1303,6 +1309,7 @@ class MotifInfo(ClusterInfo):
         Based on each median note and gap durations
         """
         import copy
+
         from ..utils.functions import extract_ind
 
         spk_ts_warped_list = []
@@ -1535,8 +1542,9 @@ class PethInfo:
         #     peth = peth[:, ind]
         #     time_bin = time_bin[ind]
 
-        from ..analysis.parameters import peth_parm, gauss_std, nb_note_crit
         from scipy.ndimage import gaussian_filter1d
+
+        from ..analysis.parameters import gauss_std, nb_note_crit, peth_parm
 
         if (
             not gaussian_std
@@ -1610,8 +1618,9 @@ class PethInfo:
         sparseness : dict
         """
 
-        from ..analysis.parameters import gauss_std, nb_note_crit
         import math
+
+        from ..analysis.parameters import gauss_std, nb_note_crit
 
         mean_fr = dict()
         sparseness = dict()
@@ -1809,15 +1818,17 @@ class BoutInfo(ClusterInfo):
 
     def plot(self):
         # TODO: this function needs revision
-        from ..analysis.parameters import bout_buffer, freq_range, bout_color
-        from ..utils import save
-        from ..utils.draw import remove_right_top
+        import warnings
+
         import matplotlib.colors as colors
         import matplotlib.pyplot as plt
         import numpy as np
-        from ..database.load import ProjectLoader, DBInfo
         from scipy import stats
-        import warnings
+
+        from ..analysis.parameters import bout_buffer, bout_color, freq_range
+        from ..database.load import DBInfo, ProjectLoader
+        from ..utils import save
+        from ..utils.draw import remove_right_top
 
         warnings.filterwarnings("ignore")
 
@@ -2391,7 +2402,7 @@ class Correlogram:
 
     def __init__(self, correlogram):
 
-        from ..analysis.parameters import spk_corr_parm, burst_hz
+        from ..analysis.parameters import burst_hz, spk_corr_parm
 
         corr_center = round(correlogram.shape[0] / 2) + 1  # center of the correlogram
         self.data = correlogram
@@ -2493,6 +2504,7 @@ class Correlogram:
             normalize the correlogram
         """
         import matplotlib.pyplot as plt
+
         from ..utils.draw import remove_right_top
         from ..utils.functions import myround
 
@@ -2655,7 +2667,7 @@ class ISI:
         isi : np.ndarray
             Inter-spike interval array
         """
-        from ..analysis.parameters import isi_win, isi_scale, isi_bin
+        from ..analysis.parameters import isi_bin, isi_scale, isi_win
 
         self.data = isi
         self.hist, self.time_bin = np.histogram(np.log10(isi), bins=isi_bin)
