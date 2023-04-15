@@ -1,10 +1,16 @@
 """
 Module for data preprocessing.
-
 Prepare & visualize raw data for further analysis.
 """
 
+import os
 from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+import scipy.io
+
+from .utils.functions import find_data_path
 
 
 def label_context():
@@ -14,12 +20,9 @@ def label_context():
     Files for each context should be stored in /Dir or /Undir folder.
     """
 
-    import os
     import shutil
     from tkinter import Tk
     from tkinter import messagebox as mb
-
-    from .utils.functions import find_data_path
 
     data_path = find_data_path()
     os.chdir(data_path)
@@ -78,37 +81,18 @@ def label_context():
     ask()
 
 
-def downsample_wav():
-    """Downsample .wav files"""
-
-    from pathlib import Path
+def downsample_wav(data_path: str | Path, target_sample_rate: float =32000) -> None:
+    """Downsample .wav files in the input directory"""
 
     import librosa
     import soundfile as sf
 
-    from .utils.functions import find_data_path
-
-    target_sr = 32000  # target sampling rate
-
     # Specify dir here or search for the dir manually
-    data_dir = Path(
-        r"H:\Box\Data\Deafening Project\o25w75\Predeafening\D01(20120208)\01\Songs"
-    )
-    try:
-        data_dir
-    except NotADirectoryError:
+    if not Path(data_dir).exists():
         data_dir = find_data_path()
 
-    files = list(data_dir.glob("*.wav"))
-
-    for file in files:
+    for file in list(data_dir.glob("*.wav")):
         print("Processing... " + file.stem)
-        signal, _ = librosa.load(
-            file, sr=target_sr
-        )  # Downsample to the target sample rate
-        # sf.write(file, signal, target_sr)
-        sf.write(data_dir / file, signal, target_sr)
-
 
 def convert_adbit2volts(spk_waveform):
     """Input the waveform matrix extracted from the cluster .txt output"""
@@ -121,26 +105,14 @@ def convert_adbit2volts(spk_waveform):
     return spk_waveform_new
 
 
-"""
-Convert files into differnt format / change names
-"""
-
-import numpy as np
-
-
-def change_cbin_names(data_path=None):
+def change_cbin_names(data_path: str | Path):
     """
     Change the name of the .cbin & .rec files to fit the format (b14r74_190913_161407_Undir) used in the current analysis
 
     Parameters
     ----------
-    data_path : str
+    data_path : str | Path
     """
-
-    import os
-    from pathlib import Path
-
-    from .utils.functions import find_data_path
 
     # Find data path
     if data_path:
@@ -192,7 +164,7 @@ def change_cbin_names(data_path=None):
         print("Done!")
 
 
-def convert2syllable(data_path=None):
+def convert2syllable(data_path: str | Path) -> None:
     """
     Rename variables (labels -> syllables) to avoid the clash with the
 
@@ -202,20 +174,11 @@ def convert2syllable(data_path=None):
     ----------
     data_path : str
     """
-    from pathlib import Path
 
-    import scipy.io
-
-    from .utils.functions import find_data_path
-
-    if data_path:
-        data_path = Path(data_path)
-    else:  # Search for data dir manually
+    if not Path(data_path).exists():
         data_path = find_data_path()
 
-    notmat_files = [file for file in data_path.glob("*.not.mat")]
-
-    for file in notmat_files:
+    for file in list(data_path.glob("*.not.mat")):
 
         # Load the .not.mat file
         print("Loading... " + file.stem)
@@ -232,7 +195,7 @@ def convert2syllable(data_path=None):
     print("Done!")
 
 
-def intan2wav(data_path=None, *args):
+def intan2wav(data_path: str | Path, *args):
     """
     Convert all .rhd files into .wav and plot the raw data
 
@@ -244,23 +207,15 @@ def intan2wav(data_path=None, *args):
 
     """
     from math import ceil
-    from pathlib import Path
 
-    import matplotlib.pyplot as plt
-
-    from .utils.functions import find_data_path
     from .utils.intan.load_intan_rhd_format import read_rhd
     from .utils.spect import spectrogram
 
     # Find data path
-    if data_path:
-        data_path = Path(data_path)
-    else:  # Search for data dir manually
+    if not Path(data_path).exists():
         data_path = find_data_path()
 
-    rhd_files = [str(rhd) for rhd in data_path.rglob("*.rhd")]
-
-    for rhd in rhd_files:
+    for rhd in list(data_path.rglob("*.rhd")):
 
         file_name = Path(rhd).stem
         fig_name = Path(rhd).with_suffix(".png")
@@ -337,7 +292,7 @@ def intan2wav(data_path=None, *args):
 
 
 def notestat(
-    data_path=None,
+    data_path: str | Path,
     fig_name=None,
     save_path=None,
     save_fig=True,
@@ -375,19 +330,16 @@ def notestat(
 
     import math
 
-    import matplotlib.pyplot as plt
     import pandas as pd
     import seaborn as sns
 
     from .analysis.load import read_not_mat
     from .utils import save
     from .utils.draw import remove_right_top
-    from .utils.functions import find_data_path, myround
+    from .utils.functions import myround
 
     # Find data path
-    if data_path:
-        data_path = Path(data_path)
-    else:  # Search for data dir manually
+    if not Path(data_path).exists():
         data_path = find_data_path()
 
     # Store results in the dataframe
@@ -465,30 +417,16 @@ def notestat(
     # print("Done!")
 
 
-def rhd(data_path=None, save_fig=True, fig_ext=".png", view_folder=True):
-    """
-    Plot .rhd files (intan)
-
-    Returns
-    -------
-
-    """
-
-    import matplotlib.pyplot as plt
-
+def rhd(data_path: str | Path, save_fig=True, fig_ext=".png", view_folder=True):
+    """Plot .rhd files (intan)"""
     from .analysis.load import read_rhd
     from .utils import save
-    from .utils.functions import find_data_path
 
     # Find data path
-    if data_path:
-        data_path = Path(data_path)
-    else:  # Search for data dir manually
+    if not Path(data_path).exists():
         data_path = find_data_path()
 
-    rhd_files = list(data_path.glob("*.rhd"))
-
-    for rhd in rhd_files:
+    for rhd in list(data_path.glob("*.rhd")):
 
         intan = read_rhd(rhd)  # load the .rhd file
         nb_channels = len(intan["amplifier_data"])
