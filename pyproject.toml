@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyfinch"
+version = "0.0.2"
+description = "A python package for analyzing neural & bioacoustics signals from songbirds"
+license = "BSD 3-Clause License"
+keywords = ["python", "songbird", "zebra finch", "neuroscience", "bioacoustics"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: BSD License",
+  "Operating System :: OS Independent",
+]
+
+dependencies = [
+  "numpy",
+  "scipy",
+  "matplotlib",
+  "pandas",
+  "seaborn",
+  "scikit-learn",
+  "scikit-image",
+  "h5py",
+  "tqdm",
+  "pyyaml",
+  "pydub",
+  "librosa",
+  "ffmpeg-python",
+  "moviepy",
+  "pydub",
+]
+
+[project.urls]
+repository = "https://github.com/JaerongA/pyfinch.git"
+
+[tool.black]
+line-length = 88
+target-version = ['py38', 'py39', 'py310']
+exclude = '''
+  /(
+      \.eggs
+    | \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+'''
+
+[tool.isort]
+profile = "black"
