@@ -81,7 +81,7 @@ def label_context():
     ask()
 
 
-def downsample_wav(data_path: str | Path, target_sample_rate: float =32000) -> None:
+def downsample_wav(data_path: str | Path, target_sample_rate: float = 32000) -> None:
     """Downsample .wav files in the input directory"""
 
     import librosa
@@ -93,6 +93,7 @@ def downsample_wav(data_path: str | Path, target_sample_rate: float =32000) -> N
 
     for file in list(data_dir.glob("*.wav")):
         print("Processing... " + file.stem)
+
 
 def convert_adbit2volts(spk_waveform):
     """Input the waveform matrix extracted from the cluster .txt output"""

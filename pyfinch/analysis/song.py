@@ -11,7 +11,6 @@ class SongInfo:
     """
 
     def __init__(self, path, name=None, update=False):
-
         from ..analysis.load import load_song
 
         self.path = path
@@ -53,7 +52,6 @@ class SongInfo:
 
     @property
     def open_folder(self):
-
         from ..utils.functions import open_folder as _open_folder
 
         return _open_folder(self.path)
@@ -104,7 +102,6 @@ class SongInfo:
         return nb_bouts
 
     def nb_motifs(self, motif):
-
         from ..utils.functions import find_str
 
         nb_motifs = {}
@@ -162,8 +159,7 @@ class SongInfo:
         only counts from bouts having at least one song note
         """
 
-        from ..analysis.functions import (total_nb_notes_in_bout,
-                                          unique_nb_notes_in_bout)
+        from ..analysis.functions import total_nb_notes_in_bout, unique_nb_notes_in_bout
 
         song_call_prop = {}
         song_call_prop["U"] = song_call_prop["D"] = None
@@ -308,7 +304,6 @@ class BoutInfo(SongInfo):
         )
 
         for file, spks, onsets, offsets, syllables, context in list_zip:
-
             bout_ind = find_str(syllables, "*")
 
             for ind in range(len(bout_ind)):
@@ -351,7 +346,6 @@ class BoutInfo(SongInfo):
 
 class MotifInfo:
     def __init__(self, motif_info, motif):
-
         # Set the dictionary values to class attributes
         for key in motif_info:
             setattr(self, key, motif_info[key])
@@ -388,7 +382,6 @@ class AudioInfo:
     """
 
     def __init__(self, filepath, format=".wav"):
-
         from scipy.io import wavfile
 
         self.path = filepath  # path object
@@ -422,7 +415,6 @@ class AudioInfo:
 
     @property
     def open_folder(self):
-
         from ..utils.functions import open_folder as _open_folder
 
         return _open_folder(self.path)
