@@ -52,7 +52,7 @@ def demarcate_bout(target, intervals: int):
     bout_labeling : str
         demarcated syllable string (e.g., 'iiiabc*abckn*')
     """
-    from ..analysis.parameters import bout_crit
+    from ..core.parameters import bout_crit
 
     ind = np.where(intervals > bout_crit)[0]
     bout_labeling = target
@@ -247,7 +247,7 @@ def get_psd_mat(
     from matplotlib.pylab import psd
     from scipy.io import wavfile
 
-    from ..analysis.parameters import freq_range
+    from ..core.parameters import freq_range
     from ..utils import save
     from ..utils.draw import remove_right_top
     from ..utils.functions import extract_ind, normalize
@@ -466,8 +466,8 @@ def get_pre_motor_spk_per_note(
     -------
     pre_motor_spk_dict : dict
     """
-    from ..analysis.parameters import pre_motor_win_size
-    from ..database.load import ProjectLoader
+    from ..core.parameters import pre_motor_win_size
+    from ..db.load import ProjectLoader
     from ..utils import save
     from ..utils.functions import find_str, unique
 

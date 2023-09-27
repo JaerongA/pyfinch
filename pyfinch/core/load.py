@@ -128,7 +128,7 @@ def load_song(data_path, format="wav") -> dict:
     """
     from scipy.io import wavfile
 
-    from ..analysis.functions import demarcate_bout
+    from ..core.functions import demarcate_bout
     from ..utils.functions import list_files
 
     # List all audio files in the dir
@@ -158,7 +158,6 @@ def load_song(data_path, format="wav") -> dict:
 
     # Loop through Intan .rhd files
     for file in audio_files:
-
         # Load audio files
         print("Loading... " + file.stem)
         sample_rate, data = wavfile.read(file)  # note that the timestamp is in second

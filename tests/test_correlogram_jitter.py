@@ -6,7 +6,7 @@ from contextlib import suppress
 
 import matplotlib.pyplot as plt
 
-from pyfinch.database.load import ProjectLoader
+from pyfinch.db.load import ProjectLoader
 
 # Parameter
 normalize = False
@@ -48,7 +48,6 @@ db.execute(query)
 
 # Loop through db
 for row in db.cur.fetchall():
-
     correlogram = {}
 
     mi = MotifInfo(row, update=update)  # motif object
@@ -60,7 +59,6 @@ for row in db.cur.fetchall():
 
     # Get correlogram per condition
     with suppress(KeyError):
-
         corr_b = Correlogram(correlogram["B"])  # Load correlogram object
         corr_u = Correlogram(correlogram["U"])
         corr_d = Correlogram(correlogram["D"])
@@ -88,7 +86,6 @@ for row in db.cur.fetchall():
     ax_txt1 = plt.subplot2grid((nb_row, nb_col), (4, 0), rowspan=3, colspan=1)
 
     with suppress(KeyError):
-
         corr_u.plot_corr(
             ax1,
             spk_corr_parm["time_bin"],

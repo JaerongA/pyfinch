@@ -4,6 +4,10 @@ Load project information and read from the project database
 
 import sqlite3
 from configparser import ConfigParser
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
 
 
 def create_db(sql_file_name: str):
@@ -48,7 +52,6 @@ class ProjectLoader:
 
 class Database:
     def __init__(self, db_path):
-
         self.path = db_path
         self.dir = self.path.parent
         self.conn = sqlite3.connect(db_path)
@@ -56,7 +59,6 @@ class Database:
         self.cur = self.conn.cursor()
 
     def execute(self, query):
-
         self.cur.execute(query)
 
     def create_col(self, table: str, col_name: str, type: str):
@@ -114,11 +116,6 @@ class Database:
         open_folder : bool
             Open the output directory
         """
-        from datetime import datetime
-        from pathlib import Path
-
-        import pandas as pd
-
         csv_name = Path(f"{table}.csv")
         if add_date:  # append time&time info to csv
             csv_name = (
@@ -150,7 +147,6 @@ class Database:
         -------
         df : dataframe
         """
-        import pandas as pd
 
         df = pd.read_sql_query(query, self.conn)
         return df
@@ -158,7 +154,6 @@ class Database:
 
 class DBInfo:
     def __init__(self, db):
-
         # Set all database fields as attributes
         self.channel = None
         for key in db.keys():
@@ -169,9 +164,6 @@ class DBInfo:
         return str([key for key in self.__dict__.keys()])
 
     def load_cluster_db(self):
-
-        from pathlib import Path
-
         cluster_id = ""
         if len(str(self.id)) == 1:
             cluster_id = "00" + str(self.id)
@@ -222,9 +214,6 @@ class DBInfo:
         return cluster_name, cluster_path
 
     def load_song_db(self):
-
-        from pathlib import Path
-
         song_id = ""
         if len(str(self.id)) == 1:
             song_id = "00" + str(self.id)

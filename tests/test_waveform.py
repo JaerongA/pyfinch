@@ -3,8 +3,8 @@ import numpy as np
 from scipy import interpolate
 from util.draw import remove_right_top
 
-from pyfinch.analysis import *
-from pyfinch.analysis.functions import get_half_width
+from pyfinch.core import *
+from pyfinch.core.functions import get_half_width
 
 # Waveform timestamp
 

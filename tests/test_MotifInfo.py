@@ -10,9 +10,9 @@ from song.parameters import *
 from util import save
 from util.draw import *
 
-from pyfinch.analysis import *
-from pyfinch.analysis import MotifInfo, read_rhd
-from pyfinch.database.load import ProjectLoader
+from pyfinch.core import *
+from pyfinch.core import MotifInfo, read_rhd
+from pyfinch.db.load import ProjectLoader
 from pyfinch.utils.spect import *
 
 

@@ -11,7 +11,7 @@ class SongInfo:
     """
 
     def __init__(self, path, name=None, update=False):
-        from ..analysis.load import load_song
+        from ..core.load import load_song
 
         self.path = path
         if name:
@@ -79,7 +79,7 @@ class SongInfo:
         -------
         nb_bouts : dict
         """
-        from ..analysis.functions import get_nb_bouts
+        from ..core.functions import get_nb_bouts
 
         nb_bouts = {}
         syllable_list = [
@@ -130,7 +130,7 @@ class SongInfo:
         """
         from statistics import mean
 
-        from ..analysis.functions import unique_nb_notes_in_bout
+        from ..core.functions import unique_nb_notes_in_bout
 
         mean_nb_intro_notes = {}
         mean_nb_intro_notes["U"] = mean_nb_intro_notes["D"] = None
@@ -159,7 +159,7 @@ class SongInfo:
         only counts from bouts having at least one song note
         """
 
-        from ..analysis.functions import total_nb_notes_in_bout, unique_nb_notes_in_bout
+        from ..core.functions import total_nb_notes_in_bout, unique_nb_notes_in_bout
 
         song_call_prop = {}
         song_call_prop["U"] = song_call_prop["D"] = None
@@ -398,7 +398,7 @@ class AudioInfo:
 
     def load_notmat(self):
         """Load the .not.mat file"""
-        from ..analysis.load import read_not_mat
+        from ..core.load import read_not_mat
 
         notmat_file = self.path.with_suffix(".wav.not.mat")
         (
@@ -466,7 +466,7 @@ class AudioInfo:
         -------
         array of spectral entropy
         """
-        from ..analysis.functions import get_spectral_entropy
+        from ..core.functions import get_spectral_entropy
 
         return get_spectral_entropy(spect, normalize=normalize, mode=mode)
 
@@ -497,7 +497,7 @@ class FundamentalFreq:
 
     def load_from_db(self, birdID, ff_note):
         """Load info from the database if exists"""
-        from ..database.load import ProjectLoader
+        from ..db.load import ProjectLoader
 
         query = (
             f"SELECT ffNote, ffParameter, ffCriterion, ffLow, ffHigh, ffDuration, harmonic "

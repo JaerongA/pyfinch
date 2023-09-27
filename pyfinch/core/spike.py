@@ -72,7 +72,7 @@ def get_peth(
     import copy
     import math
 
-    from ..analysis.parameters import peth_parm
+    from ..core.parameters import peth_parm
 
     parameter = peth_parm.copy()
 
@@ -200,7 +200,7 @@ def pcc_shuffle_test(ClassObject, PethInfo, plot_hist=False, alpha=0.05):
     import matplotlib.pyplot as plt
     import scipy.stats as stats
 
-    from ..analysis.parameters import peth_shuffle
+    from ..core.parameters import peth_shuffle
 
     pcc_shuffle = defaultdict(partial(np.ndarray, 0))
     for i in range(peth_shuffle["shuffle_iter"]):
@@ -282,7 +282,7 @@ class ClusterInfo:
         time_unit : str
             'ms' by default
         """
-        from ..analysis.load import load_song
+        from ..core.load import load_song
 
         self.path = path
         if channel_nb:  # if a neuron was recorded
@@ -401,8 +401,8 @@ class ClusterInfo:
             Factor by which to increase the sampling frequency of the waveform
             e.g., 100 if you want to increase the data points by 100 fold
         """
-        from ..analysis.functions import align_waveform, get_half_width
-        from ..analysis.parameters import sample_rate
+        from ..core.functions import align_waveform, get_half_width
+        from ..core.parameters import sample_rate
 
         if align_wf:
             self.spk_wf = align_waveform(self.spk_wf)
@@ -427,7 +427,7 @@ class ClusterInfo:
             return spk_height, spk_width, half_width, deflection_range
 
         if not interp_factor:
-            from ..analysis.parameters import interp_factor
+            from ..core.parameters import interp_factor
 
             interp_factor = interp_factor
 
@@ -491,7 +491,7 @@ class ClusterInfo:
         """Get auto- or cross-correlogram"""
         import math
 
-        from ..analysis.parameters import spk_corr_parm
+        from ..core.parameters import spk_corr_parm
 
         correlogram = {}
 
@@ -579,7 +579,7 @@ class ClusterInfo:
         """Get spike correlogram from time-jittered spikes"""
         from collections import defaultdict
 
-        from ..analysis.parameters import corr_shuffle
+        from ..core.parameters import corr_shuffle
 
         correlogram_jitter = defaultdict(list)
 
@@ -672,7 +672,7 @@ class ClusterInfo:
         nb_bouts : dict
         """
 
-        from ..analysis.functions import get_nb_bouts
+        from ..core.functions import get_nb_bouts
 
         nb_bouts = {}
         syllable_list = [
@@ -902,8 +902,8 @@ class NoteInfo:
         Calculate syllable entropy from all renditions and get the average
         Two versions : spectro-temporal entropy & spectral entropy
         """
-        from ..analysis.functions import get_spectral_entropy, get_spectrogram
-        from ..analysis.parameters import nb_note_crit
+        from ..core.functions import get_spectral_entropy, get_spectrogram
+        from ..core.parameters import nb_note_crit
         from ..utils.functions import find_str
 
         entropy_mean = {}
@@ -1029,7 +1029,7 @@ class NoteInfo:
         This version limit the jittered timestamp within the motif window
         """
 
-        from ..analysis.parameters import pre_motor_win_size
+        from ..core.parameters import pre_motor_win_size
 
         spk_ts_jittered_list = []
         list_zip = zip(self.onsets, self.offsets, self.spk_ts)
@@ -1064,7 +1064,7 @@ class NoteInfo:
     @property
     def mean_fr(self) -> dict:
         """Return mean firing rates for the note (includes pre-motor window) per context"""
-        from ..analysis.parameters import nb_note_crit, pre_motor_win_size
+        from ..core.parameters import nb_note_crit, pre_motor_win_size
         from ..utils.functions import find_str
 
         note_spk = {}
@@ -1140,7 +1140,7 @@ class MotifInfo(ClusterInfo):
 
     def _load_motif(self):
         """Load motif info"""
-        from ..analysis.parameters import peth_parm
+        from ..core.parameters import peth_parm
         from ..utils.functions import find_str
 
         # Store values here
@@ -1360,7 +1360,7 @@ class MotifInfo(ClusterInfo):
             (False by default)
 
         """
-        from ..analysis.parameters import peth_parm
+        from ..core.parameters import peth_parm
 
         fr_dict = {}
         motif_spk_list = []
@@ -1421,7 +1421,7 @@ class MotifInfo(ClusterInfo):
         This version limit the jittered timestamp within the motif window
         """
 
-        from ..analysis.parameters import pre_motor_win_size
+        from ..core.parameters import pre_motor_win_size
 
         spk_ts_jittered_list = []
         list_zip = zip(self.onsets, self.offsets, self.spk_ts)
@@ -1544,7 +1544,7 @@ class PethInfo:
 
         from scipy.ndimage import gaussian_filter1d
 
-        from ..analysis.parameters import gauss_std, nb_note_crit, peth_parm
+        from ..core.parameters import gauss_std, nb_note_crit, peth_parm
 
         if (
             not gaussian_std
@@ -1580,7 +1580,7 @@ class PethInfo:
 
     def get_pcc(self):
         """Get pairwise cross-correlation"""
-        from ..analysis.parameters import nb_note_crit
+        from ..core.parameters import nb_note_crit
 
         pcc_dict = {}
         for k, v in self.fr.items():  # loop through different conditions in peth dict
@@ -1620,7 +1620,7 @@ class PethInfo:
 
         import math
 
-        from ..analysis.parameters import gauss_std, nb_note_crit
+        from ..core.parameters import gauss_std, nb_note_crit
 
         mean_fr = dict()
         sparseness = dict()
@@ -1668,7 +1668,7 @@ class PethInfo:
         """
         Calculate the number of spikes within a specified time window
         """
-        from ..analysis.parameters import peth_parm, spk_count_parm
+        from ..core.parameters import peth_parm, spk_count_parm
 
         win_size = spk_count_parm["win_size"]
         spk_count_dict = {}
@@ -1825,8 +1825,8 @@ class BoutInfo(ClusterInfo):
         import numpy as np
         from scipy import stats
 
-        from ..analysis.parameters import bout_buffer, bout_color, freq_range
-        from ..database.load import DBInfo, ProjectLoader
+        from ..core.parameters import bout_buffer, bout_color, freq_range
+        from ..db.load import DBInfo, ProjectLoader
         from ..utils import save
         from ..utils.draw import remove_right_top
 
@@ -2029,7 +2029,7 @@ class BaselineInfo(ClusterInfo):
     def __init__(self, path, channel_nb, unit_nb, format="rhd", *name, update=False):
         super().__init__(path, channel_nb, unit_nb, format, *name, update=False)
 
-        from ..analysis.parameters import baseline
+        from ..core.parameters import baseline
         from ..utils.functions import find_str
 
         if name:
@@ -2146,7 +2146,7 @@ class BaselineInfo(ClusterInfo):
         Combine correlogram from undir and dir since no contextual differentiation is needed in baseline
         """
 
-        from ..analysis.parameters import spk_corr_parm
+        from ..core.parameters import spk_corr_parm
 
         correlogram_all = super().get_correlogram(
             ref_spk_list, target_spk_list, normalize=False
@@ -2162,7 +2162,7 @@ class BaselineInfo(ClusterInfo):
 
     def get_jittered_corr(self) -> np.ndarray:
         """Get spike correlogram from time-jittered spikes"""
-        from ..analysis.parameters import corr_shuffle
+        from ..core.parameters import corr_shuffle
 
         correlogram_jitter = []
 
@@ -2197,7 +2197,7 @@ class AudioData:
     """
 
     def __init__(self, path, format=".wav", update=False):
-        from ..analysis.load import load_audio
+        from ..core.load import load_audio
 
         self.path = path
         self.format = format
@@ -2265,7 +2265,7 @@ class AudioData:
         -------
         array of spectral entropy
         """
-        from ..analysis.functions import get_spectral_entropy
+        from ..core.functions import get_spectral_entropy
 
         return get_spectral_entropy(spect, normalize=normalize, mode=mode)
 
@@ -2298,8 +2298,8 @@ class NeuralData:
         Load and concatenate all neural data files (e.g., .rhd) in the input dir (path)
         """
 
-        from ..analysis.load import read_rhd
-        from ..analysis.parameters import sample_rate
+        from ..core.load import read_rhd
+        from ..core.parameters import sample_rate
 
         print("")
         print("Load neural data")
@@ -2402,7 +2402,7 @@ class Correlogram:
 
     def __init__(self, correlogram):
 
-        from ..analysis.parameters import burst_hz, spk_corr_parm
+        from ..core.parameters import burst_hz, spk_corr_parm
 
         corr_center = round(correlogram.shape[0] / 2) + 1  # center of the correlogram
         self.data = correlogram
@@ -2449,7 +2449,7 @@ class Correlogram:
         -------
             Category of a neuron ('Bursting' or 'Nonbursting')
         """
-        from ..analysis.parameters import corr_burst_crit
+        from ..core.parameters import corr_burst_crit
 
         corr_mean = correlogram_jitter.mean(axis=0)
 
@@ -2541,7 +2541,7 @@ class Correlogram:
 class BurstingInfo:
     def __init__(self, ClassInfo, *input_context):
 
-        from ..analysis.parameters import burst_hz
+        from ..core.parameters import burst_hz
 
         # ClassInfo can be BaselineInfo, MotifInfo etc
         if input_context:  # select data based on social context
@@ -2667,7 +2667,7 @@ class ISI:
         isi : np.ndarray
             Inter-spike interval array
         """
-        from ..analysis.parameters import isi_bin, isi_scale, isi_win
+        from ..core.parameters import isi_bin, isi_scale, isi_win
 
         self.data = isi
         self.hist, self.time_bin = np.histogram(np.log10(isi), bins=isi_bin)

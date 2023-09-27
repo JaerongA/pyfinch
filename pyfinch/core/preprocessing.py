@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.io
 
-from .utils.functions import find_data_path
+from ..utils.functions import find_data_path
 
 
 def label_context():
@@ -209,8 +209,8 @@ def intan2wav(data_path: str | Path, *args):
     """
     from math import ceil
 
-    from .utils.intan.load_intan_rhd_format import read_rhd
-    from .utils.spect import spectrogram
+    from ..utils.intan.load_intan_rhd_format import read_rhd
+    from ..utils.spect import spectrogram
 
     # Find data path
     if not Path(data_path).exists():
@@ -231,12 +231,12 @@ def intan2wav(data_path: str | Path, *args):
 
         # Plot spectrogram for song
         if "sample_rate" not in args:
-            from pyfinch.analysis.parameters import sample_rate
+            from pyfinch.core.parameters import sample_rate
 
             sample_rate = sample_rate["rhd"]
 
         if "freq_range" not in args:
-            from pyfinch.analysis.parameters import freq_range
+            from pyfinch.core.parameters import freq_range
 
             freq_range = freq_range
 
@@ -334,10 +334,10 @@ def notestat(
     import pandas as pd
     import seaborn as sns
 
-    from .analysis.load import read_not_mat
-    from .utils import save
-    from .utils.draw import remove_right_top
-    from .utils.functions import myround
+    from .load import read_not_mat
+    from ..utils import save
+    from ..utils.draw import remove_right_top
+    from ..utils.functions import myround
 
     # Find data path
     if not Path(data_path).exists():
@@ -420,8 +420,8 @@ def notestat(
 
 def rhd(data_path: str | Path, save_fig=True, fig_ext=".png", view_folder=True):
     """Plot .rhd files (intan)"""
-    from .analysis.load import read_rhd
-    from .utils import save
+    from .load import read_rhd
+    from ..utils import save
 
     # Find data path
     if not Path(data_path).exists():

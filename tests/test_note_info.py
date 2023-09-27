@@ -3,9 +3,9 @@ import matplotlib.gridspec as gridspec
 from util import save
 from util.draw import *
 
-from pyfinch.analysis import *
-from pyfinch.analysis import pre_motor_win_size
-from pyfinch.database.load import DBInfo, ProjectLoader
+from pyfinch.core import *
+from pyfinch.core import pre_motor_win_size
+from pyfinch.db.load import DBInfo, ProjectLoader
 
 # parameters
 rec_yloc = 0.05
