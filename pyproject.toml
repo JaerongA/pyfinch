@@ -6,7 +6,10 @@ build-backend = "setuptools.build_meta"
 name = "pyfinch"
 version = "0.0.2"
 description = "A python package for analyzing neural & bioacoustics signals from songbirds"
-license = "BSD 3-Clause License"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Jaerong Ahn", email = "jaerongahn@gmail.com" }]
 keywords = ["python", "songbird", "zebra finch", "neuroscience", "bioacoustics"]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -17,21 +20,21 @@ classifiers = [
 ]
 
 dependencies = [
-  "numpy",
-  "scipy",
-  "matplotlib",
-  "pandas",
-  "seaborn",
-  "scikit-learn",
-  "scikit-image",
-  "h5py",
-  "tqdm",
-  "pyyaml",
-  "pydub",
-  "librosa",
   "ffmpeg-python",
+  "h5py",
+  "librosa",
+  "matplotlib",
   "moviepy",
+  "numpy",
+  "pandas",
   "pydub",
+  "pydub",
+  "pyyaml",
+  "scikit-image",
+  "scikit-learn",
+  "scipy",
+  "seaborn",
+  "tqdm",
 ]
 
 [project.urls]
