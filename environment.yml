@@ -3,16 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.10
-  - matplotlib
+  - python>=3.11
+  - graphviz
   - numpy
-  - pandas
-  - pip
-  - scikit-learn
   - scipy
-  - seaborn
-  - librosa
-  - scikit-posthocs
-  - statsmodels
-  - pip:
-      - soundfile
