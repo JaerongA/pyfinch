@@ -24,17 +24,16 @@ dependencies = [
   "h5py",
   "librosa",
   "matplotlib",
-  "moviepy",
   "numpy",
   "pandas",
-  "pydub",
-  "pydub",
-  "pyyaml",
-  "scikit-image",
   "scikit-learn",
   "scipy",
+  "soundfile",
   "seaborn",
-  "tqdm",
+  "soundfile",
+  "librosa",
+  "scikit-posthocs",
+  "statsmodels",
 ]
 
 [project.urls]
@@ -42,7 +41,7 @@ repository = "https://github.com/JaerongA/pyfinch.git"
 
 [tool.black]
 line-length = 88
-target-version = ['py38', 'py39', 'py310']
+target-version = ['py38', 'py39', 'py310', 'py311']
 exclude = '''
   /(
       \.eggs
